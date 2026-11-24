@@ -188,6 +188,7 @@ private:
 	std::function<void(double)>* m_progress_callback;
 
 	std::string vina_remarks(output_type& pose, fl lb, fl ub);
+	void write_pose_models(std::ostream& out, int how_many, double energy_range);
 	output_container remove_redundant(const output_container& in, fl min_rmsd);
 
 	void reset_ligand_model(atom_type::t atom_typing);

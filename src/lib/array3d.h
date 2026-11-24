@@ -70,6 +70,8 @@ public:
 		m_k = k;
 		m_data.resize(checked_multiply(i, j, k));
 	}
+	typename std::vector<T>::iterator begin() { return m_data.begin(); }
+	typename std::vector<T>::iterator end() { return m_data.end(); }
 	T&       operator()(sz i, sz j, sz k)       { return m_data[i + m_i*(j + m_j*k)]; }
 	const T& operator()(sz i, sz j, sz k) const { return m_data[i + m_i*(j + m_j*k)]; }
 };

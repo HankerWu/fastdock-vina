@@ -229,121 +229,24 @@ bool ad4cache::are_atom_types_grid_initialized(szv atom_types) const {
 	return true;
 }
 
-std::vector<std::string> split(std::string str) {
-	std::vector<std::string> fields;
-	std::string field;
-	std::istringstream iss(str);
-	while(std::getline(iss, field, ' '))
-	{
-		fields.push_back(field);
-	};
-	return fields;
-}
-
-void read_ad4_map(path& filename, std::vector<grid_dims>& gds, grid& g) {
-	sz line_counter = 0;
-	sz pt_counter = 0;
-	sz x = 0;
-	sz y = 0;
-	sz z = 0;
-	grid_dims gd;
-	std::string line;
-	fl spacing, center, halfspan;
-
-	ifile in(filename);
-
-	while(std::getline(in, line)) {
-		line_counter++;
-		if (line_counter == 4) {
-			std::vector<std::string> fields = split(line);
-			spacing = std::atof(fields[1].c_str());
-		}
-		if (line_counter == 5) {
-			std::vector<std::string> fields = split(line);
-			VINA_FOR(i, 3) {
-				// n_voxels must be EVEN
-				// because the number of sampled points in the grid is always ODD
-				// (number of sampled points == n_voxels + 1)
-				gd[i].n_voxels = std::atoi(fields[i + 1].c_str());
-				if (gd[i].n_voxels % 2 == 1) {
-					std::cerr << "ERROR: number of voxels (NELEMENTS) must be even\n";
-					exit(EXIT_FAILURE);
-				}
-			}
-		}
-		if (line_counter == 6) {
-			std::vector<std::string> fields = split(line);
-			VINA_FOR(i, 3) {
-				center = std::atof(fields[i+1].c_str());
-				halfspan = (gd[i].n_voxels) * spacing / 2.0;
-				gd[i].begin = center - halfspan;
-				gd[i].end = center + halfspan;
-				// std::cout << center << " " << halfspan << " " << gd[i].begin << " " << gd[i].end << "\n";
-			}
-			gds.push_back(gd);
-			g.init(gd);
-		}
-		if (line_counter > 6) {
-			// std::cout << pt_counter << " " << x << " " << y << " " << z << " " << std::atof(line.c_str()) << "\n";
-			g.m_data(x, y, z) = std::atof(line.c_str());
-			y += sz(x == (gd[0].n_voxels + 1));
-			z += sz(y == (gd[1].n_voxels + 1));
-			x = x % (gd[0].n_voxels + 1);
-			y = y % (gd[1].n_voxels + 1);
-			pt_counter++;
-			x++;
-		}
-	} // line loop
-}
-
 void ad4cache::read(const std::string& map_prefix) {
-
-	std::string type, filename;
-	std::vector<grid_dims> gds; // to check all maps have same dims (TODO)
-
-	bool got_C_already = false;
-
-	VINA_FOR(atom_type, AD_TYPE_SIZE){
-		sz t = atom_type;
-
-		switch (t)
-	{
-		case AD_TYPE_G0:
-		case AD_TYPE_G1:
-		case AD_TYPE_G2:
-		case AD_TYPE_G3:
-			continue;
-		case AD_TYPE_CG0:
-		case AD_TYPE_CG1:
-		case AD_TYPE_CG2:
-		case AD_TYPE_CG3:
-			if (got_C_already) continue;
-			t = AD_TYPE_C;
-			got_C_already = true;
-			break;
+	bool have_atom_maps = false;
+	VINA_FOR(t, AD_TYPE_SIZE) {
+		switch (t) {
+			case AD_TYPE_G0: case AD_TYPE_G1: case AD_TYPE_G2: case AD_TYPE_G3:
+			case AD_TYPE_CG0: case AD_TYPE_CG1: case AD_TYPE_CG2: case AD_TYPE_CG3:
+				continue; // Closure carbons use the ordinary carbon map.
+		}
+		const path filename(map_prefix + "." + get_adtype_str(t) + ".map");
+		if (!fs::exists(filename)) continue;
+		const auto dimensions = m_grids[t].read_map(filename);
+		if (!have_atom_maps) m_gd = dimensions;
+		have_atom_maps = true;
 	}
 
-		type = get_adtype_str(t);
-		filename = map_prefix + "." + type + ".map";
-		path p(filename);
-		if (fs::exists(p)) {
-			read_ad4_map(p, gds, m_grids[t]);
-
-		} // if file exists
-	} // map loop
-
-	//  elec map
-	filename = map_prefix + ".e.map";
-	path pe(filename);
-	read_ad4_map(pe, gds, m_grids[AD_TYPE_SIZE]);
-
-	//  dsolv map
-	filename = map_prefix + ".d.map";
-	path pd(filename);
-	read_ad4_map(pd, gds, m_grids[AD_TYPE_SIZE + 1]);
-
-	// Store in Ad4cache object
-	m_gd = gds[0];
+	const auto electrostatic = m_grids[AD_TYPE_SIZE].read_map(path(map_prefix + ".e.map"));
+	m_grids[AD_TYPE_SIZE + 1].read_map(path(map_prefix + ".d.map"));
+	if (!have_atom_maps) m_gd = electrostatic;
 }
 
 void ad4cache::write(const std::string& out_prefix, const szv& atom_types, const std::string& gpf_filename,

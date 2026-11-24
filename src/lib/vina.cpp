@@ -547,61 +547,42 @@ std::string Vina::vina_remarks(output_type &pose, fl lb, fl ub) {
 }
 
 std::string Vina::get_poses(int how_many, double energy_range) {
-	int n = 0;
-	double best_energy = 0;
 	std::ostringstream out;
-	std::string remarks;
-
-	if (how_many < 0) {
-		throw vina_runtime_error("number of poses written must be greater than zero.");
-	}
-
-	if (energy_range < 0) {
-		throw vina_runtime_error("energy range must be greater than zero.");
-	}
-
-	if (!m_poses.empty()) {
-		// Get energy from the best conf
-		best_energy = m_poses[0].e;
-
-		VINA_FOR_IN(i, m_poses) {
-			/* Stop if:
-				- We wrote the number of conf asked
-				- If there is no conf to write
-				- The energy of the current conf is superior than best_energy + energy_range
-			*/
-			if (n >= how_many || !not_max(m_poses[i].e) || m_poses[i].e > best_energy + energy_range)
-				break; // check energy_range sanity FIXME
-
-			// Push the current pose to model
-			m_model.set(m_poses[i].c);
-
-			// Write conf
-			remarks = vina_remarks(m_poses[i], m_poses[i].lb, m_poses[i].ub);
-			// Write into the final buffer without a separate string per model.
-			m_model.write_model(out, n + 1, remarks);
-
-			n++;
-		}
-
-		// Push back the best conf in model
-		m_model.set(m_poses[0].c);
-
-	} else {
-		std::cerr << "WARNING: Could not find any poses. No poses were written.\n";
-	}
-
+	write_pose_models(out, how_many, energy_range);
 	return out.str();
 }
 
-void Vina::write_poses(const std::string& output_name, int how_many, double energy_range) {
-	if (!m_poses.empty()) {
-		// Open output file
-		ofile f(make_path(output_name));
-		f << get_poses(how_many, energy_range);
-	} else {
+void Vina::write_pose_models(std::ostream& out, int how_many, double energy_range) {
+	if (how_many < 0)
+		throw vina_runtime_error("number of poses written must be greater than zero.");
+	if (energy_range < 0)
+		throw vina_runtime_error("energy range must be greater than zero.");
+
+	if (m_poses.empty()) {
 		std::cerr << "WARNING: Could not find any poses. No poses were written.\n";
+		return;
 	}
+
+	const double best_energy = m_poses[0].e;
+	int n = 0;
+	for (auto& pose : m_poses) {
+		if (n >= how_many || !not_max(pose.e) || pose.e > best_energy + energy_range)
+			break;
+		m_model.set(pose.c);
+		m_model.write_model(out, ++n, vina_remarks(pose, pose.lb, pose.ub));
+	}
+
+	m_model.set(m_poses[0].c);
+}
+
+void Vina::write_poses(const std::string& output_name, int how_many, double energy_range) {
+	if (m_poses.empty()) {
+		std::cerr << "WARNING: Could not find any poses. No poses were written.\n";
+		return;
+	}
+
+	ofile out(make_path(output_name));
+	write_pose_models(out, how_many, energy_range);
 }
 
 void Vina::write_pose(const std::string& output_name, const std::string& remark) {
