@@ -28,6 +28,7 @@
 #define VINA_PRECALCULATE_H
 
 #include <bitset>
+#include <cstddef>
 
 #include "model.h"
 #include "scoring_function.h"
@@ -49,11 +50,11 @@ public:
     precalculate_element(const flv& distances, fl factor_, fl cap, const Evaluate& evaluate)
         : smooth(distances.size()), factor(factor_) {
         VINA_FOR_IN(i, distances)
-            smooth[i].first = (std::min)(cap, evaluate(distances[i]));
+            smooth[i][0] = (std::min)(cap, evaluate(distances[i]));
         // The centered radial derivative is zero at both ends of the table.
         for (sz i = 1; i + 1 < distances.size(); ++i) {
             const fl delta = distances[i + 1] - distances[i - 1];
-            smooth[i].second = (smooth[i + 1].first - smooth[i - 1].first) / (delta * distances[i]);
+            smooth[i][1] = (smooth[i + 1][0] - smooth[i - 1][0]) / (delta * distances[i]);
         }
     }
 
@@ -63,26 +64,23 @@ public:
     }
     fl fast_sample(sz i) const {
         assert(i + 1 < smooth.size());
-        return (smooth[i + 1].first + smooth[i].first) / 2;
+        return (smooth[i + 1][0] + smooth[i][0]) / 2;
     }
     pr eval_deriv(fl r2) const{
-        fl r2_factored = factor * r2;
+        const fl r2_factored = factor * r2;
         assert(r2_factored + 1 < smooth.size());
-        sz i1 = sz(r2_factored);
-        sz i2 = i1 + 1; // r2 is expected < cutoff_sqr, and cutoff_sqr * factor + 1 < n, so no overflow
-        assert(i1 < smooth.size());
-        assert(i2 < smooth.size());
-        fl rem = r2_factored - i1;
+        // Valid sample offsets fit the signed difference type of the vector.
+        const auto i = static_cast<std::ptrdiff_t>(r2_factored);
+        const fl rem = r2_factored - i;
         assert(rem >= -epsilon_fl);
         assert(rem < 1 + epsilon_fl);
-        const pr &p1 = smooth[i1];
-        const pr &p2 = smooth[i2];
-        fl e = p1.first + rem * (p2.first - p1.first);
-        fl dor = p1.second + rem * (p2.second - p1.second);
-        return pr(e, dor);
+        const sample lower = smooth[i];
+        const sample result = lower + rem * (smooth[i + 1] - lower);
+        return pr(result[0], result[1]);
     };
 private:
-    prv smooth; // [(e, dor)]
+    typedef fl sample __attribute__((vector_size(16)));
+    std::vector<sample> smooth; // energy and radial derivative interpolate independently
     fl factor = 0;
 };
 
@@ -135,38 +133,28 @@ struct precalculate_byatom {
 
     precalculate_byatom(const ScoringFunction& sf, const model& m, fl cap = max_fl, fl factor = 32)
         : m_cutoff_sqr(sqr(sf.get_cutoff())), m_max_cutoff_sqr(sqr(sf.get_max_cutoff())),
-          m_use_type_tables(sf.get_atom_typing() == atom_type::XS),
-          m_data(m_use_type_tables ? XS_TYPE_SIZE : m.num_atoms(), precalculate_element()) {
+          m_data(sf.get_atom_typing() == atom_type::XS ? XS_TYPE_SIZE : m.num_atoms(), precalculate_element()) {
         VINA_CHECK(factor > epsilon_fl);
         const flv distances = sample_distances(factor, m_cutoff_sqr);
 
-        const auto build_table = [&](precalculate_element& table, sz a, sz b, const flv& samples) {
-            table = precalculate_element(samples, factor, cap,
-                [&](fl r) { return sf.eval(m.atoms[a], m.atoms[b], r); });
-        };
-        if (!m_use_type_tables) {
-            // AD4 depends on atom charges, so its lookup remains indexed by atom pair.
-            VINA_FOR(j, m.num_atoms())
-                VINA_RANGE(i, 0, j + 1)
-                    build_table(m_data(i, j), i, j, distances);
-            return;
-        }
-
-        const auto build_type_tables = [&](const interacting_pairs& pairs, const flv& samples) {
+        const auto build_tables = [&](const interacting_pairs& pairs, const flv& samples) {
             for (const interacting_pair& pair : pairs) {
-                auto& table = m_data(pair.type_pair_index);
+                auto& table = m_data(pair.table_index);
                 if (!table.initialized())
-                    build_table(table, pair.a, pair.b, samples);
+                    table = precalculate_element(samples, factor, cap,
+                        [&](fl r) { return sf.eval(m.atoms[pair.a], m.atoms[pair.b], r); });
             }
         };
 
         // Build long-range tables first, so any shared pair has all needed samples.
-        if (!m.glue_pairs.empty())
-            build_type_tables(m.glue_pairs, sample_distances(factor, m_max_cutoff_sqr));
+        if (m_max_cutoff_sqr > m_cutoff_sqr && !m.glue_pairs.empty())
+            build_tables(m.glue_pairs, sample_distances(factor, m_max_cutoff_sqr));
+        else
+            build_tables(m.glue_pairs, distances);
         for (const auto& ligand : m.ligands)
-            build_type_tables(ligand.pairs, distances);
-        build_type_tables(m.inter_pairs, distances);
-        build_type_tables(m.other_pairs, distances);
+            build_tables(ligand.pairs, distances);
+        build_tables(m.inter_pairs, distances);
+        build_tables(m.other_pairs, distances);
     }
 
     fl eval_fast(const interacting_pair& pair, fl r2) const {
@@ -180,13 +168,12 @@ struct precalculate_byatom {
 
 private:
     const precalculate_element& element(const interacting_pair& pair) const {
-        return m_use_type_tables ? m_data(pair.type_pair_index)
-                                 : m_data(pair.a, pair.b);
+        assert(m_data(pair.table_index).initialized());
+        return m_data(pair.table_index);
     }
 
     fl m_cutoff_sqr = 0;
     fl m_max_cutoff_sqr = 0;
-    bool m_use_type_tables = false;
     triangular_matrix<precalculate_element> m_data;
 };
 

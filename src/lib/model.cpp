@@ -27,6 +27,13 @@
 #include "curl.h"
 #include "precalculate.h"
 
+// FastDock: resolve intramolecular scoring-table indices when assembling the model.
+static sz pair_table_index(atom_type::t typing, const atom& a, const atom& b, sz i, sz j, sz num_atoms) {
+	if (typing == atom_type::XS)
+		return triangular_matrix_index_permissive(XS_TYPE_SIZE, a.xs, b.xs);
+	return triangular_matrix_index(num_atoms, i, j);
+}
+
 template<typename T>
 atom_range get_atom_range(const T& t) {
 	atom_range tmp = t.node;
@@ -99,13 +106,15 @@ struct appender_info {
 class appender {
 	appender_info a_info;
 	appender_info b_info;
+	bool tables_by_atom;
 	sz new_grid_index(sz x) const {
 		return (is_a ? x : (a_info.grid_atoms_size + x)); // a-grid_atoms spliced before b-grid_atoms
 	}
 public:
 	bool is_a;
 
-	appender(const model& a, const model& b) : a_info(a), b_info(b), is_a(true) {}
+	appender(const model& a, const model& b)
+		: a_info(a), b_info(b), tables_by_atom(a.atom_typing_used() != atom_type::XS), is_a(true) {}
 
 	sz operator()(sz x) const { // transform coord index
 		if(is_a) {
@@ -128,6 +137,8 @@ public:
 	void update(interacting_pair& ip) const {
 		ip.a = operator()(ip.a);
 		ip.b = operator()(ip.b);
+		if (tables_by_atom)
+			ip.table_index = triangular_matrix_index(a_info.atoms_size + b_info.atoms_size, ip.a, ip.b);
 	}
 	void update(vec& v) const { // coordinates & forces - do nothing
 	}
@@ -233,16 +244,16 @@ void model::append(const model& m) {
 			sz n = num_atom_types(atom_typing_used());
 
 			if (t1 < n && t2 < n) {
-				sz type_pair_index = triangular_matrix_index_permissive(n, t1, t2);
+				interacting_pair pair(pair_table_index(atom_typing_used(), a, b, i, j, atoms.size()), i, j);
 				
 				if (is_glue_pair(i, j)) {
-					glue_pairs.push_back(interacting_pair(type_pair_index, i, j)); // glue_i - glue_j
+					glue_pairs.push_back(pair); // glue_i - glue_j
 				} else if (is_atom_in_ligand(i) && is_atom_in_ligand(j)) {
-					inter_pairs.push_back(interacting_pair(type_pair_index, i, j)); // INTER: ligand_i - ligand_j
+					inter_pairs.push_back(pair); // INTER: ligand_i - ligand_j
 				} else if (is_atom_in_ligand(i) || is_atom_in_ligand(j)) {
-					inter_pairs.push_back(interacting_pair(type_pair_index, i, j)); // INTER: flex - ligand
+					inter_pairs.push_back(pair); // INTER: flex - ligand
 				} else {
-					other_pairs.push_back(interacting_pair(type_pair_index, i, j)); // INTRA: flex_i - flex_j
+					other_pairs.push_back(pair); // INTRA: flex_i - flex_j
 				}
 			}
 		}
@@ -549,8 +560,7 @@ void model::initialize_pairs(const distance_type_matrix& mobility) {
 				sz n  = num_atom_types(atom_typing_used());
 
 				if (t1 < n && t2 < n) { // exclude, say, Hydrogens
-					sz type_pair_index = triangular_matrix_index_permissive(n, t1, t2);
-					interacting_pair ip(type_pair_index, i, j);
+					interacting_pair ip(pair_table_index(atom_typing_used(), atoms[i], atoms[j], i, j, atoms.size()), i, j);
 					
 					if (is_glue_pair(i, j)) {
 						// Add glue_i - glue_i interaction pair
@@ -747,8 +757,7 @@ fl eval_interacting_pairs(const precalculate_byatom& p, fl v, const interacting_
 		cutoff_sqr = p.max_cutoff_sqr();
 	}
 
-	VINA_FOR_IN(i, pairs) {
-		const interacting_pair& ip = pairs[i];
+	for (const interacting_pair& ip : pairs) {
 		fl r2 = vec_distance_sqr(coords[ip.a], coords[ip.b]);
 		if(r2 < cutoff_sqr) {
 			fl tmp = p.eval_fast(ip, r2);
@@ -767,8 +776,7 @@ fl eval_interacting_pairs_deriv(const precalculate_byatom& p, fl v, const intera
 		cutoff_sqr = p.max_cutoff_sqr();
 	}
 
-	VINA_FOR_IN(i, pairs) {
-		const interacting_pair& ip = pairs[i];
+	for (const interacting_pair& ip : pairs) {
 		vec r = coords[ip.b] - coords[ip.a]; // a -> b
 		fl r2 = sqr(r);
 		if(r2 < cutoff_sqr) {

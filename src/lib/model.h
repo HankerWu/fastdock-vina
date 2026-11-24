@@ -35,10 +35,11 @@
 
 
 struct interacting_pair {
-	sz type_pair_index;
+	// Index the score table by XS type pair or, for charge-dependent AD4, by atom pair.
+	sz table_index;
 	sz a;
 	sz b;
-	interacting_pair(sz type_pair_index_, sz a_, sz b_) : type_pair_index(type_pair_index_), a(a_), b(b_) {}
+	interacting_pair(sz table_index_, sz a_, sz b_) : table_index(table_index_), a(a_), b(b_) {}
 };
 
 typedef std::vector<interacting_pair> interacting_pairs;
