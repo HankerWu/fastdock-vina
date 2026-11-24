@@ -47,18 +47,24 @@ public:
 
     template<typename Evaluate>
     precalculate_element(const flv& distances, fl factor_, fl cap, const Evaluate& evaluate)
-        : smooth(distances.size()), fast(distances.size()), factor(factor_) {
+        : smooth(distances.size()), factor(factor_) {
         VINA_FOR_IN(i, distances)
             smooth[i].first = (std::min)(cap, evaluate(distances[i]));
-        init_from_smooth_fst(distances);
+        // The centered radial derivative is zero at both ends of the table.
+        for (sz i = 1; i + 1 < distances.size(); ++i) {
+            const fl delta = distances[i + 1] - distances[i - 1];
+            smooth[i].second = (smooth[i + 1].first - smooth[i - 1].first) / (delta * distances[i]);
+        }
     }
 
     bool initialized() const { return !smooth.empty(); }
     fl eval_fast(fl r2) const{
-        assert(r2 * factor < fast.size());
-        return fast[sz(factor * r2)];
-    };
-    const fl* fast_samples() const { return fast.data(); }
+        return fast_sample(sz(factor * r2));
+    }
+    fl fast_sample(sz i) const {
+        assert(i + 1 < smooth.size());
+        return (smooth[i + 1].first + smooth[i].first) / 2;
+    }
     pr eval_deriv(fl r2) const{
         fl r2_factored = factor * r2;
         assert(r2_factored + 1 < smooth.size());
@@ -76,28 +82,7 @@ public:
         return pr(e, dor);
     };
 private:
-    void init_from_smooth_fst(const flv &rs){
-        sz n = smooth.size();
-        VINA_CHECK(rs.size() == n);
-        VINA_CHECK(fast.size() == n);
-        VINA_FOR(i, n) {
-            // calculate dor's
-            fl &dor = smooth[i].second;
-            if (i == 0 || i == n - 1)
-                dor = 0;
-            else {
-                fl delta = rs[i + 1] - rs[i - 1];
-                fl r = rs[i];
-                dor = (smooth[i + 1].first - smooth[i - 1].first) / (delta * r);
-            }
-            // calculate fast's from smooth.first's
-            fl f1 = smooth[i].first;
-            fl f2 = (i + 1 >= n) ? 0 : smooth[i + 1].first;
-            fast[i] = (f2 + f1) / 2;
-        }
-    };
     prv smooth; // [(e, dor)]
-    flv fast;
     fl factor = 0;
 };
 
@@ -105,14 +90,16 @@ struct precalculate {
     precalculate() = default;
 
     precalculate(const ScoringFunction& sf, const std::bitset<XS_TYPE_SIZE>& receptor_types,
-                 fl cap = max_fl, fl factor = 32)
+                 const std::bitset<XS_TYPE_SIZE>& ligand_types, fl cap = max_fl, fl factor = 32)
         : m_cutoff_sqr(sqr(sf.get_cutoff())), m_factor(factor),
           m_data(XS_TYPE_SIZE, precalculate_element()) {
         VINA_CHECK(factor > epsilon_fl);
         const flv distances = sample_distances(factor, m_cutoff_sqr);
         VINA_FOR(t2, XS_TYPE_SIZE) {
             VINA_RANGE(t1, 0, t2 + 1) {
-                if (!receptor_types[t1] && !receptor_types[t2]) continue;
+                const bool used = (receptor_types[t1] && ligand_types[t2]) ||
+                                  (receptor_types[t2] && ligand_types[t1]);
+                if (!used) continue;
                 m_data(t1, t2) = precalculate_element(distances, factor, cap,
                     [&](fl r) { return sf.eval(t1, t2, r); });
             }

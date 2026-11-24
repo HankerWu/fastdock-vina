@@ -383,8 +383,12 @@ void Vina::compute_vina_maps(double center_x, double center_y, double center_z, 
 	// Compute the Vina grids
 	cache grid(gd, slope);
 	szv_grid receptor_index(m_model, szv_grid_dims(gd), sqr(m_scoring_function->get_cutoff()));
-	precalculate receptor_tables(*m_scoring_function, receptor_index.atom_types());
-	grid.populate(m_model, receptor_tables, receptor_index, atom_types);
+	const auto map_types = cache::map_types(atom_types);
+	auto interaction_types = map_types;
+	// Explicit scoring can use a different ligand after loading new maps.
+	if (!m_no_refine) interaction_types.set();
+	precalculate receptor_tables(*m_scoring_function, receptor_index.atom_types(), interaction_types);
+	grid.populate(m_model, receptor_tables, receptor_index, map_types);
 
 	done(m_verbosity, 0);
 
@@ -1035,27 +1039,4 @@ void Vina::global_search(const int exhaustiveness, const int n_poses, const doub
 	m_poses.swap(poses);
 }
 
-Vina::~Vina() {
-	//OpenBabel::OBMol m_mol;
-	// model and poses
-	model m_receptor;
-	model m_model;
-	output_container m_poses;
-	bool m_receptor_initialized;
-	bool m_ligand_initialized;
-	// scoring function
-	scoring_function_choice m_sf_choice;
-	flv m_weights;
-	precalculate_byatom m_precalculated_byatom;
-	precalculate m_precalculated_sf;
-	// maps
-	cache m_grid;
-	ad4cache m_ad4grid;
-	non_cache m_non_cache;
-	bool m_map_initialized;
-	// global search
-	int m_cpu;
-	int m_seed;
-	// others
-	int m_verbosity;
-}
+Vina::~Vina() = default;

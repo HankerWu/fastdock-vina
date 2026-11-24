@@ -48,11 +48,8 @@ public:
 
 typedef fl bfgs_lane2 __attribute__((vector_size(16)));
 
-template<typename Change>
-void minus_mat_vec_product(const flmat& m, const Change& in, Change& out) {
+inline void minus_mat_vec_product(const flmat& m, const flv& values, flv& out) {
 	const sz n = m.dim();
-	flv values(n);
-	VINA_FOR(j, n) values[j] = in(j);
 	sz i = 0;
 	for(; i + 1 < n; i += 2) {
 		bfgs_lane2 sums = {0, 0};
@@ -64,56 +61,43 @@ void minus_mat_vec_product(const flmat& m, const Change& in, Change& out) {
 		}
 		fl lanes[2];
 		std::memcpy(lanes, &sums, sizeof(sums));
-		out(i) = -lanes[0];
-		out(i + 1) = -lanes[1];
+		out[i] = -lanes[0];
+		out[i + 1] = -lanes[1];
 	}
 	for(; i < n; ++i) {
 		fl sum = 0;
 		VINA_FOR(j, n)
 			sum += m(i + j * n) * values[j];
-		out(i) = -sum;
+		out[i] = -sum;
 	}
 }
 
-template<typename Change>
-inline fl scalar_product(const Change& a, const Change& b, sz n) {
-	fl tmp = 0;
-	VINA_FOR(i, n)
-		tmp += a(i) * b(i);
-	return tmp;
+inline fl scalar_product(const flv& a, const flv& b) {
+	fl sum = 0;
+	VINA_FOR_IN(i, a)
+		sum += a[i] * b[i];
+	return sum;
 }
 
-template<typename Change>
-inline bool bfgs_update(flmat& h, const Change& p, const Change& y, const fl alpha) {
-	const fl yp  = scalar_product(y, p, h.dim());
-	if(alpha * yp < epsilon_fl) return false; // FIXME?
-	Change minus_hy(y); minus_mat_vec_product(h, y, minus_hy);
-	const fl yhy = - scalar_product(y, minus_hy, h.dim());
-	const fl r = 1 / (alpha * yp); // 1 / (s^T * y) , where s = alpha * p // FIXME   ... < epsilon
-	const sz n = p.num_floats();
-	flv p_values(n), hy_values(n);
-	VINA_FOR(i, n) {
-		p_values[i] = p(i);
-		hy_values[i] = minus_hy(i);
-	}
-	VINA_FOR(j, n)
+inline void bfgs_update(flmat& h, const flv& direction, const flv& y, fl alpha, fl yp, flv& minus_hy) {
+	if(alpha * yp < epsilon_fl) return;
+	minus_mat_vec_product(h, y, minus_hy);
+	const fl yhy = -scalar_product(y, minus_hy);
+	const fl r = 1 / (alpha * yp);
+	VINA_FOR(j, h.dim())
 		for(sz i = 0; i <= j; ++i) {
-			h(i, j) +=   alpha * r * (hy_values[i] * p_values[j]
-	                                + hy_values[j] * p_values[i]) +
-			           + alpha * alpha * (r*r * yhy  + r) * p_values[i] * p_values[j]; // s * s == alpha * alpha * p * p
+			h(i, j) += alpha * r * (minus_hy[i] * direction[j] + minus_hy[j] * direction[i])
+			         + alpha * alpha * (r*r * yhy + r) * direction[i] * direction[j];
 			h(j, i) = h(i, j);
 		}
-	return true;
 }
 
 template<typename F, typename Conf, typename Change>
-fl line_search(F& f, sz n, const Conf& x, const Change& g, const fl f0, const Change& p, Conf& x_new, Change& g_new, fl& f1, int& evalcount) { // returns alpha
+fl line_search(F& f, const Conf& x, const fl f0, const Change& p, fl pg, Conf& x_new, Change& g_new, fl& f1, int& evalcount) { // returns alpha
 	const fl c0 = 0.0001;
 	const unsigned max_trials = 10;
 	const fl multiplier = 0.5;
 	fl alpha = 1;
-
-	const fl pg = scalar_product(p, g, n);
 
 	VINA_U_FOR(trial, max_trials) {
 		x_new = x; x_new.increment(p, alpha);
@@ -131,15 +115,8 @@ inline void set_diagonal(flmat& m, fl x) {
 		m(i, i) = x;
 }
 
-template<typename Change>
-void subtract_change(Change& b, const Change& a, sz n) { // b -= a
-	VINA_FOR(i, n)
-		b(i) -= a(i);
-}
-
 template<typename F, typename Conf, typename Change>
-fl bfgs(F& f, Conf& x, Change& g, const unsigned max_steps, const fl average_required_improvement, const sz over,
-		int& evalcount) { // x is I/O, final value is returned
+fl bfgs(F& f, Conf& x, Change& g, const unsigned max_steps, int& evalcount) { // x is I/O, final value is returned
 	sz n = g.num_floats();
 	flmat h(n, 0);
 	set_diagonal(h, 1);
@@ -155,29 +132,36 @@ fl bfgs(F& f, Conf& x, Change& g, const unsigned max_steps, const fl average_req
 
 	Change p(g);
 
-	flv f_values; f_values.reserve(max_steps+1);
-	f_values.push_back(f0);
+	// Keep the optimizer's linear algebra flat. Only the model and the
+	// conformational increment need the ligand/residue layout.
+	flv gradient(n), direction(n), y(n), minus_hy(n);
+	VINA_FOR(i, n) gradient[i] = g(i);
 
 	VINA_U_FOR(step, max_steps) {
-		minus_mat_vec_product(h, g, p);
+		minus_mat_vec_product(h, gradient, direction);
+		VINA_FOR(i, n) p(i) = direction[i];
 		fl f1 = 0;
-		const fl alpha = line_search(f, n, x, g, f0, p, x_new, g_new, f1, evalcount);
-		Change y(g_new); subtract_change(y, g, n);
-
-		f_values.push_back(f1);
+		const fl alpha = line_search(f, x, f0, p, scalar_product(direction, gradient),
+		                             x_new, g_new, f1, evalcount);
 		f0 = f1;
 		x = x_new;
-		if(!(std::sqrt(scalar_product(g, g, n)) >= 1e-5)) break; // breaks for nans too // FIXME !!?? 
-		g = g_new; // ?
-
-		if(step == 0) {
-			const fl yy = scalar_product(y, y, n);
-			if(std::abs(yy) > epsilon_fl)
-				set_diagonal(h, alpha * scalar_product(y, p, n) / yy);
+		if(!(std::sqrt(scalar_product(gradient, gradient)) >= 1e-5)) break;
+		g = g_new;
+		VINA_FOR(i, n) {
+			const fl next = g(i);
+			y[i] = next - gradient[i];
+			gradient[i] = next;
 		}
 
-		bool h_updated = bfgs_update(h, p, y, alpha);
+		const fl yp = scalar_product(y, direction);
+		if(step == 0) {
+			const fl yy = scalar_product(y, y);
+			if(std::abs(yy) > epsilon_fl)
+				set_diagonal(h, alpha * yp / yy);
+		}
+		bfgs_update(h, direction, y, alpha, yp, minus_hy);
 	}
+
 	if(!(f0 <= f_orig)) { // succeeds for nans too
 		f0 = f_orig;
 		x = x_orig;

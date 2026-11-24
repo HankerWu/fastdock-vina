@@ -87,6 +87,15 @@ sz affinity_map_type(sz type) {
 
 } // namespace
 
+std::bitset<XS_TYPE_SIZE> cache::map_types(const szv& atom_types) {
+	std::bitset<XS_TYPE_SIZE> types;
+	for (sz type : atom_types) {
+		const sz t = affinity_map_type(type);
+		if (t < XS_TYPE_SIZE) types.set(t);
+	}
+	return types;
+}
+
 fl cache::eval(const model& m, fl v) const { // needs m.coords
 	fl e = 0;
 
@@ -311,12 +320,10 @@ void cache::write(const std::string& out_prefix, const szv& atom_types, const st
 } // cache::write
 
 void cache::populate(const model& m, const precalculate& p, const szv_grid& receptor_index,
-                     const szv& atom_types_needed) {
+                     const std::bitset<XS_TYPE_SIZE>& map_types_needed) {
 	szv needed;
-	for (sz type : atom_types_needed) {
-		const sz t = affinity_map_type(type);
-		if (t >= XS_TYPE_SIZE) continue;
-		if(!m_grids[t].initialized()) {
+	VINA_FOR(t, XS_TYPE_SIZE) {
+		if (map_types_needed[t] && !m_grids[t].initialized()) {
 			needed.push_back(t);
 			m_grids[t].init(m_gd);
 		}
@@ -331,13 +338,18 @@ void cache::populate(const model& m, const precalculate& p, const szv_grid& rece
 
 	const fl cutoff_sqr = p.cutoff_sqr();
 
-	std::vector<const fl*> tables(nat * needed.size());
+	// A grid point uses one distance for all requested ligand types.
+	// Keep these energies adjacent for a contiguous read and accumulation.
+	const sz sample_count = p.fast_index(cutoff_sqr) + 1;
+	std::vector<flv> tables(nat);
 	VINA_FOR(t1, nat) {
 		if (!receptor_index.atom_types()[t1]) continue;
+		flv& samples = tables[t1];
+		samples.resize(sample_count * needed.size());
 		VINA_FOR_IN(j, needed) {
-			assert(needed[j] < nat);
-			tables[t1 * needed.size() + j] = p.element(
-				triangular_matrix_index_permissive(nat, t1, needed[j])).fast_samples();
+			const auto& pair = p.element(triangular_matrix_index_permissive(nat, t1, needed[j]));
+			VINA_FOR(i, sample_count)
+				samples[i * needed.size() + j] = pair.fast_sample(i);
 		}
 	}
 
@@ -361,7 +373,7 @@ void cache::populate(const model& m, const precalculate& p, const szv_grid& rece
 		fl x;
 		fl dy2;
 		fl dz2;
-		const fl* const* tables;
+		const fl* samples;
 	};
 	std::vector<row_atom> row_atoms;
 
@@ -380,7 +392,7 @@ void cache::populate(const model& m, const precalculate& p, const szv_grid& rece
 					const fl dz2 = sqr(a.coords[2] - z_coord);
 					if (dy2 + dz2 <= cutoff_sqr)
 						row_atoms.push_back({a.coords[0], dy2, dz2,
-						                     tables.data() + a.xs * needed.size()});
+						                     tables[a.xs].data()});
 				}
 				VINA_RANGE(x, start, span.end) {
 					std::fill(affinities.begin(), affinities.end(), 0);
@@ -388,9 +400,9 @@ void cache::populate(const model& m, const precalculate& p, const szv_grid& rece
 						// Keep the original axis and receptor atom summation order.
 						const fl r2 = sqr(a.x - x_coords[x]) + a.dy2 + a.dz2;
 						if (r2 <= cutoff_sqr) {
-							const sz sample = p.fast_index(r2);
+							const fl* energies = a.samples + p.fast_index(r2) * needed.size();
 							VINA_FOR_IN(j, needed)
-								affinities[j] += a.tables[j][sample];
+								affinities[j] += energies[j];
 						}
 					}
 					VINA_FOR_IN(j, needed)
