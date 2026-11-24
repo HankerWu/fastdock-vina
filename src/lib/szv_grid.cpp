@@ -71,15 +71,17 @@ szv_grid::szv_grid(const model& m, const grid_dims& gd, fl cutoff_sqr) : m_data(
 	}
 }
 
+sz szv_grid::cell_index(sz axis, fl coord) const {
+	assert(coord + epsilon_fl >= m_init[axis]);
+	assert(coord <= m_init[axis] + m_range[axis] + epsilon_fl);
+	const sz cells = m_data.dim(axis);
+	const fl position = (coord - m_init[axis]) * cells / m_range[axis];
+	return fl_to_sz(position, cells - 1);
+}
+
 const szv& szv_grid::possibilities(const vec& coords) const {
-	boost::array<sz, 3> index;
-	VINA_FOR_IN(i, index) {
-		assert(coords[i] + epsilon_fl >= m_init[i]);
-		assert(coords[i] <= m_init[i] + m_range[i] + epsilon_fl);
-		const fl tmp = (coords[i] - m_init[i]) * m_data.dim(i) / m_range[i];
-		index[i] = fl_to_sz(tmp, m_data.dim(i) - 1);
-	}
-	return m_data(index[0], index[1], index[2]);
+	return possibilities(cell_index(0, coords[0]), cell_index(1, coords[1]),
+	                     cell_index(2, coords[2]));
 }
 
 grid_dims szv_grid_dims(const grid_dims& gd) {

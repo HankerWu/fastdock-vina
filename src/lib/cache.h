@@ -20,6 +20,8 @@
 
 */
 
+// FastDock: affinity grid construction shares the receptor spatial index.
+
 #ifndef VINA_CACHE_H
 #define VINA_CACHE_H
 
@@ -54,7 +56,7 @@ public:
     vec corner2() const { vec corner(m_gd[0].end, m_gd[1].end, m_gd[2].end); return corner; }
     bool is_in_grid(const model &m, fl margin=0.0001) const;
     bool is_atom_type_grid_initialized(sz t) const { return m_grids[t].initialized(); }
-    bool are_atom_types_grid_initialized(szv atom_types) const;
+    bool are_atom_types_grid_initialized(const szv& atom_types) const;
     void read(const std::string& str);
     void write(const std::string& out_prefix, const szv& atom_types, const std::string& gpf_filename="NULL",
                const std::string& fld_filename="NULL", const std::string& receptor_filename="NULL");
