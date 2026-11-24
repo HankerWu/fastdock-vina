@@ -43,7 +43,9 @@ public:
     precalculate_element(sz n, fl factor_) : fast(n, 0), smooth(n, pr(0, 0)), factor(factor_) { }
     fl eval_fast(fl r2) const{
         assert(r2 * factor < fast.size());
-        sz i = sz(factor * r2); // r2 is expected < cutoff_sqr, and cutoff_sqr * factor + 1 < n, so no overflow
+        return fast_at(sz(factor * r2));
+    };
+    fl fast_at(sz i) const{
         assert(i < fast.size());
         return fast[i];
     };
@@ -135,14 +137,13 @@ public:
     precalculate(const ScoringFunction& sf, fl v=max_fl, fl factor=32){
         m_factor = factor;
         m_cutoff_sqr = sqr(sf.get_cutoff());
-        m_max_cutoff_sqr = sqr(sf.get_max_cutoff());
-        m_n = sz(m_factor * m_max_cutoff_sqr) + 3; // sz(factor * r^2) + 1 <= sz(factor * max_cutoff_sqr) + 2 <= n-1 < n  // see assert below
-        //std::cout << "-- DEBUG -- sf.cutoff^2 in precalculate = " << m_max_cutoff_sqr << "\n";
+        // Grid construction and receptor refinement use the ordinary cutoff.
+        // Keep two extra samples for interpolation and centered derivatives.
+        m_n = sz(m_factor * m_cutoff_sqr) + 3;
         triangular_matrix<precalculate_element> data(num_atom_types(sf.get_atom_typing()), precalculate_element(m_n, m_factor));
 
         VINA_CHECK(m_factor > epsilon_fl);
-        VINA_CHECK(sz(m_max_cutoff_sqr * m_factor) + 1 < m_n); // max_cutoff_sqr * factor is the largest float we may end up converting into sz, then 1 can be added to the result
-        VINA_CHECK(m_max_cutoff_sqr * m_factor + 1 < m_n);
+        VINA_CHECK(m_cutoff_sqr * m_factor + 1 < m_n);
 
         flv rs = calculate_rs();
 
@@ -165,19 +166,22 @@ public:
         m_data = std::move(data);
     };
     fl eval_fast(sz type_pair_index, fl r2) const{
-        assert(r2 <= m_max_cutoff_sqr);
+        assert(r2 <= m_cutoff_sqr);
         return m_data(type_pair_index).eval_fast(r2);
     };
+    sz fast_index(fl r2) const {
+        assert(r2 <= m_cutoff_sqr);
+        return sz(m_factor * r2);
+    }
     const precalculate_element& element(sz type_pair_index) const {
         return m_data(type_pair_index);
     }
     pr eval_deriv(sz type_pair_index, fl r2) const{
-        assert(r2 <= m_max_cutoff_sqr);
+        assert(r2 <= m_cutoff_sqr);
         return m_data(type_pair_index).eval_deriv(r2);
     };
     sz index_permissive(sz t1, sz t2) const { return m_data.index_permissive(t1, t2); }
     fl cutoff_sqr() const { return m_cutoff_sqr; }
-    fl max_cutoff_sqr() const { return m_max_cutoff_sqr; }
     void widen(fl left, fl right){
         flv rs = calculate_rs();
         VINA_FOR(t1, m_data.dim())
@@ -193,7 +197,6 @@ private:
     };
 
     fl m_cutoff_sqr;
-    fl m_max_cutoff_sqr;
     sz m_n;
     fl m_factor;
 

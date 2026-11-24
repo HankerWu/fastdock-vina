@@ -58,7 +58,8 @@ public:
     void read(const std::string& str);
     void write(const std::string& out_prefix, const szv& atom_types, const std::string& gpf_filename="NULL",
                const std::string& fld_filename="NULL", const std::string& receptor_filename="NULL");
-	void populate(const model& m, const precalculate& p, const szv& atom_types_needed);
+	void populate(const model& m, const precalculate& p, const szv_grid& receptor_index,
+	              const szv& atom_types_needed);
 private:
 	grid_dims m_gd;
 	fl m_slope; // does not get (de-)serialized

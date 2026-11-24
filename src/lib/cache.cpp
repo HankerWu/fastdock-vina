@@ -436,7 +436,8 @@ void cache::write(const std::string& out_prefix, const szv& atom_types, const st
 	} // map atom type
 } // cache::write
 
-void cache::populate(const model &m, const precalculate &p, const szv &atom_types_needed) {
+void cache::populate(const model& m, const precalculate& p, const szv_grid& receptor_index,
+                     const szv& atom_types_needed) {
 	szv needed;
 	bool got_C_H_already = false;
 	bool got_C_P_already = false;
@@ -482,8 +483,6 @@ void cache::populate(const model &m, const precalculate &p, const szv &atom_type
 
 	const fl cutoff_sqr = p.cutoff_sqr();
 
-	grid_dims gd_reduced = szv_grid_dims(m_gd);
-	szv_grid ig(m, gd_reduced, cutoff_sqr);
 	std::vector<const precalculate_element*> tables(nat * needed.size());
 	VINA_FOR(t1, nat) {
 		VINA_FOR_IN(j, needed) {
@@ -493,12 +492,13 @@ void cache::populate(const model &m, const precalculate &p, const szv &atom_type
 		}
 	}
 
-	VINA_FOR(x, g.m_data.dim0()) {
+	// array3d stores x contiguously. Visit it in storage order.
+	VINA_FOR(z, g.m_data.dim2()) {
 		VINA_FOR(y, g.m_data.dim1()) {
-			VINA_FOR(z, g.m_data.dim2()) {
+			VINA_FOR(x, g.m_data.dim0()) {
 				std::fill(affinities.begin(), affinities.end(), 0);
 				vec probe_coords; probe_coords = g.index_to_argument(x, y, z);
-				const szv& possibilities = ig.possibilities(probe_coords);
+				const szv& possibilities = receptor_index.possibilities(probe_coords);
 				VINA_FOR_IN(possibilities_i, possibilities) {
 					const sz i = possibilities[possibilities_i];
 					const atom& a = m.grid_atoms[i];
@@ -507,9 +507,9 @@ void cache::populate(const model &m, const precalculate &p, const szv &atom_type
 					const fl r2 = vec_distance_sqr(a.coords, probe_coords);
 					if(r2 <= cutoff_sqr) {
 						const precalculate_element* const* row = tables.data() + t1 * needed.size();
-						assert(r2 <= p.max_cutoff_sqr());
+						const sz sample = p.fast_index(r2);
 						VINA_FOR_IN(j, needed) {
-							affinities[j] += row[j]->eval_fast(r2);
+							affinities[j] += row[j]->fast_at(sample);
 						}
 					}
 				}

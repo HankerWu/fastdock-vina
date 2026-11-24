@@ -377,15 +377,14 @@ void Vina::compute_vina_maps(double center_x, double center_y, double center_z, 
 
 	// Compute the Vina grids
 	cache grid(gd, slope);
-	grid.populate(m_model, m_precalculated_sf, atom_types);
+	szv_grid receptor_index(m_model, szv_grid_dims(gd), m_precalculated_sf.cutoff_sqr());
+	grid.populate(m_model, m_precalculated_sf, receptor_index, atom_types);
 
 	done(m_verbosity, 0);
 
 	// create non_cache for scoring with explicit receptor atoms (instead of grids)
-	if (!m_no_refine) {
-		non_cache nc(m_model, gd, &m_precalculated_sf, slope);
-		m_non_cache = nc;
-	}
+	if (!m_no_refine)
+		m_non_cache = non_cache(std::move(receptor_index), gd, &m_precalculated_sf, slope);
 
 	// Store in Vina object
 	m_grid = std::move(grid);
@@ -394,20 +393,18 @@ void Vina::compute_vina_maps(double center_x, double center_y, double center_z, 
 
 void Vina::load_maps(std::string maps) {
 	const fl slope = 1e6; // FIXME: too large? used to be 100
-	grid_dims gd;
-
 	if (m_sf_choice == SF_VINA || m_sf_choice == SF_VINARDO) {
 		doing("Reading Vina maps", m_verbosity, 0);
 		cache grid(slope);
 		grid.read(maps);
 		done(m_verbosity, 0);
-		m_grid = grid;
+		m_grid = std::move(grid);
 	} else {
 		doing("Reading AD4.2 maps", m_verbosity, 0);
 		ad4cache grid(slope);
 		grid.read(maps);
 		done(m_verbosity, 0);
-		m_ad4grid = grid;
+		m_ad4grid = std::move(grid);
 	}
 
 	// Check that all the affinity map are present for ligands/flex residues (if initialized already)
