@@ -44,14 +44,12 @@ bool metropolis_accept(fl old_f, fl new_f, fl temperature, rng& generator) {
 void monte_carlo::operator()(model& m, output_container& out, const precalculate_byatom& p, const igrid& ig, const vec& corner1, const vec& corner2, incrementable* increment_me, rng& generator) const {
     int evalcount = 0;
 	vec authentic_v(1000, 1000, 1000); // FIXME? this is here to avoid max_fl/max_fl
-	conf_size s = m.get_size();
-	change g(s);
+	const conf_size s = m.get_size();
 	output_type tmp(s, 0);
 	tmp.c.randomize(corner1, corner2, generator);
 	output_type candidate(s, 0);
 	fl best_e = max_fl;
-	quasi_newton quasi_newton_par;
-    quasi_newton_par.max_steps = local_steps;
+	quasi_newton quasi_newton_par(s, local_steps);
 	VINA_U_FOR(step, global_steps) {
 		if(increment_me)
 			++(*increment_me);
@@ -59,14 +57,14 @@ void monte_carlo::operator()(model& m, output_container& out, const precalculate
 			break;
 		candidate.c = tmp.c;
 		mutate_conf(candidate.c, m, mutation_amplitude, generator);
-		quasi_newton_par(m, p, ig, candidate, g, hunt_cap, evalcount);
+		quasi_newton_par(m, p, ig, candidate, hunt_cap, evalcount);
 		if(step == 0 || metropolis_accept(tmp.e, candidate.e, temperature, generator)) {
 			std::swap(tmp.c, candidate.c);
 			tmp.e = candidate.e;
 
 			// FIXME only for very promising ones
 			if(tmp.e < best_e || out.size() < num_saved_mins) {
-				quasi_newton_par(m, p, ig, tmp, g, authentic_v, evalcount);
+				quasi_newton_par(m, p, ig, tmp, authentic_v, evalcount);
 				tmp.coords = m.get_heavy_atom_movable_coords();
 				add_to_output_container(out, tmp, min_rmsd, num_saved_mins); // 20 - max size
 				if(tmp.e < best_e)

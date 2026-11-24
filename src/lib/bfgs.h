@@ -27,7 +27,7 @@
 #ifndef VINA_BFGS_H
 #define VINA_BFGS_H
 
-#include "matrix.h"
+#include "conf.h"
 #include <cstring>
 
 // Only the local BFGS inverse Hessian uses this full symmetric storage.
@@ -35,11 +35,10 @@ class flmat {
 	flv m_data;
 	sz m_dim;
 public:
-	flmat() : m_dim(0) {}
-	flmat(sz n, fl filler) : m_data(n * n, filler), m_dim(n) {}
+	explicit flmat(sz n) : m_data(n * n), m_dim(n) {}
+	void clear() { std::fill(m_data.begin(), m_data.end(), 0); }
 	sz dim() const { return m_dim; }
 	sz index(sz i, sz j) const { return i + j * m_dim; }
-	sz index_permissive(sz i, sz j) const { return index(i, j); }
 	const fl& operator()(sz i) const { return m_data[i]; }
 	fl& operator()(sz i) { return m_data[i]; }
 	const fl& operator()(sz i, sz j) const { return m_data[index(i, j)]; }
@@ -92,15 +91,16 @@ inline void bfgs_update(flmat& h, const flv& direction, const flv& y, fl alpha, 
 		}
 }
 
-template<typename F, typename Conf, typename Change>
-fl line_search(F& f, const Conf& x, const fl f0, const Change& p, fl pg, Conf& x_new, Change& g_new, fl& f1, int& evalcount) { // returns alpha
+template<typename F>
+fl line_search(F& f, const conf& x, fl f0, const change& p, fl pg, conf& x_new, change& g_new, fl& f1, int& evalcount) {
 	const fl c0 = 0.0001;
 	const unsigned max_trials = 10;
 	const fl multiplier = 0.5;
 	fl alpha = 1;
 
 	VINA_U_FOR(trial, max_trials) {
-		x_new = x; x_new.increment(p, alpha);
+		x_new = x;
+		x_new.increment(p, alpha);
 		f1 = f(x_new, g_new);
 		evalcount++;
 		if(f1 - f0 < c0 * alpha * pg) // FIXME check - div by norm(p) ? no?
@@ -115,59 +115,65 @@ inline void set_diagonal(flmat& m, fl x) {
 		m(i, i) = x;
 }
 
-template<typename F, typename Conf, typename Change>
-fl bfgs(F& f, Conf& x, Change& g, const unsigned max_steps, int& evalcount) { // x is I/O, final value is returned
-	sz n = g.num_floats();
-	flmat h(n, 0);
-	set_diagonal(h, 1);
+struct bfgs_result {
+	fl energy;
+	bool reverted;
+};
 
-	Change g_new(g);
-	Conf x_new(x);
-	fl f0 = f(x, g);
-	evalcount++;
+// Each search or refinement loop owns a workspace for its fixed conformation
+// layout. Every minimization starts with a fresh identity inverse Hessian.
+class bfgs_workspace {
+	conf trial, original;
+	change derivatives, step_change;
+	flv gradient, direction, y, minus_hy;
+	flmat h;
 
-	fl f_orig = f0;
-	Change g_orig(g);
-	Conf x_orig(x);
+public:
+	explicit bfgs_workspace(const conf_size& size)
+		: trial(size), original(size), derivatives(size), step_change(size),
+		  gradient(derivatives.num_floats()), direction(gradient.size()),
+		  y(gradient.size()), minus_hy(gradient.size()), h(gradient.size()) {}
 
-	Change p(g);
+	template<typename F>
+	bfgs_result minimize(F& f, conf& x, unsigned max_steps, int& evalcount) {
+		h.clear();
+		set_diagonal(h, 1);
+		original = x;
+		fl energy = f(x, derivatives);
+		++evalcount;
+		const fl initial_energy = energy;
+		VINA_FOR_IN(i, gradient) gradient[i] = derivatives(i);
 
-	// Keep the optimizer's linear algebra flat. Only the model and the
-	// conformational increment need the ligand/residue layout.
-	flv gradient(n), direction(n), y(n), minus_hy(n);
-	VINA_FOR(i, n) gradient[i] = g(i);
+		VINA_U_FOR(step, max_steps) {
+			minus_mat_vec_product(h, gradient, direction);
+			VINA_FOR_IN(i, direction) step_change(i) = direction[i];
+			fl trial_energy = 0;
+			const fl alpha = line_search(f, x, energy, step_change, scalar_product(direction, gradient),
+			                             trial, derivatives, trial_energy, evalcount);
+			energy = trial_energy;
+			std::swap(x, trial);
+			if (!(std::sqrt(scalar_product(gradient, gradient)) >= 1e-5)) break;
+			VINA_FOR_IN(i, gradient) {
+				const fl next = derivatives(i);
+				y[i] = next - gradient[i];
+				gradient[i] = next;
+			}
 
-	VINA_U_FOR(step, max_steps) {
-		minus_mat_vec_product(h, gradient, direction);
-		VINA_FOR(i, n) p(i) = direction[i];
-		fl f1 = 0;
-		const fl alpha = line_search(f, x, f0, p, scalar_product(direction, gradient),
-		                             x_new, g_new, f1, evalcount);
-		f0 = f1;
-		x = x_new;
-		if(!(std::sqrt(scalar_product(gradient, gradient)) >= 1e-5)) break;
-		g = g_new;
-		VINA_FOR(i, n) {
-			const fl next = g(i);
-			y[i] = next - gradient[i];
-			gradient[i] = next;
+			const fl yp = scalar_product(y, direction);
+			if (step == 0) {
+				const fl yy = scalar_product(y, y);
+				if (std::abs(yy) > epsilon_fl)
+					set_diagonal(h, alpha * yp / yy);
+			}
+			bfgs_update(h, direction, y, alpha, yp, minus_hy);
 		}
 
-		const fl yp = scalar_product(y, direction);
-		if(step == 0) {
-			const fl yy = scalar_product(y, y);
-			if(std::abs(yy) > epsilon_fl)
-				set_diagonal(h, alpha * yp / yy);
+		if (!(energy <= initial_energy)) { // also reverts when the comparison is unordered
+			std::swap(x, original);
+			return {initial_energy, true};
 		}
-		bfgs_update(h, direction, y, alpha, yp, minus_hy);
+		return {energy, false};
 	}
-
-	if(!(f0 <= f_orig)) { // succeeds for nans too
-		f0 = f_orig;
-		x = x_orig;
-		g = g_orig;
-	}
-	return f0;
-}
+};
 
 #endif

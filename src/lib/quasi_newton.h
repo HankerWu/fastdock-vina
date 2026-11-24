@@ -20,18 +20,22 @@
 
 */
 
-// Modified for FastDock Vina: remove unused improvement-history settings from local BFGS.
+// Modified for FastDock Vina: reuse the BFGS workspace across local minimizations.
 
 #ifndef VINA_QUASI_NEWTON_H
 #define VINA_QUASI_NEWTON_H
 
+#include "bfgs.h"
 #include "model.h"
 
-struct quasi_newton {
+class quasi_newton {
+    bfgs_workspace workspace;
     unsigned max_steps;
-    quasi_newton() : max_steps(1000) {}
-    // clean up
-    void operator()(model& m, const precalculate_byatom& p, const igrid& ig, output_type& out, change& g, const vec& v, int& evalcount) const; // g must have correct size
+
+public:
+    quasi_newton(const conf_size& size, unsigned steps) : workspace(size), max_steps(steps) {}
+    void operator()(model& m, const precalculate_byatom& p, const igrid& ig,
+                    output_type& out, const vec& v, int& evalcount);
 };
 
 #endif

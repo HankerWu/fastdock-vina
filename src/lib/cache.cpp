@@ -339,7 +339,7 @@ void cache::populate(const model& m, const precalculate& p, const szv_grid& rece
 	std::vector<grid> new_grids(needed.size());
 	for (auto& g : new_grids)
 		g.init(m_gd);
-	flv affinities(needed.size());
+	const sz num_maps = needed.size();
 
 	sz nat = num_atom_types(atom_type::XS);
 
@@ -354,11 +354,11 @@ void cache::populate(const model& m, const precalculate& p, const szv_grid& rece
 	VINA_FOR(t1, nat) {
 		if (!receptor_index.atom_types()[t1]) continue;
 		flv& samples = tables[t1];
-		samples.resize(sample_count * needed.size());
+		samples.resize(sample_count * num_maps);
 		VINA_FOR_IN(j, needed) {
 			const auto& pair = p.element(triangular_matrix_index_permissive(nat, t1, needed[j]));
 			VINA_FOR(i, sample_count)
-				samples[i * needed.size() + j] = pair.fast_sample(i);
+				samples[i * num_maps + j] = pair.fast_sample(i);
 		}
 	}
 
@@ -378,14 +378,7 @@ void cache::populate(const model& m, const precalculate& p, const szv_grid& rece
 		x_coords[x] = coord;
 	}
 
-	struct row_atom {
-		fl x;
-		fl dy2;
-		fl dz2;
-		const fl* samples;
-	};
-	std::vector<row_atom> row_atoms;
-
+	flv affinities;
 	VINA_FOR(z, g.m_data.dim2()) {
 		const fl z_coord = g.index_to_argument(0, 0, z)[2];
 		const sz z_cell = receptor_index.cell_index(2, z_coord);
@@ -394,33 +387,33 @@ void cache::populate(const model& m, const precalculate& p, const szv_grid& rece
 			const sz y_cell = receptor_index.cell_index(1, y_coord);
 			sz start = 0;
 			for (const x_span& span : spans) {
-				const fl first_x = x_coords[start];
-				const fl last_x = x_coords[span.end - 1];
-				row_atoms.clear();
+				affinities.resize((span.end - start) * num_maps);
+				std::fill(affinities.begin(), affinities.end(), 0);
+				// Receptor order determines each point's sum. Visit only the
+				// in-range run of points on either side of this atom.
 				for (sz i : receptor_index.possibilities(span.cell, y_cell, z_cell)) {
 					const atom& a = m.grid_atoms[i];
 					const fl dy2 = sqr(a.coords[1] - y_coord);
 					const fl dz2 = sqr(a.coords[2] - z_coord);
-					const fl dx = a.coords[0] - (std::min)((std::max)(a.coords[0], first_x), last_x);
-					// Use the point evaluation's sum order at the closest x in this span.
-					if (sqr(dx) + dy2 + dz2 <= cutoff_sqr)
-						row_atoms.push_back({a.coords[0], dy2, dz2,
-						                     tables[a.xs].data()});
+					if (dy2 + dz2 > cutoff_sqr) continue;
+					const auto split = std::lower_bound(x_coords.begin() + start,
+					                                    x_coords.begin() + span.end, a.coords[0]);
+					const sz middle = split - x_coords.begin();
+					const fl* samples = tables[a.xs].data();
+					const auto accumulate = [&](sz x) {
+						const fl r2 = sqr(a.coords[0] - x_coords[x]) + dy2 + dz2;
+						if (!(r2 <= cutoff_sqr)) return false;
+						const fl* energies = samples + p.fast_index(r2) * num_maps;
+						fl* point = affinities.data() + (x - start) * num_maps;
+						VINA_FOR(j, num_maps) point[j] += energies[j];
+						return true;
+					};
+					for (sz x = middle; x < span.end && accumulate(x); ++x) {}
+					for (sz x = middle; x > start && accumulate(x - 1); --x) {}
 				}
-				VINA_RANGE(x, start, span.end) {
-					std::fill(affinities.begin(), affinities.end(), 0);
-					for (const row_atom& a : row_atoms) {
-						// Keep the original axis and receptor atom summation order.
-						const fl r2 = sqr(a.x - x_coords[x]) + a.dy2 + a.dz2;
-						if (r2 <= cutoff_sqr) {
-							const fl* energies = a.samples + p.fast_index(r2) * needed.size();
-							VINA_FOR_IN(j, needed)
-								affinities[j] += energies[j];
-						}
-					}
-					VINA_FOR_IN(j, needed)
-						new_grids[j].m_data(x, y, z) = affinities[j];
-				}
+				VINA_FOR_IN(j, needed)
+					VINA_RANGE(x, start, span.end)
+						new_grids[j].m_data(x, y, z) = affinities[(x - start) * num_maps + j];
 				start = span.end;
 			}
 		}

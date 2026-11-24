@@ -778,9 +778,6 @@ std::vector<double> Vina::score() {
 
 std::vector<double> Vina::optimize(output_type& out, int max_steps) {
 	// Local optimization of the ligand conf
-	change g(m_model.get_size());
-	quasi_newton quasi_newton_par;
-	const fl slope = 1e6;
 	const vec authentic_v(1000, 1000, 1000);
 	std::vector<double> energies_before_opt;
 	std::vector<double> energies_after_opt;
@@ -792,7 +789,7 @@ std::vector<double> Vina::optimize(output_type& out, int max_steps) {
 		if (m_verbosity > 1)
 			std::cout << "Number of local optimization steps: " << max_steps << "\n";
 	}
-	quasi_newton_par.max_steps = max_steps;
+	quasi_newton quasi_newton_par(m_model.get_size(), max_steps);
 
 	if (m_verbosity > 1) {
 		std::cout << "Before local optimization:\n";
@@ -804,12 +801,12 @@ std::vector<double> Vina::optimize(output_type& out, int max_steps) {
 	// Try 5 five times to optimize locally the conformation
 	VINA_FOR(p, 5) {
 		if (m_sf_choice == SF_VINA || m_sf_choice == SF_VINARDO) {
-			quasi_newton_par(m_model, m_precalculated_byatom, m_grid,    out, g, authentic_v, evalcount);
+			quasi_newton_par(m_model, m_precalculated_byatom, m_grid,    out, authentic_v, evalcount);
 			// Break if we succeed to bring (back) the ligand within the grid
 			if (m_grid.is_in_grid(m_model))
 				break;
 		} else {
-			quasi_newton_par(m_model, m_precalculated_byatom, m_ad4grid, out, g, authentic_v, evalcount);
+			quasi_newton_par(m_model, m_precalculated_byatom, m_ad4grid, out, authentic_v, evalcount);
 			if (m_ad4grid.is_in_grid(m_model))
 				break;
 		}
@@ -915,19 +912,16 @@ void Vina::global_search(const int exhaustiveness, const int n_poses, const doub
 		if (m_sf_choice == SF_VINA || m_sf_choice == SF_VINARDO) {
 			// Refine poses if no_refine is false and got receptor
 			if (!m_no_refine & m_receptor_initialized) {
-				change g(m_model.get_size());
-				quasi_newton quasi_newton_par;
-				//std::vector<double> energies_before_opt;
-				//std::vector<double> energies_after_opt;
+				quasi_newton quasi_newton_par(m_model.get_size(),
+				                             unsigned((25 + m_model.num_movable_atoms()) / 3));
 				int evalcount = 0;
 				const fl slope = 1e6;
 				m_non_cache.slope = slope;
-				quasi_newton_par.max_steps = unsigned((25 + m_model.num_movable_atoms()) / 3);
 
 				VINA_FOR_IN(i, poses){
 					VINA_FOR(p, 5){
 						m_non_cache.slope = 100 * std::pow(10.0, 2.0*p);
-						quasi_newton_par(m_model, m_precalculated_byatom, m_non_cache, poses[i], g, authentic_v, evalcount);
+						quasi_newton_par(m_model, m_precalculated_byatom, m_non_cache, poses[i], authentic_v, evalcount);
 						if(m_non_cache.within(m_model))
 							break;
 					}
@@ -936,7 +930,6 @@ void Vina::global_search(const int exhaustiveness, const int n_poses, const doub
 					// rescoring in case a ligand or flex sidechain atom is outside box
 					// ensuring poses will be sorted with the same slope (a.k.a. out of
 					// box penalty) that will be used to calculate final energies.
-					m_model.set(poses[i].c);
 					double all_grids = m_non_cache.eval(m_model, authentic_v[1]);
 					double inter_pairs = m_model.eval_inter(m_precalculated_byatom, authentic_v); // ligand -- flex
 					double intra_pairs = m_model.evalo(m_precalculated_byatom, authentic_v); // flex_i -- flex_i and flex_i -- flex_j
