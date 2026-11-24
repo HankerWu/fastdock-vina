@@ -20,7 +20,7 @@
 
 */
 
-// FastDock: batch docking builds missing affinity maps on demand.
+// FastDock: prepare affinity maps on demand and validate search box options.
 
 #include <iostream>
 #include <set>
@@ -38,35 +38,6 @@
 struct usage_error : public std::runtime_error {
 	usage_error(const std::string& message) : std::runtime_error(message) {}
 };
-
-struct options_occurrence {
-	bool some;
-	bool all;
-	options_occurrence() : some(false), all(true) {} // convenience
-	options_occurrence& operator+=(const options_occurrence& x) {
-		some = some || x.some;
-		all  = all  && x.all;
-		return *this;
-	}
-};
-
-options_occurrence get_occurrence(boost::program_options::variables_map& vm, boost::program_options::options_description& d) {
-	options_occurrence tmp;
-	VINA_FOR_IN(i, d.options())
-		if(vm.count((*d.options()[i]).long_name()))
-			tmp.some = true;
-		else
-			tmp.all = false;
-	return tmp;
-}
-
-void check_occurrence(boost::program_options::variables_map& vm, boost::program_options::options_description& d) {
-	VINA_FOR_IN(i, d.options()) {
-		const std::string& str = (*d.options()[i]).long_name();
-		if(!vm.count(str))
-			std::cerr << "Required parameter --" << str << " is missing!\n";
-	}
-}
 
 int main(int argc, char* argv[]) {
 	using namespace boost::program_options;
@@ -186,8 +157,7 @@ Thank you!\n";
 			("batch", value< std::vector<std::string> >(&batch_ligand_names)->multitoken(), "batch directory or ligands (PDBQT)")
 			("scoring", value<std::string>(&sf_name)->default_value(sf_name), "scoring function (ad4, vina or vinardo)")
 		;
-		//options_description search_area("Search area (required, except with --score_only)");
-		options_description search_area("Search space (required)");
+		options_description search_area("Search space");
 		search_area.add_options()
 			("maps", value<std::string>(&maps), "affinity maps for the autodock4.2 (ad4) or vina scoring function")
 			("center_x", value<double>(&center_x), "X coordinate of the center (Angstrom)")
@@ -207,7 +177,7 @@ Thank you!\n";
 		;
 		options_description advanced("Advanced options (see the manual)");
 		advanced.add_options()
-			("score_only",     bool_switch(&score_only),     "score only - search space can be omitted")
+			("score_only",     bool_switch(&score_only),     "score only - single-system receptor input defaults to autobox")
 			("local_only",     bool_switch(&local_only),     "do local search only")
 			("unbound_energy", value<double>(&unbound_energy)->default_value(unbound_energy), "Explicitly set the Unbound System's Energy for --score_only jobs")
 			("no_refine", bool_switch(&no_refine),  "when --receptor is provided, do not use explicit receptor atoms (instead of precalculated grids) for: (1) local optimization and scoring after docking, (2) --local_only jobs, and (3) --score_only jobs")
@@ -352,6 +322,16 @@ Thank you!\n";
 			std::cerr << "WARNING: In ligand mode, --dir argument is ignored.\n";
 		}
 
+		const bool ligand_autobox = vm.count("ligand") && (score_only || local_only);
+		if (!vm.count("maps")) {
+			const auto box_fields = vm.count("center_x") + vm.count("center_y") + vm.count("center_z")
+			                      + vm.count("size_x") + vm.count("size_y") + vm.count("size_z");
+			if (box_fields == 0 && ligand_autobox && score_only && !randomize_only)
+				autobox = true;
+			if (!(ligand_autobox && autobox) && box_fields != 6)
+				throw usage_error("Provide all three center and all three size values for the search box");
+		}
+
 		if (!score_only) {
 			if (!vm.count("out") && ligand_names.size() == 1) {
 				out_name = default_output(ligand_names[0]);
@@ -432,13 +412,15 @@ Thank you!\n";
 				if (vm.count("maps")) {
 					v.load_maps(maps);
 				} else {
-					// Will compute maps only for Vina atom types in the ligand(s)
-					// In the case users ask for score and local only with the autobox arg, we compute the optimal box size for it/them.
-					if ((score_only || local_only) && autobox) {
+					const bool defer_maps = (score_only || randomize_only) && !vm.count("write_maps");
+
+					if (ligand_autobox && autobox) {
 						std::vector<double> dim = v.grid_dimensions_from_ligand(buffer_size);
-						v.compute_vina_maps(dim[0], dim[1], dim[2], dim[3], dim[4], dim[5], grid_spacing, force_even_voxels);
+						v.compute_vina_maps(dim[0], dim[1], dim[2], dim[3], dim[4], dim[5],
+						                    grid_spacing, force_even_voxels, defer_maps);
 					} else {
-						v.compute_vina_maps(center_x, center_y, center_z, size_x, size_y, size_z, grid_spacing, force_even_voxels);
+						v.compute_vina_maps(center_x, center_y, center_z, size_x, size_y, size_z,
+						                    grid_spacing, force_even_voxels, defer_maps);
 					}
 
 					if (vm.count("write_maps"))

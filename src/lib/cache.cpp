@@ -117,6 +117,7 @@ fl cache::eval(const model& m, fl v) const { // needs m.coords
 }
 
 fl cache::eval_intra(model& m, fl v) const {
+	if (m.num_flex() == 0) return 0;
 	fl e = 0;
 
 	VINA_FOR(i, m.num_movable_atoms()) {

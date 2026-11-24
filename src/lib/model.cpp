@@ -712,25 +712,24 @@ std::vector<double> model::center() const {
 	return center;
 }
 
-void string_write_coord(sz i, fl x, std::string& str) {
-	VINA_CHECK(i > 0);
-	--i;
+// FastDock: format all three PDBQT coordinate columns with one stream.
+static std::string coords_to_pdbqt_string(const vec& coords, const std::string& str) {
 	std::ostringstream out;
 	out.setf(std::ios::fixed, std::ios::floatfield);
 	out.setf(std::ios::showpoint);
-	out << std::setw(8) << std::setprecision(3) << x;
-	VINA_CHECK(out.str().size() == 8); 
-	VINA_CHECK(str.size() > i + 8);
-	VINA_FOR(j, 8)
-		str[i+j] = out.str()[j];
-}
+	out << std::setprecision(3);
+	VINA_FOR(i, 3)
+		out << std::setw(8) << coords[i];
 
-std::string coords_to_pdbqt_string(const vec& coords, const std::string& str) {
-	std::string tmp(str);
-	string_write_coord(31, coords[0], tmp);
-	string_write_coord(39, coords[1], tmp);
-	string_write_coord(47, coords[2], tmp);
-	return tmp;
+	const std::string fields = out.str();
+	constexpr sz offset = 30;
+	constexpr sz width = 3 * 8;
+	// setw is a minimum width, so an overlong coordinate grows the total.
+	VINA_CHECK(fields.size() == width);
+	VINA_CHECK(str.size() > offset + width);
+	std::string line(str);
+	line.replace(offset, width, fields);
+	return line;
 }
 
 // FastDock: write context directly to the output stream.

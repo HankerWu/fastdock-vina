@@ -33,6 +33,7 @@ fl non_cache::eval(const model& m, fl v) const {
 }
 
 fl non_cache::eval_intra(model& m, fl v) const {
+	if (m.num_flex() == 0) return 0;
 	return eval_energy(m, v, true);
 }
 

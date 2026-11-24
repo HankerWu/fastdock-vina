@@ -21,7 +21,7 @@
 */
 
 /* Modified for FastDock Vina: move precomputed tables and grid objects
-   to avoid deep copies without changing docking behavior.
+   to avoid deep copies and build deferred affinity maps at use.
    See docs/PROVENANCE.md for upstream and experimental source identities. */
 
 #include <utility>
@@ -94,9 +94,9 @@ void Vina::set_receptor(const std::string& rigid_name, const std::string& flex_n
 	// If we are reading another receptor we should not consider the ligand and the map as initialized anymore
 	m_ligand_initialized = false;
 	m_map_initialized = false;
-	if (m_batch_map_scoring && m_no_refine)
+	if (m_deferred_map_scoring && m_no_refine)
 		m_non_cache = non_cache();
-	m_batch_map_scoring.reset();
+	m_deferred_map_scoring.reset();
 }
 
 void Vina::reset_ligand_model(atom_type::t atom_typing) {
@@ -108,20 +108,9 @@ void Vina::reset_ligand_model(atom_type::t atom_typing) {
 
 void Vina::finish_ligand_setup(atom_type::t atom_typing) {
 	precalculate_byatom precalculated_byatom(*m_scoring_function, m_model);
-	if (m_map_initialized) {
+	if (m_map_initialized && !m_deferred_map_scoring) {
 		const szv atom_types = m_model.get_movable_atom_types(atom_typing);
-		if (m_batch_map_scoring) {
-			const auto missing = m_grid.missing_map_types(atom_types);
-			if (missing.any()) {
-				const auto& index = m_non_cache.receptor_index();
-				if (m_no_refine) {
-					const precalculate tables(*m_batch_map_scoring, index.atom_types(), missing);
-					m_grid.populate(m_receptor, tables, index, missing);
-				} else {
-					m_grid.populate(m_receptor, m_non_cache.receptor_tables(), index, missing);
-				}
-			}
-		} else if (m_sf_choice == SF_VINA || m_sf_choice == SF_VINARDO) {
+		if (m_sf_choice == SF_VINA || m_sf_choice == SF_VINARDO) {
 			if (!m_grid.are_atom_types_grid_initialized(atom_types))
 				exit(EXIT_FAILURE);
 		} else {
@@ -133,6 +122,21 @@ void Vina::finish_ligand_setup(atom_type::t atom_typing) {
 	m_poses.clear();
 	m_precalculated_byatom = std::move(precalculated_byatom);
 	m_ligand_initialized = true;
+}
+
+void Vina::ensure_vina_maps() {
+	if (!m_deferred_map_scoring) return;
+	const auto missing = m_grid.missing_map_types(
+		m_model.get_movable_atom_types(m_deferred_map_scoring->get_atom_typing()));
+	if (missing.none()) return;
+
+	const auto& index = m_non_cache.receptor_index();
+	if (m_no_refine) {
+		const precalculate tables(*m_deferred_map_scoring, index.atom_types(), missing);
+		m_grid.populate(m_receptor, tables, index, missing);
+	} else {
+		m_grid.populate(m_receptor, m_non_cache.receptor_tables(), index, missing);
+	}
 }
 
 void Vina::set_ligand_from_string(const std::string& ligand_string) {
@@ -303,15 +307,17 @@ std::vector<double> Vina::grid_dimensions_from_ligand(double buffer_size) {
 	return box_dimensions;
 }
 
-void Vina::compute_vina_maps(double center_x, double center_y, double center_z, double size_x, double size_y, double size_z, double granularity, bool force_even_voxels) {
+void Vina::compute_vina_maps(double center_x, double center_y, double center_z,
+                             double size_x, double size_y, double size_z,
+                             double granularity, bool force_even_voxels, bool defer_population) {
 	build_vina_maps(vec(center_x, center_y, center_z), vec(size_x, size_y, size_z),
-	                granularity, force_even_voxels, false);
+	                granularity, force_even_voxels, defer_population);
 }
 
 void Vina::initialize_vina_batch_maps(double center_x, double center_y, double center_z,
                                      double size_x, double size_y, double size_z, double granularity) {
-	build_vina_maps(vec(center_x, center_y, center_z), vec(size_x, size_y, size_z),
-	                granularity, false, true);
+	compute_vina_maps(center_x, center_y, center_z, size_x, size_y, size_z,
+	                  granularity, false, true);
 }
 
 void Vina::build_vina_maps(const vec& center, const vec& span, fl granularity,
@@ -343,15 +349,13 @@ void Vina::build_vina_maps(const vec& center, const vec& span, fl granularity,
 		gd[i].end = gd[i].begin + real_span;
 	}
 
-	if (m_sf_choice == SF_VINA)
-		doing("Computing Vina grid", m_verbosity, 0);
-	else
-		doing("Computing Vinardo grid", m_verbosity, 0);
+	const std::string scoring_name = m_sf_choice == SF_VINA ? "Vina" : "Vinardo";
+	doing((defer_population ? "Preparing " : "Computing ") + scoring_name + " grid", m_verbosity, 0);
 
 	cache grid(gd, slope);
 	szv_grid receptor_index(m_receptor, szv_grid_dims(gd), sqr(m_scoring_function->get_cutoff()));
 	std::bitset<XS_TYPE_SIZE> map_types;
-	if (!defer_population || m_ligand_initialized) {
+	if (!defer_population) {
 		map_types = cache::map_types(m_ligand_initialized
 			? m_model.get_movable_atom_types(m_scoring_function->get_atom_typing())
 			: m_scoring_function->get_atom_types());
@@ -362,18 +366,18 @@ void Vina::build_vina_maps(const vec& center, const vec& span, fl granularity,
 		// Explicit scoring also uses raw XS types and supports replacing the ligand.
 		if (!m_no_refine) interaction_types.set();
 		receptor_tables = precalculate(*m_scoring_function, receptor_index.atom_types(), interaction_types);
-		grid.populate(m_receptor, receptor_tables, receptor_index, map_types);
+		if (map_types.any())
+			grid.populate(m_receptor, receptor_tables, receptor_index, map_types);
 	}
 	done(m_verbosity, 0);
 
 	if (!m_no_refine || defer_population) {
-		if (m_no_refine) receptor_tables = precalculate();
 		m_non_cache = non_cache(std::move(receptor_index), gd, std::move(receptor_tables), slope);
 	} else {
 		m_non_cache = non_cache();
 	}
 	m_grid = std::move(grid);
-	m_batch_map_scoring = defer_population ? m_scoring_function : nullptr;
+	m_deferred_map_scoring = defer_population ? m_scoring_function : nullptr;
 	m_map_initialized = true;
 }
 
@@ -410,10 +414,10 @@ void Vina::load_maps(std::string maps) {
 		}
 	}
 
-	// Imported maps cannot be extended by the receptor used for a previous batch.
-	if (m_batch_map_scoring && m_no_refine)
+	// Imported maps cannot be extended by a previously prepared receptor.
+	if (m_deferred_map_scoring && m_no_refine)
 		m_non_cache = non_cache();
-	m_batch_map_scoring.reset();
+	m_deferred_map_scoring.reset();
 	m_map_initialized = true;
 }
 
@@ -430,12 +434,13 @@ void Vina::write_maps(const std::string& map_prefix, const std::string& gpf_file
 
 	if (m_ligand_initialized)
 		atom_types = m_model.get_movable_atom_types(atom_typing);
-	else if (m_batch_map_scoring)
+	else if (m_deferred_map_scoring)
 		throw vina_runtime_error("Load a ligand before writing deferred affinity maps.");
 	else
 		atom_types = m_scoring_function->get_atom_types();
 
 	if (m_sf_choice == SF_VINA || m_sf_choice == SF_VINARDO) {
+		ensure_vina_maps();
 		doing("Writing Vina maps", m_verbosity, 0);
 		m_grid.write(map_prefix, atom_types, gpf_filename, fld_filename, receptor_filename);
 		done(m_verbosity, 0);
@@ -701,9 +706,10 @@ std::vector<double> Vina::score(double intramolecular_energy) {
 
 	if (m_sf_choice == SF_VINA || m_sf_choice == SF_VINARDO) {
 		// Inter
-		if (m_no_refine || !m_receptor_initialized)
+		if (m_no_refine || !m_receptor_initialized) {
+			ensure_vina_maps();
 			all_grids = m_grid.eval(m_model, authentic_v[1]); // [1] ligand & flex -- grid
-		else
+		} else
 			all_grids = m_non_cache.eval(m_model, authentic_v[1]); // [1] ligand & flex -- grid
 		inter_pairs = m_model.eval_inter(m_precalculated_byatom, authentic_v); // [1] ligand -- flex
 		// Intra
@@ -769,6 +775,9 @@ std::vector<double> Vina::score() {
 	const vec authentic_v(1000, 1000, 1000);
 
 	if(m_sf_choice == SF_VINA || m_sf_choice == SF_VINARDO) {
+		// For a rigid receptor the unbound energy has no flex-grid term.
+		if (m_model.num_flex() != 0)
+			ensure_vina_maps();
 		intramolecular_energy = m_model.eval_intramolecular(m_precalculated_byatom, m_grid, authentic_v);
 	}
 
@@ -797,6 +806,7 @@ std::vector<double> Vina::optimize(output_type& out, int max_steps) {
 		show_score(energies_before_opt);
 	}
 
+	ensure_vina_maps();
 	doing("Performing local search", m_verbosity, 0);
 	// Try 5 five times to optimize locally the conformation
 	VINA_FOR(p, 5) {
@@ -875,7 +885,6 @@ void Vina::global_search(const int exhaustiveness, const int n_poses, const doub
 	double intramolecular_energy = 0;
 	const vec authentic_v(1000, 1000, 1000);
 	model best_model;
-	boost::optional<model> ref;
 	output_container poses;
 	std::stringstream sstm;
 	rng generator(static_cast<rng::result_type>(m_seed));
@@ -894,6 +903,7 @@ void Vina::global_search(const int exhaustiveness, const int n_poses, const doub
 	parallelmc.display_progress = (m_verbosity > 0);
 
 	// Docking search
+	ensure_vina_maps();
 	sstm << "Performing docking (random seed: " << m_seed << ")";
 	doing(sstm.str(), m_verbosity, 0);
 	if (m_sf_choice == SF_VINA || m_sf_choice == SF_VINARDO) {
@@ -989,9 +999,8 @@ void Vina::global_search(const int exhaustiveness, const int n_poses, const doub
 			m_model.set(poses[i].c);
 
 			// Get RMSD between current pose and best_model
-			const model &r = ref ? ref.get() : best_model;
-			poses[i].lb = m_model.rmsd_lower_bound(r);
-			poses[i].ub = m_model.rmsd_upper_bound(r);
+			poses[i].lb = m_model.rmsd_lower_bound(best_model);
+			poses[i].ub = m_model.rmsd_upper_bound(best_model);
 
 			if (m_verbosity > 0) {
 				std::cout << std::setw(4) << i + 1 << "    " << std::setw(9) << std::setprecision(4) << poses[i].e;

@@ -20,7 +20,7 @@
 
 */
 
-// FastDock: share receptor data and defer batch affinity maps.
+// FastDock: share receptor data and defer affinity maps.
 
 #ifndef VINA_H
 #define VINA_H
@@ -136,10 +136,12 @@ public:
 						      double weight_ad4_elec=0.1406, double weight_ad4_dsolv=0.1322,
 						      double weight_glue=50, double weight_ad4_rot=0.2983);
 	std::vector<double> grid_dimensions_from_ligand(double buffer_size=4);
+	// Deferred setup preserves the box and receptor, then builds the maps at use.
 	void compute_vina_maps(double center_x, double center_y, double center_z,
 								  double size_x, double size_y, double size_z,
-								  double granularity=0.5, bool force_even_voxels=false);
-	// Prepare one receptor for a batch, adding affinity maps as ligands arrive.
+								  double granularity=0.5, bool force_even_voxels=false,
+								  bool defer_population=false);
+	// Prepare one shared box for batch ligands.
 	void initialize_vina_batch_maps(double center_x, double center_y, double center_z,
 	                               double size_x, double size_y, double size_z, double granularity);
 	void load_maps(std::string maps);
@@ -175,7 +177,7 @@ private:
 	cache m_grid;
 	ad4cache m_ad4grid;
 	non_cache m_non_cache;
-	std::shared_ptr<const ScoringFunction> m_batch_map_scoring;
+	std::shared_ptr<const ScoringFunction> m_deferred_map_scoring;
 	bool m_map_initialized;
 	// global search
 	int m_cpu;
@@ -190,6 +192,7 @@ private:
 
 	void reset_ligand_model(atom_type::t atom_typing);
 	void finish_ligand_setup(atom_type::t atom_typing);
+	void ensure_vina_maps();
 	void build_vina_maps(const vec& center, const vec& span, fl granularity,
 	                     bool force_even_voxels, bool defer_population);
 	void set_forcefield();
