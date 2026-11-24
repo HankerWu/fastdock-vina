@@ -4,6 +4,10 @@
 
 ## 相比原版的效果
 
+下表记录发布版的历史结果。后续改动和复测见[工作线程复用](docs/BENCHMARKS.md#工作线程复用的本地复测)
+和[受体查表与空间索引](docs/BENCHMARKS.md#受体查表与空间索引复用)。
+最新一轮的[空间索引构建测试](docs/BENCHMARKS.md#按原子构建空间索引)以受体查表复用版为基线。
+
 在 Intel Xeon Platinum 8362 上测试 19 个完整对接案例，每个案例重复 3 次，取各案例耗时中位数后求和：
 
 | 版本 | 总耗时 | 耗时降低 |
@@ -64,6 +68,12 @@ mkdir -p demo_out
 ```
 
 结果保存至 `demo_out/1iep_out.pdbqt`。更多参数见 `./build/vina --help`。示例使用 `exhaustiveness=8`，上述性能测试使用 `32`。
+
+Vina 和 Vinardo 的普通相互作用截断距离默认是 8 Å。可用
+`--interaction_cutoff 6.75` 覆盖，或在 `--config` 指向的文件中写
+`interaction_cutoff = 6.75`。命令行显式值优先。取值大于 0 且最多 20 Å，
+并统一用于普通评分势、受体及配体查表。自定义值用于直接读取受体并构建网格的运行。
+预计算的 Vina/Vinardo 网格使用默认截断距离。AD4 和大环闭合项各使用其力场定义。
 
 ## 对接构象
 

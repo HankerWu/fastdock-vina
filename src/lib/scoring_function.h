@@ -25,6 +25,9 @@
 
 #include <stdlib.h>
 #include <list>
+#include <cmath>
+#include <stdexcept>
+#include <string>
 #include "atom.h"
 #include "conf_independent.h"
 #include "potentials.h"
@@ -36,53 +39,63 @@ struct model;
 
 enum scoring_function_choice {SF_VINA, SF_AD42, SF_VINARDO};
 
+// FastDock: one ordinary interaction radius for all XS potential terms.
+constexpr fl default_xs_interaction_cutoff = 8.0;
+constexpr fl macrocycle_glue_cutoff = 20.0;
+
 class ScoringFunction {
 public:
     ScoringFunction() {
         m_num_potentials = 0;
         m_num_conf_independents = 0;
     }
-    ScoringFunction(const scoring_function_choice sf_choice, const flv& weights){
+    ScoringFunction(const scoring_function_choice sf_choice, const flv& weights,
+                    fl xs_cutoff = default_xs_interaction_cutoff) {
+        if (sf_choice != SF_AD42 && (!std::isfinite(xs_cutoff) || xs_cutoff <= 0 || xs_cutoff > macrocycle_glue_cutoff))
+            throw std::invalid_argument("interaction_cutoff must be positive and at most " +
+                                        std::to_string(static_cast<int>(macrocycle_glue_cutoff)) + " Angstrom");
         switch (sf_choice)
         {
             case SF_VINA:
             {
-                m_potentials.push_back(new vina_gaussian(0, 0.5, 8.0));
-                m_potentials.push_back(new vina_gaussian(3, 2.0, 8.0));
-                m_potentials.push_back(new vina_repulsion(0.0, 8.0));
-                m_potentials.push_back(new vina_hydrophobic(0.5, 1.5, 8.0));
-                m_potentials.push_back(new vina_non_dir_h_bond(-0.7, 0, 8.0));
-                m_potentials.push_back(new linearattraction(20.0));
+                m_potentials.push_back(new vina_gaussian(0, 0.5, xs_cutoff));
+                m_potentials.push_back(new vina_gaussian(3, 2.0, xs_cutoff));
+                m_potentials.push_back(new vina_repulsion(0.0, xs_cutoff));
+                m_potentials.push_back(new vina_hydrophobic(0.5, 1.5, xs_cutoff));
+                m_potentials.push_back(new vina_non_dir_h_bond(-0.7, 0, xs_cutoff));
+                m_potentials.push_back(new linearattraction(macrocycle_glue_cutoff));
                 m_conf_independents.push_back(new num_tors_div());
                 m_atom_typing = atom_type::XS;
-                m_cutoff = 8.0;
-                m_max_cutoff = 20.0;
+                m_cutoff = xs_cutoff;
+                m_max_cutoff = macrocycle_glue_cutoff;
                 break;
             }
             case SF_VINARDO:
             {
-                m_potentials.push_back(new vinardo_gaussian(0, 0.8, 8.0));
-                m_potentials.push_back(new vinardo_repulsion(0, 8.0));
-                m_potentials.push_back(new vinardo_hydrophobic(0, 2.5, 8.0));
-                m_potentials.push_back(new vinardo_non_dir_h_bond(-0.6, 0, 8.0));
-                m_potentials.push_back(new linearattraction(20.0));
+                m_potentials.push_back(new vinardo_gaussian(0, 0.8, xs_cutoff));
+                m_potentials.push_back(new vinardo_repulsion(0, xs_cutoff));
+                m_potentials.push_back(new vinardo_hydrophobic(0, 2.5, xs_cutoff));
+                m_potentials.push_back(new vinardo_non_dir_h_bond(-0.6, 0, xs_cutoff));
+                m_potentials.push_back(new linearattraction(macrocycle_glue_cutoff));
                 m_conf_independents.push_back(new num_tors_div());
                 m_atom_typing = atom_type::XS;
-                m_cutoff = 8.0;
-                m_max_cutoff = 20.0;
+                m_cutoff = xs_cutoff;
+                m_max_cutoff = macrocycle_glue_cutoff;
                 break;
             }
             case SF_AD42:
             {
-                m_potentials.push_back(new ad4_vdw(0.5, 100000, 8.0));
-                m_potentials.push_back(new ad4_hb(0.5, 100000, 8.0));
-                m_potentials.push_back(new ad4_electrostatic(100, 20.48));
-                m_potentials.push_back(new ad4_solvation(3.6, 0.01097, true, 20.48));
-                m_potentials.push_back(new linearattraction(20.0));
+                constexpr fl ad4_short_cutoff = 8.0;
+                constexpr fl ad4_long_cutoff = 20.48;
+                m_potentials.push_back(new ad4_vdw(0.5, 100000, ad4_short_cutoff));
+                m_potentials.push_back(new ad4_hb(0.5, 100000, ad4_short_cutoff));
+                m_potentials.push_back(new ad4_electrostatic(100, ad4_long_cutoff));
+                m_potentials.push_back(new ad4_solvation(3.6, 0.01097, true, ad4_long_cutoff));
+                m_potentials.push_back(new linearattraction(macrocycle_glue_cutoff));
                 m_conf_independents.push_back(new ad4_tors_add());
                 m_atom_typing = atom_type::AD;
-                m_cutoff = 20.48;
-                m_max_cutoff = 20.48;
+                m_cutoff = ad4_long_cutoff;
+                m_max_cutoff = ad4_long_cutoff;
                 break;
             }
             default:

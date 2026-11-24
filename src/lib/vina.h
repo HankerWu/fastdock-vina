@@ -118,6 +118,8 @@ public:
 	void set_ligand_from_string(const std::vector<std::string> &ligand_string);
 	void set_ligand_from_file(const std::string& ligand_name);
 	void set_ligand_from_file(const std::vector<std::string>& ligand_name);
+	// Configure the Vina/Vinardo cutoff before loading ligands or maps.
+	void set_interaction_cutoff(double cutoff);
 	//void set_ligand(OpenBabel::OBMol* mol);
 	//void set_ligand(std::vector<OpenBabel::OBMol*> mol);
 	void set_vina_weights(double weight_gauss1=-0.035579, double weight_gauss2=-0.005156,

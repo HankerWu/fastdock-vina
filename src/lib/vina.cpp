@@ -286,8 +286,18 @@ void Vina::set_ad4_weights(double weight_ad4_vdw , double weight_ad4_hb,
 }
 
 void Vina::set_forcefield() {
-    // Store in Vina object
-    m_scoring_function = std::make_shared<ScoringFunction>(m_sf_choice, m_weights);
+    const fl cutoff = m_scoring_function && m_sf_choice != SF_AD42
+        ? m_scoring_function->get_cutoff() : default_xs_interaction_cutoff;
+    m_scoring_function = std::make_shared<ScoringFunction>(m_sf_choice, m_weights, cutoff);
+}
+
+// FastDock: bind the cutoff before any ligand or map lookup tables are created.
+void Vina::set_interaction_cutoff(double cutoff) {
+	if (m_sf_choice == SF_AD42)
+		throw vina_runtime_error("interaction_cutoff is supported by Vina and Vinardo");
+	if (m_ligand_initialized || m_map_initialized)
+		throw vina_runtime_error("set interaction_cutoff before loading ligands or maps");
+	m_scoring_function = std::make_shared<ScoringFunction>(m_sf_choice, m_weights, cutoff);
 }
 
 std::vector<double> Vina::grid_dimensions_from_ligand(double buffer_size) {
@@ -392,7 +402,10 @@ void Vina::compute_vina_maps(double center_x, double center_y, double center_z, 
 }
 
 void Vina::load_maps(std::string maps) {
+	if (m_sf_choice != SF_AD42 && m_scoring_function->get_cutoff() != default_xs_interaction_cutoff)
+		throw vina_runtime_error("map files require the default interaction_cutoff");
 	const fl slope = 1e6; // FIXME: too large? used to be 100
+
 	if (m_sf_choice == SF_VINA || m_sf_choice == SF_VINARDO) {
 		doing("Reading Vina maps", m_verbosity, 0);
 		cache grid(slope);
@@ -427,6 +440,8 @@ void Vina::load_maps(std::string maps) {
 
 void Vina::write_maps(const std::string& map_prefix, const std::string& gpf_filename,
 					  const std::string& fld_filename, const std::string& receptor_filename) {
+	if (m_sf_choice != SF_AD42 && m_scoring_function->get_cutoff() != default_xs_interaction_cutoff)
+		throw vina_runtime_error("map files require the default interaction_cutoff");
 	if (!m_map_initialized) {
 		throw vina_runtime_error("Cannot write affinity maps. Affinity maps were not initialized.");
 	}
@@ -589,7 +604,8 @@ std::string Vina::get_poses(int how_many, double energy_range) {
 
 			// Write conf
 			remarks = vina_remarks(m_poses[i], m_poses[i].lb, m_poses[i].ub);
-			out << m_model.write_model(n + 1, remarks);
+			// Write into the final buffer without a separate string per model.
+			m_model.write_model(out, n + 1, remarks);
 
 			n++;
 		}
@@ -605,13 +621,10 @@ std::string Vina::get_poses(int how_many, double energy_range) {
 }
 
 void Vina::write_poses(const std::string& output_name, int how_many, double energy_range) {
-	std::string out;
-
 	if (!m_poses.empty()) {
 		// Open output file
 		ofile f(make_path(output_name));
-		out = get_poses(how_many, energy_range);
-		f << out;
+		f << get_poses(how_many, energy_range);
 	} else {
 		std::cerr << "WARNING: Could not find any poses. No poses were written.\n";
 	}
@@ -1021,7 +1034,7 @@ void Vina::global_search(const int exhaustiveness, const int n_poses, const doub
 	}
 
 	// Store results in Vina object
-	m_poses = poses;
+	m_poses.swap(poses);
 }
 
 Vina::~Vina() {

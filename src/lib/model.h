@@ -20,6 +20,8 @@
 
 */
 
+// FastDock: restore only mutable search state when reusing a worker's model.
+
 #ifndef VINA_MODEL_H
 #define VINA_MODEL_H
 
@@ -108,13 +110,13 @@ public:
 
 	void write_flex  (                  const path& name, const std::string& remark) const { write_context(flex_context, name, remark); }
 	void write_ligand(sz ligand_number, const path& name, const std::string& remark) const { VINA_CHECK(ligand_number < ligands.size()); write_context(ligands[ligand_number].cont, name, remark); }
-	void write_structure(ofile& out) const {
+	void write_structure(std::ostream& out) const {
 		VINA_FOR_IN(i, ligands)
 			write_context(ligands[i].cont, out);
 		if(num_flex() > 0) // otherwise remark is written in vain
 			write_context(flex_context, out);
 	}
-	void write_structure(ofile& out, const std::string& remark) const {
+	void write_structure(std::ostream& out, const std::string& remark) const {
 		out << remark;
 		write_structure(out);
 	}
@@ -124,12 +126,11 @@ public:
 	}
 
 	void write_structure(const path& name) const { ofile out(name); write_structure(out); }
-	void write_model(ofile& out, sz model_number, const std::string& remark) const {
+	void write_model(std::ostream& out, sz model_number, const std::string& remark) const {
 		out << "MODEL " << model_number << '\n';
 		write_structure(out, remark);
 		out << "ENDMDL\n";
 	}
-	std::string write_model(sz model_number, const std::string &remark);
 
 	void set (const conf& c);
 
@@ -169,6 +170,7 @@ public:
 	      atom& get_atom(const atom_index& i)       { return (i.in_grid ? grid_atoms[i.i] : atoms[i.i]); }
 
 private:
+	friend struct parallel_mc;
 	friend struct cache;
 	friend struct non_cache;
 	friend struct ad4cache;
@@ -176,8 +178,15 @@ private:
 	friend struct appender_info;
 	friend struct pdbqt_initializer;
 
-	void write_context(const context &c, std::ostringstream& out) const;
-	void write_context(const context& c, ofile& out) const;
+	void reset_search_state(const model& initial) {
+		coords = initial.coords;
+		minus_forces = initial.minus_forces;
+		flex = initial.flex;
+		VINA_FOR_IN(i, ligands)
+			static_cast<flexible_body&>(ligands[i]) = initial.ligands[i];
+	}
+
+	void write_context(const context& c, std::ostream& out) const;
 	void write_context(const context& c, ofile& out, const std::string& remark) const {
 		out << remark;
 	}

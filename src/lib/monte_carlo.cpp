@@ -20,6 +20,8 @@
 
 */
 
+// FastDock: reuse the trial conformation across Monte Carlo steps.
+
 #include "monte_carlo.h"
 #include "coords.h"
 #include "mutate.h"
@@ -46,6 +48,7 @@ void monte_carlo::operator()(model& m, output_container& out, const precalculate
 	change g(s);
 	output_type tmp(s, 0);
 	tmp.c.randomize(corner1, corner2, generator);
+	output_type candidate(s, 0);
 	fl best_e = max_fl;
 	quasi_newton quasi_newton_par;
     quasi_newton_par.max_steps = local_steps;
@@ -54,11 +57,12 @@ void monte_carlo::operator()(model& m, output_container& out, const precalculate
 			++(*increment_me);
 		if((max_evals > 0) & (evalcount > max_evals))
 			break;
-		output_type candidate = tmp;
+		candidate.c = tmp.c;
 		mutate_conf(candidate.c, m, mutation_amplitude, generator);
 		quasi_newton_par(m, p, ig, candidate, g, hunt_cap, evalcount);
 		if(step == 0 || metropolis_accept(tmp.e, candidate.e, temperature, generator)) {
-			tmp = candidate;
+			std::swap(tmp.c, candidate.c);
+			tmp.e = candidate.e;
 
 			// FIXME only for very promising ones
 			if(tmp.e < best_e || out.size() < num_saved_mins) {
