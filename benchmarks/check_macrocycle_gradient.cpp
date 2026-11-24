@@ -18,14 +18,11 @@ int main(int argc, char** argv) {
         bounds[i].n_voxels = 54;
     }
 
-    const ScoringFunction sf(SF_VINA, {-0.035579, -0.005156, 0.840245, -0.035069, -0.587439, 50, 0.05846});
-    szv_grid index(m, szv_grid_dims(bounds), sqr(sf.get_cutoff()));
-    std::bitset<XS_TYPE_SIZE> ligand_types;
-    for (sz type : m.get_movable_atom_types(atom_type::XS))
-        ligand_types.set(type);
-    precalculate receptor_tables(sf, index.atom_types(), ligand_types);
-    non_cache receptor(std::move(index), bounds, std::move(receptor_tables), 100);
-    const precalculate_byatom ligand_tables(sf, m);
+    const auto sf = std::make_shared<ScoringFunction>(
+        SF_VINA, flv{-0.035579, -0.005156, 0.840245, -0.035069, -0.587439, 50, 0.05846});
+    non_cache receptor(m, bounds, sf, 100);
+    receptor.prepare_for_model(m);
+    const precalculate_byatom ligand_tables(*sf, m);
     const auto size = m.get_size();
     conf c = m.get_initial_conf();
     c.ligands.front().torsions.back() += 0.5;

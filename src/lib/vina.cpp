@@ -94,9 +94,9 @@ void Vina::set_receptor(const std::string& rigid_name, const std::string& flex_n
 	// If we are reading another receptor we should not consider the ligand and the map as initialized anymore
 	m_ligand_initialized = false;
 	m_map_initialized = false;
-	if (m_deferred_map_scoring && m_no_refine)
+	if (m_deferred_map_population && m_no_refine)
 		m_non_cache = non_cache();
-	m_deferred_map_scoring.reset();
+	m_deferred_map_population = false;
 }
 
 void Vina::reset_ligand_model(atom_type::t atom_typing) {
@@ -108,7 +108,7 @@ void Vina::reset_ligand_model(atom_type::t atom_typing) {
 
 void Vina::finish_ligand_setup(atom_type::t atom_typing) {
 	precalculate_byatom precalculated_byatom(*m_scoring_function, m_model);
-	if (m_map_initialized && !m_deferred_map_scoring) {
+	if (m_map_initialized && !m_deferred_map_population) {
 		const szv atom_types = m_model.get_movable_atom_types(atom_typing);
 		if (m_sf_choice == SF_VINA || m_sf_choice == SF_VINARDO) {
 			if (!m_grid.are_atom_types_grid_initialized(atom_types))
@@ -118,6 +118,8 @@ void Vina::finish_ligand_setup(atom_type::t atom_typing) {
 				exit(EXIT_FAILURE);
 		}
 	}
+	if (m_map_initialized && !m_no_refine)
+		m_non_cache.prepare_for_model(m_model);
 
 	m_poses.clear();
 	m_precalculated_byatom = std::move(precalculated_byatom);
@@ -125,18 +127,10 @@ void Vina::finish_ligand_setup(atom_type::t atom_typing) {
 }
 
 void Vina::ensure_vina_maps() {
-	if (!m_deferred_map_scoring) return;
-	const auto missing = m_grid.missing_map_types(
-		m_model.get_movable_atom_types(m_deferred_map_scoring->get_atom_typing()));
-	if (missing.none()) return;
-
-	const auto& index = m_non_cache.receptor_index();
-	if (m_no_refine) {
-		const precalculate tables(*m_deferred_map_scoring, index.atom_types(), missing);
-		m_grid.populate(m_receptor, tables, index, missing);
-	} else {
-		m_grid.populate(m_receptor, m_non_cache.receptor_tables(), index, missing);
-	}
+	if (!m_deferred_map_population) return;
+	const auto missing = m_grid.missing_map_types(m_model.get_movable_atom_types(atom_type::XS));
+	if (missing.any())
+		m_non_cache.populate_maps(m_grid, m_receptor, missing, !m_no_refine);
 }
 
 void Vina::set_ligand_from_string(const std::string& ligand_string) {
@@ -353,31 +347,25 @@ void Vina::build_vina_maps(const vec& center, const vec& span, fl granularity,
 	doing((defer_population ? "Preparing " : "Computing ") + scoring_name + " grid", m_verbosity, 0);
 
 	cache grid(gd, slope);
-	szv_grid receptor_index(m_receptor, szv_grid_dims(gd), sqr(m_scoring_function->get_cutoff()));
-	std::bitset<XS_TYPE_SIZE> map_types;
+	non_cache receptor(m_receptor, gd, m_scoring_function, slope);
+	if (!m_no_refine && m_ligand_initialized)
+		receptor.prepare_for_model(m_model);
 	if (!defer_population) {
-		map_types = cache::map_types(m_ligand_initialized
-			? m_model.get_movable_atom_types(m_scoring_function->get_atom_typing())
+		const auto map_types = cache::map_types(m_ligand_initialized
+			? m_model.get_movable_atom_types(atom_type::XS)
 			: m_scoring_function->get_atom_types());
-	}
-	precalculate receptor_tables;
-	if (!m_no_refine || map_types.any()) {
-		auto interaction_types = map_types;
-		// Explicit scoring also uses raw XS types and supports replacing the ligand.
-		if (!m_no_refine) interaction_types.set();
-		receptor_tables = precalculate(*m_scoring_function, receptor_index.atom_types(), interaction_types);
 		if (map_types.any())
-			grid.populate(m_receptor, receptor_tables, receptor_index, map_types);
+			receptor.populate_maps(grid, m_receptor, map_types, !m_no_refine);
 	}
 	done(m_verbosity, 0);
 
 	if (!m_no_refine || defer_population) {
-		m_non_cache = non_cache(std::move(receptor_index), gd, std::move(receptor_tables), slope);
+		m_non_cache = std::move(receptor);
 	} else {
 		m_non_cache = non_cache();
 	}
 	m_grid = std::move(grid);
-	m_deferred_map_scoring = defer_population ? m_scoring_function : nullptr;
+	m_deferred_map_population = defer_population;
 	m_map_initialized = true;
 }
 
@@ -415,9 +403,9 @@ void Vina::load_maps(std::string maps) {
 	}
 
 	// Imported maps cannot be extended by a previously prepared receptor.
-	if (m_deferred_map_scoring && m_no_refine)
+	if (m_deferred_map_population && m_no_refine)
 		m_non_cache = non_cache();
-	m_deferred_map_scoring.reset();
+	m_deferred_map_population = false;
 	m_map_initialized = true;
 }
 
@@ -434,7 +422,7 @@ void Vina::write_maps(const std::string& map_prefix, const std::string& gpf_file
 
 	if (m_ligand_initialized)
 		atom_types = m_model.get_movable_atom_types(atom_typing);
-	else if (m_deferred_map_scoring)
+	else if (m_deferred_map_population)
 		throw vina_runtime_error("Load a ligand before writing deferred affinity maps.");
 	else
 		atom_types = m_scoring_function->get_atom_types();

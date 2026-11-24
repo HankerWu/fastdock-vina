@@ -23,10 +23,33 @@
 // FastDock: the explicit receptor owns its index, tables and shared energy pass.
 
 #include "non_cache.h"
+#include "cache.h"
 #include "curl.h"
 
-non_cache::non_cache(szv_grid&& receptor_index, const grid_dims& gd_, precalculate&& tables, fl slope_)
-	: slope(slope_), sgrid(std::move(receptor_index)), gd(gd_), p(std::move(tables)) {}
+non_cache::non_cache(const model& receptor, const grid_dims& bounds,
+                     std::shared_ptr<const ScoringFunction> scoring_, fl slope_)
+	: slope(slope_), sgrid(receptor, szv_grid_dims(bounds), sqr(scoring_->get_cutoff())),
+	  gd(bounds), p(scoring_->get_cutoff()), scoring(std::move(scoring_)) {}
+
+void non_cache::prepare_for_model(const model& m) {
+	if (!scoring) return; // Imported maps can be used without a direct receptor.
+	std::bitset<XS_TYPE_SIZE> types;
+	for (sz type : m.get_movable_atom_types(atom_type::XS))
+		if (!is_glue_type(type)) types.set(type);
+	p.populate(*scoring, sgrid.atom_types(), types);
+}
+
+void non_cache::populate_maps(cache& maps, const model& receptor, const std::bitset<XS_TYPE_SIZE>& types,
+                              bool retain_tables) {
+	if (retain_tables) {
+		p.populate(*scoring, sgrid.atom_types(), types);
+		maps.populate(receptor, p, sgrid, types);
+	} else {
+		precalculate temporary(scoring->get_cutoff());
+		temporary.populate(*scoring, sgrid.atom_types(), types);
+		maps.populate(receptor, temporary, sgrid, types);
+	}
+}
 
 fl non_cache::eval(const model& m, fl v) const {
 	return eval_energy(m, v, false);

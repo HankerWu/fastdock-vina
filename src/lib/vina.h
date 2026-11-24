@@ -177,7 +177,7 @@ private:
 	cache m_grid;
 	ad4cache m_ad4grid;
 	non_cache m_non_cache;
-	std::shared_ptr<const ScoringFunction> m_deferred_map_scoring;
+	bool m_deferred_map_population = false;
 	bool m_map_initialized;
 	// global search
 	int m_cpu;

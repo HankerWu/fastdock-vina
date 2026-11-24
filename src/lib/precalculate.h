@@ -83,18 +83,21 @@ private:
 struct precalculate {
     precalculate() = default;
 
-    precalculate(const ScoringFunction& sf, const std::bitset<XS_TYPE_SIZE>& receptor_types,
-                 const std::bitset<XS_TYPE_SIZE>& ligand_types, fl cap = max_fl, fl factor = 32)
-        : m_cutoff_sqr(sqr(sf.get_cutoff())), m_factor(factor),
-          m_data(XS_TYPE_SIZE, precalculate_element()) {
-        VINA_CHECK(factor > epsilon_fl);
-        const flv distances = sample_distances(factor, m_cutoff_sqr);
+    explicit precalculate(fl cutoff) : m_cutoff_sqr(sqr(cutoff)) {}
+
+    void populate(const ScoringFunction& sf, const std::bitset<XS_TYPE_SIZE>& receptor_types,
+                  const std::bitset<XS_TYPE_SIZE>& ligand_types) {
+        if (receptor_types.none() || ligand_types.none()) return;
+        if (m_data.dim() == 0)
+            m_data = triangular_matrix<precalculate_element>(XS_TYPE_SIZE, precalculate_element());
+        flv distances;
         VINA_FOR(t2, XS_TYPE_SIZE) {
             VINA_RANGE(t1, 0, t2 + 1) {
                 const bool used = (receptor_types[t1] && ligand_types[t2]) ||
                                   (receptor_types[t2] && ligand_types[t1]);
-                if (!used) continue;
-                m_data(t1, t2) = precalculate_element(distances, cap,
+                if (!used || m_data(t1, t2).initialized()) continue;
+                if (distances.empty()) distances = sample_distances(m_factor, m_cutoff_sqr);
+                m_data(t1, t2) = precalculate_element(distances, max_fl,
                     [&](fl r) { return sf.eval(t1, t2, r); });
             }
         }
@@ -119,7 +122,7 @@ struct precalculate {
 
 private:
     fl m_cutoff_sqr = 0;
-    fl m_factor = 0;
+    static constexpr fl m_factor = 32;
     triangular_matrix<precalculate_element> m_data;
 };
 
