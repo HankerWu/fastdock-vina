@@ -375,11 +375,6 @@ void Vina::compute_vina_maps(double center_x, double center_y, double center_z, 
 		gd[i].end = gd[i].begin + real_span;
 	}
 
-	// Initialize the scoring function
-	precalculate precalculated_sf(*m_scoring_function);
-	// Store it now in Vina object because of non_cache
-	m_precalculated_sf = std::move(precalculated_sf);
-
 	if (m_sf_choice == SF_VINA)
 		doing("Computing Vina grid", m_verbosity, 0);
 	else
@@ -387,14 +382,17 @@ void Vina::compute_vina_maps(double center_x, double center_y, double center_z, 
 
 	// Compute the Vina grids
 	cache grid(gd, slope);
-	szv_grid receptor_index(m_model, szv_grid_dims(gd), m_precalculated_sf.cutoff_sqr());
-	grid.populate(m_model, m_precalculated_sf, receptor_index, atom_types);
+	szv_grid receptor_index(m_model, szv_grid_dims(gd), sqr(m_scoring_function->get_cutoff()));
+	precalculate receptor_tables(*m_scoring_function, receptor_index.atom_types());
+	grid.populate(m_model, receptor_tables, receptor_index, atom_types);
 
 	done(m_verbosity, 0);
 
 	// create non_cache for scoring with explicit receptor atoms (instead of grids)
-	if (!m_no_refine)
+	if (!m_no_refine) {
+		m_precalculated_sf = std::move(receptor_tables);
 		m_non_cache = non_cache(std::move(receptor_index), gd, &m_precalculated_sf, slope);
+	}
 
 	// Store in Vina object
 	m_grid = std::move(grid);

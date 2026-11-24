@@ -20,35 +20,45 @@
 
 */
 
-/* Modified for FastDock Vina: share ordered XS type-pair lookup tables
-   while preserving the original scoring operations.
+/* Modified for FastDock Vina: build lookup tables for the type pairs used
+   by the receptor index and molecular interaction lists.
    See docs/PROVENANCE.md for upstream and experimental source identities. */
 
 #ifndef VINA_PRECALCULATE_H
 #define VINA_PRECALCULATE_H
 
-#include <utility>
-#include <map>
+#include <bitset>
 
+#include "model.h"
 #include "scoring_function.h"
-#include "matrix.h"
 
-
-//Forward declaration
-struct model;
+inline flv sample_distances(fl factor, fl cutoff_sqr) {
+    // Interpolation and centered derivatives need the two samples above the cutoff.
+    flv distances(sz(factor * cutoff_sqr) + 3);
+    VINA_FOR_IN(i, distances)
+        distances[i] = std::sqrt(i / factor);
+    return distances;
+}
 
 struct precalculate_element
 {
 public:
-    precalculate_element(sz n, fl factor_) : fast(n, 0), smooth(n, pr(0, 0)), factor(factor_) { }
+    precalculate_element() = default;
+
+    template<typename Evaluate>
+    precalculate_element(const flv& distances, fl factor_, fl cap, const Evaluate& evaluate)
+        : smooth(distances.size()), fast(distances.size()), factor(factor_) {
+        VINA_FOR_IN(i, distances)
+            smooth[i].first = (std::min)(cap, evaluate(distances[i]));
+        init_from_smooth_fst(distances);
+    }
+
+    bool initialized() const { return !smooth.empty(); }
     fl eval_fast(fl r2) const{
         assert(r2 * factor < fast.size());
-        return fast_at(sz(factor * r2));
+        return fast[sz(factor * r2)];
     };
-    fl fast_at(sz i) const{
-        assert(i < fast.size());
-        return fast[i];
-    };
+    const fl* fast_samples() const { return fast.data(); }
     pr eval_deriv(fl r2) const{
         fl r2_factored = factor * r2;
         assert(r2_factored + 1 < smooth.size());
@@ -65,6 +75,7 @@ public:
         fl dor = p1.second + rem * (p2.second - p1.second);
         return pr(e, dor);
     };
+private:
     void init_from_smooth_fst(const flv &rs){
         sz n = smooth.size();
         VINA_CHECK(rs.size() == n);
@@ -85,235 +96,111 @@ public:
             fast[i] = (f2 + f1) / 2;
         }
     };
-    sz min_smooth_fst() const{
-        sz tmp = 0; // returned if smooth.empty()
-        VINA_FOR_IN(i_inv, smooth) {
-            sz i = smooth.size() - i_inv - 1; // i_inv < smooth.size()  => i_inv + 1 <= smooth.size()
-            if (i_inv == 0 || smooth[i].first < smooth[tmp].first)
-                tmp = i;
-        }
-        return tmp;
-    };
-    void widen_smooth_fst(const flv &rs, fl left, fl right){
-        flv tmp(smooth.size(), 0); // the new smooth[].first's
-        sz min_index = min_smooth_fst();
-        VINA_CHECK(min_index < rs.size()); // won't hold for n == 0
-        VINA_CHECK(rs.size() == smooth.size());
-        fl optimal_r = rs[min_index];
-        VINA_FOR_IN(i, smooth)
-        {
-            fl r = rs[i];
-            if (r < optimal_r - left)
-                r += left;
-            else if (r > optimal_r + right)
-                r -= right;
-            else
-                r = optimal_r;
-
-            if (r < 0)
-                r = 0;
-            if (r > rs.back())
-                r = rs.back();
-
-            tmp[i] = eval_deriv(sqr(r)).first;
-        }
-        VINA_FOR_IN(i, smooth)
-        smooth[i].first = tmp[i];
-    };
-    void widen(const flv &rs, fl left, fl right){
-        widen_smooth_fst(rs, left, right);
-        init_from_smooth_fst(rs);
-    };
     prv smooth; // [(e, dor)]
-private:
     flv fast;
-    fl factor;
+    fl factor = 0;
 };
 
-struct precalculate 
-{
-public:
-    precalculate() { }
-    precalculate(const ScoringFunction& sf, fl v=max_fl, fl factor=32){
-        m_factor = factor;
-        m_cutoff_sqr = sqr(sf.get_cutoff());
-        // Grid construction and receptor refinement use the ordinary cutoff.
-        // Keep two extra samples for interpolation and centered derivatives.
-        m_n = sz(m_factor * m_cutoff_sqr) + 3;
-        triangular_matrix<precalculate_element> data(num_atom_types(sf.get_atom_typing()), precalculate_element(m_n, m_factor));
+struct precalculate {
+    precalculate() = default;
 
-        VINA_CHECK(m_factor > epsilon_fl);
-        VINA_CHECK(m_cutoff_sqr * m_factor + 1 < m_n);
-
-        flv rs = calculate_rs();
-
-        VINA_FOR(t1, data.dim())
-        {
-            VINA_RANGE(t2, t1, data.dim())
-            {
-                precalculate_element &p = data(t1, t2);
-                // init smooth[].first
-                VINA_FOR_IN(i, p.smooth)
-                {
-                    p.smooth[i].first = (std::min)(v, sf.eval(t1, t2, rs[i]));
-                }
-
-                // init the rest
-                p.init_from_smooth_fst(rs);
+    precalculate(const ScoringFunction& sf, const std::bitset<XS_TYPE_SIZE>& receptor_types,
+                 fl cap = max_fl, fl factor = 32)
+        : m_cutoff_sqr(sqr(sf.get_cutoff())), m_factor(factor),
+          m_data(XS_TYPE_SIZE, precalculate_element()) {
+        VINA_CHECK(factor > epsilon_fl);
+        const flv distances = sample_distances(factor, m_cutoff_sqr);
+        VINA_FOR(t2, XS_TYPE_SIZE) {
+            VINA_RANGE(t1, 0, t2 + 1) {
+                if (!receptor_types[t1] && !receptor_types[t2]) continue;
+                m_data(t1, t2) = precalculate_element(distances, factor, cap,
+                    [&](fl r) { return sf.eval(t1, t2, r); });
             }
         }
+    }
 
-        m_data = std::move(data);
-    };
-    fl eval_fast(sz type_pair_index, fl r2) const{
+    fl eval_fast(sz type_pair_index, fl r2) const {
         assert(r2 <= m_cutoff_sqr);
-        return m_data(type_pair_index).eval_fast(r2);
-    };
+        return element(type_pair_index).eval_fast(r2);
+    }
     sz fast_index(fl r2) const {
         assert(r2 <= m_cutoff_sqr);
         return sz(m_factor * r2);
     }
     const precalculate_element& element(sz type_pair_index) const {
+        assert(m_data(type_pair_index).initialized());
         return m_data(type_pair_index);
     }
-    pr eval_deriv(sz type_pair_index, fl r2) const{
+    pr eval_deriv(sz type_pair_index, fl r2) const {
         assert(r2 <= m_cutoff_sqr);
-        return m_data(type_pair_index).eval_deriv(r2);
-    };
-    sz index_permissive(sz t1, sz t2) const { return m_data.index_permissive(t1, t2); }
+        return element(type_pair_index).eval_deriv(r2);
+    }
     fl cutoff_sqr() const { return m_cutoff_sqr; }
-    void widen(fl left, fl right){
-        flv rs = calculate_rs();
-        VINA_FOR(t1, m_data.dim())
-        VINA_RANGE(t2, t1, m_data.dim())
-        m_data(t1, t2).widen(rs, left, right);
-    };
+
 private:
-    flv calculate_rs() const{
-        flv tmp(m_n, 0);
-        VINA_FOR(i, m_n)
-            tmp[i] = std::sqrt(i / m_factor);
-        return tmp;
-    };
-
-    fl m_cutoff_sqr;
-    sz m_n;
-    fl m_factor;
-
+    fl m_cutoff_sqr = 0;
+    fl m_factor = 0;
     triangular_matrix<precalculate_element> m_data;
 };
 
-struct precalculate_byatom
-{
-public:
-    precalculate_byatom() { }
-    precalculate_byatom(const ScoringFunction &sf, const model &model, fl v=max_fl, fl factor=32){
-        // sf should not be discontinuous, even near cutoff, for the sake of the derivatives
-        m_factor = factor;
-        m_cutoff_sqr = sqr(sf.get_cutoff());
-        m_max_cutoff_sqr = sqr(sf.get_max_cutoff());
-        m_n = sz(m_factor * m_max_cutoff_sqr) + 3; // sz(factor * r^2) + 1 <= sz(factor * cutoff_sqr) + 2 <= n-1 < n  // see assert below
-        // std::cout << "-- DEBUG -- sf.cutoff^2 in precalculate = " << m_cutoff_sqr << "\n";
-        sz n_atoms = model.num_atoms();
-        atomv atoms = model.get_atoms();
+struct precalculate_byatom {
+    precalculate_byatom() = default;
 
-        // XS potentials depend only on the original types, including glue and
-        // sentinel types. Keep the atom overload and operand order unchanged.
-        m_use_type_tables = sf.get_atom_typing() == atom_type::XS;
-        if (m_use_type_tables) {
-            VINA_CHECK(m_factor > epsilon_fl);
-            VINA_CHECK(sz(m_max_cutoff_sqr * m_factor) + 1 < m_n);
-            VINA_CHECK(m_max_cutoff_sqr * m_factor + 1 < m_n);
-            m_atom_pair_tables = triangular_matrix<sz>(n_atoms, 0);
-            std::map<std::pair<sz, sz>, sz> type_pairs;
-            flv rs = calculate_rs();
-            VINA_FOR(i, n_atoms) {
-                VINA_RANGE(j, i, n_atoms) {
-                    const std::pair<sz, sz> key(atoms[i].xs, atoms[j].xs);
-                    auto inserted = type_pairs.emplace(key, m_type_data.size());
-                    const sz table = inserted.first->second;
-                    m_atom_pair_tables(i, j) = table;
-                    if (!inserted.second) continue;
-                    m_type_data.emplace_back(m_n, m_factor);
-                    precalculate_element& p = m_type_data.back();
-                    VINA_FOR_IN(k, p.smooth) {
-                        p.smooth[k].first = (std::min)(v, sf.eval(atoms[i], atoms[j], rs[k]));
-                    }
-                    p.init_from_smooth_fst(rs);
-                }
-            }
+    precalculate_byatom(const ScoringFunction& sf, const model& m, fl cap = max_fl, fl factor = 32)
+        : m_cutoff_sqr(sqr(sf.get_cutoff())), m_max_cutoff_sqr(sqr(sf.get_max_cutoff())),
+          m_use_type_tables(sf.get_atom_typing() == atom_type::XS),
+          m_data(m_use_type_tables ? XS_TYPE_SIZE : m.num_atoms(), precalculate_element()) {
+        VINA_CHECK(factor > epsilon_fl);
+        const flv distances = sample_distances(factor, m_cutoff_sqr);
+
+        const auto build_table = [&](precalculate_element& table, sz a, sz b, const flv& samples) {
+            table = precalculate_element(samples, factor, cap,
+                [&](fl r) { return sf.eval(m.atoms[a], m.atoms[b], r); });
+        };
+        if (!m_use_type_tables) {
+            // AD4 depends on atom charges, so its lookup remains indexed by atom pair.
+            VINA_FOR(j, m.num_atoms())
+                VINA_RANGE(i, 0, j + 1)
+                    build_table(m_data(i, j), i, j, distances);
             return;
         }
-        triangular_matrix<precalculate_element> data(n_atoms, precalculate_element(m_n, m_factor));
 
-        VINA_CHECK(m_factor > epsilon_fl);
-        VINA_CHECK(sz(m_max_cutoff_sqr * m_factor) + 1 < m_n); // cutoff_sqr * factor is the largest float we may end up converting into sz, then 1 can be added to the result
-        VINA_CHECK(m_max_cutoff_sqr * m_factor + 1 < m_n);
-
-        flv rs = calculate_rs();
-
-        VINA_FOR(i, data.dim())
-        {
-            VINA_RANGE(j, i, data.dim())
-            {
-                precalculate_element &p = data(i, j);
-                // init smooth[].first
-                VINA_FOR_IN(k, p.smooth)
-                {
-                    p.smooth[k].first = (std::min)(v, sf.eval(atoms[i], atoms[j], rs[k]));
-                }
-
-                // init the rest
-                p.init_from_smooth_fst(rs);
+        const auto build_type_tables = [&](const interacting_pairs& pairs, const flv& samples) {
+            for (const interacting_pair& pair : pairs) {
+                auto& table = m_data(pair.type_pair_index);
+                if (!table.initialized())
+                    build_table(table, pair.a, pair.b, samples);
             }
-        }
-        m_data = std::move(data);
-    };
-    fl eval_fast(sz i, sz j, fl r2) const{
-        assert(r2 <= m_max_cutoff_sqr);
-        if (m_use_type_tables)
-            return m_type_data[m_atom_pair_tables(i, j)].eval_fast(r2);
-        return m_data(i, j).eval_fast(r2);
-    };
-    pr eval_deriv(sz i, sz j, fl r2) const{
-        assert(r2 <= m_max_cutoff_sqr);
-        if (m_use_type_tables)
-            return m_type_data[m_atom_pair_tables(i, j)].eval_deriv(r2);
-        return m_data(i, j).eval_deriv(r2);
-    };
-    sz index_permissive(sz t1, sz t2) const {
-        return m_use_type_tables ? m_atom_pair_tables.index_permissive(t1, t2) : m_data.index_permissive(t1, t2);
+        };
+
+        // Build long-range tables first, so any shared pair has all needed samples.
+        if (!m.glue_pairs.empty())
+            build_type_tables(m.glue_pairs, sample_distances(factor, m_max_cutoff_sqr));
+        for (const auto& ligand : m.ligands)
+            build_type_tables(ligand.pairs, distances);
+        build_type_tables(m.inter_pairs, distances);
+        build_type_tables(m.other_pairs, distances);
+    }
+
+    fl eval_fast(const interacting_pair& pair, fl r2) const {
+        return element(pair).eval_fast(r2);
+    }
+    pr eval_deriv(const interacting_pair& pair, fl r2) const {
+        return element(pair).eval_deriv(r2);
     }
     fl cutoff_sqr() const { return m_cutoff_sqr; }
     fl max_cutoff_sqr() const { return m_max_cutoff_sqr; }
-    sz get_factor() const { return m_factor; }
-    void widen(fl left, fl right){
-        flv rs = calculate_rs();
-        if (m_use_type_tables) {
-            for (auto& table : m_type_data) table.widen(rs, left, right);
-            return;
-        }
-        VINA_FOR(t1, m_data.dim())
-        VINA_RANGE(t2, t1, m_data.dim())
-        m_data(t1, t2).widen(rs, left, right);
-    };
+
 private:
-    flv calculate_rs() const{
-        flv tmp(m_n, 0);
-        VINA_FOR(i, m_n)
-            tmp[i] = std::sqrt(i / m_factor);
-        return tmp;
-    };
+    const precalculate_element& element(const interacting_pair& pair) const {
+        return m_use_type_tables ? m_data(pair.type_pair_index)
+                                 : m_data(pair.a, pair.b);
+    }
 
-    fl m_cutoff_sqr;
-    fl m_max_cutoff_sqr;
-    sz m_n;
-    fl m_factor;
-
-    triangular_matrix<precalculate_element> m_data;
+    fl m_cutoff_sqr = 0;
+    fl m_max_cutoff_sqr = 0;
     bool m_use_type_tables = false;
-    triangular_matrix<sz> m_atom_pair_tables;
-    std::vector<precalculate_element> m_type_data;
+    triangular_matrix<precalculate_element> m_data;
 };
 
 #endif

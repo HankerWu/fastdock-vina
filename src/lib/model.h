@@ -76,7 +76,6 @@ public:
 	model() : m_num_movable_atoms(0), m_atom_typing_used(atom_type::XS) {}
 	model(atom_type::t atype) : m_num_movable_atoms(0), m_atom_typing_used(atype) {}
 
-    atomv get_atoms() const { return atoms; } // for precalculate_byatom
     atom get_atom(sz i) const { return atoms[i]; }
     ligand get_ligand(sz i) const { return ligands[i]; }
 	vec get_coords(sz i) const { return coords[i]; }
@@ -171,6 +170,7 @@ public:
 
 private:
 	friend struct parallel_mc;
+	friend struct precalculate_byatom;
 	friend struct cache;
 	friend struct non_cache;
 	friend struct ad4cache;

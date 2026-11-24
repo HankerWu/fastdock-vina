@@ -33,7 +33,6 @@ szv_grid::szv_grid(const model& m, const grid_dims& gd, fl cutoff_sqr) : m_data(
 	}
 	m_range = end - m_init;
 
-	const sz nat = num_atom_types(m.atom_typing_used());
 	boost::array<flv, 3> edges;
 	VINA_FOR_IN(axis, edges) {
 		const sz cells = m_data.dim(axis);
@@ -43,8 +42,9 @@ szv_grid::szv_grid(const model& m, const grid_dims& gd, fl cutoff_sqr) : m_data(
 	}
 	VINA_FOR_IN(i, m.grid_atoms) {
 		const atom& a = m.grid_atoms[i];
-		if (a.get(m.atom_typing_used()) >= nat || !(brick_distance_sqr(m_init, end, a.coords) < cutoff_sqr))
+		if (a.xs >= XS_TYPE_SIZE || !(brick_distance_sqr(m_init, end, a.coords) < cutoff_sqr))
 			continue;
+		m_atom_types.set(a.xs);
 		boost::array<sz, 3> first, last;
 		VINA_FOR_IN(axis, edges) {
 			const fl position = a.coords[axis];
@@ -69,16 +69,6 @@ szv_grid::szv_grid(const model& m, const grid_dims& gd, fl cutoff_sqr) : m_data(
 				m_data(x, y, z).push_back(i);
 		}
 	}
-}
-
-fl szv_grid::average_num_possibilities() const {
-	sz counter = 0;
-	VINA_FOR(x, m_data.dim0())
-	VINA_FOR(y, m_data.dim1())
-	VINA_FOR(z, m_data.dim2()) {
-		counter += m_data(x, y, z).size();
-	}
-	return fl(counter) / (m_data.dim0() * m_data.dim1() * m_data.dim2());
 }
 
 const szv& szv_grid::possibilities(const vec& coords) const {

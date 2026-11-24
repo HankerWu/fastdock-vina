@@ -483,12 +483,13 @@ void cache::populate(const model& m, const precalculate& p, const szv_grid& rece
 
 	const fl cutoff_sqr = p.cutoff_sqr();
 
-	std::vector<const precalculate_element*> tables(nat * needed.size());
+	std::vector<const fl*> tables(nat * needed.size());
 	VINA_FOR(t1, nat) {
+		if (!receptor_index.atom_types()[t1]) continue;
 		VINA_FOR_IN(j, needed) {
 			assert(needed[j] < nat);
-			tables[t1 * needed.size() + j] = &p.element(
-				triangular_matrix_index_permissive(nat, t1, needed[j]));
+			tables[t1 * needed.size() + j] = p.element(
+				triangular_matrix_index_permissive(nat, t1, needed[j])).fast_samples();
 		}
 	}
 
@@ -502,14 +503,12 @@ void cache::populate(const model& m, const precalculate& p, const szv_grid& rece
 				VINA_FOR_IN(possibilities_i, possibilities) {
 					const sz i = possibilities[possibilities_i];
 					const atom& a = m.grid_atoms[i];
-					const sz t1 = a.get(atom_type::XS);
-					if(t1 >= nat) continue;
 					const fl r2 = vec_distance_sqr(a.coords, probe_coords);
 					if(r2 <= cutoff_sqr) {
-						const precalculate_element* const* row = tables.data() + t1 * needed.size();
+						const fl* const* row = tables.data() + a.xs * needed.size();
 						const sz sample = p.fast_index(r2);
 						VINA_FOR_IN(j, needed) {
-							affinities[j] += row[j]->fast_at(sample);
+							affinities[j] += row[j][sample];
 						}
 					}
 				}

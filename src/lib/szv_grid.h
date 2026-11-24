@@ -23,6 +23,8 @@
 #ifndef VINA_SZV_GRID_H
 #define VINA_SZV_GRID_H
 
+#include <bitset>
+
 #include "model.h"
 #include "grid_dim.h"
 #include "array3d.h"
@@ -31,9 +33,10 @@ struct szv_grid {
   szv_grid() {}
 	szv_grid(const model& m, const grid_dims& gd, fl cutoff_sqr);
 	const szv& possibilities(const vec& coords) const;
-	fl average_num_possibilities() const;
+	const std::bitset<XS_TYPE_SIZE>& atom_types() const { return m_atom_types; }
 private:
 	array3d<szv> m_data;
+	std::bitset<XS_TYPE_SIZE> m_atom_types;
 	vec m_init;
 	vec m_range;
 };

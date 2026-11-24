@@ -751,7 +751,7 @@ fl eval_interacting_pairs(const precalculate_byatom& p, fl v, const interacting_
 		const interacting_pair& ip = pairs[i];
 		fl r2 = vec_distance_sqr(coords[ip.a], coords[ip.b]);
 		if(r2 < cutoff_sqr) {
-			fl tmp = p.eval_fast(ip.a, ip.b, r2);
+			fl tmp = p.eval_fast(ip, r2);
 			curl(tmp, v);
 			e += tmp;
 		}
@@ -772,7 +772,7 @@ fl eval_interacting_pairs_deriv(const precalculate_byatom& p, fl v, const intera
 		vec r = coords[ip.b] - coords[ip.a]; // a -> b
 		fl r2 = sqr(r);
 		if(r2 < cutoff_sqr) {
-			pr tmp = p.eval_deriv(ip.a, ip.b, r2);
+			pr tmp = p.eval_deriv(ip, r2);
 			vec force; force = tmp.second * r;
 			curl(tmp.first, force, v);
 			e += tmp.first;
@@ -842,7 +842,7 @@ fl model::eval_intramolecular(const precalculate_byatom& p, const igrid& ig, con
 		const interacting_pair& pair = other_pairs[i];
 		fl r2 = vec_distance_sqr(coords[pair.a], coords[pair.b]);
 		if (r2 < cutoff_sqr) {
-			fl this_e = p.eval_fast(pair.a, pair.b, r2);
+			fl this_e = p.eval_fast(pair, r2);
 			curl(this_e, v[2]);
 			e += this_e;
 		}
