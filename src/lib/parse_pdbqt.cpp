@@ -571,10 +571,6 @@ struct pdbqt_initializer {
     model m;
     //pdbqt_initializer(): atom_typing_used(atom_type::XS), m(atom_type::XS) {}
     pdbqt_initializer(atom_type::t atype): atom_typing_used(atype), m(atype) {}
-    void initialize_from_rigid(const rigid& r) { // static really
-        VINA_CHECK(m.grid_atoms.empty());
-        m.grid_atoms = r.atoms;
-    }
     void initialize_from_nrp(const non_rigid_parsed& nrp, const context& c, bool is_ligand) { // static really
         VINA_CHECK(m.ligands.empty());
         VINA_CHECK(m.flex   .empty());
@@ -615,8 +611,8 @@ struct pdbqt_initializer {
             m.flex_context = c;
 
     }
-    void initialize(const distance_type_matrix& mobility) {
-        m.initialize(mobility);
+    void initialize(const distance_type_matrix& mobility, atomv rigid_atoms = {}) {
+        m.initialize(mobility, std::move(rigid_atoms));
     }
 };
 
@@ -629,7 +625,7 @@ model parse_ligand_pdbqt_from_file(const std::string& name, atom_type::t atype) 
     pdbqt_initializer tmp(atype);
     tmp.initialize_from_nrp(nrp, c, true);
     tmp.initialize(nrp.mobility_matrix());
-    return tmp.m;
+    return std::move(tmp.m);
 }
 
 model parse_ligand_pdbqt_from_string(const std::string& string_name, atom_type::t atype) { // can throw parse_error
@@ -642,7 +638,7 @@ model parse_ligand_pdbqt_from_string(const std::string& string_name, atom_type::
     pdbqt_initializer tmp(atype);
     tmp.initialize_from_nrp(nrp, c, true);
     tmp.initialize(nrp.mobility_matrix());
-    return tmp.m;
+    return std::move(tmp.m);
 }
 
 model parse_receptor_pdbqt(const std::string& rigid_name, const std::string& flex_name, atom_type::t atype) { 
@@ -666,18 +662,11 @@ model parse_receptor_pdbqt(const std::string& rigid_name, const std::string& fle
         parse_pdbqt_flex(make_path(flex_name), nrp, c);
     }
 
-    if (!rigid_name.empty()) {
-        tmp.initialize_from_rigid(r);
-        if (flex_name.empty()) {
-            distance_type_matrix mobility_matrix;
-            tmp.initialize(mobility_matrix);
-        }
-    }
-
     if (!flex_name.empty()) {
         tmp.initialize_from_nrp(nrp, c, false);
-        tmp.initialize(nrp.mobility_matrix());
-    }
+        tmp.initialize(nrp.mobility_matrix(), std::move(r.atoms));
+    } else if (!rigid_name.empty())
+        tmp.initialize(distance_type_matrix(), std::move(r.atoms));
 
-    return tmp.m;
+    return std::move(tmp.m);
 }

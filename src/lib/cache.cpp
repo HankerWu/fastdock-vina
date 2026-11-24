@@ -378,6 +378,14 @@ void cache::populate(const model& m, const precalculate& p, const szv_grid& rece
 		x_coords[x] = coord;
 	}
 
+	const auto& receptor = m.grid_atoms();
+	// Project the same full-row split into each spatial cell's x span.
+	szv atom_x_split(receptor.size());
+	VINA_FOR_IN(i, receptor) {
+		const auto split = std::lower_bound(x_coords.begin(), x_coords.end(), receptor[i].coords[0]);
+		atom_x_split[i] = split - x_coords.begin();
+	}
+
 	flv affinities;
 	VINA_FOR(z, g.m_data.dim2()) {
 		const fl z_coord = g.index_to_argument(0, 0, z)[2];
@@ -392,13 +400,11 @@ void cache::populate(const model& m, const precalculate& p, const szv_grid& rece
 				// Receptor order determines each point's sum. Visit only the
 				// in-range run of points on either side of this atom.
 				for (sz i : receptor_index.possibilities(span.cell, y_cell, z_cell)) {
-					const atom& a = m.grid_atoms[i];
+					const atom& a = receptor[i];
 					const fl dy2 = sqr(a.coords[1] - y_coord);
 					const fl dz2 = sqr(a.coords[2] - z_coord);
 					if (dy2 + dz2 > cutoff_sqr) continue;
-					const auto split = std::lower_bound(x_coords.begin() + start,
-					                                    x_coords.begin() + span.end, a.coords[0]);
-					const sz middle = split - x_coords.begin();
+					const sz middle = (std::min)((std::max)(atom_x_split[i], start), span.end);
 					const fl* samples = tables[a.xs].data();
 					const auto accumulate = [&](sz x) {
 						const fl r2 = sqr(a.coords[0] - x_coords[x]) + dy2 + dz2;

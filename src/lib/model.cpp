@@ -100,7 +100,7 @@ struct appender_info {
 	sz m_num_movable_atoms;
 	sz atoms_size;
 
-	appender_info(const model& m) : grid_atoms_size(m.grid_atoms.size()), m_num_movable_atoms(m.m_num_movable_atoms), atoms_size(m.atoms.size()) {}
+	appender_info(const model& m) : grid_atoms_size(m.grid_atoms().size()), m_num_movable_atoms(m.m_num_movable_atoms), atoms_size(m.atoms.size()) {}
 };
 
 class appender {
@@ -222,7 +222,15 @@ void model::append(const model& m) {
 	t.append(flex, m.flex);
 	t.append(flex_context, m.flex_context);
 
-	t.append(grid_atoms, m.grid_atoms);
+	// Grid bonds can target inflexible atoms, whose indices shift when
+	// new movable atoms are inserted. Rigid-only receptors can stay shared.
+	const auto& grid = grid_atoms();
+	const auto& added_grid = m.grid_atoms();
+	if (!added_grid.empty() || (!grid.empty() && atoms.size() > m_num_movable_atoms && m.m_num_movable_atoms > 0)) {
+		auto remapped = std::make_shared<atomv>(grid);
+		t.append(*remapped, added_grid);
+		m_grid_atoms = std::move(remapped);
+	}
 	t.coords_append(atoms, m.atoms);
 
 	// Add interaction pairs between previously added atoms and (very likely) ligand atoms
@@ -267,9 +275,15 @@ void model::append(const model& m) {
 
 /////////////////// begin MODEL::INITIALIZE /////////////////////////
 
+const atomv& model::grid_atoms() const {
+	static const atomv empty;
+	return m_grid_atoms ? *m_grid_atoms : empty;
+}
+
 atom_index model::sz_to_atom_index(sz i) const {
-	if(i < grid_atoms.size()) return atom_index(i                    ,  true);
-	else                      return atom_index(i - grid_atoms.size(), false);
+	const sz rigid_count = grid_atoms().size();
+	if(i < rigid_count) return atom_index(i, true);
+	else                return atom_index(i - rigid_count, false);
 }
 
 distance_type model::distance_type_between(const distance_type_matrix& mobility, const atom_index& i, const atom_index& j) const {
@@ -287,7 +301,7 @@ distance_type model::distance_type_between(const distance_type_matrix& mobility,
 }
 
 const vec& model::atom_coords(const atom_index& i) const {
-	return i.in_grid ? grid_atoms[i.i].coords : coords[i.i];
+	return i.in_grid ? (*m_grid_atoms)[i.i].coords : coords[i.i];
 }
 
 fl model::distance_sqr_between(const atom_index& a, const atom_index& b) const {
@@ -337,9 +351,9 @@ struct beads {
 	}
 };
 
-void model::assign_bonds(const distance_type_matrix& mobility) { // assign bonds based on relative mobility, distance and covalent length
+void model::assign_bonds(const distance_type_matrix& mobility, atomv& rigid_atoms) {
 	const fl bond_length_allowance_factor = 1.1;
-	sz n = grid_atoms.size() + atoms.size();
+	sz n = rigid_atoms.size() + atoms.size();
 
 	// construct beads
 	const fl bead_radius = 15;
@@ -349,10 +363,11 @@ void model::assign_bonds(const distance_type_matrix& mobility) { // assign bonds
 		beads_instance.add(i, atom_coords(i_atom_index));
 	}
 	// assign bonds
+	szv relevant_atoms;
 	VINA_FOR(i, n) {
 		atom_index i_atom_index = sz_to_atom_index(i);
 		const vec& i_atom_coords = atom_coords(i_atom_index);
-		atom& i_atom = get_atom(i_atom_index);
+		atom& i_atom = initializing_atom(i_atom_index, rigid_atoms);
 
 		const fl max_covalent_r = max_covalent_radius(); // FIXME mv to atom_constants
 		fl i_atom_covalent_radius = max_covalent_r;
@@ -360,7 +375,7 @@ void model::assign_bonds(const distance_type_matrix& mobility) { // assign bonds
 			i_atom_covalent_radius = ad_type_property(i_atom.ad).covalent_radius;
 
 		//find relevant atoms
-		szv relevant_atoms;
+		relevant_atoms.clear();
 		const fl bead_cutoff_sqr = sqr(bead_radius + bond_length_allowance_factor * (i_atom_covalent_radius + max_covalent_r));
 		VINA_FOR_IN(b, beads_instance.data) {
 			if(vec_distance_sqr(beads_instance.data[b].first, i_atom_coords) > bead_cutoff_sqr) continue;
@@ -368,12 +383,9 @@ void model::assign_bonds(const distance_type_matrix& mobility) { // assign bonds
 			VINA_FOR_IN(bead_elements_i, bead_elements) {
 				sz j = bead_elements[bead_elements_i];
 				atom_index j_atom_index = sz_to_atom_index(j);
-				atom& j_atom = get_atom(j_atom_index);
-				const fl bond_length = i_atom.optimal_covalent_bond_length(j_atom);
 				distance_type dt = distance_type_between(mobility, i_atom_index, j_atom_index);
 				if(dt != DISTANCE_VARIABLE && i != j) {
 					fl r2 = distance_sqr_between(i_atom_index, j_atom_index);
-					//if(r2 < sqr(bond_length_allowance_factor * bond_length))
 					if(r2 < sqr(bond_length_allowance_factor * (i_atom_covalent_radius + max_covalent_r)))
 						relevant_atoms.push_back(j);
 				}
@@ -384,7 +396,7 @@ void model::assign_bonds(const distance_type_matrix& mobility) { // assign bonds
 			sz j = relevant_atoms[relevant_atoms_i];
 			if(j <= i) continue; // already considered
 			atom_index j_atom_index = sz_to_atom_index(j);
-			atom& j_atom = get_atom(j_atom_index);
+			atom& j_atom = initializing_atom(j_atom_index, rigid_atoms);
 			const fl bond_length = i_atom.optimal_covalent_bond_length(j_atom);
 			distance_type dt = distance_type_between(mobility, i_atom_index, j_atom_index);
 			fl r2 = distance_sqr_between(i_atom_index, j_atom_index);
@@ -417,10 +429,10 @@ bool model::bonded_to_heteroatom(const atom& a) const {
 	return false;
 }
 
-void model::assign_types() {
-	VINA_FOR(i, grid_atoms.size() + atoms.size()) {
+void model::assign_types(atomv& rigid_atoms) {
+	VINA_FOR(i, rigid_atoms.size() + atoms.size()) {
 		const atom_index ai = sz_to_atom_index(i);
-		atom& a = get_atom(ai);
+		atom& a = initializing_atom(ai, rigid_atoms);
 		a.assign_el();
 		sz& x = a.xs;
 
@@ -578,11 +590,16 @@ void model::initialize_pairs(const distance_type_matrix& mobility) {
 	}
 }
 
-void model::initialize(const distance_type_matrix& mobility) {
+void model::initialize(const distance_type_matrix& mobility, atomv rigid_atoms) {
+	std::shared_ptr<atomv> initializing_grid;
+	if (!rigid_atoms.empty())
+		initializing_grid = std::make_shared<atomv>(std::move(rigid_atoms));
+	m_grid_atoms = initializing_grid;
+	auto& grid = initializing_grid ? *initializing_grid : rigid_atoms;
 	VINA_FOR_IN(i, ligands)
 		ligands[i].set_range();
-	assign_bonds(mobility);
-	assign_types();
+	assign_bonds(mobility, grid);
+	assign_types(grid);
 	initialize_pairs(mobility);
 }
 
@@ -936,9 +953,11 @@ fl model::rmsd_ligands_upper_bound(const model& m) const {
 
 
 void model::verify_bond_lengths() const {
-	VINA_FOR(i, grid_atoms.size() + atoms.size()) {
-		const atom_index ai = sz_to_atom_index(i);
-		const atom& a = get_atom(ai);
+	// Rigid-grid bonds are immutable. Cross bonds are checked from the
+	// non-grid atom, since bond assignment records each bond on both atoms.
+	VINA_FOR_IN(i, atoms) {
+		const atom_index ai(i, false);
+		const atom& a = atoms[i];
 		VINA_FOR_IN(j, a.bonds) {
 			const bond& b = a.bonds[j];
 			fl d = std::sqrt(distance_sqr_between(ai, b.connected_atom_index));
@@ -1077,8 +1096,7 @@ void model::print_stuff(bool show_coords, bool show_internal, bool show_atoms, b
 
 	if (show_grid) {
 		std::cout << "grid_atoms:\n";
-		VINA_FOR_IN(i, grid_atoms) {
-			const atom& a = grid_atoms[i];
+		for (const atom& a : grid_atoms()) {
 			std::cout << a.el << " " << a.ad << " " << a.xs << " " << a.sy << "    " << a.charge << '\n';
 			std::cout << a.bonds.size() << "  "; printnl(a.coords);
 		}

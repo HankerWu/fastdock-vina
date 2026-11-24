@@ -25,6 +25,7 @@
 #ifndef VINA_MODEL_H
 #define VINA_MODEL_H
 
+#include <memory>
 #include <boost/optional.hpp> // for context
 
 #include "file.h"
@@ -166,8 +167,7 @@ public:
 
 	fl clash_penalty() const;
 
-	const atom& get_atom(const atom_index& i) const { return (i.in_grid ? grid_atoms[i.i] : atoms[i.i]); }
-	      atom& get_atom(const atom_index& i)       { return (i.in_grid ? grid_atoms[i.i] : atoms[i.i]); }
+	const atom& get_atom(const atom_index& i) const { return i.in_grid ? (*m_grid_atoms)[i.i] : atoms[i.i]; }
 
 private:
 	friend struct parallel_mc;
@@ -210,16 +210,18 @@ private:
     bool is_unmatched_closure_dummy(sz i, sz j) const;
 	bool is_glue_pair(sz i, sz j) const;
 
-	void assign_bonds(const distance_type_matrix& mobility); // assign bonds based on relative mobility, distance and covalent length
-	void assign_types();
+	const atomv& grid_atoms() const;
+	atom& initializing_atom(const atom_index& i, atomv& rigid_atoms) { return i.in_grid ? rigid_atoms[i.i] : atoms[i.i]; }
+	void assign_bonds(const distance_type_matrix& mobility, atomv& rigid_atoms);
+	void assign_types(atomv& rigid_atoms);
 	void initialize_pairs(const distance_type_matrix& mobility);
-	void initialize(const distance_type_matrix& mobility);
+	void initialize(const distance_type_matrix& mobility, atomv rigid_atoms);
 	fl clash_penalty_aux(const interacting_pairs& pairs) const;
 
 	vecv coords;
 	vecv minus_forces;
 
-	atomv grid_atoms;
+	std::shared_ptr<const atomv> m_grid_atoms;
 	atomv atoms; // movable, inflex
 	vector_mutable<ligand> ligands;
 	vector_mutable<residue> flex;

@@ -39,6 +39,7 @@ fl non_cache::eval_intra(model& m, fl v) const {
 fl non_cache::eval_energy(const model& m, fl v, bool flex_only) const {
 	fl e = 0;
 	const fl cutoff_sqr = p.cutoff_sqr();
+	const auto& receptor = m.grid_atoms();
 
 	sz n = num_atom_types(atom_type::XS);
 
@@ -63,7 +64,7 @@ fl non_cache::eval_energy(const model& m, fl v, bool flex_only) const {
 
 		VINA_FOR_IN(possibilities_j, possibilities) {
 			const sz j = possibilities[possibilities_j];
-			const atom& b = m.grid_atoms[j];
+			const atom& b = receptor[j];
 			sz t2 = b.get(atom_type::XS);
 			if(t2 >= n) continue;
 			vec r_ba; r_ba = adjusted_a_coords - b.coords; // FIXME why b-a and not a-b ?
@@ -94,6 +95,7 @@ bool non_cache::within(const model& m, fl margin) const {
 fl non_cache::eval_deriv(      model& m, fl v) const { // clean up
 	fl e = 0;
 	const fl cutoff_sqr = p.cutoff_sqr();
+	const auto& receptor = m.grid_atoms();
 
 	sz n = num_atom_types(atom_type::XS);
 
@@ -123,7 +125,7 @@ fl non_cache::eval_deriv(      model& m, fl v) const { // clean up
 
 		VINA_FOR_IN(possibilities_j, possibilities) {
 			const sz j = possibilities[possibilities_j];
-			const atom& b = m.grid_atoms[j];
+			const atom& b = receptor[j];
 			sz t2 = b.get(atom_type::XS);
 			if(t2 >= n) continue;
 			vec r_ba; r_ba = adjusted_a_coords - b.coords; // FIXME why b-a and not a-b ?

@@ -40,8 +40,9 @@ szv_grid::szv_grid(const model& m, const grid_dims& gd, fl cutoff_sqr) : m_data(
 		VINA_FOR_IN(i, edges[axis])
 			edges[axis][i] = m_init[axis] + m_range[axis] * fl(i) / fl(cells);
 	}
-	VINA_FOR_IN(i, m.grid_atoms) {
-		const atom& a = m.grid_atoms[i];
+	const auto& receptor = m.grid_atoms();
+	VINA_FOR_IN(i, receptor) {
+		const atom& a = receptor[i];
 		if (a.xs >= XS_TYPE_SIZE || !(brick_distance_sqr(m_init, end, a.coords) < cutoff_sqr))
 			continue;
 		m_atom_types.set(a.xs);
