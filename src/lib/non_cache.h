@@ -20,7 +20,7 @@
 
 */
 
-// FastDock: the explicit receptor owns its spatial index and scoring tables.
+// FastDock: the explicit receptor owns its index, tables and shared energy pass.
 
 #ifndef VINA_NON_CACHE_H
 #define VINA_NON_CACHE_H
@@ -40,6 +40,7 @@ struct non_cache : public igrid {
 	bool within(const model& m, fl margin = 0.0001) const;
 	fl slope = 0;
 private:
+	fl eval_energy(const model& m, fl v, bool flex_only) const;
 	szv_grid sgrid;
 	grid_dims gd;
 	precalculate p;

@@ -21,7 +21,8 @@
 */
 
 /* Modified for FastDock Vina: build lookup tables for the type pairs used
-   by the receptor index and molecular interaction lists.
+   by the receptor index and molecular interaction lists, and share the
+   distance-to-sample scale across each set of tables.
    See docs/PROVENANCE.md for upstream and experimental source identities. */
 
 #ifndef VINA_PRECALCULATE_H
@@ -47,8 +48,8 @@ public:
     precalculate_element() = default;
 
     template<typename Evaluate>
-    precalculate_element(const flv& distances, fl factor_, fl cap, const Evaluate& evaluate)
-        : smooth(distances.size()), factor(factor_) {
+    precalculate_element(const flv& distances, fl cap, const Evaluate& evaluate)
+        : smooth(distances.size()) {
         VINA_FOR_IN(i, distances)
             smooth[i][0] = (std::min)(cap, evaluate(distances[i]));
         // The centered radial derivative is zero at both ends of the table.
@@ -59,15 +60,11 @@ public:
     }
 
     bool initialized() const { return !smooth.empty(); }
-    fl eval_fast(fl r2) const{
-        return fast_sample(sz(factor * r2));
-    }
     fl fast_sample(sz i) const {
         assert(i + 1 < smooth.size());
         return (smooth[i + 1][0] + smooth[i][0]) / 2;
     }
-    pr eval_deriv(fl r2) const{
-        const fl r2_factored = factor * r2;
+    pr eval_deriv(fl r2_factored) const {
         assert(r2_factored + 1 < smooth.size());
         // Valid sample offsets fit the signed difference type of the vector.
         const auto i = static_cast<std::ptrdiff_t>(r2_factored);
@@ -81,7 +78,6 @@ public:
 private:
     typedef fl sample __attribute__((vector_size(16)));
     std::vector<sample> smooth; // energy and radial derivative interpolate independently
-    fl factor = 0;
 };
 
 struct precalculate {
@@ -98,15 +94,14 @@ struct precalculate {
                 const bool used = (receptor_types[t1] && ligand_types[t2]) ||
                                   (receptor_types[t2] && ligand_types[t1]);
                 if (!used) continue;
-                m_data(t1, t2) = precalculate_element(distances, factor, cap,
+                m_data(t1, t2) = precalculate_element(distances, cap,
                     [&](fl r) { return sf.eval(t1, t2, r); });
             }
         }
     }
 
     fl eval_fast(sz type_pair_index, fl r2) const {
-        assert(r2 <= m_cutoff_sqr);
-        return element(type_pair_index).eval_fast(r2);
+        return element(type_pair_index).fast_sample(fast_index(r2));
     }
     sz fast_index(fl r2) const {
         assert(r2 <= m_cutoff_sqr);
@@ -118,7 +113,7 @@ struct precalculate {
     }
     pr eval_deriv(sz type_pair_index, fl r2) const {
         assert(r2 <= m_cutoff_sqr);
-        return element(type_pair_index).eval_deriv(r2);
+        return element(type_pair_index).eval_deriv(m_factor * r2);
     }
     fl cutoff_sqr() const { return m_cutoff_sqr; }
 
@@ -133,6 +128,7 @@ struct precalculate_byatom {
 
     precalculate_byatom(const ScoringFunction& sf, const model& m, fl cap = max_fl, fl factor = 32)
         : m_cutoff_sqr(sqr(sf.get_cutoff())), m_max_cutoff_sqr(sqr(sf.get_max_cutoff())),
+          m_factor(factor),
           m_data(sf.get_atom_typing() == atom_type::XS ? XS_TYPE_SIZE : m.num_atoms(), precalculate_element()) {
         VINA_CHECK(factor > epsilon_fl);
         const flv distances = sample_distances(factor, m_cutoff_sqr);
@@ -141,7 +137,7 @@ struct precalculate_byatom {
             for (const interacting_pair& pair : pairs) {
                 auto& table = m_data(pair.table_index);
                 if (!table.initialized())
-                    table = precalculate_element(samples, factor, cap,
+                    table = precalculate_element(samples, cap,
                         [&](fl r) { return sf.eval(m.atoms[pair.a], m.atoms[pair.b], r); });
             }
         };
@@ -158,10 +154,10 @@ struct precalculate_byatom {
     }
 
     fl eval_fast(const interacting_pair& pair, fl r2) const {
-        return element(pair).eval_fast(r2);
+        return element(pair).fast_sample(sz(m_factor * r2));
     }
     pr eval_deriv(const interacting_pair& pair, fl r2) const {
-        return element(pair).eval_deriv(r2);
+        return element(pair).eval_deriv(m_factor * r2);
     }
     fl cutoff_sqr() const { return m_cutoff_sqr; }
     fl max_cutoff_sqr() const { return m_max_cutoff_sqr; }
@@ -174,6 +170,7 @@ private:
 
     fl m_cutoff_sqr = 0;
     fl m_max_cutoff_sqr = 0;
+    fl m_factor = 0;
     triangular_matrix<precalculate_element> m_data;
 };
 

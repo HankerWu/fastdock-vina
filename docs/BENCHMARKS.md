@@ -384,3 +384,60 @@ C++ 接口使用 Vina 和 Vinardo 的 16 种截断距离与精修组合，在非
 另用合成 AD4 网格验证带及不带柔性残基的双配体。未舍入双精度数值与基线逐位一致。
 优化器单独对比了 200 组构象布局、步数与目标函数，覆盖零步、零梯度和非有限值回退。
 原生 CLI 还核对了 Vina/Vinardo 网格导出与重载、批处理中跳过坏输入和单个坏输入的退出行为。
+
+
+## 原子对计算复用与大环梯度
+
+基线为 `b231b2a`。用 1iep 做单线程完整搜索时，1,587 个引擎内 CPU 采样点中，52.7%
+落在原子对求导，27.3% 落在网格插值。原子对求导沿用现有列表次序，在相邻且首原子相同
+的一组内复用首原子坐标，只在组末写回它的力。查询倍率由每组评分表持有，单张表对象
+从 32 缩至 24 字节（GCC x86-64），能量样本格式未变。显式受体共用全模型与柔性残基的
+能量计算。每次精修求值会清空大环闭合虚拟原子的受体力，再由原子对计算加入本次闭环作用。
+
+基线和候选使用 GCC 11.4、Boost 1.67 和相同的发布参数，在共享 Xeon Platinum 8362
+上以种子 42 测量 1iep。每项先各预热一次，然后交替运行。单线程绑 CPU 20，四线程绑
+CPU 12–15。限次单配体为 4 条轨迹，每条最多 20,000 次评估。批处理从示例的四个
+MODEL 取构象，每个输入为 4 条轨迹、每条最多 7,000 次评估。两项限次测试保留 5 个
+搜索模式。完整版用 8 条轨迹、默认评估预算和 9 个模式。
+[逐次计时、内存、块 I/O 和输出摘要](../benchmarks/local-pair-force-reuse.csv)
+
+| 场景 | 每版重复 | 墙钟中位数，基线 → 候选 | 配对墙钟变化中位数 | CPU 时间中位数，基线 → 候选 | 峰值 RSS 中位数，基线 → 候选 |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| 20 Å 建图和评分 | 7 | 0.150 → 0.155 s | +3.3% | 0.149 → 0.154 s | 19.58 → 19.51 MiB |
+| 36 Å 建图和评分，关闭精修 | 5 | 0.480 → 0.487 s | +0.9% | 0.479 → 0.487 s | 44.34 → 44.31 MiB |
+| 20 Å 单配体限次对接 | 9 | 0.565 → 0.548 s | −3.3% | 0.564 → 0.540 s | 19.57 → 19.57 MiB |
+| 20 Å 四构象限次批处理 | 7 | 0.821 → 0.832 s | −5.1% | 0.819 → 0.779 s | 19.84 → 19.57 MiB |
+| 20 Å 四线程完整对接 | 3 | 17.851 → 16.289 s | −8.7% | 65.824 → 61.435 s | 21.24 → 21.33 MiB |
+
+配对变化先算每对相对差异再取中位数。批处理墙钟有波动，配对与各版中位数的方向不同，
+各版 CPU 时间中位数下降 4.8%。用 CPU 21 另做的评分复测也有主机波动。上述对照的输出
+内容和大小均一致，进程块 I/O 计数均为零。
+
+用 C++ 接口做了 11 组原生对照，覆盖 Vina、Vinardo 和合成 AD4 网格，包含自定义截断、
+柔性残基、双配体和关闭显式精修的大环。评分、局部优化和搜索后报告的双精度能量逐位一致。
+单配体另比对未舍入坐标，双配体比对完整 PDBQT。显式受体的大环回归单独验证修复行为。
+对扭转偏移 0.5 弧度的同一姿势连续求导，旧版能量相同，首个梯度分量从 20.2118
+变到 −11.6672。新版两次的能量与所有梯度分量一致。
+
+### 复现大环梯度回归
+
+使用 1iep 受体与 [环十二烷夹具](../benchmarks/fixtures/cyclododecane.pdbqt)。夹具由
+RDKit 2025.09.1 的 ETKDG（种子 42）和 MMFF 准备，再用 Meeko 0.7.1 导出。
+以下命令使用本节测试所用的 Boost 1.67。在 Bash 中将 `BOOST_PREFIX` 设为其安装目录，并在仓库根目录运行。
+
+```bash
+python3 tools/build.py --boost-prefix "$BOOST_PREFIX" --output-dir build/check-macrocycle
+objects=()
+for object in build/check-macrocycle/obj/*.o; do
+    if [[ ${object##*/} != main.o && ${object##*/} != split.o ]]; then
+        objects+=("$object")
+    fi
+done
+c++ -O3 -DNDEBUG -std=c++14 -pthread -Isrc/lib -I"$BOOST_PREFIX/include" \
+    benchmarks/check_macrocycle_gradient.cpp "${objects[@]}" \
+    -L"$BOOST_PREFIX/lib" -Wl,-rpath,"$BOOST_PREFIX/lib" \
+    -lboost_system -lboost_thread -lboost_serialization -lboost_filesystem \
+    -o build/check-macrocycle/check-gradient
+build/check-macrocycle/check-gradient examples/basic/1iep_receptor.pdbqt \
+    benchmarks/fixtures/cyclododecane.pdbqt
+```

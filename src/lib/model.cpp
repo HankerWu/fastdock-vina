@@ -768,27 +768,32 @@ fl eval_interacting_pairs(const precalculate_byatom& p, fl v, const interacting_
 	return e;
 }
 
-fl eval_interacting_pairs_deriv(const precalculate_byatom& p, fl v, const interacting_pairs& pairs, const vecv& coords, vecv& forces, const bool with_max_cutoff) { // adds to forces  // clean up
+fl eval_interacting_pairs_deriv(const precalculate_byatom& p, fl v, const interacting_pairs& pairs, const vecv& coords, vecv& forces, const bool with_max_cutoff) {
 	fl e = 0;
-	fl cutoff_sqr = p.cutoff_sqr();
+	const fl cutoff_sqr = with_max_cutoff ? p.max_cutoff_sqr() : p.cutoff_sqr();
 
-	if (with_max_cutoff) {
-		cutoff_sqr = p.max_cutoff_sqr();
-	}
-
-	for (const interacting_pair& ip : pairs) {
-		vec r = coords[ip.b] - coords[ip.a]; // a -> b
-		fl r2 = sqr(r);
-		if(r2 < cutoff_sqr) {
-			pr tmp = p.eval_deriv(ip, r2);
-			vec force; force = tmp.second * r;
-			curl(tmp.first, force, v);
-			e += tmp.first;
-
-			// FIXME inefficient, if using hard curl
-			forces[ip.a] -= force; // we could omit forces on inflex here
-			forces[ip.b] += force;
-		}
+	auto pair = pairs.begin();
+	while (pair != pairs.end()) {
+		const sz a = pair->a;
+		const vec a_coords = coords[a];
+		vec a_force = forces[a];
+		// No pair joins an atom to itself, so this run can keep the
+		// first atom's force local without reordering any additions.
+		do {
+			const sz b = pair->b;
+			const vec r = coords[b] - a_coords;
+			const fl r2 = sqr(r);
+			if (r2 < cutoff_sqr) {
+				pr energy_deriv = p.eval_deriv(*pair, r2);
+				vec force = energy_deriv.second * r;
+				curl(energy_deriv.first, force, v);
+				e += energy_deriv.first;
+				a_force -= force;
+				forces[b] += force;
+			}
+			++pair;
+		} while (pair != pairs.end() && pair->a == a);
+		forces[a] = a_force;
 	}
 	return e;
 }
