@@ -20,15 +20,17 @@
 
 */
 
+// FastDock: the explicit receptor owns its spatial index and scoring tables.
+
 #include "non_cache.h"
 #include "curl.h"
 
-non_cache::non_cache(szv_grid&& receptor_index, const grid_dims& gd_, const precalculate* p_, fl slope_)
-	: slope(slope_), sgrid(std::move(receptor_index)), gd(gd_), p(p_) {}
+non_cache::non_cache(szv_grid&& receptor_index, const grid_dims& gd_, precalculate&& tables, fl slope_)
+	: slope(slope_), sgrid(std::move(receptor_index)), gd(gd_), p(std::move(tables)) {}
 
 fl non_cache::eval      (const model& m, fl v) const { // clean up
 	fl e = 0;
-	const fl cutoff_sqr = p->cutoff_sqr();
+	const fl cutoff_sqr = p.cutoff_sqr();
 
 	sz n = num_atom_types(atom_type::XS);
 
@@ -80,7 +82,7 @@ fl non_cache::eval      (const model& m, fl v) const { // clean up
 			fl r2 = sqr(r_ba);
 			if(r2 < cutoff_sqr) {
 				sz type_pair_index = get_type_pair_index(atom_type::XS, a, b);
-				this_e +=  p->eval_fast(type_pair_index, r2);
+				this_e +=  p.eval_fast(type_pair_index, r2);
 			}
 		}
 		curl(this_e, v);
@@ -103,7 +105,7 @@ bool non_cache::within(const model& m, fl margin) const {
 
 fl non_cache::eval_deriv(      model& m, fl v) const { // clean up
 	fl e = 0;
-	const fl cutoff_sqr = p->cutoff_sqr();
+	const fl cutoff_sqr = p.cutoff_sqr();
 
 	sz n = num_atom_types(atom_type::XS);
 
@@ -157,7 +159,7 @@ fl non_cache::eval_deriv(      model& m, fl v) const { // clean up
 			fl r2 = sqr(r_ba);
 			if(r2 < cutoff_sqr) {
 				sz type_pair_index = get_type_pair_index(atom_type::XS, a, b);
-				pr e_dor =  p->eval_deriv(type_pair_index, r2);
+				pr e_dor =  p.eval_deriv(type_pair_index, r2);
 				this_e += e_dor.first;
 				deriv += e_dor.second * r_ba;
 			}
@@ -172,7 +174,7 @@ fl non_cache::eval_deriv(      model& m, fl v) const { // clean up
 
 fl non_cache::eval_intra(model& m, fl v) const { // clean up
 	fl e = 0;
-	const fl cutoff_sqr = p->cutoff_sqr();
+	const fl cutoff_sqr = p.cutoff_sqr();
 
 	sz n = num_atom_types(atom_type::XS);
 
@@ -225,7 +227,7 @@ fl non_cache::eval_intra(model& m, fl v) const { // clean up
 			fl r2 = sqr(r_ba);
 			if(r2 < cutoff_sqr) {
 				sz type_pair_index = get_type_pair_index(atom_type::XS, a, b);
-				this_e +=  p->eval_fast(type_pair_index, r2);
+				this_e +=  p.eval_fast(type_pair_index, r2);
 			}
 		}
 		curl(this_e, v);

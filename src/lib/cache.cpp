@@ -96,6 +96,13 @@ std::bitset<XS_TYPE_SIZE> cache::map_types(const szv& atom_types) {
 	return types;
 }
 
+std::bitset<XS_TYPE_SIZE> cache::missing_map_types(const szv& atom_types) const {
+	auto types = map_types(atom_types);
+	VINA_FOR(t, XS_TYPE_SIZE)
+		if (m_grids[t].initialized()) types.reset(t);
+	return types;
+}
+
 fl cache::eval(const model& m, fl v) const { // needs m.coords
 	fl e = 0;
 
@@ -323,18 +330,20 @@ void cache::populate(const model& m, const precalculate& p, const szv_grid& rece
                      const std::bitset<XS_TYPE_SIZE>& map_types_needed) {
 	szv needed;
 	VINA_FOR(t, XS_TYPE_SIZE) {
-		if (map_types_needed[t] && !m_grids[t].initialized()) {
+		if (map_types_needed[t] && !m_grids[t].initialized())
 			needed.push_back(t);
-			m_grids[t].init(m_gd);
-		}
 	}
 	if(needed.empty())
 		return;
+	// Publish these maps only once every new grid has been filled.
+	std::vector<grid> new_grids(needed.size());
+	for (auto& g : new_grids)
+		g.init(m_gd);
 	flv affinities(needed.size());
 
 	sz nat = num_atom_types(atom_type::XS);
 
-	grid& g = m_grids[needed.front()];
+	const grid& g = new_grids.front();
 
 	const fl cutoff_sqr = p.cutoff_sqr();
 
@@ -385,12 +394,16 @@ void cache::populate(const model& m, const precalculate& p, const szv_grid& rece
 			const sz y_cell = receptor_index.cell_index(1, y_coord);
 			sz start = 0;
 			for (const x_span& span : spans) {
+				const fl first_x = x_coords[start];
+				const fl last_x = x_coords[span.end - 1];
 				row_atoms.clear();
 				for (sz i : receptor_index.possibilities(span.cell, y_cell, z_cell)) {
 					const atom& a = m.grid_atoms[i];
 					const fl dy2 = sqr(a.coords[1] - y_coord);
 					const fl dz2 = sqr(a.coords[2] - z_coord);
-					if (dy2 + dz2 <= cutoff_sqr)
+					const fl dx = a.coords[0] - (std::min)((std::max)(a.coords[0], first_x), last_x);
+					// Use the point evaluation's sum order at the closest x in this span.
+					if (sqr(dx) + dy2 + dz2 <= cutoff_sqr)
 						row_atoms.push_back({a.coords[0], dy2, dz2,
 						                     tables[a.xs].data()});
 				}
@@ -406,10 +419,12 @@ void cache::populate(const model& m, const precalculate& p, const szv_grid& rece
 						}
 					}
 					VINA_FOR_IN(j, needed)
-						m_grids[needed[j]].m_data(x, y, z) = affinities[j];
+						new_grids[j].m_data(x, y, z) = affinities[j];
 				}
 				start = span.end;
 			}
 		}
 	}
+	VINA_FOR_IN(j, needed)
+		m_grids[needed[j]] = std::move(new_grids[j]);
 }

@@ -20,6 +20,8 @@
 
 */
 
+// FastDock: share receptor data and defer batch affinity maps.
+
 #ifndef VINA_H
 #define VINA_H
 
@@ -137,6 +139,9 @@ public:
 	void compute_vina_maps(double center_x, double center_y, double center_z,
 								  double size_x, double size_y, double size_z,
 								  double granularity=0.5, bool force_even_voxels=false);
+	// Prepare one receptor for a batch, adding affinity maps as ligands arrive.
+	void initialize_vina_batch_maps(double center_x, double center_y, double center_z,
+	                               double size_x, double size_y, double size_z, double granularity);
 	void load_maps(std::string maps);
 	void randomize(const int max_steps=10000);
 	std::vector<double> score();
@@ -165,11 +170,12 @@ private:
 	flv m_weights;
 	std::shared_ptr<ScoringFunction> m_scoring_function;
 	precalculate_byatom m_precalculated_byatom;
-	precalculate m_precalculated_sf;
+
 	// maps
 	cache m_grid;
 	ad4cache m_ad4grid;
 	non_cache m_non_cache;
+	std::shared_ptr<const ScoringFunction> m_batch_map_scoring;
 	bool m_map_initialized;
 	// global search
 	int m_cpu;
@@ -182,6 +188,10 @@ private:
 	std::string vina_remarks(output_type& pose, fl lb, fl ub);
 	output_container remove_redundant(const output_container& in, fl min_rmsd);
 
+	void reset_ligand_model(atom_type::t atom_typing);
+	void finish_ligand_setup(atom_type::t atom_typing);
+	void build_vina_maps(const vec& center, const vec& span, fl granularity,
+	                     bool force_even_voxels, bool defer_population);
 	void set_forcefield();
 	std::vector<double> optimize(output_type& out, const int max_steps=0);
 	int generate_seed(const int seed=0);

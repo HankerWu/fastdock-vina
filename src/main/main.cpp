@@ -20,6 +20,8 @@
 
 */
 
+// FastDock: batch docking builds missing affinity maps on demand.
+
 #include <iostream>
 #include <set>
 #include <string>
@@ -468,12 +470,11 @@ Thank you!\n";
 			if (sf_name.compare("vina") == 0 || sf_name.compare("vinardo") == 0) {
 				if (vm.count("maps")) {
 					v.load_maps(maps);
-				} else {
-					// Will compute maps for all Vina atom types
+				} else if (vm.count("write_maps")) {
 					v.compute_vina_maps(center_x, center_y, center_z, size_x, size_y, size_z, grid_spacing);
-
-					if (vm.count("write_maps"))
-						v.write_maps(out_maps);
+					v.write_maps(out_maps);
+				} else {
+					v.initialize_vina_batch_maps(center_x, center_y, center_z, size_x, size_y, size_z, grid_spacing);
 				}
 			}
 

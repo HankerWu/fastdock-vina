@@ -94,96 +94,68 @@ void Vina::set_receptor(const std::string& rigid_name, const std::string& flex_n
 	// If we are reading another receptor we should not consider the ligand and the map as initialized anymore
 	m_ligand_initialized = false;
 	m_map_initialized = false;
+	if (m_batch_map_scoring && m_no_refine)
+		m_non_cache = non_cache();
+	m_batch_map_scoring.reset();
+}
+
+void Vina::reset_ligand_model(atom_type::t atom_typing) {
+	if (m_receptor_initialized)
+		m_model = m_receptor;
+	else
+		m_model = model(atom_typing);
+}
+
+void Vina::finish_ligand_setup(atom_type::t atom_typing) {
+	precalculate_byatom precalculated_byatom(*m_scoring_function, m_model);
+	if (m_map_initialized) {
+		const szv atom_types = m_model.get_movable_atom_types(atom_typing);
+		if (m_batch_map_scoring) {
+			const auto missing = m_grid.missing_map_types(atom_types);
+			if (missing.any()) {
+				const auto& index = m_non_cache.receptor_index();
+				if (m_no_refine) {
+					const precalculate tables(*m_batch_map_scoring, index.atom_types(), missing);
+					m_grid.populate(m_receptor, tables, index, missing);
+				} else {
+					m_grid.populate(m_receptor, m_non_cache.receptor_tables(), index, missing);
+				}
+			}
+		} else if (m_sf_choice == SF_VINA || m_sf_choice == SF_VINARDO) {
+			if (!m_grid.are_atom_types_grid_initialized(atom_types))
+				exit(EXIT_FAILURE);
+		} else {
+			if (!m_ad4grid.are_atom_types_grid_initialized(atom_types))
+				exit(EXIT_FAILURE);
+		}
+	}
+
+	m_poses.clear();
+	m_precalculated_byatom = std::move(precalculated_byatom);
+	m_ligand_initialized = true;
 }
 
 void Vina::set_ligand_from_string(const std::string& ligand_string) {
-	// Read ligand PDBQT string and add it to the model
 	if (ligand_string.empty()) {
 		std::cerr << "ERROR: Cannot read ligand file. Ligand string is empty.\n";
 		exit(EXIT_FAILURE);
 	}
-
-	atom_type::t atom_typing = m_scoring_function->get_atom_typing();
-
-	if (!m_receptor_initialized) {
-		// This situation will happen if we don't need a receptor and we are using affinity maps
-		model m(atom_typing);
-		m_model = m;
-		m_receptor = m;
-	} else {
-		// Replace current model with receptor and reinitialize poses
-		m_model = m_receptor;
-	}
-
-	// ... and add ligand to the model
+	const atom_type::t atom_typing = m_scoring_function->get_atom_typing();
+	reset_ligand_model(atom_typing);
 	m_model.append(parse_ligand_pdbqt_from_string(ligand_string, atom_typing));
-
-	// Because we precalculate ligand atoms interactions
-	precalculate_byatom precalculated_byatom(*m_scoring_function, m_model);
-
-	// Check that all atom types are in the grid (if initialized)
-	if (m_map_initialized) {
-		szv atom_types = m_model.get_movable_atom_types(atom_typing);
-
-		if (m_sf_choice == SF_VINA || m_sf_choice == SF_VINARDO) {
-			if(!m_grid.are_atom_types_grid_initialized(atom_types))
-				exit(EXIT_FAILURE);
-		} else {
-			if(!m_ad4grid.are_atom_types_grid_initialized(atom_types))
-				exit(EXIT_FAILURE);
-		}
-	}
-
-	// Store in Vina object
-	output_container poses;
-	m_poses = poses;
-	m_precalculated_byatom = std::move(precalculated_byatom);
-	m_ligand_initialized = true;
+	finish_ligand_setup(atom_typing);
 }
 
 void Vina::set_ligand_from_string(const std::vector<std::string>& ligand_string) {
-	// Read ligand PDBQT strings and add them to the model
 	if (ligand_string.empty()) {
 		std::cerr << "ERROR: Cannot read ligand list. Ligands list is empty.\n";
 		exit(EXIT_FAILURE);
 	}
-
-	atom_type::t atom_typing = m_scoring_function->get_atom_typing();
-
-	if (!m_receptor_initialized) {
-		// This situation will happen if we don't need a receptor and we are using affinity maps
-		model m(atom_typing);
-		m_model = m;
-		m_receptor = m;
-	} else {
-		// Replace current model with receptor and reinitialize poses
-		m_model = m_receptor;
-	}
-
-	VINA_RANGE(i, 0, ligand_string.size())
-		m_model.append(parse_ligand_pdbqt_from_string(ligand_string[i], atom_typing));
-
-	// Because we precalculate ligand atoms interactions
-	precalculate_byatom precalculated_byatom(*m_scoring_function, m_model);
-
-	// Check that all atom types are in the grid (if initialized)
-	if (m_map_initialized) {
-		szv atom_types = m_model.get_movable_atom_types(atom_typing);
-
-		if (m_sf_choice == SF_VINA || m_sf_choice == SF_VINARDO) {
-			if(!m_grid.are_atom_types_grid_initialized(atom_types))
-				exit(EXIT_FAILURE);
-		} else {
-			if(!m_ad4grid.are_atom_types_grid_initialized(atom_types))
-				exit(EXIT_FAILURE);
-		}
-	}
-
-	// Store in Vina object
-	output_container poses;
-	m_poses = poses;
-	m_precalculated_byatom = std::move(precalculated_byatom);
-	m_ligand_initialized = true;
+	const atom_type::t atom_typing = m_scoring_function->get_atom_typing();
+	reset_ligand_model(atom_typing);
+	for (const auto& ligand : ligand_string)
+		m_model.append(parse_ligand_pdbqt_from_string(ligand, atom_typing));
+	finish_ligand_setup(atom_typing);
 }
 
 void Vina::set_ligand_from_file(const std::string& ligand_name) {
@@ -332,34 +304,30 @@ std::vector<double> Vina::grid_dimensions_from_ligand(double buffer_size) {
 }
 
 void Vina::compute_vina_maps(double center_x, double center_y, double center_z, double size_x, double size_y, double size_z, double granularity, bool force_even_voxels) {
-	// Setup the search box
-	// Check first that the receptor was added
+	build_vina_maps(vec(center_x, center_y, center_z), vec(size_x, size_y, size_z),
+	                granularity, force_even_voxels, false);
+}
+
+void Vina::initialize_vina_batch_maps(double center_x, double center_y, double center_z,
+                                     double size_x, double size_y, double size_z, double granularity) {
+	build_vina_maps(vec(center_x, center_y, center_z), vec(size_x, size_y, size_z),
+	                granularity, false, true);
+}
+
+void Vina::build_vina_maps(const vec& center, const vec& span, fl granularity,
+                           bool force_even_voxels, bool defer_population) {
 	if (m_sf_choice == SF_AD42) {
 		throw vina_runtime_error("Cannot compute Vina affinity maps using the AD4 scoring function.");
 	} else if (!m_receptor_initialized) {
-		// m_model
 		throw vina_runtime_error("Cannot compute Vina or Vinardo affinity maps. The (rigid) receptor was not initialized.");
-	} else if (size_x <= 0 || size_y <= 0 || size_z <= 0) {
+	} else if (span[0] <= 0 || span[1] <= 0 || span[2] <= 0) {
 		throw vina_runtime_error("Grid box dimensions must be greater than 0 Angstrom");
-	} else if (size_x * size_y * size_z > 27e3) {
+	} else if (span[0] * span[1] * span[2] > 27e3) {
 		std::cerr << "WARNING: Search space volume is greater than 27000 Angstrom^3 (See FAQ)\n";
 	}
 
 	grid_dims gd;
-	vec span(size_x, size_y, size_z);
-	vec center(center_x, center_y, center_z);
-	const fl slope = 1e6; // FIXME: too large? used to be 100
-	szv atom_types;
-	atom_type::t atom_typing = m_scoring_function->get_atom_typing();
-
-	/* Atom types initialization
-	If a ligand was defined before, we only use those present in the ligand
-	otherwise we use all the atom types present in the forcefield
-	*/
-	if (m_ligand_initialized)
-		atom_types = m_model.get_movable_atom_types(atom_typing);
-	else
-		atom_types = m_scoring_function->get_atom_types();
+	const fl slope = 1e6;
 
 	// Grid dimensions
 	VINA_FOR_IN(i, gd) {
@@ -380,26 +348,32 @@ void Vina::compute_vina_maps(double center_x, double center_y, double center_z, 
 	else
 		doing("Computing Vinardo grid", m_verbosity, 0);
 
-	// Compute the Vina grids
 	cache grid(gd, slope);
-	szv_grid receptor_index(m_model, szv_grid_dims(gd), sqr(m_scoring_function->get_cutoff()));
-	const auto map_types = cache::map_types(atom_types);
-	auto interaction_types = map_types;
-	// Explicit scoring can use a different ligand after loading new maps.
-	if (!m_no_refine) interaction_types.set();
-	precalculate receptor_tables(*m_scoring_function, receptor_index.atom_types(), interaction_types);
-	grid.populate(m_model, receptor_tables, receptor_index, map_types);
-
+	szv_grid receptor_index(m_receptor, szv_grid_dims(gd), sqr(m_scoring_function->get_cutoff()));
+	std::bitset<XS_TYPE_SIZE> map_types;
+	if (!defer_population || m_ligand_initialized) {
+		map_types = cache::map_types(m_ligand_initialized
+			? m_model.get_movable_atom_types(m_scoring_function->get_atom_typing())
+			: m_scoring_function->get_atom_types());
+	}
+	precalculate receptor_tables;
+	if (!m_no_refine || map_types.any()) {
+		auto interaction_types = map_types;
+		// Explicit scoring also uses raw XS types and supports replacing the ligand.
+		if (!m_no_refine) interaction_types.set();
+		receptor_tables = precalculate(*m_scoring_function, receptor_index.atom_types(), interaction_types);
+		grid.populate(m_receptor, receptor_tables, receptor_index, map_types);
+	}
 	done(m_verbosity, 0);
 
-	// create non_cache for scoring with explicit receptor atoms (instead of grids)
-	if (!m_no_refine) {
-		m_precalculated_sf = std::move(receptor_tables);
-		m_non_cache = non_cache(std::move(receptor_index), gd, &m_precalculated_sf, slope);
+	if (!m_no_refine || defer_population) {
+		if (m_no_refine) receptor_tables = precalculate();
+		m_non_cache = non_cache(std::move(receptor_index), gd, std::move(receptor_tables), slope);
+	} else {
+		m_non_cache = non_cache();
 	}
-
-	// Store in Vina object
 	m_grid = std::move(grid);
+	m_batch_map_scoring = defer_population ? m_scoring_function : nullptr;
 	m_map_initialized = true;
 }
 
@@ -436,7 +410,10 @@ void Vina::load_maps(std::string maps) {
 		}
 	}
 
-	// Store in Vina object
+	// Imported maps cannot be extended by the receptor used for a previous batch.
+	if (m_batch_map_scoring && m_no_refine)
+		m_non_cache = non_cache();
+	m_batch_map_scoring.reset();
 	m_map_initialized = true;
 }
 
@@ -453,6 +430,8 @@ void Vina::write_maps(const std::string& map_prefix, const std::string& gpf_file
 
 	if (m_ligand_initialized)
 		atom_types = m_model.get_movable_atom_types(atom_typing);
+	else if (m_batch_map_scoring)
+		throw vina_runtime_error("Load a ligand before writing deferred affinity maps.");
 	else
 		atom_types = m_scoring_function->get_atom_types();
 

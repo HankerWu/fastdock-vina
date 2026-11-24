@@ -20,6 +20,8 @@
 
 */
 
+// FastDock: support an empty spatial index and direct cell access.
+
 #ifndef VINA_SZV_GRID_H
 #define VINA_SZV_GRID_H
 
@@ -39,8 +41,8 @@ struct szv_grid {
 private:
 	array3d<szv> m_data;
 	std::bitset<XS_TYPE_SIZE> m_atom_types;
-	vec m_init;
-	vec m_range;
+	vec m_init{0, 0, 0};
+	vec m_range{0, 0, 0};
 };
 
 grid_dims szv_grid_dims(const grid_dims& gd);

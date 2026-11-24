@@ -20,6 +20,8 @@
 
 */
 
+// FastDock: the explicit receptor owns its spatial index and scoring tables.
+
 #ifndef VINA_NON_CACHE_H
 #define VINA_NON_CACHE_H
 
@@ -28,17 +30,19 @@
 #include "precalculate.h"
 
 struct non_cache : public igrid {
-    non_cache() {}
-	non_cache(szv_grid&& receptor_index, const grid_dims& gd_, const precalculate* p_, fl slope_);
+	non_cache() = default;
+	non_cache(szv_grid&& receptor_index, const grid_dims& gd_, precalculate&& tables, fl slope_);
+	const szv_grid& receptor_index() const { return sgrid; }
+	const precalculate& receptor_tables() const { return p; }
 	virtual fl eval      (const model& m, fl v) const; // needs m.coords // clean up
 	virtual fl eval_intra(      model& m, fl v) const;
 	virtual fl eval_deriv(      model& m, fl v) const; // needs m.coords, sets m.minus_forces // clean up
 	bool within(const model& m, fl margin = 0.0001) const;
-	fl slope;
+	fl slope = 0;
 private:
 	szv_grid sgrid;
 	grid_dims gd;
-	const precalculate* p;
+	precalculate p;
 };
 
 #endif
