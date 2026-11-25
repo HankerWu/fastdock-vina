@@ -20,6 +20,8 @@
 
 */
 
+// FastDock: construct line-search trials directly from a flat search direction.
+
 #ifndef VINA_CONF_H
 #define VINA_CONF_H
 
@@ -36,10 +38,11 @@ struct scale {
 };
 
 struct conf_size {
+	static constexpr sz rigid_degrees_of_freedom = 6;
 	szv ligands;
 	szv flex;
 	sz num_degrees_of_freedom() const {
-		return sum(ligands) + sum(flex) + 6 * ligands.size();
+		return sum(ligands) + sum(flex) + rigid_degrees_of_freedom * ligands.size();
 	}
 };
 
@@ -48,9 +51,9 @@ inline void torsions_set_to_null(flv& torsions) {
 		torsions[i] = 0;
 }
 
-inline void torsions_increment(flv& torsions, const flv& c, fl factor) { // new torsions are normalized
+inline void set_incremented_torsions(flv& torsions, const flv& base, flv::const_iterator& step, fl factor) {
 	VINA_FOR_IN(i, torsions) {
-		torsions[i] += normalized_angle(factor * c[i]);
+		torsions[i] = base[i] + normalized_angle(factor * *step++);
 		normalize_angle(torsions[i]);
 	}
 }
@@ -77,16 +80,6 @@ inline void torsions_generate(flv& torsions, fl spread, fl rp, const flv* rs, rn
 			torsions[i] += random_fl(-spread, spread, generator);
 }
 
-struct rigid_change {
-	vec position;
-	vec orientation;
-	rigid_change() : position(0, 0, 0), orientation(0, 0, 0) {}
-	void print() const {
-		::print(position);
-		::print(orientation);
-	}
-};
-
 struct rigid_conf {
 	vec position;
 	qt orientation;
@@ -95,10 +88,11 @@ struct rigid_conf {
 		position = zero_vec;
 		orientation = qt_identity;
 	}
-	void increment(const rigid_change& c, fl factor) {
-		position += factor * c.position;
-		vec rotation; rotation = factor * c.orientation;
-		quaternion_increment(orientation, rotation); // orientation does not get normalized; tests show rounding errors growing very slowly
+	void set_incremented(const rigid_conf& base, flv::const_iterator& step, fl factor) {
+		position = base.position + factor * vec(step[0], step[1], step[2]);
+		orientation = base.orientation;
+		quaternion_increment(orientation, factor * vec(step[3], step[4], step[5]));
+		step += conf_size::rigid_degrees_of_freedom;
 	}
 	void randomize(const vec& corner1, const vec& corner2, rng& generator) {
 		position = random_in_box(corner1, corner2, generator);
@@ -145,25 +139,12 @@ private:
 	}
 };
 
-struct ligand_change {
-	rigid_change rigid;
-	flv torsions;
-	void print() const {
-		rigid.print();
-		printnl(torsions);
-	}
-};
-
 struct ligand_conf {
 	rigid_conf rigid;
 	flv torsions;
 	void set_to_null() {
 		rigid.set_to_null();
 		torsions_set_to_null(torsions);
-	}
-	void increment(const ligand_change& c, fl factor) {
-		rigid.increment(c.rigid, factor);
-		torsions_increment(torsions, c.torsions, factor);
 	}
 	void randomize(const vec& corner1, const vec& corner2, rng& generator) {
 		rigid.randomize(corner1, corner2, generator);
@@ -182,20 +163,10 @@ private:
 	}
 };
 
-struct residue_change {
-	flv torsions;
-	void print() const {
-		printnl(torsions);
-	}
-};
-
 struct residue_conf {
 	flv torsions;
 	void set_to_null() {
 		torsions_set_to_null(torsions);
-	}
-	void increment(const residue_change& c, fl factor) {
-		torsions_increment(torsions, c.torsions, factor);
 	}
 	void randomize(rng& generator) {
 		torsions_randomize(torsions, generator);
@@ -208,67 +179,6 @@ private:
 	template<class Archive>
 	void serialize(Archive & ar, const unsigned version) {
 		ar & torsions;
-	}
-};
-
-struct change {
-	std::vector<ligand_change> ligands;
-	std::vector<residue_change> flex;
-	change(const conf_size& s) : ligands(s.ligands.size()), flex(s.flex.size()) {
-		VINA_FOR_IN(i, ligands)
-			ligands[i].torsions.resize(s.ligands[i], 0);
-		VINA_FOR_IN(i, flex)
-			flex[i].torsions.resize(s.flex[i], 0);
-	}
-	fl operator()(sz index) const { // returns by value
-		VINA_FOR_IN(i, ligands) {
-			const ligand_change& lig = ligands[i];
-			if(index < 3) return lig.rigid.position[index];
-			index -= 3;
-			if(index < 3) return lig.rigid.orientation[index];
-			index -= 3;
-			if(index < lig.torsions.size()) return lig.torsions[index];
-			index -= lig.torsions.size();
-		}
-		VINA_FOR_IN(i, flex) {
-			const residue_change& res = flex[i];
-			if(index < res.torsions.size()) return res.torsions[index];
-			index -= res.torsions.size();
-		}
-		VINA_CHECK(false); 
-		return 0; // shouldn't happen, placating the compiler
-	}
-	fl& operator()(sz index) {
-		VINA_FOR_IN(i, ligands) {
-			ligand_change& lig = ligands[i];
-			if(index < 3) return lig.rigid.position[index];
-			index -= 3;
-			if(index < 3) return lig.rigid.orientation[index];
-			index -= 3;
-			if(index < lig.torsions.size()) return lig.torsions[index];
-			index -= lig.torsions.size();
-		}
-		VINA_FOR_IN(i, flex) {
-			residue_change& res = flex[i];
-			if(index < res.torsions.size()) return res.torsions[index];
-			index -= res.torsions.size();
-		}
-		VINA_CHECK(false); 
-		return ligands[0].rigid.position[0]; // shouldn't happen, placating the compiler
-	}
-	sz num_floats() const {
-		sz tmp = 0;
-		VINA_FOR_IN(i, ligands)
-			tmp += 6 + ligands[i].torsions.size();
-		VINA_FOR_IN(i, flex)
-			tmp += flex[i].torsions.size();
-		return tmp;
-	}
-	void print() const {
-		VINA_FOR_IN(i, ligands)
-			ligands[i].print();
-		VINA_FOR_IN(i, flex)
-			flex[i].print();
 	}
 };
 
@@ -288,11 +198,17 @@ struct conf {
 		VINA_FOR_IN(i, flex)
 			flex[i].set_to_null();
 	}
-	void increment(const change& c, fl factor) { // torsions get normalized, orientations do not
-		VINA_FOR_IN(i, ligands)
-			ligands[i].increment(c.ligands[i], factor);
+	// Use the same order as model::eval_deriv: each ligand's translation,
+	// rotation and torsions, followed by the flexible residues' torsions.
+	void set_incremented(const conf& base, const flv& direction, fl factor) {
+		auto step = direction.begin();
+		VINA_FOR_IN(i, ligands) {
+			ligands[i].rigid.set_incremented(base.ligands[i].rigid, step, factor);
+			set_incremented_torsions(ligands[i].torsions, base.ligands[i].torsions, step, factor);
+		}
 		VINA_FOR_IN(i, flex)
-			flex[i]   .increment(c.flex[i],    factor);
+			set_incremented_torsions(flex[i].torsions, base.flex[i].torsions, step, factor);
+		assert(step == direction.end());
 	}
 	bool internal_too_close(const conf& c, fl torsions_cutoff) const {
 		assert(ligands.size() == c.ligands.size());

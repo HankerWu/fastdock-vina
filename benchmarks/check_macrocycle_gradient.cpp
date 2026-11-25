@@ -28,15 +28,15 @@ int main(int argc, char** argv) {
     c.ligands.front().torsions.back() += 0.5;
     m.set(c);
 
-    change first(size), second(size);
+    flv first(size.num_degrees_of_freedom()), second(first.size());
     const vec cap(1000, 1000, 1000);
     const fl first_energy = m.eval_deriv(ligand_tables, receptor, cap, first);
     const fl second_energy = m.eval_deriv(ligand_tables, receptor, cap, second);
     if (first_energy != second_energy) return 2;
-    for (sz i = 0; i < first.num_floats(); ++i) {
-        if (first(i) != second(i)) {
+    for (sz i = 0; i < first.size(); ++i) {
+        if (first[i] != second[i]) {
             std::cerr << std::setprecision(17) << "Unchanged pose: gradient " << i << " changed from "
-                      << first(i) << " to " << second(i) << '\n';
+                      << first[i] << " to " << second[i] << '\n';
             return 1;
         }
     }

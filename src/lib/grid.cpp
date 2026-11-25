@@ -147,23 +147,19 @@ fl grid::evaluate_aux(const vec& location, fl slope, fl v, vec* deriv) const { /
 	const fl penalty = slope * (miss * m_factor_inv); // FIXME check that inv_factor is correctly initialized and serialized
 	assert(penalty > -epsilon_fl);
 
-	const sz x0 = a[0];
-	const sz y0 = a[1];
-	const sz z0 = a[2];
-
-	const sz x1 = x0+1;
-	const sz y1 = y0+1;
-	const sz z1 = z0+1;
-
-
-	const fl f000 = m_data(x0, y0, z0);
-	const fl f100 = m_data(x1, y0, z0);
-	const fl f010 = m_data(x0, y1, z0);
-	const fl f110 = m_data(x1, y1, z0);
-	const fl f001 = m_data(x0, y0, z1);
-	const fl f101 = m_data(x1, y0, z1);
-	const fl f011 = m_data(x0, y1, z1);
-	const fl f111 = m_data(x1, y1, z1);
+	// Samples are stored x-fastest. Locate the first corner once and
+	// use the row and plane strides for its seven neighbors.
+	const sz row = m_data.dim0();
+	const fl* lower = &m_data(a[0], a[1], a[2]);
+	const fl* upper = lower + row * m_data.dim1();
+	const fl f000 = lower[0];
+	const fl f100 = lower[1];
+	const fl f010 = lower[row];
+	const fl f110 = lower[row + 1];
+	const fl f001 = upper[0];
+	const fl f101 = upper[1];
+	const fl f011 = upper[row];
+	const fl f111 = upper[row + 1];
 
 	const fl x = s[0];
 	const fl y = s[1];

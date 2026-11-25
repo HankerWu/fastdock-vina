@@ -26,7 +26,7 @@
 
 void quasi_newton::operator()(model& m, const precalculate_byatom& p, const igrid& ig,
                               output_type& out, const vec& v, int& evalcount) {
-    auto evaluate = [&](const conf& c, change& gradient) {
+    auto evaluate = [&](const conf& c, flv& gradient) {
         m.set(c);
         return m.eval_deriv(p, ig, v, gradient);
     };

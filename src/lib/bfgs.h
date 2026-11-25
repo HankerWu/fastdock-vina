@@ -92,15 +92,14 @@ inline void bfgs_update(flmat& h, const flv& direction, const flv& y, fl alpha, 
 }
 
 template<typename F>
-fl line_search(F& f, const conf& x, fl f0, const change& p, fl pg, conf& x_new, change& g_new, fl& f1, int& evalcount) {
+fl line_search(F& f, const conf& x, fl f0, const flv& p, fl pg, conf& x_new, flv& g_new, fl& f1, int& evalcount) {
 	const fl c0 = 0.0001;
 	const unsigned max_trials = 10;
 	const fl multiplier = 0.5;
 	fl alpha = 1;
 
 	VINA_U_FOR(trial, max_trials) {
-		x_new = x;
-		x_new.increment(p, alpha);
+		x_new.set_incremented(x, p, alpha);
 		f1 = f(x_new, g_new);
 		evalcount++;
 		if(f1 - f0 < c0 * alpha * pg) // FIXME check - div by norm(p) ? no?
@@ -124,40 +123,38 @@ struct bfgs_result {
 // layout. Every minimization starts with a fresh identity inverse Hessian.
 class bfgs_workspace {
 	conf trial, original;
-	change derivatives, step_change;
-	flv gradient, direction, y, minus_hy;
+	flv gradient, trial_gradient, direction, minus_hy;
 	flmat h;
 
 public:
 	explicit bfgs_workspace(const conf_size& size)
-		: trial(size), original(size), derivatives(size), step_change(size),
-		  gradient(derivatives.num_floats()), direction(gradient.size()),
-		  y(gradient.size()), minus_hy(gradient.size()), h(gradient.size()) {}
+		: trial(size), original(size), gradient(size.num_degrees_of_freedom()),
+		  trial_gradient(gradient.size()), direction(gradient.size()),
+		  minus_hy(gradient.size()), h(gradient.size()) {}
 
 	template<typename F>
 	bfgs_result minimize(F& f, conf& x, unsigned max_steps, int& evalcount) {
 		h.clear();
 		set_diagonal(h, 1);
 		original = x;
-		fl energy = f(x, derivatives);
+		fl energy = f(x, gradient);
 		++evalcount;
 		const fl initial_energy = energy;
-		VINA_FOR_IN(i, gradient) gradient[i] = derivatives(i);
-
 		VINA_U_FOR(step, max_steps) {
 			minus_mat_vec_product(h, gradient, direction);
-			VINA_FOR_IN(i, direction) step_change(i) = direction[i];
 			fl trial_energy = 0;
-			const fl alpha = line_search(f, x, energy, step_change, scalar_product(direction, gradient),
-			                             trial, derivatives, trial_energy, evalcount);
+			const fl alpha = line_search(f, x, energy, direction, scalar_product(direction, gradient),
+			                             trial, trial_gradient, trial_energy, evalcount);
 			energy = trial_energy;
 			std::swap(x, trial);
+			// The inverse Hessian is only used by subsequent steps.
+			if (step + 1 == max_steps) break;
 			if (!(std::sqrt(scalar_product(gradient, gradient)) >= 1e-5)) break;
-			VINA_FOR_IN(i, gradient) {
-				const fl next = derivatives(i);
-				y[i] = next - gradient[i];
-				gradient[i] = next;
-			}
+			gradient.swap(trial_gradient);
+			// The previous gradient is now scratch until the next trial.
+			flv& y = trial_gradient;
+			VINA_FOR_IN(i, y)
+				y[i] = gradient[i] - y[i];
 
 			const fl yp = scalar_product(y, direction);
 			if (step == 0) {

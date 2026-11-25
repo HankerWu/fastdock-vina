@@ -831,7 +831,7 @@ fl model::evali(const precalculate_byatom& p, const vec& v) const { // clean up
 	return e;
 }
 
-fl model::eval_deriv(const precalculate_byatom& p, const igrid& ig, const vec& v, change& g) { // clean up
+fl model::eval_deriv(const precalculate_byatom& p, const igrid& ig, const vec& v, flv& gradient) {
 	// INTER ligand - grid
 	fl e = ig.eval_deriv(*this, v[1]); // sets minus_forces, except inflex
 
@@ -850,8 +850,10 @@ fl model::eval_deriv(const precalculate_byatom& p, const igrid& ig, const vec& v
 		e += eval_interacting_pairs_deriv(p, v[2], glue_pairs, coords, minus_forces, true); // adds to minus_forces
 
 	// calculate derivatives
-	ligands.derivative(coords, minus_forces, g.ligands);
-	flex.derivative(coords, minus_forces, g.flex); // inflex forces are ignored
+	auto out = gradient.begin();
+	ligands.derivative(coords, minus_forces, out);
+	flex.derivative(coords, minus_forces, out); // inflex forces are ignored
+	assert(out == gradient.end());
 	return e;
 }
 

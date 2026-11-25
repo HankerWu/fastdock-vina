@@ -150,7 +150,8 @@ public:
 	fl evalo     (const precalculate_byatom& p,                  const vec& v           ) const;
 	fl evali     (const precalculate_byatom& p,                  const vec& v           ) const;
 	fl eval_inter(const precalculate_byatom& p,                  const vec& v           ) const;
-	fl eval_deriv(const precalculate_byatom& p, const igrid& ig, const vec& v, change& g);
+	// Gradient uses the same layout as conf::set_incremented.
+	fl eval_deriv(const precalculate_byatom& p, const igrid& ig, const vec& v, flv& gradient);
 	fl eval_intramolecular(const precalculate_byatom& p, const igrid& ig, const vec& v);
 
 	fl rmsd_lower_bound(const model& m) const; // uses coords
