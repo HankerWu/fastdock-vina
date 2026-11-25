@@ -24,11 +24,17 @@
    to avoid deep copies without changing docking behavior.
    See docs/PROVENANCE.md for upstream and experimental source identities. */
 
+#include <fstream>
 #include <utility>
+#include <limits>
 
 #include "vina.h"
 #include "scoring_function.h"
 #include "precalculate.h"
+#include "pose_template.h"
+#include "polar_geometry.h"
+#include "net_polar.h"
+#include "trajectory_archive.h"
 
 
 void Vina::cite() {
@@ -94,6 +100,7 @@ void Vina::set_receptor(const std::string& rigid_name, const std::string& flex_n
 	// If we are reading another receptor we should not consider the ligand and the map as initialized anymore
 	m_ligand_initialized = false;
 	m_map_initialized = false;
+	m_use_explicit_receptor = false;
 }
 
 void Vina::set_ligand_from_string(const std::string& ligand_string) {
@@ -103,8 +110,11 @@ void Vina::set_ligand_from_string(const std::string& ligand_string) {
 		exit(EXIT_FAILURE);
 	}
 
-	atom_type::t atom_typing = m_scoring_function->get_atom_typing();
+	set_single_ligand_model(parse_ligand_pdbqt_from_string(ligand_string, m_scoring_function->get_atom_typing()));
+}
 
+void Vina::set_single_ligand_model(model ligand) {
+	const auto atom_typing = m_scoring_function->get_atom_typing();
 	if (!m_receptor_initialized) {
 		// This situation will happen if we don't need a receptor and we are using affinity maps
 		model m(atom_typing);
@@ -116,7 +126,7 @@ void Vina::set_ligand_from_string(const std::string& ligand_string) {
 	}
 
 	// ... and add ligand to the model
-	m_model.append(parse_ligand_pdbqt_from_string(ligand_string, atom_typing));
+	m_model.append(ligand);
 
 	// Because we precalculate ligand atoms interactions
 	precalculate_byatom precalculated_byatom(*m_scoring_function, m_model);
@@ -188,6 +198,21 @@ void Vina::set_ligand_from_string(const std::vector<std::string>& ligand_string)
 
 void Vina::set_ligand_from_file(const std::string& ligand_name) {
 	set_ligand_from_string(get_file_contents(ligand_name));
+}
+
+void Vina::set_ligand_from_file_with_bonds(const std::string& ligand_name, const std::string& bonds_name) {
+	if (!m_receptor_initialized || m_receptor.num_flex() != 0 || m_sf_choice == SF_AD42 ||
+	    (m_map_initialized && !m_use_explicit_receptor))
+		throw vina_runtime_error("ligand_bonds requires one Vina or Vinardo ligand and a rigid receptor");
+	set_single_ligand_model(parse_ligand_pdbqt_with_bonds(ligand_name, m_scoring_function->get_atom_typing(), bonds_name));
+}
+
+void Vina::set_pose_coordinates_for_scoring(const std::string& pose_name) {
+	if (!m_ligand_initialized || !m_receptor_initialized || m_no_refine ||
+	    (m_map_initialized && !m_use_explicit_receptor) || m_sf_choice == SF_AD42 ||
+	    m_model.num_ligands() != 1 || m_model.num_flex() != 0)
+		throw vina_runtime_error("pose_coordinates requires a prepared single ligand and an explicit rigid receptor");
+	replace_fixed_pose_coordinates(m_model, get_file_contents(pose_name));
 }
 
 void Vina::set_ligand_from_file(const std::vector<std::string>& ligand_name) {
@@ -300,6 +325,16 @@ void Vina::set_interaction_cutoff(double cutoff) {
 	m_scoring_function = std::make_shared<ScoringFunction>(m_sf_choice, m_weights, cutoff);
 }
 
+void Vina::set_rerank_gauss2_scale(double scale) {
+	if (!(scale >= 0 && scale <= 1))
+		throw vina_runtime_error("rerank_gauss2_scale must be finite and between 0 and 1");
+	if (scale != 1.0 && (m_sf_choice != SF_VINA || m_no_refine))
+		throw vina_runtime_error("rerank_gauss2_scale below 1 requires Vina scoring with explicit receptor refinement");
+	if (scale != m_rerank_gauss2_scale && m_map_initialized)
+		throw vina_runtime_error("set rerank_gauss2_scale before building search maps");
+	m_rerank_gauss2_scale = scale;
+}
+
 std::vector<double> Vina::grid_dimensions_from_ligand(double buffer_size) {
 	std::vector<double> box_dimensions(6, 0);
 	std::vector<double> box_center(3, 0);
@@ -396,12 +431,26 @@ void Vina::compute_vina_maps(double center_x, double center_y, double center_z, 
 	if (!m_no_refine)
 		m_non_cache = non_cache(std::move(receptor_index), gd, &m_precalculated_sf, slope);
 
+	if (m_rerank_gauss2_scale != 1.0) {
+		flv weights = m_weights;
+		weights[1] *= m_rerank_gauss2_scale; // Vina's second Gaussian
+		m_rerank_scoring_function = std::make_shared<ScoringFunction>(SF_VINA, weights, m_scoring_function->get_cutoff());
+		m_rerank_precalculated_sf = precalculate(*m_rerank_scoring_function);
+	}
+
 	// Store in Vina object
 	m_grid = std::move(grid);
+	m_use_explicit_receptor = !m_no_refine;
 	m_map_initialized = true;
 }
 
 void Vina::load_maps(std::string maps) {
+	if (m_armijo_refinement)
+		throw vina_runtime_error("Armijo refinement requires search maps built from a rigid receptor");
+	if (m_late_pose_selection)
+		throw vina_runtime_error("late pose selection requires search maps built from a rigid receptor");
+	if (m_rerank_gauss2_scale != 1.0)
+		throw vina_runtime_error("rerank_gauss2_scale below 1 requires search maps built from a rigid receptor");
 	if (m_sf_choice != SF_AD42 && m_scoring_function->get_cutoff() != default_xs_interaction_cutoff)
 		throw vina_runtime_error("map files require the default interaction_cutoff");
 	const fl slope = 1e6; // FIXME: too large? used to be 100
@@ -435,6 +484,7 @@ void Vina::load_maps(std::string maps) {
 	}
 
 	// Store in Vina object
+	m_use_explicit_receptor = false;
 	m_map_initialized = true;
 }
 
@@ -468,6 +518,16 @@ void Vina::write_maps(const std::string& map_prefix, const std::string& gpf_file
 	}
 }
 
+static bool uses_native_energy_window(const output_type& pose) {
+	return pose.template_overlap >= 0 || pose.polar_radial >= 0 || pose.polar_burial >= 0 || pose.net_polar_score || pose.archive_votes >= 0;
+}
+
+fl Vina::output_energy_reference() const {
+	if (!uses_native_energy_window(m_poses[0]))
+		return m_poses[0].e;
+	return std::min_element(m_poses.begin(), m_poses.end())->e;
+}
+
 std::vector< std::vector<double> > Vina::get_poses_coordinates(int how_many, double energy_range) {
 	int n = 0;
 	double best_energy = 0;
@@ -483,7 +543,7 @@ std::vector< std::vector<double> > Vina::get_poses_coordinates(int how_many, dou
 
 	if (!m_poses.empty()) {
 		// Get energy from the best conf
-		best_energy = m_poses[0].e;
+		best_energy = output_energy_reference();
 
 		VINA_FOR_IN(i, m_poses) {
 			/* Stop if:
@@ -491,8 +551,13 @@ std::vector< std::vector<double> > Vina::get_poses_coordinates(int how_many, dou
 				- If there is no conf to write
 				- The energy of the current conf is superior than best_energy + energy_range
 			*/
-			if (n >= how_many || !not_max(m_poses[i].e) || m_poses[i].e > best_energy + energy_range)
+			if (n >= how_many)
 				break; // check energy_range sanity FIXME
+			if (!not_max(m_poses[i].e) || m_poses[i].e > best_energy + energy_range) {
+				if (!uses_native_energy_window(m_poses[i]))
+					break;
+				continue;
+			}
 
 			// Push the current pose to model
 			m_model.set(m_poses[i].c);
@@ -525,7 +590,7 @@ std::vector< std::vector<double> > Vina::get_poses_energies(int how_many, double
 
 	if (!m_poses.empty()) {
 		// Get energy from the best conf
-		best_energy = m_poses[0].e;
+		best_energy = output_energy_reference();
 
 		VINA_FOR_IN(i, m_poses) {
 			/* Stop if:
@@ -533,8 +598,13 @@ std::vector< std::vector<double> > Vina::get_poses_energies(int how_many, double
 				- If there is no conf to write
 				- The energy of the current conf is superior than best_energy + energy_range
 			*/
-			if (n >= how_many || !not_max(m_poses[i].e) || m_poses[i].e > best_energy + energy_range)
+			if (n >= how_many)
 				break; // check energy_range sanity FIXME
+			if (!not_max(m_poses[i].e) || m_poses[i].e > best_energy + energy_range) {
+				if (!uses_native_energy_window(m_poses[i]))
+					break;
+				continue;
+			}
 
 			// Push the current pose to model
 			energies.push_back({m_poses[i].e,
@@ -550,17 +620,95 @@ std::vector< std::vector<double> > Vina::get_poses_energies(int how_many, double
 	return energies;
 }
 
+static void write_net_polar_satisfaction(std::ostream& output, const char* label,
+                                         const net_polar_terms& terms,
+                                         const net_polar_satisfaction_score& score) {
+	output << label << ' ' << terms.direct_credit_area << ' ' << terms.additional_water_credit_area
+	       << ' ' << score.direct_credit << ' ' << score.additional_water_credit
+	       << ' ' << score.dry_delta << ' ' << score.water_delta << '\n';
+}
+
 std::string Vina::vina_remarks(output_type &pose, fl lb, fl ub) {
 	std::ostringstream remark;
 
 	remark.setf(std::ios::fixed, std::ios::floatfield);
 	remark.setf(std::ios::showpoint);
 
-	remark << "REMARK VINA RESULT: "
-		   << std::setw(9) << std::setprecision(3) << pose.e
-		   << "  " << std::setw(9) << std::setprecision(3) << lb
-		   << "  " << std::setw(9) << std::setprecision(3) << ub
-		   << '\n';
+	if (pose.net_polar_score) {
+		const auto& score = *pose.net_polar_score;
+		remark << "REMARK VINA RESULT: " << std::setw(9) << std::setprecision(3) << pose.e
+		       << "  " << std::setw(9) << lb << "  " << std::setw(9) << ub << '\n';
+		remark << std::defaultfloat << std::noshowpoint
+		       << std::setprecision(std::numeric_limits<fl>::max_digits10);
+		remark << "REMARK VINA NATIVE: " << pose.e << ' ' << pose.native_rank << '\n';
+		remark << "REMARK VINA NET POLAR RESULT: " << score.rank_score << ' ' << lb << ' ' << ub << '\n';
+		remark << "REMARK VINA NET POLAR TERMS: " << score.terms.native_hbond << ' '
+		       << score.terms.directed_hbond << ' ' << score.terms.direction_delta << ' '
+		       << score.terms.buried_area << ' ' << score.terms.water_area << '\n';
+		remark << "REMARK VINA NET POLAR DELTAS:";
+		for (const fl delta : score.deltas)
+			remark << ' ' << delta;
+		remark << '\n' << "REMARK VINA NET POLAR MODE: " << net_polar_name() << '\n';
+		remark << "REMARK VINA NET POLAR WATER POINTS: " << m_net_polar_waters.size() << '\n';
+		if (score.satisfaction)
+			write_net_polar_satisfaction(remark, "REMARK VINA NET POLAR SATISFACTION:",
+			                             score.terms, *score.satisfaction);
+		remark << std::fixed << std::showpoint;
+	} else if (pose.polar_burial >= 0) {
+		remark << "REMARK VINA RESULT: " << std::setw(9) << std::setprecision(3) << pose.e
+		       << "  " << std::setw(9) << lb << "  " << std::setw(9) << ub << '\n';
+		remark << std::defaultfloat << std::noshowpoint
+		       << std::setprecision(std::numeric_limits<fl>::max_digits10);
+		remark << "REMARK VINA NATIVE: " << pose.e << ' ' << pose.native_rank << '\n';
+		remark << "REMARK VINA POLAR BURIAL NATIVE RANK: " << pose.native_rank << '\n';
+		remark << "REMARK VINA POLAR BURIAL RESULT: " << pose.polar_burial_rank_score
+		       << ' ' << lb << ' ' << ub << '\n';
+		remark << "REMARK VINA POLAR BURIAL TERMS: " << pose.polar_burial << ' '
+		       << pose.polar_geometry_defect << ' ' << pose.polar_uncompensated << '\n';
+		remark << "REMARK VINA POLAR BURIAL DELTAS:";
+		for (const fl delta : pose.polar_burial_deltas)
+			remark << ' ' << delta;
+		remark << '\n' << "REMARK VINA POLAR BURIAL MODE: " << polar_burial_name() << '\n';
+		remark << std::fixed << std::showpoint;
+	} else if (pose.archive_votes >= 0) {
+		remark << std::defaultfloat << std::noshowpoint
+		       << std::setprecision(std::numeric_limits<fl>::max_digits10);
+		remark << "REMARK VINA ARCHIVE RESULT: " << pose.e << ' ' << lb << ' ' << ub << '\n';
+		remark << "REMARK VINA NATIVE: " << pose.e << ' ' << pose.native_rank << '\n';
+		remark << "REMARK VINA ARCHIVE SUPPORT: " << pose.archive_votes << ' ' << pose.archive_eligible
+		       << ' ' << (m_trajectory_archive == archive_mode::support) << '\n';
+		remark << "REMARK VINA ARCHIVE SOURCE: " << (pose.archive_from_accepted ? "accepted" : "historical") << '\n';
+		remark << "REMARK VINA ARCHIVE MODE: " << trajectory_archive_name() << '\n';
+		remark << std::fixed << std::showpoint;
+	} else if (pose.polar_radial >= 0) {
+		remark << std::defaultfloat << std::noshowpoint
+		       << std::setprecision(std::numeric_limits<fl>::max_digits10);
+		remark << "REMARK VINA POLAR RESULT: " << polar_rank_score(pose) << ' ' << lb << ' ' << ub << '\n';
+		remark << "REMARK VINA NATIVE: " << pose.e << ' ' << pose.native_rank << '\n';
+		remark << "REMARK VINA POLAR SCORES: " << pose.polar_distance_score << ' ' << pose.polar_directional_score << '\n';
+		remark << "REMARK VINA POLAR TERMS: " << pose.polar_radial << ' ' << pose.polar_angular << '\n';
+		remark << "REMARK VINA POLAR MODE: " << polar_geometry_name() << '\n';
+		remark << std::fixed << std::showpoint;
+	} else if (pose.template_overlap >= 0) {
+		remark << std::defaultfloat << std::noshowpoint
+		       << std::setprecision(std::numeric_limits<double>::max_digits10);
+		remark << "REMARK VINA TEMPLATE RESULT: " << pose.template_rank_score << ' ' << lb << ' ' << ub << '\n';
+		remark << "REMARK VINA NATIVE: " << pose.e << ' ' << pose.native_rank << '\n';
+		remark << "REMARK VINA TEMPLATE OVERLAP: " << pose.template_overlap << '\n';
+		remark << "REMARK VINA TEMPLATE STAGE: " << pose_template_stage_name() << '\n';
+		remark << std::fixed << std::showpoint;
+	} else {
+		remark << (pose.native_rank ? "REMARK VINA PRO RESULT: " : "REMARK VINA RESULT: ")
+		       << std::setw(9) << std::setprecision(3) << pose.e
+		       << "  " << std::setw(9) << std::setprecision(3) << lb
+		       << "  " << std::setw(9) << std::setprecision(3) << ub << '\n';
+		if (pose.native_rank) {
+			remark << "REMARK VINA NATIVE: " << pose.native_energy << "  " << pose.native_rank << '\n';
+			remark << "REMARK VINA PRO GAUSS2 SCALE: " << std::defaultfloat << std::noshowpoint
+			       << std::setprecision(std::numeric_limits<double>::max_digits10) << m_rerank_gauss2_scale << '\n';
+			remark << std::fixed << std::showpoint;
+		}
+	}
 
 	remark << "REMARK INTER + INTRA:    " << std::setw(12) << std::setprecision(3) << pose.total << "\n";
 	remark << "REMARK INTER:            " << std::setw(12) << std::setprecision(3) << pose.inter << "\n";
@@ -570,6 +718,29 @@ std::string Vina::vina_remarks(output_type &pose, fl lb, fl ub) {
 	remark << "REMARK UNBOUND:          " << std::setw(12) << std::setprecision(3) << pose.unbound << "\n";
 
 	return remark.str();
+}
+
+static bool is_vina_score_remark(const std::string& line) {
+	// A ligand split from a previous docking output retains these diagnostic rows.
+	for (const char* prefix : {"REMARK VINA RESULT:", "REMARK VINA PRO RESULT:", "REMARK VINA NATIVE:",
+	                          "REMARK VINA PRO GAUSS2 SCALE:", "REMARK VINA TEMPLATE RESULT:",
+	                          "REMARK VINA TEMPLATE STAGE:", "REMARK VINA TEMPLATE OVERLAP:",
+	                          "REMARK VINA POLAR RESULT:", "REMARK VINA POLAR SCORES:",
+	                          "REMARK VINA POLAR TERMS:", "REMARK VINA POLAR MODE:",
+	                          "REMARK VINA POLAR BURIAL RESULT:", "REMARK VINA POLAR BURIAL TERMS:",
+	                          "REMARK VINA POLAR BURIAL DELTAS:", "REMARK VINA POLAR BURIAL MODE:",
+	                          "REMARK VINA POLAR BURIAL NATIVE RANK:",
+	                          "REMARK VINA NET POLAR RESULT:", "REMARK VINA NET POLAR TERMS:",
+	                          "REMARK VINA NET POLAR DELTAS:", "REMARK VINA NET POLAR MODE:",
+	                          "REMARK VINA NET POLAR WATER POINTS:", "REMARK VINA NET POLAR SATISFACTION:",
+	                          "REMARK VINA ARCHIVE RESULT:", "REMARK VINA ARCHIVE SUPPORT:",
+	                          "REMARK VINA ARCHIVE SOURCE:", "REMARK VINA ARCHIVE MODE:",
+	                          "REMARK INTER + INTRA:", "REMARK INTER:",
+	                          "REMARK INTRA:", "REMARK CONF_INDEPENDENT:", "REMARK UNBOUND:"}) {
+		if (boost::starts_with(line, prefix))
+			return true;
+	}
+	return false;
 }
 
 std::string Vina::get_poses(int how_many, double energy_range) {
@@ -588,7 +759,10 @@ std::string Vina::get_poses(int how_many, double energy_range) {
 
 	if (!m_poses.empty()) {
 		// Get energy from the best conf
-		best_energy = m_poses[0].e;
+		best_energy = output_energy_reference();
+		const bool range_excludes_first = uses_native_energy_window(m_poses[0]) &&
+		                                 m_poses[0].e > best_energy + energy_range;
+		boost::optional<model> range_reference;
 
 		VINA_FOR_IN(i, m_poses) {
 			/* Stop if:
@@ -596,16 +770,30 @@ std::string Vina::get_poses(int how_many, double energy_range) {
 				- If there is no conf to write
 				- The energy of the current conf is superior than best_energy + energy_range
 			*/
-			if (n >= how_many || !not_max(m_poses[i].e) || m_poses[i].e > best_energy + energy_range)
+			if (n >= how_many)
 				break; // check energy_range sanity FIXME
+			if (!not_max(m_poses[i].e) || m_poses[i].e > best_energy + energy_range) {
+				if (!uses_native_energy_window(m_poses[i]))
+					break;
+				continue;
+			}
 
 			// Push the current pose to model
 			m_model.set(m_poses[i].c);
 
 			// Write conf
-			remarks = vina_remarks(m_poses[i], m_poses[i].lb, m_poses[i].ub);
+			fl lb = m_poses[i].lb;
+			fl ub = m_poses[i].ub;
+			if (range_excludes_first) {
+				if (!range_reference)
+					range_reference = m_model;
+				lb = m_model.rmsd_lower_bound(*range_reference);
+				ub = m_model.rmsd_upper_bound(*range_reference);
+			}
+			remarks = vina_remarks(m_poses[i], lb, ub);
 			// Write into the final buffer without a separate string per model.
-			m_model.write_model(out, n + 1, remarks);
+			const bool clean_score_remarks = m_poses[i].native_rank || m_late_pose_selection || m_armijo_refinement;
+			m_model.write_model(out, n + 1, remarks, clean_score_remarks ? is_vina_score_remark : nullptr);
 
 			n++;
 		}
@@ -703,6 +891,12 @@ void Vina::show_score(const std::vector<double> energies) {
 	}
 }
 
+const igrid& Vina::vina_receptor_interactions() const {
+	if (m_use_explicit_receptor)
+		return m_non_cache;
+	return m_grid;
+}
+
 std::vector<double> Vina::score(double intramolecular_energy) {
 	// Score the current conf in the model
 	double total = 0;
@@ -719,17 +913,12 @@ std::vector<double> Vina::score(double intramolecular_energy) {
 	std::vector<double> energies;
 
 	if (m_sf_choice == SF_VINA || m_sf_choice == SF_VINARDO) {
+		const igrid& receptor = vina_receptor_interactions();
 		// Inter
-		if (m_no_refine || !m_receptor_initialized)
-			all_grids = m_grid.eval(m_model, authentic_v[1]); // [1] ligand & flex -- grid
-		else
-			all_grids = m_non_cache.eval(m_model, authentic_v[1]); // [1] ligand & flex -- grid
+		all_grids = receptor.eval(m_model, authentic_v[1]); // [1] ligand & flex -- receptor
 		inter_pairs = m_model.eval_inter(m_precalculated_byatom, authentic_v); // [1] ligand -- flex
 		// Intra
-		if (m_no_refine || !m_receptor_initialized)
-			flex_grids = m_grid.eval_intra(m_model, authentic_v[1]); // [1] flex -- grid
-		else
-			flex_grids = m_non_cache.eval_intra(m_model, authentic_v[1]); // [1] flex -- grid
+		flex_grids = receptor.eval_intra(m_model, authentic_v[1]); // [1] flex -- receptor
 		intra_pairs = m_model.evalo(m_precalculated_byatom, authentic_v); // [1] flex_i -- flex_i and flex_i -- flex_j
 		lig_grids = all_grids - flex_grids;
 		inter = lig_grids + inter_pairs;
@@ -788,7 +977,7 @@ std::vector<double> Vina::score() {
 	const vec authentic_v(1000, 1000, 1000);
 
 	if(m_sf_choice == SF_VINA || m_sf_choice == SF_VINARDO) {
-		intramolecular_energy = m_model.eval_intramolecular(m_precalculated_byatom, m_grid, authentic_v);
+		intramolecular_energy = m_model.eval_intramolecular(m_precalculated_byatom, vina_receptor_interactions(), authentic_v);
 	}
 
 	std::vector<double> energies = score(intramolecular_energy);
@@ -799,7 +988,6 @@ std::vector<double> Vina::optimize(output_type& out, int max_steps) {
 	// Local optimization of the ligand conf
 	change g(m_model.get_size());
 	quasi_newton quasi_newton_par;
-	const fl slope = 1e6;
 	const vec authentic_v(1000, 1000, 1000);
 	std::vector<double> energies_before_opt;
 	std::vector<double> energies_after_opt;
@@ -823,7 +1011,7 @@ std::vector<double> Vina::optimize(output_type& out, int max_steps) {
 	// Try 5 five times to optimize locally the conformation
 	VINA_FOR(p, 5) {
 		if (m_sf_choice == SF_VINA || m_sf_choice == SF_VINARDO) {
-			quasi_newton_par(m_model, m_precalculated_byatom, m_grid,    out, g, authentic_v, evalcount);
+			quasi_newton_par(m_model, m_precalculated_byatom, vina_receptor_interactions(), out, g, authentic_v, evalcount);
 			// Break if we succeed to bring (back) the ligand within the grid
 			if (m_grid.is_in_grid(m_model))
 				break;
@@ -878,7 +1066,441 @@ output_container Vina::remove_redundant(const output_container &in, fl min_rmsd)
 	return tmp;
 }
 
-void Vina::global_search(const int exhaustiveness, const int n_poses, const double min_rmsd, const int max_evals) {
+void Vina::rerank_poses(output_container& poses, const vec& authentic_v) {
+	const precalculate_byatom ligand_scores(*m_rerank_scoring_function, m_model);
+	VINA_FOR_IN(i, poses) {
+		output_type& pose = poses[i];
+		pose.native_energy = pose.e;
+		pose.native_rank = i + 1;
+		m_model.set(pose.c);
+		pose.inter = m_non_cache.eval(m_model, authentic_v[1], m_rerank_precalculated_sf);
+		pose.intra = m_model.evali(ligand_scores, authentic_v);
+		pose.total = pose.inter + pose.intra;
+	}
+
+	// Apply Vina's common unbound-energy convention to the new scoring function:
+	// every candidate subtracts the internal energy of the lowest-total-energy pose.
+	const fl unbound = std::min_element(poses.begin(), poses.end(), [](const output_type& a, const output_type& b) {
+		return a.total < b.total;
+	})->intra;
+	for (output_type& pose : poses) {
+		const fl corrected = pose.total - unbound;
+		pose.e = m_rerank_scoring_function->conf_independent(m_model, corrected);
+		pose.conf_independent = pose.e - corrected;
+		pose.unbound = unbound;
+	}
+	poses.sort([](const output_type& a, const output_type& b) {
+		return a.e == b.e ? a.native_rank < b.native_rank : a.e < b.e;
+	});
+}
+
+void Vina::set_late_pose_selection(bool enabled) {
+	if (enabled && (m_sf_choice != SF_VINA || m_no_refine))
+		throw vina_runtime_error("late pose selection requires Vina scoring with explicit receptor refinement");
+	if (enabled != m_late_pose_selection && m_map_initialized)
+		throw vina_runtime_error("set late pose selection before initializing search maps");
+	m_late_pose_selection = enabled;
+}
+
+void Vina::set_armijo_refinement(bool enabled) {
+	if (enabled && (m_sf_choice != SF_VINA || m_no_refine))
+		throw vina_runtime_error("Armijo refinement requires Vina scoring with explicit receptor refinement");
+	if (enabled != m_armijo_refinement && m_map_initialized)
+		throw vina_runtime_error("set Armijo refinement before initializing search maps");
+	m_armijo_refinement = enabled;
+}
+
+void Vina::set_rigid_reorientation(bool mixed, bool centered) {
+	if ((mixed || centered) && (m_sf_choice != SF_VINA || m_no_refine))
+		throw vina_runtime_error("rigid_reorientation requires Vina scoring with explicit receptor refinement");
+	m_mixed_reorientation = mixed;
+	m_centered_rotation = centered;
+}
+
+void Vina::set_separate_hunt_chain(bool enabled) {
+	if (enabled && (m_sf_choice != SF_VINA || m_no_refine))
+		throw vina_runtime_error("separate_hunt_chain requires Vina scoring with explicit receptor refinement");
+	m_separate_hunt_chain = enabled;
+}
+
+void Vina::set_pocket_start_radius(double radius) {
+	if (!std::isfinite(radius) || radius <= 0)
+		throw vina_runtime_error("pocket_start_radius must be finite and positive");
+	if (m_sf_choice == SF_AD42)
+		throw vina_runtime_error("pocket_start_radius requires Vina or Vinardo scoring");
+	m_pocket_start_radius = radius;
+}
+
+void Vina::set_pose_template(const std::string& filename, const std::string& stage) {
+	if (m_map_initialized)
+		throw vina_runtime_error("set pose_template before initializing search maps");
+	if (filename.empty())
+		throw vina_runtime_error("pose_template must name a heavy-atom coordinate file");
+	if (stage == "rank")
+		m_template_stage = template_stage::rank;
+	else if (stage == "select")
+		m_template_stage = template_stage::select;
+	else if (stage == "refine")
+		m_template_stage = template_stage::refine;
+	else
+		throw vina_runtime_error("template_stage must be rank, select or refine");
+	m_pose_template_path = filename;
+}
+
+void Vina::set_polar_geometry(const std::string& mode) {
+	if (m_map_initialized)
+		throw vina_runtime_error("set polar_geometry before initializing search maps");
+	if (mode == "distance")
+		m_polar_geometry = polar_mode::distance;
+	else if (mode == "directional")
+		m_polar_geometry = polar_mode::directional;
+	else if (mode == "penalty")
+		m_polar_geometry = polar_mode::penalty;
+	else
+		throw vina_runtime_error("polar_geometry must be distance, directional or penalty");
+}
+
+void Vina::set_polar_burial(const std::string& mode) {
+	if (m_map_initialized)
+		throw vina_runtime_error("set polar_burial before initializing search maps");
+	if (mode == "burial")
+		m_polar_burial = burial_mode::burial;
+	else if (mode == "geometry")
+		m_polar_burial = burial_mode::geometry;
+	else if (mode == "compensated")
+		m_polar_burial = burial_mode::compensated;
+	else
+		throw vina_runtime_error("polar_burial must be burial, geometry or compensated");
+}
+
+const char* Vina::polar_burial_name() const {
+	switch (m_polar_burial) {
+		case burial_mode::burial: return "burial";
+		case burial_mode::geometry: return "geometry";
+		case burial_mode::compensated: return "compensated";
+		case burial_mode::off: return "";
+	}
+	return "";
+}
+
+bool Vina::supports_polar_burial() const {
+	return m_sf_choice == SF_VINA && !m_no_refine && m_receptor_initialized &&
+	       m_model.num_ligands() == 1 && m_model.num_flex() == 0 &&
+	       m_rerank_gauss2_scale == 1 && !m_armijo_refinement && m_pose_template_path.empty() &&
+	       m_polar_geometry == polar_mode::off && m_trajectory_archive == archive_mode::off;
+}
+
+std::array<fl, 3> Vina::polar_burial_deltas(fl burial, fl geometry, fl uncompensated) const {
+	// Standard Vina's only conformation-independent transform divides energy
+	// by a positive torsional normalization fixed for the ligand.
+	constexpr fl strength = 0.6;
+	const fl normalization = m_scoring_function->conf_independent(m_model, strength);
+	return {{normalization * burial, normalization * geometry, normalization * uncompensated}};
+}
+
+non_cache Vina::fixed_pose_receptor(const precalculate& scores) {
+	const auto box = grid_dimensions_from_ligand(1);
+	grid_dims dimensions;
+	VINA_FOR_IN(i, dimensions) {
+		dimensions[i].begin = box[i] - box[i + 3] / 2;
+		dimensions[i].end = box[i] + box[i + 3] / 2;
+		dimensions[i].n_voxels = 1;
+	}
+	szv_grid index(m_model, szv_grid_dims(dimensions), scores.cutoff_sqr());
+	return non_cache(std::move(index), dimensions, &scores, 0);
+}
+
+void Vina::show_polar_burial() {
+	if (!supports_polar_burial())
+		throw vina_runtime_error("polar_burial score_only requires Vina with one ligand and an explicit rigid receptor");
+	const polar_geometry geometry(m_model);
+	const auto terms = geometry.evaluate_burial(m_model);
+	const auto deltas = polar_burial_deltas(terms.burial, terms.geometry, terms.uncompensated);
+
+	// Reuse the native explicit scorer with an index enclosing the supplied
+	// pose. This gives the rigid inter and intra terms without map population
+	// or box penalties. Use a zero common unbound reference for diagnostics.
+	const precalculate native(*m_scoring_function);
+	const non_cache receptor = fixed_pose_receptor(native);
+	const vec authentic_v(1000, 1000, 1000);
+	const fl inter = receptor.eval(m_model, authentic_v[1]);
+	const fl intra = m_model.evali(m_precalculated_byatom, authentic_v);
+	const fl native_zero = m_scoring_function->conf_independent(m_model, inter + intra);
+
+	std::ostringstream report;
+	report << std::fixed << std::setprecision(12)
+	       << "Polar burial terms: " << terms.burial << ' ' << terms.geometry << ' ' << terms.uncompensated << '\n'
+	       << "Polar burial deltas: " << deltas[0] << ' ' << deltas[1] << ' ' << deltas[2] << '\n'
+	       << "Polar burial native: " << inter << ' ' << intra << ' ' << native_zero << '\n';
+	std::cout << report.str();
+}
+
+void Vina::rank_polar_burial_poses(output_container& poses) {
+	const polar_geometry geometry(m_model);
+	const sz mode = static_cast<sz>(m_polar_burial) - 1;
+	VINA_FOR_IN(i, poses) {
+		output_type& pose = poses[i];
+		m_model.set(pose.c);
+		const auto terms = geometry.evaluate_burial(m_model);
+		pose.native_rank = i + 1;
+		pose.polar_burial = terms.burial;
+		pose.polar_geometry_defect = terms.geometry;
+		pose.polar_uncompensated = terms.uncompensated;
+		pose.polar_burial_deltas = polar_burial_deltas(terms.burial, terms.geometry, terms.uncompensated);
+		pose.polar_burial_rank_score = pose.e + pose.polar_burial_deltas[mode];
+	}
+	poses.sort([](const output_type& a, const output_type& b) {
+		return a.polar_burial_rank_score == b.polar_burial_rank_score ? a.native_rank < b.native_rank
+		                                                            : a.polar_burial_rank_score < b.polar_burial_rank_score;
+	});
+}
+
+void Vina::set_net_polar(const std::string& mode, const std::string& waters) {
+	if (m_map_initialized)
+		throw vina_runtime_error("set net_polar before initializing search maps");
+	net_polar_mode selection;
+	if (mode == "native")
+		selection = net_polar_mode::native;
+	else if (mode == "direction")
+		selection = net_polar_mode::direction;
+	else if (mode == "burial")
+		selection = net_polar_mode::burial;
+	else if (mode == "combined")
+		selection = net_polar_mode::combined;
+	else if (mode == "water")
+		selection = net_polar_mode::water;
+	else if (mode == "satisfied")
+		selection = net_polar_mode::satisfied;
+	else if (mode == "satisfied_water")
+		selection = net_polar_mode::satisfied_water;
+	else
+		throw vina_runtime_error("net_polar must be native, direction, burial, combined, water, satisfied or satisfied_water");
+
+	vecv water_points;
+	if (!waters.empty()) {
+		std::ifstream input(waters);
+		if (!input)
+			throw vina_runtime_error("cannot open net_polar_waters file: " + waters);
+		std::string line;
+		sz line_number = 0;
+		while (std::getline(input, line)) {
+			++line_number;
+			std::istringstream record(line.substr(0, line.find('#')));
+			record >> std::ws;
+			if (record.eof())
+				continue;
+			vec point;
+			std::string extra;
+			if (!(record >> point[0] >> point[1] >> point[2]) || record >> extra ||
+			    !std::isfinite(point[0]) || !std::isfinite(point[1]) || !std::isfinite(point[2]))
+				throw vina_runtime_error("net_polar_waters expects three finite coordinates on line " +
+				                         std::to_string(line_number));
+			water_points.push_back(point);
+		}
+		if (input.bad() || water_points.empty())
+			throw vina_runtime_error("net_polar_waters requires a readable file with at least one aligned water oxygen");
+	}
+	if ((selection == net_polar_mode::water || selection == net_polar_mode::satisfied_water) && water_points.empty())
+		throw vina_runtime_error("net_polar " + mode + " requires net_polar_waters from independent aligned structural evidence");
+	m_net_polar_waters = std::move(water_points);
+	m_net_polar = selection;
+}
+
+const char* Vina::net_polar_name() const {
+	switch (m_net_polar) {
+		case net_polar_mode::native: return "native";
+		case net_polar_mode::direction: return "direction";
+		case net_polar_mode::burial: return "burial";
+		case net_polar_mode::combined: return "combined";
+		case net_polar_mode::water: return "water";
+		case net_polar_mode::satisfied: return "satisfied";
+		case net_polar_mode::satisfied_water: return "satisfied_water";
+		case net_polar_mode::off: return "";
+	}
+	return "";
+}
+
+bool Vina::uses_net_polar_satisfaction() const {
+	return m_net_polar == net_polar_mode::satisfied || m_net_polar == net_polar_mode::satisfied_water;
+}
+
+std::array<fl, 4> Vina::net_polar_deltas(const net_polar_terms& terms, fl normalization) const {
+	const fl direction = terms.direction_delta * normalization;
+	const fl burial = net_polar::area_cost() * terms.buried_area * normalization;
+	const fl water_credit = net_polar::area_cost() * terms.water_area * normalization;
+	return {{direction, burial, direction + burial, direction + burial - water_credit}};
+}
+
+static net_polar_satisfaction_score satisfaction_score(const net_polar_terms& terms, fl normalization,
+                                                       fl direction) {
+	const fl area_cost = net_polar::area_cost() * normalization;
+	const fl dry_area = terms.buried_area - terms.direct_credit_area;
+	// Roundoff in the summed credits must not turn a residual cost into a reward.
+	const fl wet_area = std::max(fl(0), dry_area - terms.additional_water_credit_area);
+	return {area_cost * terms.direct_credit_area, area_cost * terms.additional_water_credit_area,
+	        direction + area_cost * dry_area, direction + area_cost * wet_area};
+}
+
+void Vina::show_net_polar() {
+	if (!supports_polar_burial() || m_polar_burial != burial_mode::off)
+		throw vina_runtime_error("net_polar score_only requires Vina with one ligand and an explicit rigid receptor");
+	const precalculate native(*m_scoring_function);
+	const non_cache receptor = fixed_pose_receptor(native);
+	const vec authentic_v(1000, 1000, 1000);
+	const net_polar polar(m_model, m_net_polar_waters);
+	net_polar_terms terms;
+	const fl inter = receptor.directional_eval(m_model, authentic_v[1], *m_scoring_function, polar, terms);
+	const fl intra = m_model.evali(m_precalculated_byatom, authentic_v);
+	const fl native_zero = m_scoring_function->conf_independent(m_model, inter + intra);
+	const fl normalization = m_scoring_function->conf_independent(m_model, 1);
+	const bool satisfaction = uses_net_polar_satisfaction();
+	polar.add_surface(m_model, terms, satisfaction);
+	const auto deltas = net_polar_deltas(terms, normalization);
+
+	std::ostringstream report;
+	report << std::fixed << std::setprecision(12)
+	       << "Net polar terms: " << terms.native_hbond << ' ' << terms.directed_hbond << ' '
+	       << terms.direction_delta << ' ' << terms.buried_area << ' ' << terms.water_area << '\n'
+	       << "Net polar deltas: " << deltas[0] << ' ' << deltas[1] << ' ' << deltas[2] << ' ' << deltas[3] << '\n'
+	       << "Net polar native: " << inter << ' ' << intra << ' ' << native_zero << '\n'
+	       << "Net polar normalization: " << normalization << '\n'
+	       << "Net polar water points: " << m_net_polar_waters.size() << '\n';
+	if (satisfaction)
+		write_net_polar_satisfaction(report, "Net polar satisfaction:", terms,
+		                             satisfaction_score(terms, normalization, deltas[0]));
+	std::cout << report.str();
+}
+
+void Vina::rank_net_polar_poses(output_container& poses) {
+	const net_polar polar(m_model, m_net_polar_waters);
+	const fl normalization = m_scoring_function->conf_independent(m_model, 1);
+	const bool native = m_net_polar == net_polar_mode::native;
+	const bool satisfaction = uses_net_polar_satisfaction();
+	VINA_FOR_IN(i, poses) {
+		output_type& pose = poses[i];
+		m_model.set(pose.c);
+		net_polar_terms terms;
+		m_non_cache.directional_eval(m_model, 1000, *m_scoring_function, polar, terms);
+		polar.add_surface(m_model, terms, satisfaction);
+		const auto deltas = net_polar_deltas(terms, normalization);
+		pose.native_rank = i + 1;
+		net_polar_pose_score score{terms, deltas, pose.e, boost::none};
+		if (satisfaction) {
+			score.satisfaction = satisfaction_score(terms, normalization, deltas[0]);
+			score.rank_score += m_net_polar == net_polar_mode::satisfied ?
+			                   score.satisfaction->dry_delta : score.satisfaction->water_delta;
+		} else if (!native) {
+			const auto mode = static_cast<sz>(m_net_polar) - static_cast<sz>(net_polar_mode::direction);
+			score.rank_score += deltas[mode];
+		}
+		pose.net_polar_score = score;
+	}
+	if (!native) {
+		poses.sort([](const output_type& a, const output_type& b) {
+			const fl first = a.net_polar_score->rank_score;
+			const fl second = b.net_polar_score->rank_score;
+			return first == second ? a.native_rank < b.native_rank : first < second;
+		});
+	}
+}
+
+const char* Vina::polar_geometry_name() const {
+	switch (m_polar_geometry) {
+		case polar_mode::distance: return "distance";
+		case polar_mode::directional: return "directional";
+		case polar_mode::penalty: return "penalty";
+		case polar_mode::off: return "";
+	}
+	return "";
+}
+
+void Vina::set_trajectory_archive(const std::string& mode) {
+	if (m_map_initialized)
+		throw vina_runtime_error("set trajectory_archive before initializing search maps");
+	if (mode == "accepted")
+		m_trajectory_archive = archive_mode::accepted;
+	else if (mode == "support")
+		m_trajectory_archive = archive_mode::support;
+	else
+		throw vina_runtime_error("trajectory_archive must be accepted or support");
+}
+
+const char* Vina::trajectory_archive_name() const {
+	return m_trajectory_archive == archive_mode::support ? "support" : "accepted";
+}
+
+fl Vina::polar_rank_score(const output_type& pose) const {
+	switch (m_polar_geometry) {
+		case polar_mode::distance: return pose.polar_distance_score;
+		case polar_mode::directional: return pose.polar_directional_score;
+		case polar_mode::penalty: return pose.polar_penalty_score;
+		case polar_mode::off: return pose.e;
+	}
+	return pose.e;
+}
+
+void Vina::rank_polar_poses(output_container& poses) {
+	const polar_geometry geometry(m_model);
+	const fl zero = m_scoring_function->conf_independent(m_model, 0);
+	bool has_reward = false;
+	VINA_FOR_IN(i, poses) {
+		output_type& pose = poses[i];
+		m_model.set(pose.c);
+		const auto terms = geometry.evaluate(m_model);
+		pose.native_rank = i + 1;
+		pose.polar_radial = terms.radial;
+		pose.polar_angular = terms.angular;
+		pose.polar_distance_score = pose.e - (m_scoring_function->conf_independent(m_model, terms.radial) - zero);
+		pose.polar_directional_score = pose.e - (m_scoring_function->conf_independent(m_model, terms.angular) - zero);
+		if (m_polar_geometry == polar_mode::penalty)
+			pose.polar_penalty_score = pose.e + (m_scoring_function->conf_independent(m_model, terms.radial - terms.angular) - zero);
+		has_reward |= polar_rank_score(pose) != pose.e;
+	}
+	if (has_reward) {
+		poses.sort([this](const output_type& a, const output_type& b) {
+			const fl first = polar_rank_score(a);
+			const fl second = polar_rank_score(b);
+			return first == second ? a.native_rank < b.native_rank : first < second;
+		});
+	}
+}
+
+const char* Vina::pose_template_stage_name() const {
+	switch (m_template_stage) {
+		case template_stage::rank: return "rank";
+		case template_stage::select: return "select";
+		case template_stage::refine: return "refine";
+	}
+	return "";
+}
+
+void Vina::rank_template_poses(output_container& poses, pose_template& reference, sz& rank_evals) {
+	if (m_template_stage == template_stage::refine) {
+		// The retained poses were ordered by the combined refinement score.
+		// Recover their native order before giving each pose its final rank.
+		poses.sort();
+	}
+	const fl transformed_zero = m_scoring_function->conf_independent(m_model, 0);
+	VINA_FOR_IN(i, poses) {
+		output_type& pose = poses[i];
+		pose.native_rank = i + 1;
+		if (pose.template_overlap < 0) {
+			m_model.set(pose.c);
+			pose.template_overlap = m_model.template_overlap(reference);
+			++rank_evals;
+		}
+		const fl reward = m_scoring_function->conf_independent(m_model, pose_template::strength * pose.template_overlap)
+		                - transformed_zero;
+		pose.template_rank_score = pose.e - reward;
+	}
+	poses.sort([](const output_type& a, const output_type& b) {
+		return a.template_rank_score == b.template_rank_score ? a.native_rank < b.native_rank
+		                                                       : a.template_rank_score < b.template_rank_score;
+	});
+}
+
+void Vina::global_search(const int exhaustiveness, const int n_poses, const double min_rmsd, const int max_evals,
+                         boost::optional<int> refine_candidates) {
 	// Vina search (Monte-carlo and local optimization)
 	// Check if ff, box and ligand were initialized
 	if (!m_ligand_initialized) {
@@ -888,6 +1510,73 @@ void Vina::global_search(const int exhaustiveness, const int n_poses, const doub
 	} else if (exhaustiveness < 1) {
 		throw vina_runtime_error("Exhaustiveness must be 1 or greater");
 	}
+	if (m_armijo_refinement && (!m_receptor_initialized || m_model.num_ligands() != 1 || m_model.num_flex() != 0))
+		throw vina_runtime_error("Armijo refinement requires one ligand and a rigid receptor");
+	if ((m_mixed_reorientation || m_centered_rotation) &&
+	    (!m_use_explicit_receptor || m_model.num_ligands() != 1 || m_model.num_flex() != 0))
+		throw vina_runtime_error("rigid_reorientation requires one ligand and a rigid explicit receptor");
+	if (m_separate_hunt_chain && (!m_use_explicit_receptor || m_model.num_ligands() != 1 || m_model.num_flex() != 0))
+		throw vina_runtime_error("separate_hunt_chain requires one ligand and a rigid explicit receptor");
+	if (m_pocket_start_radius > 0) {
+		if (!m_receptor_initialized || m_model.num_ligands() != 1 || m_model.num_flex() != 0)
+			throw vina_runtime_error("pocket_start_radius requires one ligand and a rigid receptor");
+		const vec width = m_grid.corner2() - m_grid.corner1();
+		if (m_pocket_start_radius > 0.5 * std::min({width[0], width[1], width[2]}))
+			throw vina_runtime_error("pocket_start_radius exceeds the smallest search-box half-width");
+	}
+	const bool late_selection = m_late_pose_selection;
+	if (m_use_min_rmsd_for_merge &&
+	    (late_selection || m_sf_choice != SF_VINA || !m_use_explicit_receptor ||
+	     m_model.num_ligands() != 1 || m_model.num_flex() != 0 ||
+	     !std::isfinite(min_rmsd) || min_rmsd < 0))
+		throw vina_runtime_error("use_min_rmsd_for_merge requires rigid single-ligand native Vina docking and finite non-negative min_rmsd");
+	if (late_selection && (!m_receptor_initialized || m_model.num_ligands() != 1 || m_model.num_flex() != 0))
+		throw vina_runtime_error("late pose selection requires one ligand and a rigid receptor");
+	if (late_selection && (n_poses <= 0 || !std::isfinite(min_rmsd) || min_rmsd < 0))
+		throw vina_runtime_error("late pose selection requires positive num_modes and finite non-negative min_rmsd");
+	const bool rerank = m_rerank_gauss2_scale != 1.0;
+	if (rerank && (m_model.num_ligands() != 1 || m_model.num_flex() != 0))
+		throw vina_runtime_error("rerank_gauss2_scale below 1 requires one ligand and a rigid receptor");
+	const bool polar_rank = m_polar_geometry != polar_mode::off;
+	const bool burial_rank = m_polar_burial != burial_mode::off;
+	const bool net_polar_rank = m_net_polar != net_polar_mode::off;
+	if (net_polar_rank && (!late_selection || burial_rank || !supports_polar_burial()))
+		throw vina_runtime_error("net_polar requires rigid single-ligand Late Vina docking with native refinement and no other experimental scoring");
+	if (burial_rank && (!late_selection || net_polar_rank || !supports_polar_burial()))
+		throw vina_runtime_error("polar_burial requires rigid single-ligand Late Vina docking with native refinement and no other experimental scoring");
+	if (polar_rank && (!late_selection || rerank || !m_pose_template_path.empty()))
+		throw vina_runtime_error("polar_geometry requires rigid single-ligand Late Vina docking without template or Gaussian rescaling");
+	if (refine_candidates) {
+		if (*refine_candidates <= 0 || *refine_candidates < n_poses)
+			throw vina_runtime_error("refine_candidates must be positive and at least num_modes");
+		if (!late_selection || rerank || m_armijo_refinement || m_sf_choice != SF_VINA || m_no_refine ||
+		    polar_rank || !m_pose_template_path.empty())
+			throw vina_runtime_error("refine_candidates requires Late Vina docking with native refinement and no template, polar geometry, or Gaussian rescaling");
+	}
+	const bool archive_enabled = m_trajectory_archive != archive_mode::off;
+	const bool archive_support = m_trajectory_archive == archive_mode::support;
+	if (archive_enabled) {
+		if (!late_selection || rerank || m_armijo_refinement || m_sf_choice != SF_VINA || m_no_refine ||
+		    polar_rank || !m_pose_template_path.empty())
+			throw vina_runtime_error("trajectory_archive requires rigid single-ligand Late Vina docking with native refinement and no template, polar geometry, or Gaussian rescaling");
+		VINA_FOR(i, m_model.num_atoms()) {
+			const atom a = m_model.get_atom(i);
+			if (a.el == EL_TYPE_Dummy || (a.ad >= AD_TYPE_CG0 && a.ad <= AD_TYPE_CG3))
+				throw vina_runtime_error("trajectory_archive does not support ligand dummy atoms or macrocycle closure types");
+		}
+	}
+	std::unique_ptr<pose_template> template_reference;
+	if (!m_pose_template_path.empty()) {
+		if (!late_selection || rerank || m_armijo_refinement || m_sf_choice != SF_VINA || m_no_refine)
+			throw vina_runtime_error("pose_template requires Late Vina docking with native refinement and no Gaussian rescaling");
+		ifile input(m_pose_template_path);
+		template_reference = std::make_unique<pose_template>(input, m_model.chemical_heavy_atom_elements());
+	}
+	const bool template_selection = template_reference && m_template_stage != template_stage::rank;
+	const bool template_refinement = template_reference && m_template_stage == template_stage::refine;
+	sz template_selection_evals = 0;
+	sz template_refinement_evals = 0;
+	sz template_rank_evals = 0;
 
 	if (exhaustiveness < m_cpu) {
 		std::cerr << "WARNING: At low exhaustiveness, it may be impossible to utilize all CPUs.\n";
@@ -899,6 +1588,12 @@ void Vina::global_search(const int exhaustiveness, const int n_poses, const doub
 	model best_model;
 	boost::optional<model> ref;
 	output_container poses;
+	std::vector<trajectory_archive> archives;
+	std::vector<search_trajectory_counters> trajectory_counters;
+	auto* counters = m_search_counters ? &trajectory_counters : nullptr;
+	sz explicit_inputs = 0;
+	sz explicit_calls = 0;
+	int explicit_evals = 0;
 	std::stringstream sstm;
 	rng generator(static_cast<rng::result_type>(m_seed));
 
@@ -911,31 +1606,67 @@ void Vina::global_search(const int exhaustiveness, const int n_poses, const doub
 	parallelmc.mc.min_rmsd = min_rmsd;
 	parallelmc.mc.num_saved_mins = n_poses;
 	parallelmc.mc.hunt_cap = vec(10, 10, 10);
+	parallelmc.mc.mixed_reorientation = m_mixed_reorientation;
+	parallelmc.mc.separate_hunt_chain = m_separate_hunt_chain;
+	parallelmc.mc.centered_rotation = m_centered_rotation;
 	parallelmc.num_tasks = exhaustiveness;
 	parallelmc.num_threads = m_cpu;
 	parallelmc.display_progress = (m_verbosity > 0);
+	parallelmc.keep_trajectory_minima = late_selection;
+	parallelmc.use_min_rmsd_for_merge = m_use_min_rmsd_for_merge;
+	parallelmc.pocket_start_radius = m_pocket_start_radius;
 
 	// Docking search
 	sstm << "Performing docking (random seed: " << m_seed << ")";
 	doing(sstm.str(), m_verbosity, 0);
 	if (m_sf_choice == SF_VINA || m_sf_choice == SF_VINARDO) {
-		parallelmc(m_model, poses, m_precalculated_byatom,    m_grid, m_grid.corner1(), m_grid.corner2(), generator, m_progress_callback);
+		parallelmc(m_model, poses, m_precalculated_byatom, m_grid, m_grid.corner1(), m_grid.corner2(), generator,
+		           m_progress_callback, archive_enabled ? &archives : nullptr, archive_support, counters);
 	} else {
-		parallelmc(m_model, poses, m_precalculated_byatom, m_ad4grid, m_ad4grid.corner1(), m_ad4grid.corner2(), generator, m_progress_callback);
+		parallelmc(m_model, poses, m_precalculated_byatom, m_ad4grid, m_ad4grid.corner1(), m_ad4grid.corner2(), generator, m_progress_callback, nullptr, false, counters);
 	}
 	done(m_verbosity, 1);
 
 	// Docking post-processing and rescoring
-	poses = remove_redundant(poses, min_rmsd);
+	const sz saved_minima = poses.size();
+	const sz accepted_minima = archive_enabled ? append_accepted_minima(poses, archives) : 0;
+	const sz prescore_inputs = poses.size();
+	if (late_selection) {
+		// Use the saved conformation with chemical atoms only for selection geometry.
+		// Score with native weights and the same box penalty used for final refinement ranking.
+		m_non_cache.slope = 1e6;
+		for (auto& pose : poses) {
+			m_model.set(pose.c);
+			pose.coords = m_model.get_chemical_heavy_atom_movable_coords();
+			pose.e = m_non_cache.eval(m_model, authentic_v[1])
+			       + m_model.evali(m_precalculated_byatom, authentic_v);
+			if (template_selection) {
+				pose.e -= pose_template::strength * m_model.template_overlap(*template_reference);
+				++template_selection_evals;
+			}
+		}
+		const sz refinement_limit = refine_candidates.value_or(n_poses);
+		poses = select_distinct_poses(poses, min_rmsd, refinement_limit);
+	} else {
+		poses = remove_redundant(poses, min_rmsd);
+	}
 
 	if (!poses.empty()) {
 		// For the Vina scoring function, we take the intramolecular energy from the best pose
 		// the order must not change because of non-decreasing g (see paper), but we'll re-sort in case g is non strictly increasing
 		if (m_sf_choice == SF_VINA || m_sf_choice == SF_VINARDO) {
 			// Refine poses if no_refine is false and got receptor
-			if (!m_no_refine & m_receptor_initialized) {
+			if (m_use_explicit_receptor) {
+				const sz refinement_inputs = poses.size();
+				const sz accepted_refinement_inputs = archive_enabled
+					? std::count_if(poses.begin(), poses.end(), [](const output_type& pose) {
+						return pose.archive_from_accepted;
+					})
+					: 0;
+				sz refinement_calls = 0;
 				change g(m_model.get_size());
 				quasi_newton quasi_newton_par;
+				quasi_newton_par.strict_armijo = m_armijo_refinement;
 				//std::vector<double> energies_before_opt;
 				//std::vector<double> energies_after_opt;
 				int evalcount = 0;
@@ -946,11 +1677,14 @@ void Vina::global_search(const int exhaustiveness, const int n_poses, const doub
 				VINA_FOR_IN(i, poses){
 					VINA_FOR(p, 5){
 						m_non_cache.slope = 100 * std::pow(10.0, 2.0*p);
-						quasi_newton_par(m_model, m_precalculated_byatom, m_non_cache, poses[i], g, authentic_v, evalcount);
+						quasi_newton_par(m_model, m_precalculated_byatom, m_non_cache, poses[i], g, authentic_v, evalcount,
+						                 template_refinement ? template_reference.get() : nullptr);
+						++refinement_calls;
 						if(m_non_cache.within(m_model))
 							break;
 					}
-					poses[i].coords = m_model.get_heavy_atom_movable_coords();
+					poses[i].coords = late_selection ? m_model.get_chemical_heavy_atom_movable_coords()
+					                                : m_model.get_heavy_atom_movable_coords();
 					m_non_cache.slope = slope;
 					// rescoring in case a ligand or flex sidechain atom is outside box
 					// ensuring poses will be sorted with the same slope (a.k.a. out of
@@ -961,15 +1695,53 @@ void Vina::global_search(const int exhaustiveness, const int n_poses, const doub
 					double intra_pairs = m_model.evalo(m_precalculated_byatom, authentic_v); // flex_i -- flex_i and flex_i -- flex_j
 					double lig_intra = m_model.evali(m_precalculated_byatom, authentic_v); // ligand_i -- ligand_i
 					poses[i].e = all_grids + inter_pairs + intra_pairs + lig_intra;
+					if (template_refinement) {
+						output_type& pose = poses[i];
+						pose.native_energy = pose.e;
+						pose.template_overlap = m_model.template_overlap(*template_reference);
+						pose.e -= pose_template::strength * pose.template_overlap;
+						++template_rank_evals;
+					}
+				}
+				explicit_inputs = refinement_inputs;
+				explicit_calls = refinement_calls;
+				explicit_evals = evalcount;
+				if (template_refinement)
+					template_refinement_evals = evalcount;
+				if (late_selection) {
+					poses = select_distinct_poses(poses, min_rmsd, n_poses);
+					if (m_verbosity > 0)
+						std::cout << "Late pose selection: saved=" << saved_minima
+						          << " refine=" << refinement_inputs << " refinement_calls=" << refinement_calls
+						          << " retained=" << poses.size() << '\n';
+					if (archive_enabled && m_verbosity > 0) {
+						sz search_evals = 0;
+						sz search_refinements = 0;
+						for (const auto& archive : archives) {
+							search_evals += archive.native_evaluations;
+							search_refinements += archive.native_refinements;
+						}
+						std::cout << "Trajectory archive: mode=" << trajectory_archive_name()
+						          << " trajectories=" << archives.size() << " native=" << saved_minima
+						          << " extra=" << accepted_minima << " prescore=" << prescore_inputs
+						          << " extra_prescore=" << prescore_inputs - saved_minima
+						          << " refine=" << refinement_inputs << " extra_refine=" << accepted_refinement_inputs
+						          << " refinement_calls=" << refinement_calls << " retained=" << poses.size()
+						          << " native_search_evals=" << search_evals
+						          << " native_search_refinements=" << search_refinements << '\n';
+					}
 				}
 			}
 
-			poses.sort(); // order often changes after non_cache refinement
-			m_model.set(poses[0].c);
-			if (m_no_refine || !m_receptor_initialized)
-				intramolecular_energy = m_model.eval_intramolecular(m_precalculated_byatom, m_grid, authentic_v);
-			else
-				intramolecular_energy = m_model.eval_intramolecular(m_precalculated_byatom, m_non_cache, authentic_v);
+			if (!late_selection)
+				poses.sort(); // late selection already stably sorted on refined energy
+			const output_type& native_best = template_refinement
+				? *std::min_element(poses.begin(), poses.end(), [](const output_type& a, const output_type& b) {
+					return a.native_energy < b.native_energy;
+				})
+				: poses[0];
+			m_model.set(native_best.c);
+			intramolecular_energy = m_model.eval_intramolecular(m_precalculated_byatom, vina_receptor_interactions(), authentic_v);
 		}
 
 		VINA_FOR_IN(i, poses) {
@@ -989,7 +1761,7 @@ void Vina::global_search(const int exhaustiveness, const int n_poses, const doub
 			poses[i].unbound = energies[7]; // specific to each scoring function
 
 			if (m_verbosity > 1) {
-				std::cout << "FINAL ENERGY: \n";
+				std::cout << (rerank ? "NATIVE FINAL ENERGY: \n" : "FINAL ENERGY: \n");
 				show_score(energies);
 			}
 		}
@@ -998,6 +1770,56 @@ void Vina::global_search(const int exhaustiveness, const int n_poses, const doub
 		// The order does not change in Vina because unbound is intra of the 1st pose
 		if (m_sf_choice == SF_AD42)
 			poses.sort();
+		if (rerank)
+			rerank_poses(poses, authentic_v);
+		if (polar_rank) {
+			rank_polar_poses(poses);
+			if (m_verbosity > 0)
+				std::cout << "Polar geometry scoring: mode=" << polar_geometry_name() << " poses=" << poses.size() << '\n';
+		}
+		if (burial_rank) {
+			rank_polar_burial_poses(poses);
+			if (m_verbosity > 0)
+				std::cout << "Polar burial scoring: mode=" << polar_burial_name() << " poses=" << poses.size() << '\n';
+		}
+		if (net_polar_rank) {
+			rank_net_polar_poses(poses);
+			if (m_verbosity > 0)
+				std::cout << "Net polar scoring: mode=" << net_polar_name() << " poses=" << poses.size() << '\n';
+		}
+		if (template_reference) {
+			rank_template_poses(poses, *template_reference, template_rank_evals);
+			if (m_verbosity > 0)
+				std::cout << "Template pose scoring: stage=" << pose_template_stage_name()
+				          << " selection_evals=" << template_selection_evals
+				          << " refinement_evals=" << template_refinement_evals
+				          << " rank_evals=" << template_rank_evals << '\n';
+		}
+		if (archive_enabled) {
+			// Late refinement already has stable tie order. Rank the final
+			// reported native energies explicitly at their full precision.
+			VINA_FOR_IN(i, poses)
+				poses[i].native_rank = i + 1;
+			poses.sort([](const output_type& a, const output_type& b) {
+				return a.e == b.e ? a.native_rank < b.native_rank : a.e < b.e;
+			});
+			const fl eligible_energy = poses.front().e + 1.0;
+			VINA_FOR_IN(i, poses) {
+				output_type& pose = poses[i];
+				pose.native_rank = i + 1;
+				pose.archive_eligible = pose.e <= eligible_energy;
+				pose.archive_votes = archive_support ? archived_trajectory_support(pose.coords, archives) : 0;
+			}
+			if (archive_support) {
+				poses.sort([](const output_type& a, const output_type& b) {
+					if (a.archive_eligible != b.archive_eligible)
+						return a.archive_eligible;
+					if (a.archive_eligible && a.archive_votes != b.archive_votes)
+						return a.archive_votes > b.archive_votes;
+					return a.native_rank < b.native_rank;
+				});
+			}
+		}
 
 		// Now compute RMSD from the best model
 		// Necessary to do it in two pass for AD4 scoring function
@@ -1006,8 +1828,15 @@ void Vina::global_search(const int exhaustiveness, const int n_poses, const doub
 
 		if (m_verbosity > 0) {
 			std::cout << '\n';
-			std::cout << "mode |   affinity | dist from best mode\n";
-			std::cout << "     | (kcal/mol) | rmsd l.b.| rmsd u.b.\n";
+			if (rerank)
+				std::cout << "Pose ranking: FastDock Vina Pro\n";
+			if (template_reference || polar_rank || burial_rank || net_polar_rank) {
+				std::cout << "mode | " << (net_polar_rank ? "net polar score" : burial_rank ? "polar burial score" : polar_rank ? "polar score" : "template score") << " | dist from best mode\n";
+				std::cout << "     | (rank score)   | rmsd l.b.| rmsd u.b.\n";
+			} else {
+				std::cout << "mode |   affinity | dist from best mode\n";
+				std::cout << "     | (kcal/mol) | rmsd l.b.| rmsd u.b.\n";
+			}
 			std::cout << "-----+------------+----------+----------\n";
 		}
 
@@ -1020,7 +1849,11 @@ void Vina::global_search(const int exhaustiveness, const int n_poses, const doub
 			poses[i].ub = m_model.rmsd_upper_bound(r);
 
 			if (m_verbosity > 0) {
-				std::cout << std::setw(4) << i + 1 << "    " << std::setw(9) << std::setprecision(4) << poses[i].e;
+				const fl reported_score = net_polar_rank ? poses[i].net_polar_score->rank_score
+				                        : burial_rank ? poses[i].polar_burial_rank_score
+				                        : polar_rank ? polar_rank_score(poses[i])
+				                        : template_reference ? poses[i].template_rank_score : poses[i].e;
+				std::cout << std::setw(4) << i + 1 << "    " << std::setw(9) << std::setprecision(4) << reported_score;
 				std::cout << "  " << std::setw(9) << std::setprecision(4) << poses[i].lb;
 				std::cout << "  " << std::setw(9) << std::setprecision(4) << poses[i].ub << "\n";
 			}
@@ -1031,6 +1864,35 @@ void Vina::global_search(const int exhaustiveness, const int n_poses, const doub
 	} else {
 		std::cerr << "WARNING: Zero poses in output container after global search. This should not be happening and is likely a bug.\n";
 		std::cerr << "WARNING: If possible, please file a bug report with your input files and random seed on GitHub.\n";
+	}
+
+	if (m_search_counters) {
+		if (!late_selection)
+			std::cout << "Native merge: rmsd=" << (m_use_min_rmsd_for_merge ? min_rmsd : 2)
+			          << " candidates=" << saved_minima << '\n';
+		VINA_FOR_IN(i, trajectory_counters) {
+			const auto& counts = trajectory_counters[i];
+			std::cout << "Search trajectory: index=" << i + 1 << " steps=" << counts.hunt_calls
+			          << " hunt_calls=" << counts.hunt_calls << " hunt_evals=" << counts.hunt_evals
+			          << " second_calls=" << counts.second_calls << " second_evals=" << counts.second_evals
+			          << " rigid_reorientations=" << counts.rigid_reorientations << '\n';
+			std::cout << "Hunt chain: index=" << i + 1 << " separate=" << int(m_separate_hunt_chain)
+			          << " accepted=" << counts.accepted_steps
+			          << " mixed_accept_checks=" << counts.mixed_accept_checks << '\n';
+			if (counts.initial_centroid) {
+				const auto& center = *counts.initial_centroid;
+				std::ostringstream line;
+				line << "Pocket start: index=" << i + 1 << " anchored=" << int(counts.pocket_anchored)
+				     << std::fixed << std::setprecision(12)
+				     << " cx=" << center[0] << " cy=" << center[1] << " cz=" << center[2] << '\n';
+				std::cout << line.str();
+			}
+		}
+		const char* reorientation = m_centered_rotation ? "centered" : (m_mixed_reorientation ? "mixed" : "native");
+		std::cout << "Search counters: rigid_reorientation=" << reorientation
+		          << " explicit_inputs=" << explicit_inputs << " explicit_calls=" << explicit_calls
+		          << " explicit_evals=" << explicit_evals << " late_prescore=" << (late_selection ? prescore_inputs : 0)
+		          << '\n';
 	}
 
 	// Store results in Vina object

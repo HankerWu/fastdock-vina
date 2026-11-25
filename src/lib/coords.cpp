@@ -56,3 +56,23 @@ void add_to_output_container(output_container& out, const output_type& t, fl min
 	}
 	out.sort();
 }
+
+output_container select_distinct_poses(const output_container& poses, fl min_rmsd, sz max_size) {
+	std::vector<const output_type*> by_energy;
+	by_energy.reserve(poses.size());
+	for(const auto& pose : poses)
+		by_energy.push_back(&pose);
+	std::stable_sort(by_energy.begin(), by_energy.end(), [](const output_type* a, const output_type* b) {
+		return a->e < b->e;
+	});
+
+	output_container selected;
+	selected.reserve(std::min(max_size, poses.size()));
+	for(const auto* pose : by_energy) {
+		if(selected.size() == max_size)
+			break;
+		if(find_closest(pose->coords, selected).second >= min_rmsd)
+			selected.push_back(new output_type(*pose));
+	}
+	return selected;
+}

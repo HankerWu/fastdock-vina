@@ -31,33 +31,54 @@ sz count_mutable_entities(const conf& c) {
 	return counter;
 }
 
-// does not set model
-void mutate_conf(conf& c, const model& m, fl amplitude, rng& generator) { // ONE OF: 2A for position, similar amp for orientation, randomize torsion
+static void orient_about_centroid(conf& c, model& m, sz ligand, const qt& orientation) {
+	m.set(c);
+	const vec center = m.ligand_heavy_centroid(ligand);
+	auto& rigid = c.ligands[ligand].rigid;
+	rigid.orientation = orientation;
+	m.set(c);
+	rigid.position += center - m.ligand_heavy_centroid(ligand);
+}
+
+bool mutate_conf(conf& c, model& m, fl amplitude, rng& generator, bool mixed_reorientation,
+                 bool use_proposal_geometry, bool centered_rotation) { // ONE OF: 2A for position, similar amp for orientation, randomize torsion
 	sz mutable_entities_num = count_mutable_entities(c);
-	if(mutable_entities_num == 0) return;
+	if(mutable_entities_num == 0) return false;
 	int which_int = random_int(0, int(mutable_entities_num - 1), generator);
 	VINA_CHECK(which_int >= 0);
 	sz which = sz(which_int);
 	VINA_CHECK(which < mutable_entities_num);
 
 	VINA_FOR_IN(i, c.ligands) {
-		if(which == 0) { c.ligands[i].rigid.position += amplitude * random_inside_sphere(generator); return; }
+		if(which == 0) { c.ligands[i].rigid.position += amplitude * random_inside_sphere(generator); return false; }
 		--which;
-		if(which == 0) { 
-			fl gr = m.gyration_radius(i); 
-			if(gr > epsilon_fl) { // FIXME? just doing nothing for 0-radius molecules. do some other mutation?
-				vec rotation; 
-				rotation = amplitude / gr * random_inside_sphere(generator); 
-				quaternion_increment(c.ligands[i].rigid.orientation, rotation);
+		if(which == 0) {
+			if (mixed_reorientation && random_int(0, 3, generator) == 0) {
+				orient_about_centroid(c, m, i, random_orientation(generator));
+				return true;
 			}
-			return; 
+			if (use_proposal_geometry)
+				m.set(c);
+			fl gr = m.gyration_radius(i);
+			if(gr > epsilon_fl) { // FIXME? just doing nothing for 0-radius molecules. do some other mutation?
+				const vec rotation = amplitude / gr * random_inside_sphere(generator);
+				if (centered_rotation) {
+					qt orientation = c.ligands[i].rigid.orientation;
+					quaternion_increment(orientation, rotation);
+					orient_about_centroid(c, m, i, orientation);
+				} else {
+					quaternion_increment(c.ligands[i].rigid.orientation, rotation);
+				}
+			}
+			return false;
 		}
 		--which;
-		if(which < c.ligands[i].torsions.size()) { c.ligands[i].torsions[which] = random_fl(-pi, pi, generator); return; }
+		if(which < c.ligands[i].torsions.size()) { c.ligands[i].torsions[which] = random_fl(-pi, pi, generator); return false; }
 		which -= c.ligands[i].torsions.size();
 	}
 	VINA_FOR_IN(i, c.flex) {
-		if(which < c.flex[i].torsions.size()) { c.flex[i].torsions[which] = random_fl(-pi, pi, generator); return; }
+		if(which < c.flex[i].torsions.size()) { c.flex[i].torsions[which] = random_fl(-pi, pi, generator); return false; }
 		which -= c.flex[i].torsions.size();
 	}
+	return false;
 }

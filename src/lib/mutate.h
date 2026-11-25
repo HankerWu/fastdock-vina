@@ -25,7 +25,9 @@
 
 #include "model.h"
 
-// does not set model
-void mutate_conf(conf& c, const model& m, fl amplitude, rng& generator);
+// Returns true for a global rigid reorientation. The mixed branch sets model
+// coordinates to determine the proposed pivot before subsequent optimization.
+bool mutate_conf(conf& c, model& m, fl amplitude, rng& generator, bool mixed_reorientation,
+                 bool use_proposal_geometry = false, bool centered_rotation = false);
 
 #endif

@@ -120,6 +120,23 @@ Thank you!\n";
 		std::vector<std::string> batch_ligand_names;
 		std::string maps;
 		std::string sf_name = "vina";
+		std::string pose_selection = "native";
+		std::string refinement_optimizer = "native";
+		std::string rigid_reorientation = "native";
+		bool separate_hunt_chain = false;
+		bool use_min_rmsd_for_merge = false;
+		std::string pose_coordinates;
+		std::string ligand_bonds;
+		bool search_counters = false;
+		double pocket_start_radius = 0;
+		std::string pose_template_path;
+		std::string template_stage;
+		std::string polar_geometry;
+		std::string polar_burial;
+		std::string net_polar;
+		std::string net_polar_waters;
+		std::string trajectory_archive;
+		boost::optional<int> refine_candidates;
 		double center_x;
 		double center_y;
 		double center_z;
@@ -149,6 +166,7 @@ Thank you!\n";
 		// vina weights
 		double weight_gauss1      = -0.035579;
 		double weight_gauss2      = -0.005156;
+		double rerank_gauss2_scale = 1.0;
 		double weight_repulsion   =  0.840245;
 		double weight_hydrophobic = -0.035069;
 		double weight_hydrogen    = -0.587439;
@@ -206,14 +224,29 @@ Thank you!\n";
 		options_description advanced("Advanced options (see the manual)");
 		advanced.add_options()
 			("score_only",     bool_switch(&score_only),     "score only - search space can be omitted")
+			("ligand_bonds", value<std::string>(&ligand_bonds),
+			 "trusted complete ligand covalent graph as undirected PDBQT serial pairs")
+			("pose_coordinates", value<std::string>(&pose_coordinates),
+			 "fixed score only: use coordinates from one pose with the topology prepared from --ligand")
 			("local_only",     bool_switch(&local_only),     "do local search only")
 			("unbound_energy", value<double>(&unbound_energy)->default_value(unbound_energy), "Explicitly set the Unbound System's Energy for --score_only jobs")
 			("no_refine", bool_switch(&no_refine),  "when --receptor is provided, do not use explicit receptor atoms (instead of precalculated grids) for: (1) local optimization and scoring after docking, (2) --local_only jobs, and (3) --score_only jobs")
+			("refinement_optimizer", value<std::string>(&refinement_optimizer)->default_value(refinement_optimizer),
+			 "native or strict Armijo BFGS for explicit rigid Vina final refinement")
+			("rigid_reorientation", value<std::string>(&rigid_reorientation)->default_value(rigid_reorientation),
+			 "native, mixed local/global, or centered local rotation for single-ligand rigid Vina docking")
+			("separate_hunt_chain", bool_switch(&separate_hunt_chain),
+			 "keep the Monte Carlo state on the hunt objective and refine only the saved copy")
+			("pocket_start_radius", value<double>(&pocket_start_radius),
+			 "place half the trajectories' initial ligand heavy centroids within this radius (Angstrom) of the search box center")
+			("search_counters", bool_switch(&search_counters),
+			 "print per-trajectory gradient counts and explicit refinement work")
 			("force_even_voxels", bool_switch(&force_even_voxels),  "calculated grid maps will have an even number of voxels (intervals) in each dimension (odd number of grid points)")
 			("randomize_only", bool_switch(&randomize_only), "randomize input, attempting to avoid clashes")
 
 			("weight_gauss1", value<double>(&weight_gauss1)->default_value(weight_gauss1),                "gauss_1 weight")
 			("weight_gauss2", value<double>(&weight_gauss2)->default_value(weight_gauss2),                "gauss_2 weight")
+			("rerank_gauss2_scale", value<double>(&rerank_gauss2_scale)->default_value(rerank_gauss2_scale), "scale gauss_2 for FastDock Vina Pro final pose ranking only (0 to 1; 1 uses normal Vina)")
 			("weight_repulsion", value<double>(&weight_repulsion)->default_value(weight_repulsion),       "repulsion weight")
 			("weight_hydrophobic", value<double>(&weight_hydrophobic)->default_value(weight_hydrophobic), "hydrophobic weight")
 			("weight_hydrogen", value<double>(&weight_hydrogen)->default_value(weight_hydrogen),          "Hydrogen bond weight")
@@ -240,6 +273,26 @@ Thank you!\n";
 			("exhaustiveness", value<int>(&exhaustiveness)->default_value(8), "exhaustiveness of the global search (roughly proportional to time): 1+")
 			("max_evals", value<int>(&max_evals)->default_value(0), "number of evaluations in each MC run (if zero, which is the default, the number of MC steps is based on heuristics)")
 			("num_modes", value<int>(&num_modes)->default_value(9), "maximum number of binding modes to generate")
+			("pose_selection", value<std::string>(&pose_selection)->default_value(pose_selection),
+			 "native search merge or late selection using explicit Vina scores before refinement")
+			("use_min_rmsd_for_merge", bool_switch(&use_min_rmsd_for_merge),
+			 "use min_rmsd for the native cross-trajectory merge instead of 2 Angstrom")
+			("refine_candidates", value<int>(),
+			 "maximum Late candidates sent to explicit refinement (at least num_modes; default num_modes)")
+			("pose_template", value<std::string>(&pose_template_path),
+			 "aligned external template with element, x, y and z columns (Angstrom)")
+			("template_stage", value<std::string>(&template_stage),
+			 "template guidance stage: rank, select or refine")
+			("polar_geometry", value<std::string>(&polar_geometry),
+			 "final Late Vina ranking by polar distance, directional geometry or angular penalty (default off)")
+			("polar_burial", value<std::string>(&polar_burial),
+			 "final Late Vina ranking by burial, geometry or compensated penalty, or fixed coordinates with score_only (default off)")
+			("net_polar", value<std::string>(&net_polar),
+			 "final Late Vina ranking or fixed-coordinate diagnostics (native|direction|burial|combined|water|satisfied|satisfied_water; default off)")
+			("net_polar_waters", value<std::string>(&net_polar_waters),
+			 "independent aligned water oxygens, one x y z row per water (Angstrom)")
+			("trajectory_archive", value<std::string>(&trajectory_archive),
+			 "add accepted Monte Carlo minima to Late Vina, ranked by native score or trajectory support (accepted|support, default off)")
 			("min_rmsd", value<double>(&min_rmsd)->default_value(1.0), "minimum RMSD between output poses")
 			("energy_range", value<double>(&energy_range)->default_value(3.0), "maximum energy difference between the best binding mode and the worst one displayed (kcal/mol)")
 			("spacing", value<double>(&grid_spacing)->default_value(0.375), "grid spacing (Angstrom)")
@@ -306,6 +359,89 @@ Thank you!\n";
 
 		if (verbosity > 0) {
 			std::cout << cite_message << '\n';
+		}
+
+		const bool regular_rigid_vina = sf_name == "vina" && !rigid_name.empty() &&
+		    !vm.count("flex") && !vm.count("maps") && !vm.count("write_maps") &&
+		    ligand_names.size() <= 1 && !no_refine && !score_only && !local_only &&
+		    !randomize_only && !autobox && vm["unbound_energy"].defaulted();
+		if (rerank_gauss2_scale >= 0 && rerank_gauss2_scale < 1 && !regular_rigid_vina)
+			throw usage_error("rerank_gauss2_scale below 1 requires regular Vina docking with a rigid receptor, one ligand per run, and explicit receptor refinement");
+
+		if (pose_selection != "native" && pose_selection != "late")
+			throw usage_error("pose_selection must be native or late");
+		if (pose_selection == "late" && !regular_rigid_vina)
+			throw usage_error("late pose selection requires regular Vina docking with a rigid receptor, one ligand per search, and explicit receptor refinement");
+		if (use_min_rmsd_for_merge && (!regular_rigid_vina || pose_selection != "native" ||
+		    !std::isfinite(min_rmsd) || min_rmsd < 0))
+			throw usage_error("use_min_rmsd_for_merge requires rigid single-ligand native Vina docking and finite non-negative min_rmsd");
+		if (rigid_reorientation != "native" && rigid_reorientation != "mixed" && rigid_reorientation != "centered")
+			throw usage_error("rigid_reorientation must be native, mixed or centered");
+		if (rigid_reorientation != "native" && !regular_rigid_vina)
+			throw usage_error("rigid_reorientation requires regular Vina docking with a rigid receptor, one ligand per search, and explicit receptor refinement");
+		if (separate_hunt_chain && !regular_rigid_vina)
+			throw usage_error("separate_hunt_chain requires regular Vina docking with a rigid receptor, one ligand per search, and explicit receptor refinement");
+		if (vm.count("pocket_start_radius")) {
+			if (!std::isfinite(pocket_start_radius) || pocket_start_radius <= 0)
+				throw usage_error("pocket_start_radius must be finite and positive");
+			if (score_only || local_only || randomize_only || ligand_names.size() != 1 ||
+			    rigid_name.empty() || vm.count("batch") || vm.count("flex") || vm.count("maps") ||
+			    vm.count("write_maps") || (sf_name != "vina" && sf_name != "vinardo"))
+				throw usage_error("pocket_start_radius requires global Vina or Vinardo docking with one ligand and a rigid receptor");
+		}
+		if (search_counters && (randomize_only || score_only || local_only))
+			throw usage_error("search_counters requires global docking");
+		if (refinement_optimizer != "native" && refinement_optimizer != "armijo")
+			throw usage_error("refinement_optimizer must be native or armijo");
+		if (refinement_optimizer == "armijo" && !regular_rigid_vina)
+			throw usage_error("Armijo refinement requires regular Vina docking with a rigid receptor, one ligand per search, and explicit receptor refinement");
+		if (vm.count("pose_template") != vm.count("template_stage"))
+			throw usage_error("Specify pose_template and template_stage together");
+		if (vm.count("pose_template") && (!regular_rigid_vina || ligand_names.size() != 1 || vm.count("batch") ||
+		    pose_selection != "late" || rerank_gauss2_scale != 1 || refinement_optimizer != "native"))
+			throw usage_error("pose_template requires Late Vina docking with one rigid receptor, one ligand, native refinement, and no Gaussian rescaling");
+		if (vm.count("polar_geometry") && (!regular_rigid_vina || ligand_names.size() != 1 || vm.count("batch") ||
+		    pose_selection != "late" || rerank_gauss2_scale != 1 || vm.count("pose_template")))
+			throw usage_error("polar_geometry requires rigid single-ligand Late Vina docking without template or Gaussian rescaling");
+		if (vm.count("ligand_bonds") &&
+		    (ligand_names.size() != 1 || rigid_name.empty() || vm.count("batch") || vm.count("flex") ||
+		     vm.count("maps") || vm.count("write_maps") || (sf_name != "vina" && sf_name != "vinardo")))
+			throw usage_error("ligand_bonds requires one prepared Vina or Vinardo ligand and a rigid receptor");
+		if (vm.count("pose_coordinates") &&
+		    (!score_only || local_only || randomize_only || ligand_names.size() != 1 ||
+		     rigid_name.empty() || vm.count("batch") || vm.count("flex") || vm.count("maps") ||
+		     vm.count("write_maps") || no_refine || (sf_name != "vina" && sf_name != "vinardo")))
+			throw usage_error("pose_coordinates requires score_only with one prepared Vina or Vinardo ligand and an explicit rigid receptor");
+		const bool polar_burial_score_only = vm.count("polar_burial") && score_only;
+		const bool net_polar_score_only = vm.count("net_polar") && score_only;
+		if (vm.count("net_polar_waters") && (!vm.count("net_polar") || net_polar_waters.empty()))
+			throw usage_error("net_polar_waters requires net_polar and a nonempty filename");
+		if (vm.count("polar_burial") && vm.count("net_polar"))
+			throw usage_error("net_polar and polar_burial select separate final scoring modes");
+		if (vm.count("polar_burial") || vm.count("net_polar")) {
+			const bool single_rigid_vina = sf_name == "vina" && !rigid_name.empty() && ligand_names.size() == 1 &&
+			    !vm.count("batch") && !vm.count("flex") && !vm.count("maps") && !vm.count("write_maps") &&
+			    !no_refine && !local_only && !randomize_only && vm["unbound_energy"].defaulted();
+			if (!single_rigid_vina || (!score_only && (!regular_rigid_vina || pose_selection != "late")) ||
+			    (score_only && vm.count("refine_candidates")) ||
+			    rerank_gauss2_scale != 1 || refinement_optimizer != "native" || vm.count("pose_template") ||
+			    vm.count("polar_geometry") || vm.count("trajectory_archive"))
+				throw usage_error(std::string(vm.count("net_polar") ? "net_polar" : "polar_burial") +
+			                  " requires one ligand, an explicit rigid receptor, and either Late Vina docking with native refinement or score_only");
+		}
+		if (vm.count("trajectory_archive") && (trajectory_archive != "accepted" && trajectory_archive != "support"))
+			throw usage_error("trajectory_archive must be accepted or support");
+		if (vm.count("trajectory_archive") && (!regular_rigid_vina || ligand_names.size() != 1 || vm.count("batch") ||
+		    pose_selection != "late" || rerank_gauss2_scale != 1 || refinement_optimizer != "native" ||
+		    vm.count("pose_template") || vm.count("polar_geometry")))
+			throw usage_error("trajectory_archive requires rigid single-ligand Late Vina docking with native refinement and no template, polar geometry, or Gaussian rescaling");
+		if (vm.count("refine_candidates")) {
+			refine_candidates = vm["refine_candidates"].as<int>();
+			if (*refine_candidates <= 0 || *refine_candidates < num_modes)
+				throw usage_error("refine_candidates must be positive and at least num_modes");
+			if (!regular_rigid_vina || pose_selection != "late" || rerank_gauss2_scale != 1 ||
+			    refinement_optimizer != "native" || vm.count("pose_template") || vm.count("polar_geometry"))
+				throw usage_error("refine_candidates requires Late Vina docking with native refinement and no template, polar geometry, or Gaussian rescaling");
 		}
 
 		if (vm.count("receptor") && vm.count("maps")) {
@@ -394,6 +530,25 @@ Thank you!\n";
 		}
 
 		Vina v(sf_name, cpu, seed, verbosity, no_refine);
+		v.set_armijo_refinement(refinement_optimizer == "armijo");
+		v.set_rigid_reorientation(rigid_reorientation == "mixed", rigid_reorientation == "centered");
+		v.set_separate_hunt_chain(separate_hunt_chain);
+		v.set_search_counters(search_counters);
+		if (vm.count("pocket_start_radius"))
+			v.set_pocket_start_radius(pocket_start_radius);
+		v.set_late_pose_selection(pose_selection == "late");
+		v.set_use_min_rmsd_for_merge(use_min_rmsd_for_merge);
+		v.set_rerank_gauss2_scale(rerank_gauss2_scale);
+		if (vm.count("pose_template"))
+			v.set_pose_template(pose_template_path, template_stage);
+		if (vm.count("polar_geometry"))
+			v.set_polar_geometry(polar_geometry);
+		if (vm.count("polar_burial"))
+			v.set_polar_burial(polar_burial);
+		if (vm.count("net_polar"))
+			v.set_net_polar(net_polar, net_polar_waters);
+		if (vm.count("trajectory_archive"))
+			v.set_trajectory_archive(trajectory_archive);
 		if (!vm["interaction_cutoff"].defaulted()) {
 			if (interaction_cutoff != default_xs_interaction_cutoff && (vm.count("maps") || vm.count("write_maps")))
 				throw usage_error("map files require the default interaction_cutoff");
@@ -424,7 +579,20 @@ Thank you!\n";
 		}
 
 		if (vm.count("ligand")) {
-			v.set_ligand_from_file(ligand_names);
+			if (vm.count("ligand_bonds"))
+				v.set_ligand_from_file_with_bonds(ligand_names.front(), ligand_bonds);
+			else
+				v.set_ligand_from_file(ligand_names);
+			if (vm.count("pose_coordinates"))
+				v.set_pose_coordinates_for_scoring(pose_coordinates);
+			if (net_polar_score_only) {
+				v.show_net_polar();
+				return 0;
+			}
+			if (polar_burial_score_only) {
+				v.show_polar_burial();
+				return 0;
+			}
 
 			if (sf_name.compare("vina") == 0 || sf_name.compare("vinardo") == 0) {
 				if (vm.count("maps")) {
@@ -461,7 +629,7 @@ Thank you!\n";
 				v.write_pose(out_name);
 				v.show_score(energies);
 			} else {
-				v.global_search(exhaustiveness, num_modes, min_rmsd, max_evals);
+				v.global_search(exhaustiveness, num_modes, min_rmsd, max_evals, refine_candidates);
 				v.write_poses(out_name, num_modes, energy_range);
 			}
 		} else if (vm.count("batch")) {
@@ -537,7 +705,7 @@ Thank you!\n";
 					v.optimize();
 					v.write_pose(out_name);
 				} else {
-					v.global_search(exhaustiveness, num_modes, min_rmsd, max_evals);
+					v.global_search(exhaustiveness, num_modes, min_rmsd, max_evals, refine_candidates);
 					v.write_poses(out_name, num_modes, energy_range);
 				}
 			}

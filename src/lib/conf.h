@@ -23,6 +23,8 @@
 #ifndef VINA_CONF_H
 #define VINA_CONF_H
 
+#include <array>
+#include <boost/optional.hpp>
 #include <boost/ptr_container/ptr_vector.hpp> // typedef output_container
 
 #include "quaternion.h"
@@ -355,6 +357,30 @@ private:
 	}
 };
 
+struct net_polar_terms {
+	fl native_hbond = 0;
+	fl directed_hbond = 0;
+	fl direction_delta = 0;
+	fl buried_area = 0;
+	fl water_area = 0;
+	fl direct_credit_area = 0;
+	fl additional_water_credit_area = 0;
+};
+
+struct net_polar_satisfaction_score {
+	fl direct_credit;
+	fl additional_water_credit;
+	fl dry_delta;
+	fl water_delta;
+};
+
+struct net_polar_pose_score {
+	net_polar_terms terms;
+	std::array<fl, 4> deltas;
+	fl rank_score;
+	boost::optional<net_polar_satisfaction_score> satisfaction;
+};
+
 struct output_type {
 	conf c;
 	fl e;
@@ -365,6 +391,24 @@ struct output_type {
     fl conf_independent;
     fl unbound;
     fl total;
+	fl native_energy = 0;
+	sz native_rank = 0;
+	fl template_overlap = -1;
+	fl template_rank_score = 0;
+	fl polar_radial = -1;
+	fl polar_angular = 0;
+	fl polar_distance_score = 0;
+	fl polar_directional_score = 0;
+	fl polar_penalty_score = 0;
+	fl polar_burial = -1;
+	fl polar_geometry_defect = 0;
+	fl polar_uncompensated = 0;
+	std::array<fl, 3> polar_burial_deltas{};
+	fl polar_burial_rank_score = 0;
+	boost::optional<net_polar_pose_score> net_polar_score;
+	int archive_votes = -1;
+	bool archive_eligible = false;
+	bool archive_from_accepted = false;
 	vecv coords;
 	output_type(const conf& c_, fl e_) : c(c_), e(e_) {}
 	//output_type(const conf& c_, fl e_, fl intra_, fl conf_independent_) : c(c_), e(e_), intra(intra_), conf_independent(conf_independent_) {}

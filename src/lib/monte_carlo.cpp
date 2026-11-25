@@ -26,6 +26,7 @@
 #include "coords.h"
 #include "mutate.h"
 #include "quasi_newton.h"
+#include "trajectory_archive.h"
 
 output_type monte_carlo::operator()(model& m, const precalculate_byatom& p, const igrid& ig, const vec& corner1, const vec& corner2, incrementable* increment_me, rng& generator) const {
 	output_container tmp;
@@ -41,15 +42,30 @@ bool metropolis_accept(fl old_f, fl new_f, fl temperature, rng& generator) {
 }
 
 // out is sorted
-void monte_carlo::operator()(model& m, output_container& out, const precalculate_byatom& p, const igrid& ig, const vec& corner1, const vec& corner2, incrementable* increment_me, rng& generator) const {
+void monte_carlo::operator()(model& m, output_container& out, const precalculate_byatom& p, const igrid& ig, const vec& corner1, const vec& corner2, incrementable* increment_me, rng& generator, trajectory_archive* archive, search_trajectory_counters* counters,
+                             const boost::optional<vec>& pocket_start) const {
     int evalcount = 0;
 	vec authentic_v(1000, 1000, 1000); // FIXME? this is here to avoid max_fl/max_fl
 	conf_size s = m.get_size();
 	change g(s);
 	output_type tmp(s, 0);
 	tmp.c.randomize(corner1, corner2, generator);
+	if (pocket_start || (counters && m.num_ligands() == 1 && m.num_flex() == 0)) {
+		auto& ligand = tmp.c.ligands.front();
+		vec center = m.ligand_heavy_centroid(ligand);
+		if (pocket_start) {
+			ligand.rigid.position += *pocket_start - center;
+			if (counters)
+				center = m.ligand_heavy_centroid(ligand);
+		}
+		if (counters) {
+			counters->initial_centroid = center;
+			counters->pocket_anchored = bool(pocket_start);
+		}
+	}
 	output_type candidate(s, 0);
 	fl best_e = max_fl;
+	bool reference_from_save = false;
 	quasi_newton quasi_newton_par;
     quasi_newton_par.max_steps = local_steps;
 	VINA_U_FOR(step, global_steps) {
@@ -58,22 +74,53 @@ void monte_carlo::operator()(model& m, output_container& out, const precalculate
 		if((max_evals > 0) & (evalcount > max_evals))
 			break;
 		candidate.c = tmp.c;
-		mutate_conf(candidate.c, m, mutation_amplitude, generator);
+		const bool reoriented = mutate_conf(candidate.c, m, mutation_amplitude, generator,
+		                                    mixed_reorientation, separate_hunt_chain, centered_rotation);
+		const int before_hunt = evalcount;
 		quasi_newton_par(m, p, ig, candidate, g, hunt_cap, evalcount);
+		if (counters) {
+			++counters->hunt_calls;
+			counters->hunt_evals += evalcount - before_hunt;
+			counters->rigid_reorientations += reoriented;
+			counters->mixed_accept_checks += reference_from_save;
+		}
 		if(step == 0 || metropolis_accept(tmp.e, candidate.e, temperature, generator)) {
 			std::swap(tmp.c, candidate.c);
 			tmp.e = candidate.e;
+			reference_from_save = false;
+			if (counters)
+				++counters->accepted_steps;
+
+			// Hunt minimization left m at the accepted conformation. The shadow
+			// archive must observe it before the historical second minimization.
+			if (archive)
+				archive->capture(m, tmp, min_rmsd, num_saved_mins);
 
 			// FIXME only for very promising ones
 			if(tmp.e < best_e || out.size() < num_saved_mins) {
-				quasi_newton_par(m, p, ig, tmp, g, authentic_v, evalcount);
-				tmp.coords = m.get_heavy_atom_movable_coords();
-				add_to_output_container(out, tmp, min_rmsd, num_saved_mins); // 20 - max size
+				if (archive)
+					++archive->native_refinements;
+				const int before_second = evalcount;
+				// The separated chain keeps the accepted hunt state and its
+				// energy. Reuse the trial buffer for the saved minimum.
+				output_type& saved = separate_hunt_chain ? candidate : tmp;
+				if (separate_hunt_chain)
+					saved.c = tmp.c;
+				quasi_newton_par(m, p, ig, saved, g, authentic_v, evalcount);
+				if (counters) {
+					++counters->second_calls;
+					counters->second_evals += evalcount - before_second;
+				}
+				saved.coords = m.get_heavy_atom_movable_coords();
+				add_to_output_container(out, saved, min_rmsd, num_saved_mins); // 20 - max size
+				reference_from_save = !separate_hunt_chain;
 				if(tmp.e < best_e)
 					best_e = tmp.e;
 			}
 		}
 	}
+	if (archive)
+		archive->native_evaluations = evalcount;
 	VINA_CHECK(!out.empty());
 	VINA_CHECK(out.front().e <= out.back().e); // make sure the sorting worked in the correct order
 }

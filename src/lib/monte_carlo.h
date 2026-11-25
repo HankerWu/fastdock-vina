@@ -26,6 +26,20 @@
 #include "incrementable.h"
 #include "model.h"
 
+struct trajectory_archive;
+
+struct search_trajectory_counters {
+	unsigned hunt_calls = 0; // One per executed Monte Carlo step.
+	unsigned hunt_evals = 0;
+	unsigned second_calls = 0;
+	unsigned second_evals = 0;
+	unsigned rigid_reorientations = 0;
+	unsigned accepted_steps = 0;
+	unsigned mixed_accept_checks = 0;
+	bool pocket_anchored = false;
+	boost::optional<vec> initial_centroid;
+};
+
 struct monte_carlo {
     unsigned max_evals;
 	unsigned global_steps;
@@ -35,6 +49,9 @@ struct monte_carlo {
 	sz num_saved_mins;
 	fl mutation_amplitude;
 	unsigned local_steps;
+	bool mixed_reorientation = false;
+	bool separate_hunt_chain = false;
+	bool centered_rotation = false;
     // T = 600K, R = 2cal/(K*mol) -> temperature = RT = 1.2;  global_steps = 50*lig_atoms = 2500
     monte_carlo() : max_evals(0), global_steps(2500), temperature(1.2), hunt_cap(10, 1.5, 10), min_rmsd(0.5), num_saved_mins(50), mutation_amplitude(2) {}
 
@@ -42,7 +59,9 @@ struct monte_carlo {
                            const vec& corner2, incrementable* increment_me, rng& generator) const;
 	// out is sorted
 	void operator()(model& m, output_container& out, const precalculate_byatom& p, const igrid& ig,
-                    const vec& corner1, const vec& corner2, incrementable* increment_me, rng& generator) const;
+                    const vec& corner1, const vec& corner2, incrementable* increment_me, rng& generator,
+                    trajectory_archive* archive = nullptr, search_trajectory_counters* counters = nullptr,
+                    const boost::optional<vec>& pocket_start = boost::none) const;
 };
 
 #endif

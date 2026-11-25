@@ -30,8 +30,14 @@ struct parallel_mc {
 	sz num_tasks;
 	sz num_threads;
 	bool display_progress;
+	bool keep_trajectory_minima = false;
+	bool use_min_rmsd_for_merge = false;
+	fl pocket_start_radius = 0;
 	parallel_mc() : num_tasks(8), num_threads(1), display_progress(true) {}
-	void operator()(const model& m, output_container& out, const precalculate_byatom& p, const igrid& ig, const vec& corner1, const vec& corner2, rng& generator, std::function<void(double)>* progress_callback) const;
+	void operator()(const model& m, output_container& out, const precalculate_byatom& p, const igrid& ig,
+	                const vec& corner1, const vec& corner2, rng& generator, std::function<void(double)>* progress_callback,
+	                std::vector<trajectory_archive>* archives = nullptr, bool keep_support = false,
+	                std::vector<search_trajectory_counters>* counters = nullptr) const;
 };
 
 #endif

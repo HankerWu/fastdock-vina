@@ -36,6 +36,7 @@
 #include <boost/filesystem.hpp>
 #include <boost/thread/thread.hpp> // hardware_concurrency // FIXME rm ?
 #include <boost/algorithm/string.hpp>
+#include <boost/optional.hpp>
 //#include <openbabel/mol.h>
 #include "parse_pdbqt.h"
 #include "parallel_mc.h"
@@ -118,8 +119,32 @@ public:
 	void set_ligand_from_string(const std::vector<std::string> &ligand_string);
 	void set_ligand_from_file(const std::string& ligand_name);
 	void set_ligand_from_file(const std::vector<std::string>& ligand_name);
+	// Fixed score only. Preserve prepared topology while replacing lab coordinates.
+	void set_pose_coordinates_for_scoring(const std::string& pose_name);
+	void set_ligand_from_file_with_bonds(const std::string& ligand_name, const std::string& bonds_name);
 	// Configure the Vina/Vinardo cutoff before loading ligands or maps.
 	void set_interaction_cutoff(double cutoff);
+	// Configure final Vina pose ranking before building search maps.
+	void set_rerank_gauss2_scale(double scale);
+	// Use explicit-receptor rescoring before merging trajectories, configured before maps.
+	void set_late_pose_selection(bool enabled);
+	void set_use_min_rmsd_for_merge(bool enabled) { m_use_min_rmsd_for_merge = enabled; }
+	// Enable experimental template guidance before building search maps.
+	void set_pose_template(const std::string& filename, const std::string& stage);
+	// Enable experimental polar-geometry final ranking before building search maps.
+	void set_polar_geometry(const std::string& mode);
+	void set_polar_burial(const std::string& mode);
+	void show_polar_burial();
+	void set_net_polar(const std::string& mode, const std::string& waters);
+	void show_net_polar();
+	// Enable experimental trajectory archiving before building search maps.
+	void set_trajectory_archive(const std::string& mode);
+	// Use strict Armijo line search only in explicit final refinement.
+	void set_armijo_refinement(bool enabled);
+	void set_rigid_reorientation(bool mixed, bool centered = false);
+	void set_separate_hunt_chain(bool enabled);
+	void set_search_counters(bool enabled) { m_search_counters = enabled; }
+	void set_pocket_start_radius(double radius);
 	//void set_ligand(OpenBabel::OBMol* mol);
 	//void set_ligand(std::vector<OpenBabel::OBMol*> mol);
 	void set_vina_weights(double weight_gauss1=-0.035579, double weight_gauss2=-0.005156,
@@ -142,7 +167,9 @@ public:
 	std::vector<double> score();
 	std::vector<double> score(double intramolecular_energy);
 	std::vector<double> optimize(const int max_steps=0);
-	void global_search(const int exhaustiveness=8, const int n_poses=20, const double min_rmsd=1.0, const int max_evals=0);
+	// An optional Late cap before explicit refinement leaves the search and output caps intact.
+	void global_search(const int exhaustiveness=8, const int n_poses=20, const double min_rmsd=1.0, const int max_evals=0,
+	                   boost::optional<int> refine_candidates=boost::none);
 	std::string get_poses(int how_many=9, double energy_range=3.0);
 	std::vector< std::vector<double> > get_poses_coordinates(int how_many=9, double energy_range=3.0);
 	std::vector< std::vector<double> > get_poses_energies(int how_many=9, double energy_range=3.0);
@@ -153,6 +180,7 @@ public:
 	void show_score(const std::vector<double> energies);
 
 private:
+	void set_single_ligand_model(model ligand);
 	// model and poses
 	model m_receptor;
 	model m_model;
@@ -166,23 +194,65 @@ private:
 	std::shared_ptr<ScoringFunction> m_scoring_function;
 	precalculate_byatom m_precalculated_byatom;
 	precalculate m_precalculated_sf;
+	double m_rerank_gauss2_scale = 1.0;
+	std::shared_ptr<ScoringFunction> m_rerank_scoring_function;
+	precalculate m_rerank_precalculated_sf;
 	// maps
 	cache m_grid;
 	ad4cache m_ad4grid;
 	non_cache m_non_cache;
 	bool m_map_initialized;
+	bool m_use_explicit_receptor = false;
 	// global search
 	int m_cpu;
 	int m_seed;
+	bool m_late_pose_selection = false;
+	bool m_use_min_rmsd_for_merge = false;
+	bool m_armijo_refinement = false;
+	bool m_mixed_reorientation = false;
+	bool m_centered_rotation = false;
+	bool m_separate_hunt_chain = false;
+	bool m_search_counters = false;
+	double m_pocket_start_radius = 0;
+	enum class template_stage { rank, select, refine };
+	template_stage m_template_stage = template_stage::rank;
+	std::string m_pose_template_path;
+	enum class polar_mode { off, distance, directional, penalty };
+	polar_mode m_polar_geometry = polar_mode::off;
+	enum class burial_mode { off, burial, geometry, compensated };
+	burial_mode m_polar_burial = burial_mode::off;
+	enum class net_polar_mode { off, native, direction, burial, combined, water, satisfied, satisfied_water };
+	net_polar_mode m_net_polar = net_polar_mode::off;
+	vecv m_net_polar_waters;
+	enum class archive_mode { off, accepted, support };
+	archive_mode m_trajectory_archive = archive_mode::off;
 	// others
 	int m_verbosity;
 	bool m_no_refine;
 	std::function<void(double)>* m_progress_callback;
 
 	std::string vina_remarks(output_type& pose, fl lb, fl ub);
+	const char* pose_template_stage_name() const;
+	const char* polar_geometry_name() const;
+	const char* trajectory_archive_name() const;
+	fl polar_rank_score(const output_type& pose) const;
+	fl output_energy_reference() const;
 	output_container remove_redundant(const output_container& in, fl min_rmsd);
+	void rerank_poses(output_container& poses, const vec& authentic_v);
+	void rank_template_poses(output_container& poses, pose_template& reference, sz& rank_evals);
+	void rank_polar_poses(output_container& poses);
+	void rank_polar_burial_poses(output_container& poses);
+	std::array<fl, 3> polar_burial_deltas(fl burial, fl geometry, fl uncompensated) const;
+	bool supports_polar_burial() const;
+	const char* polar_burial_name() const;
+	const char* net_polar_name() const;
+	bool uses_net_polar_satisfaction() const;
+	void rank_net_polar_poses(output_container& poses);
+	std::array<fl, 4> net_polar_deltas(const net_polar_terms& terms, fl normalization) const;
+	non_cache fixed_pose_receptor(const precalculate& scores);
 
 	void set_forcefield();
+	const igrid& vina_receptor_interactions() const;
 	std::vector<double> optimize(output_type& out, const int max_steps=0);
 	int generate_seed(const int seed=0);
 };

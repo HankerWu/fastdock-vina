@@ -65,11 +65,14 @@ struct cache; // forward declaration
 struct szv_grid; // forward declaration
 struct pdbqt_initializer; // forward declaration - only declared in parse_pdbqt.cpp
 struct precalculate_byatom; // forward declaration
+class pose_template;
 
 fl eval_interacting_pairs(const precalculate_byatom& p, fl v, const interacting_pairs& pairs, const vecv& coords, const bool with_max_cutoff=false);
 fl eval_interacting_pairs_deriv(const precalculate_byatom& p, fl v, const interacting_pairs& pairs, const vecv& coords, vecv& forces, const bool with_max_cutoff=false);
 
 struct model {
+	using context_line_filter = bool (*)(const std::string&);
+
 public:
 	// Had to move it from private to public to make it work. 
 	// So we might have to fix that later
@@ -105,16 +108,16 @@ public:
 	vecv get_ligand_coords() const;
 	std::vector<double> get_ligand_coords();
 	vecv get_heavy_atom_movable_coords() const;
+	vecv get_chemical_heavy_atom_movable_coords() const;
+	std::vector<std::pair<sz, std::string>> chemical_heavy_atom_elements() const;
+	fl template_overlap(pose_template& reference) const;
 	conf_size get_size() const;
 	conf get_initial_conf() const; // torsions = 0, orientations = identity, ligand positions = current
 
 	void write_flex  (                  const path& name, const std::string& remark) const { write_context(flex_context, name, remark); }
 	void write_ligand(sz ligand_number, const path& name, const std::string& remark) const { VINA_CHECK(ligand_number < ligands.size()); write_context(ligands[ligand_number].cont, name, remark); }
 	void write_structure(std::ostream& out) const {
-		VINA_FOR_IN(i, ligands)
-			write_context(ligands[i].cont, out);
-		if(num_flex() > 0) // otherwise remark is written in vain
-			write_context(flex_context, out);
+		write_structure_context(out, nullptr);
 	}
 	void write_structure(std::ostream& out, const std::string& remark) const {
 		out << remark;
@@ -126,15 +129,18 @@ public:
 	}
 
 	void write_structure(const path& name) const { ofile out(name); write_structure(out); }
-	void write_model(std::ostream& out, sz model_number, const std::string& remark) const {
+	void write_model(std::ostream& out, sz model_number, const std::string& remark, context_line_filter omit_line = nullptr) const {
 		out << "MODEL " << model_number << '\n';
-		write_structure(out, remark);
+		out << remark;
+		write_structure_context(out, omit_line);
 		out << "ENDMDL\n";
 	}
 
 	void set (const conf& c);
 
 	fl gyration_radius(sz ligand_number) const; // uses coords
+	vec ligand_heavy_centroid(sz ligand_number) const;
+	vec ligand_heavy_centroid(const ligand_conf& conf) const;
 
 	const atom_base& movable_atom  (sz i) const { assert(i < m_num_movable_atoms); return  atoms[i]; }
 	const vec&       movable_coords(sz i) const { assert(i < m_num_movable_atoms); return coords[i]; }
@@ -149,7 +155,8 @@ public:
 	fl evalo     (const precalculate_byatom& p,                  const vec& v           ) const;
 	fl evali     (const precalculate_byatom& p,                  const vec& v           ) const;
 	fl eval_inter(const precalculate_byatom& p,                  const vec& v           ) const;
-	fl eval_deriv(const precalculate_byatom& p, const igrid& ig, const vec& v, change& g);
+	fl eval_deriv(const precalculate_byatom& p, const igrid& ig, const vec& v, change& g,
+	              pose_template* reference = nullptr);
 	fl eval_intramolecular(const precalculate_byatom& p, const igrid& ig, const vec& v);
 
 	fl rmsd_lower_bound(const model& m) const; // uses coords
@@ -177,6 +184,8 @@ private:
 	friend struct szv_grid;
 	friend struct appender_info;
 	friend struct pdbqt_initializer;
+	friend class polar_geometry;
+	friend class net_polar;
 
 	void reset_search_state(const model& initial) {
 		coords = initial.coords;
@@ -186,7 +195,13 @@ private:
 			static_cast<flexible_body&>(ligands[i]) = initial.ligands[i];
 	}
 
-	void write_context(const context& c, std::ostream& out) const;
+	void write_structure_context(std::ostream& out, context_line_filter omit_line) const {
+		VINA_FOR_IN(i, ligands)
+			write_context(ligands[i].cont, out, omit_line);
+		if (num_flex() > 0)
+			write_context(flex_context, out, omit_line);
+	}
+	void write_context(const context& c, std::ostream& out, context_line_filter omit_line = nullptr) const;
 	void write_context(const context& c, ofile& out, const std::string& remark) const {
 		out << remark;
 	}
@@ -212,6 +227,7 @@ private:
 	void assign_bonds(const distance_type_matrix& mobility); // assign bonds based on relative mobility, distance and covalent length
 	void assign_types();
 	void initialize_pairs(const distance_type_matrix& mobility);
+	vec ligand_heavy_centroid(sz ligand_number, const vecv& positions, const vec& origin) const;
 	void initialize(const distance_type_matrix& mobility);
 	fl clash_penalty_aux(const interacting_pairs& pairs) const;
 

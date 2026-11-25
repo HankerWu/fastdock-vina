@@ -62,6 +62,7 @@ public:
                 m_potentials.push_back(new vina_gaussian(3, 2.0, xs_cutoff));
                 m_potentials.push_back(new vina_repulsion(0.0, xs_cutoff));
                 m_potentials.push_back(new vina_hydrophobic(0.5, 1.5, xs_cutoff));
+                m_vina_hbond_index = m_potentials.size();
                 m_potentials.push_back(new vina_non_dir_h_bond(-0.7, 0, xs_cutoff));
                 m_potentials.push_back(new linearattraction(macrocycle_glue_cutoff));
                 m_conf_independents.push_back(new num_tors_div());
@@ -145,6 +146,9 @@ public:
         }
         return acc;
     };
+    fl vina_hbond(sz t1, sz t2, fl r) const {
+        return m_weights[m_vina_hbond_index] * m_potentials[m_vina_hbond_index]->eval(t1, t2, r);
+    }
     fl conf_independent(const model& m, fl e) const{
         // Iterator for weights
         flv::const_iterator it = m_weights.begin() + m_num_potentials;
@@ -174,6 +178,7 @@ public:
 private:
     std::vector<Potential*> m_potentials;
     std::vector<ConfIndependent*> m_conf_independents;
+    sz m_vina_hbond_index = 0;
     flv m_weights;
     fl m_cutoff;
     fl m_max_cutoff;

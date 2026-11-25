@@ -20,11 +20,14 @@
 
 */
 
+#include <algorithm>
 #include <string>
 #include <fstream> // for getline ?
 #include <sstream> // in parse_two_unsigneds
 #include <cctype> // isspace
 #include <exception>
+#include <map>
+#include <set>
 #include <boost/utility.hpp> // for noncopyable 
 #include <boost/optional.hpp>
 #include <boost/filesystem/fstream.hpp>
@@ -618,8 +621,240 @@ struct pdbqt_initializer {
     void initialize(const distance_type_matrix& mobility) {
         m.initialize(mobility);
     }
+    static void replace_fixed_pose_coordinates(model& prepared, const non_rigid_parsed& pose,
+                                               const context& pose_context);
+    void initialize_explicit_ligand_bonds(const distance_type_matrix& mobility, std::istream& input);
 };
 
+namespace {
+
+unsigned fixed_pose_atom_serial(const std::string& line) {
+    auto token = line.substr(6, 5);
+    const auto first = token.find_first_not_of(" ");
+    const auto last = token.find_last_not_of(" ");
+    if (first == std::string::npos)
+        throw pdbqt_parse_error("PDBQT atom serial must be a positive decimal integer.", line);
+    token = token.substr(first, last - first + 1);
+    if (token.find_first_not_of("0123456789") != std::string::npos)
+        throw pdbqt_parse_error("PDBQT atom serial must be a positive decimal integer.", line);
+    const auto serial = checked_convert_substring<unsigned>(token, 1, token.size(), "Atom number");
+    if (!serial)
+        throw pdbqt_parse_error("PDBQT atom serial must be a positive decimal integer.", line);
+    return serial;
+}
+
+// Normalize layout tokens but keep their order and the full chemical metadata.
+std::string fixed_pose_layout_line(const parsed_line& line) {
+    if (line.second) {
+        // Keep the atom identity (including serial), charge and AD type.
+        const auto& text = line.first;
+        return text.substr(0, 30) + text.substr(68, 11);
+    }
+    std::istringstream input(line.first);
+    std::string tag, layout, token;
+    input >> tag;
+    if (tag == "REMARK") {
+        input >> token;
+        if (token != "SMILES" && token != "H" && token != "INDEX")
+            return {};
+        layout = tag + " " + token;
+    } else {
+        if (tag != "ROOT" && tag != "ENDROOT" && tag != "BRANCH" && tag != "ENDBRANCH" && tag != "TORSDOF")
+            return {};
+        layout = tag;
+    }
+    while (input >> token)
+        layout += " " + token;
+    return layout;
+}
+
+using fixed_pose_layout = std::vector<std::pair<std::string, const parsed_line*>>;
+
+fixed_pose_layout fixed_pose_layout_of(const context& lines) {
+    fixed_pose_layout result;
+    for (const auto& line : lines) {
+        auto signature = fixed_pose_layout_line(line);
+        if (!signature.empty())
+            result.emplace_back(std::move(signature), &line);
+    }
+    return result;
+}
+
+std::string unwrap_fixed_pose(const std::string& input) {
+    std::istringstream stream(input);
+    std::vector<std::string> lines;
+    std::string line;
+    while (std::getline(stream, line)) {
+        if (!line.empty() && line.back() == '\r')
+            line.pop_back();
+        lines.push_back(line);
+    }
+    const auto content = [](const std::string& s) { return s.find_first_not_of(" \t") != std::string::npos; };
+    const auto first = std::find_if(lines.begin(), lines.end(), content);
+    if (first == lines.end())
+        throw pdbqt_parse_error("No atoms in the supplied pose coordinates.");
+    if (!starts_with(*first, "MODEL"))
+        return input;
+    const auto last = std::find_if(lines.rbegin(), lines.rend(), content).base() - 1;
+    std::istringstream header(*first), footer(*last);
+    std::string tag, extra;
+    unsigned model_number = 0;
+    if (!(header >> tag >> model_number) || tag != "MODEL" || !model_number || (header >> extra) ||
+        !(footer >> tag) || tag != "ENDMDL" || (footer >> extra) || first == last)
+        throw pdbqt_parse_error("Pose coordinates require exactly one complete MODEL or bare ligand PDBQT.");
+    std::ostringstream body;
+    for (auto it = first + 1; it != last; ++it) {
+        if (starts_with(*it, "MODEL") || starts_with(*it, "ENDMDL"))
+            throw pdbqt_parse_error("Pose coordinates require exactly one complete MODEL or bare ligand PDBQT.");
+        body << *it << '\n';
+    }
+    return body.str();
+}
+
+} // namespace
+
+void pdbqt_initializer::replace_fixed_pose_coordinates(model& prepared, const non_rigid_parsed& pose,
+                                                      const context& pose_context) {
+    const context& prepared_context = prepared.ligands.front().cont;
+    const auto original = fixed_pose_layout_of(prepared_context);
+    const auto candidate = fixed_pose_layout_of(pose_context);
+    if (original.size() != candidate.size() || pose.atoms.size() != prepared.num_movable_atoms())
+        throw pdbqt_parse_error("Pose coordinates differ from the prepared atom layout or chemical metadata.");
+
+    std::set<unsigned> serials;
+    vecv coordinates = prepared.coords;
+    VINA_FOR_IN(i, original) {
+        const auto& reference = *original[i].second;
+        const auto& current = *candidate[i].second;
+        if (original[i].first != candidate[i].first || bool(reference.second) != bool(current.second))
+            throw pdbqt_parse_error("Pose coordinates differ from the prepared atom layout or chemical metadata.",
+                                    current.first);
+        if (!reference.second)
+            continue;
+        const auto serial = fixed_pose_atom_serial(current.first);
+        if (!serials.insert(serial).second)
+            throw pdbqt_parse_error("Pose coordinates require unique positive atom serials.", current.first);
+        const vec& xyz = pose.atoms[*current.second].coords;
+        if (!std::isfinite(xyz[0]) || !std::isfinite(xyz[1]) || !std::isfinite(xyz[2]))
+            throw pdbqt_parse_error("Pose coordinates must be finite.", current.first);
+        coordinates[*reference.second] = xyz;
+    }
+    if (serials.size() != pose.atoms.size())
+        throw pdbqt_parse_error("Pose coordinates do not map every prepared atom.");
+    prepared.coords.swap(coordinates);
+}
+
+void replace_fixed_pose_coordinates(model& prepared, const std::string& pose) {
+    VINA_CHECK(prepared.num_ligands() == 1 && prepared.num_flex() == 0);
+    std::istringstream input(unwrap_fixed_pose(pose));
+    non_rigid_parsed parsed;
+    context lines;
+    // Parse/validate the pose tree without calling initialize(), which assigns
+    // bonds, XS types and interaction pairs from the pose coordinates.
+    parse_pdbqt_ligand(input, parsed, lines);
+    pdbqt_initializer::replace_fixed_pose_coordinates(prepared, parsed, lines);
+}
+
+
+void pdbqt_initializer::initialize_explicit_ligand_bonds(const distance_type_matrix& mobility,
+                                                          std::istream& input) {
+    std::map<unsigned, sz> indices;
+    const auto& ligand = m.ligands.front();
+    for (const auto& line : ligand.cont) {
+        if (!line.second)
+            continue;
+        const auto serial = fixed_pose_atom_serial(line.first);
+        const sz index = *line.second;
+        if (!indices.emplace(serial, index).second)
+            throw pdbqt_parse_error("ligand_bonds requires unique positive PDBQT atom serials.", line.first);
+        const sz type = m.atoms[index].ad;
+        if (type >= AD_TYPE_G0 && type <= AD_TYPE_W)
+            throw pdbqt_parse_error("ligand_bonds does not support macrocycle or hydrated-ligand atom types.", line.first);
+        const vec& xyz = m.coords[index];
+        if (!std::isfinite(xyz[0]) || !std::isfinite(xyz[1]) || !std::isfinite(xyz[2]))
+            throw pdbqt_parse_error("ligand_bonds requires finite prepared coordinates.", line.first);
+    }
+    if (indices.size() != m.atoms.size())
+        throw pdbqt_parse_error("ligand_bonds requires a serial for every prepared atom.");
+
+    std::set<std::pair<sz, sz>> edges;
+    std::string line;
+    while (std::getline(input, line)) {
+        std::istringstream fields(line.substr(0, line.find('#')));
+        std::string first_token, second_token, extra;
+        if (!(fields >> first_token))
+            continue;
+        if (!(fields >> second_token) || (fields >> extra))
+            throw pdbqt_parse_error("ligand_bonds expects two atom serials on each edge line.", line);
+        const auto serial = [&](const std::string& token) {
+            if (token.find_first_not_of("0123456789") != std::string::npos)
+                throw pdbqt_parse_error("ligand_bonds atom serials must be positive integers.", line);
+            const auto value = checked_convert_substring<unsigned>(token, 1, token.size(), "Atom number");
+            const auto found = indices.find(value);
+            if (found == indices.end())
+                throw pdbqt_parse_error("ligand_bonds edge references an unknown prepared atom serial.", line);
+            return found->second;
+        };
+        const sz first = serial(first_token), second = serial(second_token);
+        if (first == second)
+            throw pdbqt_parse_error("ligand_bonds edge cannot connect an atom to itself.", line);
+        const auto edge = std::make_pair(std::min(first, second), std::max(first, second));
+        if (mobility(edge.first, edge.second) == DISTANCE_VARIABLE)
+            throw pdbqt_parse_error("ligand_bonds edge crosses a variable-distance torsion-tree pair.", line);
+        if (!edges.insert(edge).second)
+            throw pdbqt_parse_error("Duplicate ligand_bonds edge.", line);
+    }
+    VINA_FOR_IN(first, m.atoms) {
+        VINA_RANGE(second, first + 1, m.atoms.size()) {
+            if (mobility(first, second) == DISTANCE_ROTOR && !edges.count({first, second}))
+                throw pdbqt_parse_error("ligand_bonds is missing a BRANCH rotor edge.");
+        }
+    }
+    for (const auto& edge : edges) {
+        const sz a = edge.first, b = edge.second;
+        const fl length = std::sqrt(vec_distance_sqr(m.coords[a], m.coords[b]));
+        if (!(length > epsilon_fl) || !std::isfinite(length))
+            throw pdbqt_parse_error("ligand_bonds bond endpoints have invalid coordinates.");
+        const bool rotatable = mobility(a, b) == DISTANCE_ROTOR;
+        m.atoms[a].bonds.emplace_back(atom_index(b, false), length, rotatable);
+        m.atoms[b].bonds.emplace_back(atom_index(a, false), length, rotatable);
+    }
+    for (const auto& atom : m.atoms) {
+        if ((atom.ad == AD_TYPE_H || atom.ad == AD_TYPE_HD) && atom.bonds.size() != 1)
+            throw pdbqt_parse_error("ligand_bonds requires one neighbor for each explicit hydrogen.");
+    }
+
+    std::vector<bool> visited(m.atoms.size(), false);
+    szv connected{0};
+    visited[0] = true;
+    for (sz i = 0; i < connected.size(); ++i) {
+        for (const auto& bond : m.atoms[connected[i]].bonds) {
+            const sz next = bond.connected_atom_index.i;
+            if (!visited[next]) {
+                visited[next] = true;
+                connected.push_back(next);
+            }
+        }
+    }
+    if (connected.size() != m.atoms.size())
+        throw pdbqt_parse_error("ligand_bonds must connect every atom of one prepared ligand.");
+
+    m.ligands.front().set_range();
+    m.assign_types();
+    m.initialize_pairs(mobility);
+}
+
+model parse_ligand_pdbqt_with_bonds(const std::string& ligand_name, atom_type::t atype,
+                                  const std::string& bonds_name) {
+    non_rigid_parsed parsed;
+    context lines;
+    parse_pdbqt_ligand(make_path(ligand_name), parsed, lines);
+    pdbqt_initializer prepared(atype);
+    prepared.initialize_from_nrp(parsed, lines, true);
+    ifile bonds(make_path(bonds_name));
+    prepared.initialize_explicit_ligand_bonds(parsed.mobility_matrix(), bonds);
+    return prepared.m;
+}
 
 model parse_ligand_pdbqt_from_file(const std::string& name, atom_type::t atype) { // can throw parse_error
     non_rigid_parsed nrp;

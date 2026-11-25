@@ -21,11 +21,13 @@
 */
 
 #include <random>
+#include <boost/algorithm/string/trim.hpp>
 
 #include "model.h"
 #include "file.h"
 #include "curl.h"
 #include "precalculate.h"
+#include "pose_template.h"
 
 template<typename T>
 atom_range get_atom_range(const T& t) {
@@ -636,14 +638,49 @@ std::vector<double> model::get_ligand_coords() {
 	return tmp;
 }
 
-vecv model::get_heavy_atom_movable_coords() const { // FIXME mv
-	vecv tmp;
+static bool chemical_heavy_atom(const atom_base& atom) {
+	return atom.el != EL_TYPE_H && atom.el != EL_TYPE_Dummy;
+}
 
-	VINA_FOR(i, num_movable_atoms()) {
-		if (atoms[i].el != EL_TYPE_H)
-			tmp.push_back(coords[i]);
+template<bool KeepDummy>
+static vecv heavy_movable_coords(const model& m) {
+	vecv heavy;
+	VINA_FOR(i, m.num_movable_atoms()) {
+		const auto& atom = m.movable_atom(i);
+		if (KeepDummy ? atom.el != EL_TYPE_H : chemical_heavy_atom(atom))
+			heavy.push_back(m.movable_coords(i));
 	}
-	return tmp;
+	return heavy;
+}
+
+vecv model::get_heavy_atom_movable_coords() const {
+	return heavy_movable_coords<true>(*this);
+}
+
+vecv model::get_chemical_heavy_atom_movable_coords() const {
+	return heavy_movable_coords<false>(*this);
+}
+
+std::vector<std::pair<sz, std::string>> model::chemical_heavy_atom_elements() const {
+	std::vector<std::pair<sz, std::string>> result;
+	for (const auto& line : ligands.front().cont) {
+		if (!line.second || !chemical_heavy_atom(atoms[*line.second]))
+			continue;
+		// Respect exact elements for scoring aliases (Se) and the separate metals.
+		const sz index = *line.second;
+		std::string type = boost::trim_copy(line.first.substr(77));
+		const sz ad = atoms[index].ad;
+		if (ad == AD_TYPE_A || (ad >= AD_TYPE_CG0 && ad <= AD_TYPE_CG3))
+			type = "C";
+		else if (ad == AD_TYPE_NA || ad == AD_TYPE_OA || ad == AD_TYPE_SA)
+			type.resize(1);
+		result.emplace_back(index, std::move(type));
+	}
+	return result;
+}
+
+fl model::template_overlap(pose_template& reference) const {
+	return reference.overlap(coords);
 }
 
 sz model::find_ligand(sz a) const {
@@ -707,14 +744,14 @@ std::string coords_to_pdbqt_string(const vec& coords, const std::string& str) {
 }
 
 // FastDock: write context directly to the output stream.
-void model::write_context(const context& c, std::ostream& out) const {
+void model::write_context(const context& c, std::ostream& out, context_line_filter omit_line) const {
 	verify_bond_lengths();
 	VINA_FOR_IN(i, c) {
 		const std::string& str = c[i].first;
 		if(c[i].second) {
 			out << coords_to_pdbqt_string(coords[c[i].second.get()], str) << '\n';
 		}
-		else
+		else if (!omit_line || !omit_line(str))
 			out << str << '\n';
 	}
 }
@@ -722,6 +759,33 @@ void model::write_context(const context& c, std::ostream& out) const {
 void model::set         (const conf& c) {
 	ligands.set_conf(atoms, coords, c.ligands);
 	flex   .set_conf(atoms, coords, c.flex);
+}
+
+vec model::ligand_heavy_centroid(sz ligand_number) const {
+	return ligand_heavy_centroid(ligand_number, coords, ligands[ligand_number].node.get_origin());
+}
+
+vec model::ligand_heavy_centroid(const ligand_conf& conf) const {
+	// Preserve the worker's starting state used by the first native mutation.
+	flexible_body placed(ligands.front());
+	vecv coordinates(coords.size());
+	placed.set_conf(atoms, coordinates, conf);
+	return ligand_heavy_centroid(0, coordinates, conf.rigid.position);
+}
+
+vec model::ligand_heavy_centroid(sz ligand_number, const vecv& positions, const vec& origin) const {
+	const ligand& lig = ligands[ligand_number];
+	vec center(0, 0, 0);
+	sz count = 0;
+	VINA_RANGE(i, lig.begin, lig.end) {
+		if (chemical_heavy_atom(atoms[i])) {
+			center += positions[i];
+			++count;
+		}
+	}
+	// A ligand with no heavy atoms has no chemical centroid. Its root is
+	// a consistent pivot for rotation of that degenerate input.
+	return count ? (1.0 / fl(count)) * center : origin;
 }
 
 fl model::gyration_radius(sz ligand_number) const {
@@ -802,7 +866,8 @@ fl model::evali(const precalculate_byatom& p, const vec& v) const { // clean up
 	return e;
 }
 
-fl model::eval_deriv(const precalculate_byatom& p, const igrid& ig, const vec& v, change& g) { // clean up
+fl model::eval_deriv(const precalculate_byatom& p, const igrid& ig, const vec& v, change& g,
+                     pose_template* reference) {
 	// INTER ligand - grid
 	fl e = ig.eval_deriv(*this, v[1]); // sets minus_forces, except inflex
 
@@ -819,6 +884,9 @@ fl model::eval_deriv(const precalculate_byatom& p, const igrid& ig, const vec& v
 	// glue_i - glue_i and glue_i - glue_j
 	if (!glue_pairs.empty())
 		e += eval_interacting_pairs_deriv(p, v[2], glue_pairs, coords, minus_forces, true); // adds to minus_forces
+
+	if (reference)
+		e -= pose_template::strength * reference->overlap(coords, &minus_forces);
 
 	// calculate derivatives
 	ligands.derivative(coords, minus_forces, g.ligands);

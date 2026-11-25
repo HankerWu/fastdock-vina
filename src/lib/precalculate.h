@@ -173,6 +173,12 @@ public:
         assert(r2 <= m_cutoff_sqr);
         return sz(m_factor * r2);
     }
+    // Isolate a linear component using the same midpoint samples as eval_fast.
+    template<class Potential>
+    fl eval_fast_component(fl r2, const Potential& potential) const {
+        const sz i = fast_index(r2);
+        return (potential(std::sqrt(i / m_factor)) + potential(std::sqrt((i + 1) / m_factor))) / 2;
+    }
     const precalculate_element& element(sz type_pair_index) const {
         return m_data(type_pair_index);
     }

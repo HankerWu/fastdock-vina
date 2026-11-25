@@ -106,7 +106,14 @@ inline bool bfgs_update(flmat& h, const Change& p, const Change& y, const fl alp
 	return true;
 }
 
-template<typename F, typename Conf, typename Change>
+template<typename Change>
+bool finite_change(const Change& g, sz n) {
+	VINA_FOR(i, n)
+		if(!std::isfinite(g(i))) return false;
+	return true;
+}
+
+template<bool StrictArmijo = false, typename F, typename Conf, typename Change>
 fl line_search(F& f, sz n, const Conf& x, const Change& g, const fl f0, const Change& p, Conf& x_new, Change& g_new, fl& f1, int& evalcount) { // returns alpha
 	const fl c0 = 0.0001;
 	const unsigned max_trials = 10;
@@ -114,16 +121,23 @@ fl line_search(F& f, sz n, const Conf& x, const Change& g, const fl f0, const Ch
 	fl alpha = 1;
 
 	const fl pg = scalar_product(p, g, n);
+	if(StrictArmijo && (!std::isfinite(pg) || pg >= 0))
+		return 0;
 
 	VINA_U_FOR(trial, max_trials) {
 		x_new = x; x_new.increment(p, alpha);
 		f1 = f(x_new, g_new);
 		evalcount++;
-		if(f1 - f0 < c0 * alpha * pg) // FIXME check - div by norm(p) ? no?
+		if(StrictArmijo) {
+			if(std::isfinite(f1) && f1 < f0 && f1 - f0 <= c0 * alpha * pg &&
+			   finite_change(g_new, n))
+				return alpha;
+		}
+		else if(f1 - f0 < c0 * alpha * pg) // FIXME check - div by norm(p) ? no?
 			break;
 		alpha *= multiplier;
 	}
-	return alpha;
+	return StrictArmijo ? 0 : alpha;
 }
 
 inline void set_diagonal(flmat& m, fl x) {
@@ -137,7 +151,7 @@ void subtract_change(Change& b, const Change& a, sz n) { // b -= a
 		b(i) -= a(i);
 }
 
-template<typename F, typename Conf, typename Change>
+template<bool StrictArmijo = false, typename F, typename Conf, typename Change>
 fl bfgs(F& f, Conf& x, Change& g, const unsigned max_steps, const fl average_required_improvement, const sz over,
 		int& evalcount) { // x is I/O, final value is returned
 	sz n = g.num_floats();
@@ -148,6 +162,9 @@ fl bfgs(F& f, Conf& x, Change& g, const unsigned max_steps, const fl average_req
 	Conf x_new(x);
 	fl f0 = f(x, g);
 	evalcount++;
+	if(StrictArmijo && (!std::isfinite(f0) || !finite_change(g, n) ||
+	   std::sqrt(scalar_product(g, g, n)) < 1e-5))
+		return f0;
 
 	fl f_orig = f0;
 	Change g_orig(g);
@@ -161,16 +178,34 @@ fl bfgs(F& f, Conf& x, Change& g, const unsigned max_steps, const fl average_req
 	VINA_U_FOR(step, max_steps) {
 		minus_mat_vec_product(h, g, p);
 		fl f1 = 0;
-		const fl alpha = line_search(f, n, x, g, f0, p, x_new, g_new, f1, evalcount);
+		const fl alpha = line_search<StrictArmijo>(f, n, x, g, f0, p, x_new, g_new, f1, evalcount);
+		if(StrictArmijo && alpha == 0)
+			break;
 		Change y(g_new); subtract_change(y, g, n);
 
 		f_values.push_back(f1);
 		f0 = f1;
 		x = x_new;
+		if(StrictArmijo)
+			g = g_new;
 		if(!(std::sqrt(scalar_product(g, g, n)) >= 1e-5)) break; // breaks for nans too // FIXME !!?? 
-		g = g_new; // ?
+		if(!StrictArmijo)
+			g = g_new; // ?
 
-		if(step == 0) {
+		if(StrictArmijo) {
+			const fl sy = alpha * scalar_product(y, p, n);
+			if(!std::isfinite(sy) || sy < epsilon_fl)
+				continue;
+			if(step == 0) {
+				const fl yy = scalar_product(y, y, n);
+				if(std::isfinite(yy) && yy > epsilon_fl) {
+					const fl scale = sy / yy;
+					if(std::isfinite(scale) && scale > 0)
+						set_diagonal(h, scale);
+				}
+			}
+		}
+		else if(step == 0) {
 			const fl yy = scalar_product(y, y, n);
 			if(std::abs(yy) > epsilon_fl)
 				set_diagonal(h, alpha * scalar_product(y, p, n) / yy);

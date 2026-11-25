@@ -22,18 +22,35 @@
 
 #include "non_cache.h"
 #include "curl.h"
+#include "net_polar.h"
 
 non_cache::non_cache(szv_grid&& receptor_index, const grid_dims& gd_, const precalculate* p_, fl slope_)
 	: slope(slope_), sgrid(std::move(receptor_index)), gd(gd_), p(p_) {}
 
-fl non_cache::eval      (const model& m, fl v) const { // clean up
+fl non_cache::eval(const model& m, fl v) const {
+	return eval(m, v, *p);
+}
+
+fl non_cache::eval(const model& m, fl v, const precalculate& scores) const {
+	return eval_impl<false>(m, v, scores, nullptr, nullptr, nullptr);
+}
+
+fl non_cache::directional_eval(const model& m, fl v, const ScoringFunction& sf,
+                               const net_polar& polar, net_polar_terms& terms) const {
+	return eval_impl<true>(m, v, *p, &sf, &polar, &terms);
+}
+
+template<bool Directional>
+fl non_cache::eval_impl(const model& m, fl v, const precalculate& scores,
+                         const ScoringFunction* sf, const net_polar* polar, net_polar_terms* terms) const {
 	fl e = 0;
-	const fl cutoff_sqr = p->cutoff_sqr();
+	const fl cutoff_sqr = scores.cutoff_sqr();
 
 	sz n = num_atom_types(atom_type::XS);
 
 	VINA_FOR(i, m.num_movable_atoms()) {
 		fl this_e = 0;
+		fl direction_delta = 0;
 		fl out_of_bounds_penalty = 0;
 		const atom& a = m.atoms[i];
 		sz t1 = a.get(atom_type::XS);
@@ -80,10 +97,29 @@ fl non_cache::eval      (const model& m, fl v) const { // clean up
 			fl r2 = sqr(r_ba);
 			if(r2 < cutoff_sqr) {
 				sz type_pair_index = get_type_pair_index(atom_type::XS, a, b);
-				this_e +=  p->eval_fast(type_pair_index, r2);
+				this_e += scores.eval_fast(type_pair_index, r2);
+				if (Directional && (a.el == EL_TYPE_N || a.el == EL_TYPE_O) &&
+				    (b.el == EL_TYPE_N || b.el == EL_TYPE_O) && xs_h_bond_possible(t1, t2)) {
+					const fl native_hbond = scores.eval_fast_component(r2, [&](fl distance) {
+						return sf->vina_hbond(t1, t2, distance);
+					});
+					if (native_hbond != 0) {
+						const fl directed_hbond = native_hbond * polar->direction(m, i, j, adjusted_a_coords, b.coords);
+						direction_delta += directed_hbond - native_hbond;
+						terms->native_hbond += native_hbond;
+						terms->directed_hbond += directed_hbond;
+					}
+				}
 			}
 		}
-		curl(this_e, v);
+		if (Directional) {
+			fl replaced = this_e + direction_delta;
+			curl(replaced, v);
+			curl(this_e, v);
+			terms->direction_delta += replaced - this_e;
+		} else {
+			curl(this_e, v);
+		}
 		e += this_e + out_of_bounds_penalty;
 	}
 	return e;
