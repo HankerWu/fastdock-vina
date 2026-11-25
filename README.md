@@ -1,8 +1,18 @@
-# FastDock Vina
+# FastDock Vina Pro
 
-基于 [AutoDock Vina](https://github.com/ccsb-scripps/AutoDock-Vina/tree/3c65c0b3e6c2c1d183f6a175ecb65e3c5ba91645) 的 CPU 优化版本，保留双精度计算和原有搜索设置，不使用 GPU。
+AutoDock Vina 的 CPU 优化和对接研发分支。
 
-## 相比原版的效果
+[性能实验记录](docs/BENCHMARKS.md) · [逐项数据](benchmarks/benchmark.csv) · [源码来源](docs/PROVENANCE.md) · [上游 AutoDock Vina](https://github.com/ccsb-scripps/AutoDock-Vina)
+
+FastDock Vina 基于 [AutoDock Vina](https://github.com/ccsb-scripps/AutoDock-Vina/tree/3c65c0b3e6c2c1d183f6a175ecb65e3c5ba91645) 做 CPU 优化。Pro 研发分支继承这些优化，并提供可选的搜索、精修和姿势重排方法。
+
+![25 项测试的加速比及汇总指标](docs/figures/speedup-summary.png)
+
+## 为什么用 FastDock Vina
+
+在 CPU 集群上执行大批量虚拟筛选时，单次对接的耗时和内存需求会累积。常规 FastDock 的工程优化保留双精度和原搜索逻辑。
+
+## 效果
 
 下表记录发布版的历史结果。后续改动和复测见[工作线程复用](docs/BENCHMARKS.md#工作线程复用的本地复测)
 和[受体查表与空间索引](docs/BENCHMARKS.md#受体查表与空间索引复用)。
@@ -12,23 +22,24 @@
 [亲和力网格读取与姿势写出](docs/BENCHMARKS.md#亲和力网格读取与姿势写出)
 和[局部搜索向量与网格索引](docs/BENCHMARKS.md#局部搜索向量与网格索引)。
 
-在 Intel Xeon Platinum 8362 上测试 19 个完整对接案例，每个案例重复 3 次，取各案例耗时中位数后求和：
+测试平台为 Intel Xeon Platinum 8362，每个案例重复 3 次并取中位数：
 
-| 版本 | 总耗时 | 耗时降低 |
-| --- | ---: | ---: |
-| 原始 AutoDock Vina | 3242.525 秒 | — |
-| FastDock Vina | 2989.231 秒 | **7.81%** |
+| 指标 | 结果 |
+| --- | --- |
+| 25 项测试的等权几何平均加速比（19 项完整对接 + 6 项评分 / 局部优化） | **1.228×** |
+| 19 项完整对接的合计耗时（原版 3242.525 秒 → 2989.231 秒） | 降低 **7.81%**（约 1.085×） |
+| 峰值内存（RSS） | 降低 **28.71%–73.27%** |
+| 对接输出 | 已测配置下与原版**逐字节一致** |
 
-全部 **25 项测试**（19 项完整对接 + 6 项评分／局部优化）的**等权几何平均加速比为 1.228×**。计算时，每项先取 3 次耗时中位数，以 `原版耗时 / FastDock 耗时` 得到加速比，再对 25 个比值取几何平均（[逐项数据](benchmarks/benchmark.csv)）。
+两个速度指标口径不同：1.228× 给每项测试相同权重；7.81% 是 19 项完整对接的总耗时变化。19 个完整对接案例都比原版快。所有结果只适用于已测的环境和输入，详细数据与验证范围见 [实验记录](docs/BENCHMARKS.md)。
 
-两个指标的口径不同：**1.228×** 对每项测试赋予相同权重；**7.81%** 是 19 项完整对接的合计耗时降低，折合约 **1.085×**。几何平均值不代表每个案例的最低加速或单例最高加速。
+![1iep 配体在受体中的位置，以及原版与 FastDock 构象的叠加](docs/figures/docking-overlay.png)
 
-19 个案例均快于原版，峰值内存（RSS）降低 **28.71%–73.27%**。已测配置的对接 PDBQT 输出与原版逐字节一致；结果仅适用于已测环境和输入。详细数据与验证范围见 [实验记录](docs/BENCHMARKS.md)。
+上图右侧放大了 MODEL 1：原版为蓝色，FastDock 为橙色，两者坐标完全重合（40 个原子的 RMSD 为 **0.000 Å**，未做结构对齐）。[对接输出](examples/basic/1iep_docked.pdbqt) · [图表数据与复现方法](docs/FIGURES.md)
 
-![25 项测试的加速比及汇总指标](docs/figures/speedup-summary.png)
+## 做了哪些优化
 
-## 优化方法
-
+- 调整 BFGS 矩阵布局，用 CPU SIMD 同时处理相互独立的行，并保留原有的累加顺序。
 - 按实际进入受体空间索引和配体相互作用列表的类型对构建 Vina/Vinardo 查表。普通相互作用按实际截断距离采样，大环闭合项保留 20 Å 查表。
 - 显式受体评分只为当前配体和柔性残基需要的类型建表。亲和力网格复用这些表，批处理遇到新类型时补表并继续复用已有表。
 - 组装模型时确定原子对的查表索引。AD4 只采样参与评分的原子对，每对保留独立的电荷信息。局部搜索并行插值成对能量和径向导数，保留双精度和原子对累加顺序。
@@ -44,10 +55,10 @@
 
 ## 编译
 
-需要 Python 3.8+、支持 C++14 的 GCC/Clang 和 Boost（已验证 1.82）。
+需要 Python 3.8+、支持 C++14 的 GCC 或 Clang，以及 Boost（已验证 1.82）。
 
 ```bash
-git clone https://github.com/Drangon-Li/fastdock-vina.git
+git clone --branch fastdock-vina-pro https://github.com/HankerWu/fastdock-vina.git
 cd fastdock-vina
 ```
 
@@ -58,7 +69,7 @@ sudo apt-get install build-essential python3 libboost-all-dev
 python3 tools/build.py --jobs 4
 ```
 
-macOS（已安装 Xcode Command Line Tools 和 Homebrew）：
+macOS（需要 Xcode 命令行工具和 Homebrew）：
 
 ```bash
 brew install boost
@@ -67,7 +78,7 @@ python3 tools/build.py --boost-prefix "$(brew --prefix boost)" --jobs 4
 
 ## 运行
 
-使用仓库自带的 1iep 示例：
+用仓库自带的 1iep 示例跑一次对接：
 
 ```bash
 mkdir -p demo_out
@@ -80,7 +91,7 @@ mkdir -p demo_out
   --out demo_out/1iep_out.pdbqt
 ```
 
-结果保存至 `demo_out/1iep_out.pdbqt`。更多参数见 `./build/vina --help`。示例使用 `exhaustiveness=8`，上述性能测试使用 `32`。
+结果保存在 `demo_out/1iep_out.pdbqt`，更多参数见 `./build/vina --help`。示例使用 `exhaustiveness=8`，上面的性能测试使用的是 `32`。
 
 Vina 和 Vinardo 的普通相互作用截断距离默认是 8 Å。可用
 `--interaction_cutoff 6.75` 覆盖，或在 `--config` 指向的文件中写
@@ -230,12 +241,36 @@ PYTHONDONTWRITEBYTECODE=1 python3 benchmarks/check_refinement_input_compatibilit
 
 原生候选筛选可用 `--use_min_rmsd_for_merge` 把命令给定的 `--min_rmsd` 用于跨轨迹合并。 [候选筛选和距离控制](docs/NATIVE_MERGE_RMSD.md)
 
-## 对接构象
+## 引用
 
-![1iep 配体在受体中的位置及原版与 FastDock 的构象叠加](docs/figures/docking-overlay.png)
+研究中使用时，请引用 Vina 的原始论文：
 
-左图展示配体在受体中的位置，右图放大 MODEL 1：原版为蓝色，FastDock 为橙色，两者输出坐标完全重合（40 个原子的 RMSD 为 **0.000 Å**，未做结构对齐）。图中保留真实化学键，显示 37 个重原子。[对接输出](examples/basic/1iep_docked.pdbqt) · [图表数据与复现方法](docs/FIGURES.md)。
+- Trott, O. & Olson, A. J. AutoDock Vina: improving the speed and accuracy of docking with a new scoring function, efficient optimization, and multithreading. *J. Comput. Chem.* 31, 455–461 (2010). https://doi.org/10.1002/jcc.21334
+- Eberhardt, J., Santos-Martins, D., Tillack, A. F. & Forli, S. AutoDock Vina 1.2.0: New Docking Methods, Expanded Force Field, and Python Bindings. *J. Chem. Inf. Model.* 61, 3891–3898 (2021). https://doi.org/10.1021/acs.jcim.1c00203
 
-## 许可与致谢
+## Topic / Keywords
 
-遵循 [Apache 2.0](LICENSE)，保留 AutoDock Vina 的版权与署名。研究使用请引用 [Vina 原始论文](https://doi.org/10.1002/jcc.21334)和 [Vina 1.2.0 论文](https://doi.org/10.1021/acs.jcim.1c00203)。源码来源见 [PROVENANCE](docs/PROVENANCE.md)。
+- **解决的问题**：AutoDock Vina 在 CPU 上做大规模分子对接和虚拟筛选时耗时长、内存占用高，而常见的加速方案依赖 GPU，或会改变计算结果。
+- **实现方式**：在不改变双精度、搜索算法和累加顺序的前提下做 C++ 工程优化，包括共享评分查找表、缓存热循环指针、移动语义替代深拷贝、BFGS 矩阵 SIMD 化；用 25 项基准测试和逐字节输出比对来验证。
+- **项目类别**：计算化学 · 分子对接 · 虚拟筛选 · 药物发现 · 高性能计算（HPC）· C++ 性能优化 · AutoDock Vina 分支
+- **研发选项**：Pro 可选用不同的搜索、精修或重排方法。性能表记录常规版发布时的已验证条件。
+- **中文关键词**：分子对接、AutoDock Vina 加速、虚拟筛选、药物发现、蛋白-配体对接、CPU 优化、SIMD、内存优化、可复现、结果一致
+- **English keywords**: molecular docking, AutoDock Vina, faster Vina, Vina CPU optimization, virtual screening, drug discovery, protein-ligand docking, PDBQT, SIMD, BFGS, memory reduction, bit-identical results, reproducible benchmark, computational chemistry, HPC, C++
+
+## TL;DR
+
+> Pro 提供常规 FastDock 的 CPU 优化和可单独启用的对接实验。常规版发布时的 25 项对照几何平均加速 1.228×，该数据来自上表所述的历史环境。
+
+## Link
+
+- [FastDock Vina Pro](https://github.com/HankerWu/fastdock-vina/tree/fastdock-vina-pro)
+- [常规 FastDock](https://github.com/holamochi/fastdock-vina)
+- 上游 AutoDock Vina：https://github.com/ccsb-scripps/AutoDock-Vina
+- 同类项目：
+  - QuickVina 2（加速版 AutoDock Vina）：https://github.com/QVina/qvina
+  - AutoDock-GPU（GPU 加速的 AutoDock）：https://github.com/forlilab/AutoDock-GPU
+  - gnina（基于深度学习打分的分子对接）：https://github.com/gnina/gnina
+
+## 开源许可
+
+本项目遵循 [Apache License 2.0](LICENSE)，保留 AutoDock Vina 的版权与署名。源码来源见 [PROVENANCE](docs/PROVENANCE.md)。
