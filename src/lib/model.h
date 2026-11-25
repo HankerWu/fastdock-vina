@@ -25,6 +25,7 @@
 #ifndef VINA_MODEL_H
 #define VINA_MODEL_H
 
+#include <memory>
 #include <boost/optional.hpp> // for context
 
 #include "file.h"
@@ -35,10 +36,11 @@
 
 
 struct interacting_pair {
-	sz type_pair_index;
+	// Index the score table by XS type pair or, for charge-dependent AD4, by atom pair.
+	sz table_index;
 	sz a;
 	sz b;
-	interacting_pair(sz type_pair_index_, sz a_, sz b_) : type_pair_index(type_pair_index_), a(a_), b(b_) {}
+	interacting_pair(sz table_index_, sz a_, sz b_) : table_index(table_index_), a(a_), b(b_) {}
 };
 
 typedef std::vector<interacting_pair> interacting_pairs;
@@ -79,7 +81,6 @@ public:
 	model() : m_num_movable_atoms(0), m_atom_typing_used(atom_type::XS) {}
 	model(atom_type::t atype) : m_num_movable_atoms(0), m_atom_typing_used(atype) {}
 
-    atomv get_atoms() const { return atoms; } // for precalculate_byatom
     atom get_atom(sz i) const { return atoms[i]; }
     ligand get_ligand(sz i) const { return ligands[i]; }
 	vec get_coords(sz i) const { return coords[i]; }
@@ -155,7 +156,8 @@ public:
 	fl evalo     (const precalculate_byatom& p,                  const vec& v           ) const;
 	fl evali     (const precalculate_byatom& p,                  const vec& v           ) const;
 	fl eval_inter(const precalculate_byatom& p,                  const vec& v           ) const;
-	fl eval_deriv(const precalculate_byatom& p, const igrid& ig, const vec& v, change& g,
+	// Gradient uses the same layout as conf::set_incremented.
+	fl eval_deriv(const precalculate_byatom& p, const igrid& ig, const vec& v, flv& gradient,
 	              pose_template* reference = nullptr);
 	fl eval_intramolecular(const precalculate_byatom& p, const igrid& ig, const vec& v);
 
@@ -173,11 +175,11 @@ public:
 
 	fl clash_penalty() const;
 
-	const atom& get_atom(const atom_index& i) const { return (i.in_grid ? grid_atoms[i.i] : atoms[i.i]); }
-	      atom& get_atom(const atom_index& i)       { return (i.in_grid ? grid_atoms[i.i] : atoms[i.i]); }
+	const atom& get_atom(const atom_index& i) const { return i.in_grid ? (*m_grid_atoms)[i.i] : atoms[i.i]; }
 
 private:
 	friend struct parallel_mc;
+	friend struct precalculate_byatom;
 	friend struct cache;
 	friend struct non_cache;
 	friend struct ad4cache;
@@ -224,17 +226,19 @@ private:
     bool is_unmatched_closure_dummy(sz i, sz j) const;
 	bool is_glue_pair(sz i, sz j) const;
 
-	void assign_bonds(const distance_type_matrix& mobility); // assign bonds based on relative mobility, distance and covalent length
-	void assign_types();
+	const atomv& grid_atoms() const;
+	atom& initializing_atom(const atom_index& i, atomv& rigid_atoms) { return i.in_grid ? rigid_atoms[i.i] : atoms[i.i]; }
+	void assign_bonds(const distance_type_matrix& mobility, atomv& rigid_atoms);
+	void assign_types(atomv& rigid_atoms);
 	void initialize_pairs(const distance_type_matrix& mobility);
 	vec ligand_heavy_centroid(sz ligand_number, const vecv& positions, const vec& origin) const;
-	void initialize(const distance_type_matrix& mobility);
+	void initialize(const distance_type_matrix& mobility, atomv rigid_atoms);
 	fl clash_penalty_aux(const interacting_pairs& pairs) const;
 
 	vecv coords;
 	vecv minus_forces;
 
-	atomv grid_atoms;
+	std::shared_ptr<const atomv> m_grid_atoms;
 	atomv atoms; // movable, inflex
 	vector_mutable<ligand> ligands;
 	vector_mutable<residue> flex;

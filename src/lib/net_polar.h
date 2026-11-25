@@ -11,8 +11,8 @@ public:
 
 	net_polar(const model& m, const vecv& waters)
 		: polar(m), ligand_site(index_sites(polar.ligand, m.atoms.size())),
-		  receptor_site(index_sites(polar.receptor, m.grid_atoms.size())),
-		  ligand_radii(radii(m.atoms)), receptor_radii(radii(m.grid_atoms)),
+		  receptor_site(index_sites(polar.receptor, m.grid_atoms().size())),
+		  ligand_radii(radii(m.atoms)), receptor_radii(radii(m.grid_atoms())),
 		  bridges(prepare_waters(m, waters)) {}
 
 	fl direction(const model& m, sz lig, sz rec, const vec& lig_xyz, const vec& rec_xyz) const {
@@ -22,14 +22,14 @@ public:
 			return 1;
 		const vec unit = (1 / distance) * displacement;
 		const auto& a = m.atoms[lig];
-		const auto& b = m.grid_atoms[rec];
+		const auto& b = m.grid_atoms()[rec];
 		fl gate = 0;
 		if (xs_donor_acceptor(b.xs, a.xs))
 			gate = direct_gate(ligand_site[lig], lig_xyz, unit,
 			                   [&](sz i) -> const vec& { return m.coords[i]; });
 		if (xs_donor_acceptor(a.xs, b.xs))
 			gate = std::max(gate, direct_gate(receptor_site[rec], rec_xyz, -1 * unit,
-			                                 [&](sz i) -> const vec& { return m.grid_atoms[i].coords; }));
+			                                 [&](sz i) -> const vec& { return m.grid_atoms()[i].coords; }));
 		return gate;
 	}
 
@@ -46,7 +46,7 @@ public:
 					add_neighbor(ligand_neighbors, center, radius, m.coords[i], ligand_radii[i]);
 			}
 			VINA_FOR_IN(i, receptor_radii)
-				add_neighbor(receptor_neighbors, center, radius, m.grid_atoms[i].coords, receptor_radii[i]);
+				add_neighbor(receptor_neighbors, center, radius, m.grid_atoms()[i].coords, receptor_radii[i]);
 
 			if (receptor_neighbors.empty())
 				continue;
@@ -164,7 +164,7 @@ private:
 		for (const auto& oxygen : waters) {
 			bool clashes = false;
 			VINA_FOR_IN(i, receptor_radii) {
-				if (receptor_radii[i] > 0 && (oxygen - m.grid_atoms[i].coords).norm_sqr() < sqr(2.2)) {
+				if (receptor_radii[i] > 0 && (oxygen - m.grid_atoms()[i].coords).norm_sqr() < sqr(2.2)) {
 					clashes = true;
 					break;
 				}
@@ -173,11 +173,11 @@ private:
 				continue;
 			water_bridge bridge{oxygen, {}};
 			for (const auto& protein : polar.receptor) {
-				const vec& center = m.grid_atoms[protein.index].coords;
+				const vec& center = m.grid_atoms()[protein.index].coords;
 				const vec to_water = oxygen - center;
 				const fl distance = to_water.norm();
 				const fl quality = contact(protein, center, to_water, distance,
-					[&](sz i) -> const vec& { return m.grid_atoms[i].coords; });
+					[&](sz i) -> const vec& { return m.grid_atoms()[i].coords; });
 				if (quality > 0)
 					bridge.legs.push_back({(-1 / distance) * to_water, quality});
 			}

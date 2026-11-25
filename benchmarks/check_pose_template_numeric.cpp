@@ -25,14 +25,16 @@ model parse_root(const std::string& atoms) {
 	return parse_ligand_pdbqt_from_string("ROOT\n" + atoms + "ENDROOT\nTORSDOF 0\n", atom_type::XS);
 }
 
-non_cache empty_receptor_grid(const model& ligand, const precalculate& pair_scores) {
+non_cache empty_receptor_grid(const model& ligand, const std::shared_ptr<const ScoringFunction>& scoring) {
 	grid_dims bounds;
 	for (auto& axis : bounds) {
 		axis.begin = -80;
 		axis.end = 80;
 		axis.n_voxels = 400;
 	}
-	return non_cache(szv_grid(ligand, bounds, pair_scores.cutoff_sqr()), bounds, &pair_scores, 1e6);
+	non_cache grid(ligand, bounds, scoring, 1e6);
+	grid.prepare_for_model(ligand);
+	return grid;
 }
 
 void check_cartesian() {
@@ -84,13 +86,12 @@ void check_parsed_elements() {
 }
 
 void check_optimizer(const std::string& ligand_path) {
-	const ScoringFunction vina(SF_VINA, {-0.035579, -0.005156, 0.840245, -0.035069,
+	const auto vina = std::make_shared<ScoringFunction>(SF_VINA, flv{-0.035579, -0.005156, 0.840245, -0.035069,
 	                                    -0.587439, 50, 5 * 0.05846 / 0.1 - 1});
-	const precalculate atom_scores(vina);
 	const vec cap(1000, 1000, 1000);
 	model ligand = parse_ligand_pdbqt_from_file(ligand_path, atom_type::XS);
-	const precalculate_byatom pairs(vina, ligand);
-	const non_cache grid = empty_receptor_grid(ligand, atom_scores);
+	const precalculate_byatom pairs(*vina, ligand);
+	const non_cache grid = empty_receptor_grid(ligand, vina);
 	const conf initial = ligand.get_initial_conf();
 	ligand.set(initial);
 	std::ostringstream template_rows;
@@ -101,40 +102,36 @@ void check_optimizer(const std::string& ligand_path) {
 	}
 	std::istringstream source(template_rows.str());
 	pose_template reference(source, ligand.chemical_heavy_atom_elements());
-	change native_gradient(ligand.get_size());
-	change full_gradient(ligand.get_size());
+	flv native_gradient(ligand.get_size().num_degrees_of_freedom());
+	flv full_gradient(native_gradient.size());
 	const fl native = ligand.eval_deriv(pairs, grid, cap, native_gradient);
 	const fl guided = ligand.eval_deriv(pairs, grid, cap, full_gradient, &reference);
 	require(std::abs(guided - native + 6 * ligand.template_overlap(reference)) < 1e-12,
 	        "Template gradient path must report the same raw term as rank/select");
 	const fl step = 1e-5;
-	for (sz dof = 0; dof < full_gradient.num_floats(); ++dof) {
-		change basis(ligand.get_size());
-		for (sz i = 0; i < basis.num_floats(); ++i)
-			basis(i) = i == dof;
+	for (sz dof = 0; dof < full_gradient.size(); ++dof) {
+		flv basis(full_gradient.size(), 0);
+		basis[dof] = 1;
 		conf perturbed = initial;
-		perturbed.increment(basis, step);
+		perturbed.set_incremented(initial, basis, step);
 		ligand.set(perturbed);
 		const fl plus = -6 * ligand.template_overlap(reference);
-		perturbed = initial;
-		perturbed.increment(basis, -step);
+		perturbed.set_incremented(initial, basis, -step);
 		ligand.set(perturbed);
 		const fl minus = -6 * ligand.template_overlap(reference);
-		require(std::abs((plus - minus) / (2 * step) - (full_gradient(dof) - native_gradient(dof))) < 1e-5,
+		require(std::abs((plus - minus) / (2 * step) - (full_gradient[dof] - native_gradient[dof])) < 1e-5,
 		        "Template contribution to pose translation/orientation/torsions disagrees with finite differences");
 	}
 
 	model point = parse_root(atom_record(1, "C", 0));
-	const precalculate_byatom point_pairs(vina, point);
-	const non_cache point_grid = empty_receptor_grid(point, atom_scores);
+	const precalculate_byatom point_pairs(*vina, point);
+	const non_cache point_grid = empty_receptor_grid(point, vina);
 	std::istringstream target("C 2 0 0\n");
 	pose_template guide(target, point.chemical_heavy_atom_elements());
 	output_type result(point.get_initial_conf(), 0);
-	change point_gradient(point.get_size());
-	quasi_newton refine;
-	refine.max_steps = 15;
+	quasi_newton refine(point.get_size(), 15);
 	int calls = 0;
-	refine(point, point_pairs, point_grid, result, point_gradient, cap, calls, &guide);
+	refine(point, point_pairs, point_grid, result, cap, calls, &guide);
 	require(std::abs(point.movable_coords(0)[0] - 2) < 1e-5 && std::abs(result.e + 6) < 1e-8 && calls > 1,
 	        "Native BFGS with the template term must reach the attractive minimum");
 }

@@ -38,6 +38,7 @@ public:
 	grid() : m_init(0, 0, 0), m_range(1, 1, 1), m_factor(1, 1, 1), m_dim_fl_minus_1(-1, -1, -1), m_factor_inv(1, 1, 1) {} // not private
 	grid(const grid_dims& gd) { init(gd); }
     void init(const grid_dims& gd);
+	grid_dims read_map(const path& filename);
 	vec index_to_argument(sz x, sz y, sz z) const {
 		return vec(m_init[0] + m_factor_inv[0] * x,
 		           m_init[1] + m_factor_inv[1] * y,

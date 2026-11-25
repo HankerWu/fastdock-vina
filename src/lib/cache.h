@@ -20,9 +20,12 @@
 
 */
 
+// FastDock: affinity grid construction shares the receptor spatial index.
+
 #ifndef VINA_CACHE_H
 #define VINA_CACHE_H
 
+#include <bitset>
 #include <iostream>
 #include <string>
 #include <sstream>
@@ -54,12 +57,14 @@ public:
     vec corner2() const { vec corner(m_gd[0].end, m_gd[1].end, m_gd[2].end); return corner; }
     bool is_in_grid(const model &m, fl margin=0.0001) const;
     bool is_atom_type_grid_initialized(sz t) const { return m_grids[t].initialized(); }
-    bool are_atom_types_grid_initialized(szv atom_types) const;
+    bool are_atom_types_grid_initialized(const szv& atom_types) const;
+	static std::bitset<XS_TYPE_SIZE> map_types(const szv& atom_types);
+	std::bitset<XS_TYPE_SIZE> missing_map_types(const szv& atom_types) const;
     void read(const std::string& str);
     void write(const std::string& out_prefix, const szv& atom_types, const std::string& gpf_filename="NULL",
                const std::string& fld_filename="NULL", const std::string& receptor_filename="NULL");
 	void populate(const model& m, const precalculate& p, const szv_grid& receptor_index,
-	              const szv& atom_types_needed);
+	              const std::bitset<XS_TYPE_SIZE>& map_types_needed);
 private:
 	grid_dims m_gd;
 	fl m_slope; // does not get (de-)serialized

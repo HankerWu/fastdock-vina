@@ -61,7 +61,7 @@ void check_queue(model m) {
 void check_search(const model& original) {
 	const ScoringFunction scoring(SF_VINA, {-0.035579, -0.005156, 0.840245, -0.035069,
 	                                       -0.587439, 50, 0.05846});
-	const precalculate scores(scoring);
+	precalculate scores(scoring.get_cutoff());
 	const precalculate_byatom ligand_scores(scoring, original);
 	grid_dims dims;
 	const vec center(15.190, 53.903, 16.917);
@@ -72,7 +72,9 @@ void check_search(const model& original) {
 	}
 	cache grid(dims, 1e6);
 	szv_grid index(original, szv_grid_dims(dims), scores.cutoff_sqr());
-	grid.populate(original, scores, index, original.get_movable_atom_types(atom_type::XS));
+	const auto types = cache::map_types(original.get_movable_atom_types(atom_type::XS));
+	scores.populate(scoring, index.atom_types(), types);
+	grid.populate(original, scores, index, types);
 
 	monte_carlo search;
 	search.max_evals = 1800;

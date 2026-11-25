@@ -46,8 +46,7 @@ void monte_carlo::operator()(model& m, output_container& out, const precalculate
                              const boost::optional<vec>& pocket_start) const {
     int evalcount = 0;
 	vec authentic_v(1000, 1000, 1000); // FIXME? this is here to avoid max_fl/max_fl
-	conf_size s = m.get_size();
-	change g(s);
+	const conf_size s = m.get_size();
 	output_type tmp(s, 0);
 	tmp.c.randomize(corner1, corner2, generator);
 	if (pocket_start || (counters && m.num_ligands() == 1 && m.num_flex() == 0)) {
@@ -66,8 +65,7 @@ void monte_carlo::operator()(model& m, output_container& out, const precalculate
 	output_type candidate(s, 0);
 	fl best_e = max_fl;
 	bool reference_from_save = false;
-	quasi_newton quasi_newton_par;
-    quasi_newton_par.max_steps = local_steps;
+	quasi_newton quasi_newton_par(s, local_steps);
 	VINA_U_FOR(step, global_steps) {
 		if(increment_me)
 			++(*increment_me);
@@ -77,7 +75,7 @@ void monte_carlo::operator()(model& m, output_container& out, const precalculate
 		const bool reoriented = mutate_conf(candidate.c, m, mutation_amplitude, generator,
 		                                    mixed_reorientation, separate_hunt_chain, centered_rotation);
 		const int before_hunt = evalcount;
-		quasi_newton_par(m, p, ig, candidate, g, hunt_cap, evalcount);
+		quasi_newton_par(m, p, ig, candidate, hunt_cap, evalcount);
 		if (counters) {
 			++counters->hunt_calls;
 			counters->hunt_evals += evalcount - before_hunt;
@@ -106,7 +104,7 @@ void monte_carlo::operator()(model& m, output_container& out, const precalculate
 				output_type& saved = separate_hunt_chain ? candidate : tmp;
 				if (separate_hunt_chain)
 					saved.c = tmp.c;
-				quasi_newton_par(m, p, ig, saved, g, authentic_v, evalcount);
+				quasi_newton_par(m, p, ig, saved, authentic_v, evalcount);
 				if (counters) {
 					++counters->second_calls;
 					counters->second_evals += evalcount - before_second;

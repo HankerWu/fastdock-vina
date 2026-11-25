@@ -33,7 +33,6 @@ szv_grid::szv_grid(const model& m, const grid_dims& gd, fl cutoff_sqr) : m_data(
 	}
 	m_range = end - m_init;
 
-	const sz nat = num_atom_types(m.atom_typing_used());
 	boost::array<flv, 3> edges;
 	VINA_FOR_IN(axis, edges) {
 		const sz cells = m_data.dim(axis);
@@ -41,10 +40,12 @@ szv_grid::szv_grid(const model& m, const grid_dims& gd, fl cutoff_sqr) : m_data(
 		VINA_FOR_IN(i, edges[axis])
 			edges[axis][i] = m_init[axis] + m_range[axis] * fl(i) / fl(cells);
 	}
-	VINA_FOR_IN(i, m.grid_atoms) {
-		const atom& a = m.grid_atoms[i];
-		if (a.get(m.atom_typing_used()) >= nat || !(brick_distance_sqr(m_init, end, a.coords) < cutoff_sqr))
+	const auto& receptor = m.grid_atoms();
+	VINA_FOR_IN(i, receptor) {
+		const atom& a = receptor[i];
+		if (a.xs >= XS_TYPE_SIZE || !(brick_distance_sqr(m_init, end, a.coords) < cutoff_sqr))
 			continue;
+		m_atom_types.set(a.xs);
 		boost::array<sz, 3> first, last;
 		VINA_FOR_IN(axis, edges) {
 			const fl position = a.coords[axis];
@@ -71,25 +72,17 @@ szv_grid::szv_grid(const model& m, const grid_dims& gd, fl cutoff_sqr) : m_data(
 	}
 }
 
-fl szv_grid::average_num_possibilities() const {
-	sz counter = 0;
-	VINA_FOR(x, m_data.dim0())
-	VINA_FOR(y, m_data.dim1())
-	VINA_FOR(z, m_data.dim2()) {
-		counter += m_data(x, y, z).size();
-	}
-	return fl(counter) / (m_data.dim0() * m_data.dim1() * m_data.dim2());
+sz szv_grid::cell_index(sz axis, fl coord) const {
+	assert(coord + epsilon_fl >= m_init[axis]);
+	assert(coord <= m_init[axis] + m_range[axis] + epsilon_fl);
+	const sz cells = m_data.dim(axis);
+	const fl position = (coord - m_init[axis]) * cells / m_range[axis];
+	return fl_to_sz(position, cells - 1);
 }
 
 const szv& szv_grid::possibilities(const vec& coords) const {
-	boost::array<sz, 3> index;
-	VINA_FOR_IN(i, index) {
-		assert(coords[i] + epsilon_fl >= m_init[i]);
-		assert(coords[i] <= m_init[i] + m_range[i] + epsilon_fl);
-		const fl tmp = (coords[i] - m_init[i]) * m_data.dim(i) / m_range[i];
-		index[i] = fl_to_sz(tmp, m_data.dim(i) - 1);
-	}
-	return m_data(index[0], index[1], index[2]);
+	return possibilities(cell_index(0, coords[0]), cell_index(1, coords[1]),
+	                     cell_index(2, coords[2]));
 }
 
 grid_dims szv_grid_dims(const grid_dims& gd) {

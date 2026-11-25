@@ -20,37 +20,20 @@
 
 */
 
+// Modified for FastDock Vina: reuse coordinates from the final BFGS evaluation.
+
 #include "quasi_newton.h"
-#include "bfgs.h"
 
-
-struct quasi_newton_aux {
-    model* m;
-    const precalculate_byatom* p;
-    const igrid* ig;
-    const vec v;
-    pose_template* reference;
-
-    quasi_newton_aux(model* m_, const precalculate_byatom* p_, const igrid* ig_, const vec& v_, pose_template* reference_)
-        : m(m_), p(p_), ig(ig_), v(v_), reference(reference_) {}
-    
-    fl operator()(const conf& c, change& g) {
-        // Before evaluating conf, we have to update model
-        m->set(c);
-        const fl tmp = m->eval_deriv(*p, *ig, v, g, reference);
-        return tmp;
-    }
-};
-
-void quasi_newton::operator()(model& m, const precalculate_byatom& p, const igrid& ig, output_type& out,
-                             change& g, const vec& v, int& evalcount, pose_template* reference) const {
-    quasi_newton_aux aux(&m, &p, &ig, v, reference);
-
-    fl res = strict_armijo
-        ? bfgs<true>(aux, out.c, g, max_steps, average_required_improvement, 10, evalcount)
-        : bfgs(aux, out.c, g, max_steps, average_required_improvement, 10, evalcount);
-
-    // Update model a last time after optimization
-    m.set(out.c);
-    out.e = res;
+void quasi_newton::operator()(model& m, const precalculate_byatom& p, const igrid& ig,
+                              output_type& out, const vec& v, int& evalcount, pose_template* reference) {
+    auto evaluate = [&](const conf& c, flv& gradient) {
+        m.set(c);
+        return m.eval_deriv(p, ig, v, gradient, reference);
+    };
+    const bfgs_result result = strict_armijo
+        ? workspace.minimize<true>(evaluate, out.c, max_steps, evalcount)
+        : workspace.minimize(evaluate, out.c, max_steps, evalcount);
+    if (result.restore_coordinates)
+        m.set(out.c);
+    out.e = result.energy;
 }

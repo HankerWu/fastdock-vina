@@ -20,6 +20,8 @@
 
 */
 
+// FastDock: share receptor data and defer affinity maps.
+
 #ifndef VINA_H
 #define VINA_H
 
@@ -159,9 +161,14 @@ public:
 						      double weight_ad4_elec=0.1406, double weight_ad4_dsolv=0.1322,
 						      double weight_glue=50, double weight_ad4_rot=0.2983);
 	std::vector<double> grid_dimensions_from_ligand(double buffer_size=4);
+	// Deferred setup preserves the box and receptor, then builds the maps at use.
 	void compute_vina_maps(double center_x, double center_y, double center_z,
 								  double size_x, double size_y, double size_z,
-								  double granularity=0.5, bool force_even_voxels=false);
+								  double granularity=0.5, bool force_even_voxels=false,
+								  bool defer_population=false);
+	// Prepare one shared box for batch ligands.
+	void initialize_vina_batch_maps(double center_x, double center_y, double center_z,
+	                               double size_x, double size_y, double size_z, double granularity);
 	void load_maps(std::string maps);
 	void randomize(const int max_steps=10000);
 	std::vector<double> score();
@@ -193,14 +200,13 @@ private:
 	flv m_weights;
 	std::shared_ptr<ScoringFunction> m_scoring_function;
 	precalculate_byatom m_precalculated_byatom;
-	precalculate m_precalculated_sf;
 	double m_rerank_gauss2_scale = 1.0;
 	std::shared_ptr<ScoringFunction> m_rerank_scoring_function;
-	precalculate m_rerank_precalculated_sf;
 	// maps
 	cache m_grid;
 	ad4cache m_ad4grid;
 	non_cache m_non_cache;
+	bool m_deferred_map_population = false;
 	bool m_map_initialized;
 	bool m_use_explicit_receptor = false;
 	// global search
@@ -237,6 +243,7 @@ private:
 	const char* trajectory_archive_name() const;
 	fl polar_rank_score(const output_type& pose) const;
 	fl output_energy_reference() const;
+	void write_pose_models(std::ostream& out, int how_many, double energy_range);
 	output_container remove_redundant(const output_container& in, fl min_rmsd);
 	void rerank_poses(output_container& poses, const vec& authentic_v);
 	void rank_template_poses(output_container& poses, pose_template& reference, sz& rank_evals);
@@ -249,10 +256,15 @@ private:
 	bool uses_net_polar_satisfaction() const;
 	void rank_net_polar_poses(output_container& poses);
 	std::array<fl, 4> net_polar_deltas(const net_polar_terms& terms, fl normalization) const;
-	non_cache fixed_pose_receptor(const precalculate& scores);
+	non_cache fixed_pose_receptor();
 
+	void reset_ligand_model(atom_type::t atom_typing);
+	void finish_ligand_setup(atom_type::t atom_typing);
+	void ensure_vina_maps();
+	void build_vina_maps(const vec& center, const vec& span, fl granularity,
+	                     bool force_even_voxels, bool defer_population);
 	void set_forcefield();
-	const igrid& vina_receptor_interactions() const;
+	const igrid& vina_receptor_interactions();
 	std::vector<double> optimize(output_type& out, const int max_steps=0);
 	int generate_seed(const int seed=0);
 };

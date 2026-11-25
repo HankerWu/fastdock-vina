@@ -34,7 +34,7 @@ signature topology(const model& ligand_model) {
 	}
 	for (const auto& pair : ligand.pairs) {
 		const auto a = serial[pair.a], b = serial[pair.b];
-		result.internal.emplace(std::min(a, b), std::max(a, b), pair.type_pair_index);
+		result.internal.emplace(std::min(a, b), std::max(a, b), pair.table_index);
 	}
 	return result;
 }

@@ -13,7 +13,7 @@ public:
 	};
 
 	explicit polar_geometry(const model& m)
-		: ligand(collect(m.atoms, false)), receptor(collect(m.grid_atoms, true)) {}
+		: ligand(collect(m.atoms, false)), receptor(collect(m.grid_atoms(), true)) {}
 
 	struct burial_terms {
 		fl burial = 0;
@@ -53,7 +53,7 @@ private:
 
 	static fl burial_fraction(const model& m, const vec& xyz) {
 		fl density = 0;
-		for (const atom& rec : m.grid_atoms) {
+		for (const atom& rec : m.grid_atoms()) {
 			if (rec.el == EL_TYPE_H || rec.el == EL_TYPE_Dummy || rec.el == EL_TYPE_SIZE)
 				continue;
 			const fl r2 = (rec.coords - xyz).norm_sqr();
@@ -74,7 +74,7 @@ private:
 			const bool receptor_accepts = !rec.neighbors.empty() && lig.donor;
 			if (!ligand_accepts && !receptor_accepts)
 				continue;
-			const vec& rec_xyz = m.grid_atoms[rec.index].coords;
+			const vec& rec_xyz = m.grid_atoms()[rec.index].coords;
 			const vec lig_to_rec = rec_xyz - lig_xyz;
 			const fl distance_sqr = lig_to_rec.norm_sqr();
 			if (distance_sqr <= 0 || distance_sqr > 16.0)
@@ -86,7 +86,7 @@ private:
 			if (ligand_accepts)
 				update(best, weight, lig, lig_xyz, unit, [&](sz n) -> const vec& { return m.coords[n]; });
 			if (receptor_accepts)
-				update(best, weight, rec, rec_xyz, -1 * unit, [&](sz n) -> const vec& { return m.grid_atoms[n].coords; });
+				update(best, weight, rec, rec_xyz, -1 * unit, [&](sz n) -> const vec& { return m.grid_atoms()[n].coords; });
 		}
 		return best;
 	}

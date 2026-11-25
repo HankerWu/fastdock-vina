@@ -22,6 +22,11 @@
 
 #include "grid.h"
 
+#include <cstddef>
+#include <cstdlib>
+#include <sstream>
+#include <stdexcept>
+
 void grid::init(const grid_dims& gd) {
 	m_data.resize(gd[0].n_voxels + 1, gd[1].n_voxels + 1, gd[2].n_voxels + 1); // number of sample points == n_voxels + 1
 	m_init = vec(gd[0].begin, gd[1].begin, gd[2].begin);
@@ -36,6 +41,74 @@ void grid::init(const grid_dims& gd) {
 		m_factor[i] = m_dim_fl_minus_1[i] / m_range[i];
 		m_factor_inv[i] = 1 / m_factor[i];
 	}
+}
+
+grid_dims grid::read_map(const path& filename) {
+	ifile input(filename);
+	const auto invalid = [&](const char* reason) {
+		return std::runtime_error("Invalid affinity map " + filename.string() + ": " + reason);
+	};
+	std::string line;
+	for (int i = 0; i < 3; ++i) {
+		if (!std::getline(input, line))
+			throw invalid("incomplete header");
+	}
+
+	std::string label;
+	fl spacing;
+	if (!std::getline(input, line) ||
+	    !(std::istringstream(line) >> label >> spacing) ||
+	    label != "SPACING" || !(spacing > 0) || !std::isfinite(spacing))
+		throw invalid("expected positive SPACING");
+
+	if (!std::getline(input, line))
+		throw invalid("missing NELEMENTS");
+	std::istringstream counts(line);
+	if (!(counts >> label) || label != "NELEMENTS")
+		throw invalid("missing NELEMENTS");
+	grid_dims dimensions;
+	for (auto& axis : dimensions) {
+		std::ptrdiff_t voxels;
+		if (!(counts >> voxels) || voxels <= 0 || voxels % 2 != 0)
+			throw invalid("NELEMENTS must contain three positive even counts");
+		axis.n_voxels = voxels;
+	}
+
+	if (!std::getline(input, line))
+		throw invalid("missing CENTER");
+	std::istringstream centers(line);
+	if (!(centers >> label) || label != "CENTER")
+		throw invalid("missing CENTER");
+	for (auto& axis : dimensions) {
+		fl center;
+		if (!(centers >> center))
+			throw invalid("CENTER must contain three coordinates");
+		const fl halfspan = axis.n_voxels * spacing / 2.0;
+		axis.begin = center - halfspan;
+		axis.end = center + halfspan;
+		if (!std::isfinite(axis.begin) || !std::isfinite(axis.end) || !(axis.begin < axis.end))
+			throw invalid("invalid grid bounds");
+	}
+
+	grid loaded(dimensions);
+	for (fl& sample : loaded.m_data) {
+		if (!std::getline(input, line))
+			throw invalid("too few samples");
+		const char* begin = line.c_str();
+		char* end;
+		sample = std::strtod(begin, &end);
+		if (end == begin || !std::isfinite(sample) ||
+		    line.find_first_not_of(" \t\r\f\v", end - begin) != std::string::npos)
+			throw invalid("expected one finite number per sample");
+	}
+	while (std::getline(input, line))
+		if (line.find_first_not_of(" \t\r\f\v") != std::string::npos)
+			throw invalid("too many samples");
+	if (input.bad())
+		throw invalid("read failed");
+
+	*this = std::move(loaded);
+	return dimensions;
 }
 
 fl grid::evaluate_aux(const vec& location, fl slope, fl v, vec* deriv) const { // sets *deriv if not NULL
@@ -61,8 +134,10 @@ fl grid::evaluate_aux(const vec& location, fl slope, fl v, vec* deriv) const { /
 		}
 		else {
 			region[i] = 0; // now that region is boost::array, it's not initialized
-			a[i] = sz(s[i]);
-			s[i] -= a[i];
+			// A valid grid index fits the signed difference type of the storage.
+			const auto index = static_cast<std::ptrdiff_t>(s[i]);
+			a[i] = index;
+			s[i] -= index;
 		}
 		assert(s[i] >= 0);
 		assert(s[i] <= 1);
@@ -72,23 +147,19 @@ fl grid::evaluate_aux(const vec& location, fl slope, fl v, vec* deriv) const { /
 	const fl penalty = slope * (miss * m_factor_inv); // FIXME check that inv_factor is correctly initialized and serialized
 	assert(penalty > -epsilon_fl);
 
-	const sz x0 = a[0];
-	const sz y0 = a[1];
-	const sz z0 = a[2];
-
-	const sz x1 = x0+1;
-	const sz y1 = y0+1;
-	const sz z1 = z0+1;
-
-
-	const fl f000 = m_data(x0, y0, z0);
-	const fl f100 = m_data(x1, y0, z0);
-	const fl f010 = m_data(x0, y1, z0);
-	const fl f110 = m_data(x1, y1, z0);
-	const fl f001 = m_data(x0, y0, z1);
-	const fl f101 = m_data(x1, y0, z1);
-	const fl f011 = m_data(x0, y1, z1);
-	const fl f111 = m_data(x1, y1, z1);
+	// Samples are stored x-fastest. Locate the first corner once and
+	// use the row and plane strides for its seven neighbors.
+	const sz row = m_data.dim0();
+	const fl* lower = &m_data(a[0], a[1], a[2]);
+	const fl* upper = lower + row * m_data.dim1();
+	const fl f000 = lower[0];
+	const fl f100 = lower[1];
+	const fl f010 = lower[row];
+	const fl f110 = lower[row + 1];
+	const fl f001 = upper[0];
+	const fl f101 = upper[1];
+	const fl f011 = upper[row];
+	const fl f111 = upper[row + 1];
 
 	const fl x = s[0];
 	const fl y = s[1];

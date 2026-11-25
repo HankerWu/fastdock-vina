@@ -20,6 +20,8 @@
 
 */
 
+// FastDock: prepare affinity maps on demand and validate search box options.
+
 #include <iostream>
 #include <set>
 #include <string>
@@ -36,35 +38,6 @@
 struct usage_error : public std::runtime_error {
 	usage_error(const std::string& message) : std::runtime_error(message) {}
 };
-
-struct options_occurrence {
-	bool some;
-	bool all;
-	options_occurrence() : some(false), all(true) {} // convenience
-	options_occurrence& operator+=(const options_occurrence& x) {
-		some = some || x.some;
-		all  = all  && x.all;
-		return *this;
-	}
-};
-
-options_occurrence get_occurrence(boost::program_options::variables_map& vm, boost::program_options::options_description& d) {
-	options_occurrence tmp;
-	VINA_FOR_IN(i, d.options())
-		if(vm.count((*d.options()[i]).long_name()))
-			tmp.some = true;
-		else
-			tmp.all = false;
-	return tmp;
-}
-
-void check_occurrence(boost::program_options::variables_map& vm, boost::program_options::options_description& d) {
-	VINA_FOR_IN(i, d.options()) {
-		const std::string& str = (*d.options()[i]).long_name();
-		if(!vm.count(str))
-			std::cerr << "Required parameter --" << str << " is missing!\n";
-	}
-}
 
 int main(int argc, char* argv[]) {
 	using namespace boost::program_options;
@@ -202,8 +175,7 @@ Thank you!\n";
 			("batch", value< std::vector<std::string> >(&batch_ligand_names)->multitoken(), "batch directory or ligands (PDBQT)")
 			("scoring", value<std::string>(&sf_name)->default_value(sf_name), "scoring function (ad4, vina or vinardo)")
 		;
-		//options_description search_area("Search area (required, except with --score_only)");
-		options_description search_area("Search space (required)");
+		options_description search_area("Search space");
 		search_area.add_options()
 			("maps", value<std::string>(&maps), "affinity maps for the autodock4.2 (ad4) or vina scoring function")
 			("center_x", value<double>(&center_x), "X coordinate of the center (Angstrom)")
@@ -223,7 +195,7 @@ Thank you!\n";
 		;
 		options_description advanced("Advanced options (see the manual)");
 		advanced.add_options()
-			("score_only",     bool_switch(&score_only),     "score only - search space can be omitted")
+			("score_only",     bool_switch(&score_only),     "score only - single-system receptor input defaults to autobox")
 			("ligand_bonds", value<std::string>(&ligand_bonds),
 			 "trusted complete ligand covalent graph as undirected PDBQT serial pairs")
 			("pose_coordinates", value<std::string>(&pose_coordinates),
@@ -378,7 +350,7 @@ Thank you!\n";
 		if (rigid_reorientation != "native" && rigid_reorientation != "mixed" && rigid_reorientation != "centered")
 			throw usage_error("rigid_reorientation must be native, mixed or centered");
 		if (rigid_reorientation != "native" && !regular_rigid_vina)
-			throw usage_error("rigid_reorientation requires regular Vina docking with a rigid receptor, one ligand per search, and explicit receptor refinement");
+			throw usage_error(rigid_reorientation + " rigid_reorientation requires regular Vina docking with a rigid receptor, one ligand per search, and explicit receptor refinement");
 		if (separate_hunt_chain && !regular_rigid_vina)
 			throw usage_error("separate_hunt_chain requires regular Vina docking with a rigid receptor, one ligand per search, and explicit receptor refinement");
 		if (vm.count("pocket_start_radius")) {
@@ -484,6 +456,16 @@ Thank you!\n";
 			}
 		} else if (vm.count("ligand") && vm.count("dir")) {
 			std::cerr << "WARNING: In ligand mode, --dir argument is ignored.\n";
+		}
+
+		const bool ligand_autobox = vm.count("ligand") && (score_only || local_only);
+		if (!vm.count("maps")) {
+			const auto box_fields = vm.count("center_x") + vm.count("center_y") + vm.count("center_z")
+			                      + vm.count("size_x") + vm.count("size_y") + vm.count("size_z");
+			if (box_fields == 0 && ligand_autobox && score_only && !randomize_only)
+				autobox = true;
+			if (!(ligand_autobox && autobox) && box_fields != 6)
+				throw usage_error("Provide all three center and all three size values for the search box");
 		}
 
 		if (!score_only) {
@@ -598,13 +580,15 @@ Thank you!\n";
 				if (vm.count("maps")) {
 					v.load_maps(maps);
 				} else {
-					// Will compute maps only for Vina atom types in the ligand(s)
-					// In the case users ask for score and local only with the autobox arg, we compute the optimal box size for it/them.
-					if ((score_only || local_only) && autobox) {
+					const bool defer_maps = (score_only || randomize_only) && !vm.count("write_maps");
+
+					if (ligand_autobox && autobox) {
 						std::vector<double> dim = v.grid_dimensions_from_ligand(buffer_size);
-						v.compute_vina_maps(dim[0], dim[1], dim[2], dim[3], dim[4], dim[5], grid_spacing, force_even_voxels);
+						v.compute_vina_maps(dim[0], dim[1], dim[2], dim[3], dim[4], dim[5],
+						                    grid_spacing, force_even_voxels, defer_maps);
 					} else {
-						v.compute_vina_maps(center_x, center_y, center_z, size_x, size_y, size_z, grid_spacing, force_even_voxels);
+						v.compute_vina_maps(center_x, center_y, center_z, size_x, size_y, size_z,
+						                    grid_spacing, force_even_voxels, defer_maps);
 					}
 
 					if (vm.count("write_maps"))
@@ -636,12 +620,11 @@ Thank you!\n";
 			if (sf_name.compare("vina") == 0 || sf_name.compare("vinardo") == 0) {
 				if (vm.count("maps")) {
 					v.load_maps(maps);
-				} else {
-					// Will compute maps for all Vina atom types
+				} else if (vm.count("write_maps")) {
 					v.compute_vina_maps(center_x, center_y, center_z, size_x, size_y, size_z, grid_spacing);
-
-					if (vm.count("write_maps"))
-						v.write_maps(out_maps);
+					v.write_maps(out_maps);
+				} else {
+					v.initialize_vina_batch_maps(center_x, center_y, center_z, size_x, size_y, size_z, grid_spacing);
 				}
 			}
 

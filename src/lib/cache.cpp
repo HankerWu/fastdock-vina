@@ -21,8 +21,10 @@
 */
 
 /* Modified for FastDock Vina: reuse type-pair table pointers during grid
-   population without changing the scoring formula.
+   population, share the atom-type mapping and reuse receptor candidates across grid rows.
    See docs/PROVENANCE.md for upstream and experimental source identities. */
+
+#include <bitset>
 
 #include "cache.h"
 #include "model.h"
@@ -57,35 +59,56 @@ std::string convert_XS_to_string(sz t) {
 	}
 }
 
+namespace {
+
+// Ring closure pseudoatoms have no receptor map. The two carbon aliases
+// use the same maps as ordinary hydrophobic and polar carbons.
+sz affinity_map_type(sz type) {
+	switch (type) {
+		case XS_TYPE_G0:
+		case XS_TYPE_G1:
+		case XS_TYPE_G2:
+		case XS_TYPE_G3:
+			return XS_TYPE_SIZE;
+		case XS_TYPE_C_H_CG0:
+		case XS_TYPE_C_H_CG1:
+		case XS_TYPE_C_H_CG2:
+		case XS_TYPE_C_H_CG3:
+			return XS_TYPE_C_H;
+		case XS_TYPE_C_P_CG0:
+		case XS_TYPE_C_P_CG1:
+		case XS_TYPE_C_P_CG2:
+		case XS_TYPE_C_P_CG3:
+			return XS_TYPE_C_P;
+		default:
+			return type;
+	}
+}
+
+} // namespace
+
+std::bitset<XS_TYPE_SIZE> cache::map_types(const szv& atom_types) {
+	std::bitset<XS_TYPE_SIZE> types;
+	for (sz type : atom_types) {
+		const sz t = affinity_map_type(type);
+		if (t < XS_TYPE_SIZE) types.set(t);
+	}
+	return types;
+}
+
+std::bitset<XS_TYPE_SIZE> cache::missing_map_types(const szv& atom_types) const {
+	auto types = map_types(atom_types);
+	VINA_FOR(t, XS_TYPE_SIZE)
+		if (m_grids[t].initialized()) types.reset(t);
+	return types;
+}
+
 fl cache::eval(const model& m, fl v) const { // needs m.coords
 	fl e = 0;
-	sz nat = num_atom_types(atom_type::XS);
 
 	VINA_FOR(i, m.num_movable_atoms()) {
-		const atom& a = m.atoms[i];
-		sz t = a.get(atom_type::XS);
-
-		if (t >= nat) { continue; }
-		switch (t)
-		{
-			case XS_TYPE_G0:
-			case XS_TYPE_G1:
-			case XS_TYPE_G2:
-			case XS_TYPE_G3:
-				continue;
-			case XS_TYPE_C_H_CG0:
-			case XS_TYPE_C_H_CG1:
-			case XS_TYPE_C_H_CG2:
-			case XS_TYPE_C_H_CG3:
-				t = XS_TYPE_C_H;
-				break;
-			case XS_TYPE_C_P_CG0:
-			case XS_TYPE_C_P_CG1:
-			case XS_TYPE_C_P_CG2:
-			case XS_TYPE_C_P_CG3:
-				t = XS_TYPE_C_P;
-				break;
-		}
+		const sz t = affinity_map_type(m.atoms[i].xs);
+		if (t >= XS_TYPE_SIZE) continue;
 
 		const grid& g = m_grids[t];
 		e += g.evaluate(m.coords[i], m_slope, v);
@@ -94,35 +117,13 @@ fl cache::eval(const model& m, fl v) const { // needs m.coords
 }
 
 fl cache::eval_intra(model& m, fl v) const {
+	if (m.num_flex() == 0) return 0;
 	fl e = 0;
-	sz nat = num_atom_types(atom_type::XS);
 
 	VINA_FOR(i, m.num_movable_atoms()) {
 		if(m.is_atom_in_ligand(i)) continue; // we only want flex-rigid interaction
-		const atom& a = m.atoms[i];
-		sz t = a.get(atom_type::XS);
-
-		if (t >= nat) { continue; }
-		switch (t)
-		{
-			case XS_TYPE_G0:
-			case XS_TYPE_G1:
-			case XS_TYPE_G2:
-			case XS_TYPE_G3:
-				continue;
-			case XS_TYPE_C_H_CG0:
-			case XS_TYPE_C_H_CG1:
-			case XS_TYPE_C_H_CG2:
-			case XS_TYPE_C_H_CG3:
-				t = XS_TYPE_C_H;
-				break;
-			case XS_TYPE_C_P_CG0:
-			case XS_TYPE_C_P_CG1:
-			case XS_TYPE_C_P_CG2:
-			case XS_TYPE_C_P_CG3:
-				t = XS_TYPE_C_P;
-				break;
-		}
+		const sz t = affinity_map_type(m.atoms[i].xs);
+		if (t >= XS_TYPE_SIZE) continue;
 
 		const grid& g = m_grids[t];
 		e += g.evaluate(m.coords[i], m_slope, v);
@@ -132,33 +133,12 @@ fl cache::eval_intra(model& m, fl v) const {
 
 fl cache::eval_deriv(model& m, fl v) const { // needs m.coords, sets m.minus_forces
 	fl e = 0;
-	sz nat = num_atom_types(atom_type::XS);
 
 	VINA_FOR(i, m.num_movable_atoms()) {
-		const atom& a = m.atoms[i];
-		sz t = a.get(atom_type::XS);
-
-		if (t >= nat) { m.minus_forces[i].assign(0); continue; }
-		switch (t)
-		{
-			case XS_TYPE_G0:
-			case XS_TYPE_G1:
-			case XS_TYPE_G2:
-			case XS_TYPE_G3:
-				m.minus_forces[i].assign(0);
-				continue;
-			case XS_TYPE_C_H_CG0:
-			case XS_TYPE_C_H_CG1:
-			case XS_TYPE_C_H_CG2:
-			case XS_TYPE_C_H_CG3:
-				t = XS_TYPE_C_H;
-				break;
-			case XS_TYPE_C_P_CG0:
-			case XS_TYPE_C_P_CG1:
-			case XS_TYPE_C_P_CG2:
-			case XS_TYPE_C_P_CG3:
-				t = XS_TYPE_C_P;
-				break;
+		const sz t = affinity_map_type(m.atoms[i].xs);
+		if (t >= XS_TYPE_SIZE) {
+			m.minus_forces[i].assign(0);
+			continue;
 		}
 
 		vec deriv;
@@ -187,33 +167,10 @@ bool cache::is_in_grid(const model& m, fl margin) const {
 	return true;
 }
 
-bool cache::are_atom_types_grid_initialized(szv atom_types) const {
-	sz nat = num_atom_types(atom_type::XS);
-
-	VINA_FOR_IN(i, atom_types) {
-		sz t = atom_types[i];
-
-		if (t >= nat) { continue; }
-		switch (t)
-		{
-			case XS_TYPE_G0:
-			case XS_TYPE_G1:
-			case XS_TYPE_G2:
-			case XS_TYPE_G3:
-				continue;
-			case XS_TYPE_C_H_CG0:
-			case XS_TYPE_C_H_CG1:
-			case XS_TYPE_C_H_CG2:
-			case XS_TYPE_C_H_CG3:
-				t = XS_TYPE_C_H;
-				break;
-			case XS_TYPE_C_P_CG0:
-			case XS_TYPE_C_P_CG1:
-			case XS_TYPE_C_P_CG2:
-			case XS_TYPE_C_P_CG3:
-				t = XS_TYPE_C_P;
-				break;
-		}
+bool cache::are_atom_types_grid_initialized(const szv& atom_types) const {
+	for (sz type : atom_types) {
+		const sz t = affinity_map_type(type);
+		if (t >= XS_TYPE_SIZE) continue;
 		if (!is_atom_type_grid_initialized(t)) {
 			std::cerr << "ERROR: Affinity map for atom type " <<  convert_XS_to_string(t) << " is not present.\n";
 			return false;
@@ -223,177 +180,34 @@ bool cache::are_atom_types_grid_initialized(szv atom_types) const {
 	return true;
 }
 
-std::vector<std::string> vina_split(std::string str) {
-	std::vector<std::string> fields;
-	std::string field;
-	std::istringstream iss(str);
-	while (std::getline(iss, field, ' '))
-	{
-		fields.push_back(field);
-	};
-	return fields;
-}
-
-void read_vina_map(path &filename, std::vector<grid_dims> &gds, grid &g) {
-	sz line_counter = 0;
-	sz pt_counter = 0;
-	sz x = 0;
-	sz y = 0;
-	sz z = 0;
-	grid_dims gd;
-	std::string line;
-	fl spacing, center, halfspan;
-
-	ifile in(filename);
-
-	while (std::getline(in, line))
-	{
-		line_counter++;
-		if (line_counter == 4)
-		{
-			std::vector<std::string> fields = vina_split(line);
-			spacing = std::atof(fields[1].c_str());
-		}
-		if (line_counter == 5)
-		{
-			std::vector<std::string> fields = vina_split(line);
-			VINA_FOR(i, 3) {
-				// n_voxels must be EVEN
-				// because the number of sampled points in the grid is always ODD
-				// (number of sampled points == n_voxels + 1)
-				gd[i].n_voxels = std::atoi(fields[i + 1].c_str());
-				if (gd[i].n_voxels % 2 == 1) {
-					std::cerr << "ERROR: number of voxels (NELEMENTS) must be even\n";
-					exit(EXIT_FAILURE);
-				}
-			}
-		}
-		if (line_counter == 6)
-		{
-			std::vector<std::string> fields = vina_split(line);
-			VINA_FOR(i, 3)
-			{
-				center = std::atof(fields[i + 1].c_str());
-				halfspan = (gd[i].n_voxels) * spacing / 2.0;
-				gd[i].begin = center - halfspan;
-				gd[i].end = center + halfspan;
-				// std::cout << center << " " << halfspan << " " << gd[i].begin << " " << gd[i].end << "\n";
-			}
-			gds.push_back(gd);
-			g.init(gd);
-
-		}
-		if (line_counter > 6)
-		{
-			// std::cout << pt_counter << " " << x << " " << y << " " << z << " " << std::atof(line.c_str()) << "\n";
-			g.m_data(x, y, z) = std::atof(line.c_str());
-			y += sz(x == (gd[0].n_voxels + 1));
-			z += sz(y == (gd[1].n_voxels + 1));
-			x = x % (gd[0].n_voxels + 1);
-			y = y % (gd[1].n_voxels + 1);
-			pt_counter++;
-			x++;
-		}
-	} // line loop
-}
-
-void cache::read(const std::string &map_prefix) {
-	sz nat = num_atom_types(atom_type::XS);
-	std::string type, filename;
-	std::vector<grid_dims> gds; // to check all maps have same dims (TODO)
-
-	bool got_C_H_already = false;
-	bool got_C_P_already = false;
-	bool found_at_least_1_map = false;
-
-	VINA_FOR(atom_type, XS_TYPE_SIZE)
-	{
-		sz t = atom_type;
-
-		if (t >= nat) { continue; }
-		switch (t)
-		{
-			case XS_TYPE_G0:
-			case XS_TYPE_G1:
-			case XS_TYPE_G2:
-			case XS_TYPE_G3:
-				continue;
-			case XS_TYPE_C_H_CG0:
-			case XS_TYPE_C_H_CG1:
-			case XS_TYPE_C_H_CG2:
-			case XS_TYPE_C_H_CG3:
-				if (got_C_H_already) continue;
-				t = XS_TYPE_C_H;
-				got_C_H_already = true;
-				break;
-			case XS_TYPE_C_P_CG0:
-			case XS_TYPE_C_P_CG1:
-			case XS_TYPE_C_P_CG2:
-			case XS_TYPE_C_P_CG3:
-				if (got_C_P_already) continue;
-				t = XS_TYPE_C_P;
-				got_C_P_already = true;
-				break;
-		}
-		type = convert_XS_to_string(t);
-		filename = map_prefix + "." + type + ".map";
-		path p(filename);
-		if (fs::exists(p)) {
-			read_vina_map(p, gds, m_grids[t]);
-			found_at_least_1_map = true;
-		}
-	} // map loop
-
-	if (!found_at_least_1_map){
-		std::cerr << "\nERROR: No *.map files with prefix \"" << map_prefix << "\"\n";
-		exit(EXIT_FAILURE) ;
+void cache::read(const std::string& map_prefix) {
+	bool have_maps = false;
+	VINA_FOR(t, XS_TYPE_SIZE) {
+		if (affinity_map_type(t) != t) continue;
+		const path filename(map_prefix + "." + convert_XS_to_string(t) + ".map");
+		if (!fs::exists(filename)) continue;
+		const auto dimensions = m_grids[t].read_map(filename);
+		if (!have_maps) m_gd = dimensions;
+		have_maps = true;
 	}
-
-	// Store in Cache object
-	m_gd = gds[0];
+	if (!have_maps) {
+		std::cerr << "\nERROR: No *.map files with prefix \"" << map_prefix << "\"\n";
+		exit(EXIT_FAILURE);
+	}
 }
 
 void cache::write(const std::string& out_prefix, const szv& atom_types, const std::string& gpf_filename,
 				      const std::string& fld_filename, const std::string& receptor_filename) {
-	sz nat = num_atom_types(atom_type::XS);
-	std::string atom_type;
-	std::string filename;
-	bool got_C_H_already = false;
-	bool got_C_P_already = false;
+	std::bitset<XS_TYPE_SIZE> written;
 
-	VINA_FOR_IN(i, atom_types) {
-		sz t = atom_types[i];
-
-		if (t >= nat) { continue; }
-		switch (t)
-		{
-			case XS_TYPE_G0:
-			case XS_TYPE_G1:
-			case XS_TYPE_G2:
-			case XS_TYPE_G3:
-				continue;
-			case XS_TYPE_C_H_CG0:
-			case XS_TYPE_C_H_CG1:
-			case XS_TYPE_C_H_CG2:
-			case XS_TYPE_C_H_CG3:
-				if (got_C_H_already) continue;
-				t = XS_TYPE_C_H;
-				got_C_H_already = true;
-				break;
-			case XS_TYPE_C_P_CG0:
-			case XS_TYPE_C_P_CG1:
-			case XS_TYPE_C_P_CG2:
-			case XS_TYPE_C_P_CG3:
-				if (got_C_P_already) continue;
-				t = XS_TYPE_C_P;
-				got_C_P_already = true;
-				break;
-		}
+	for (sz type : atom_types) {
+		const sz t = affinity_map_type(type);
+		if (t >= XS_TYPE_SIZE || written[t]) continue;
 		if (m_grids[t].initialized()) {
 			int nx = m_grids[t].m_data.dim0() - 1;
 			int ny = m_grids[t].m_data.dim1() - 1;
 			int nz = m_grids[t].m_data.dim2() - 1;
-			atom_type = convert_XS_to_string(t);
+			const std::string atom_type = convert_XS_to_string(t);
 
 			// For writing a .map, the number of points in the grid must be odd, which means that the number
 			// of voxels (NELEMENTS) must be even... n_voxels = n_grid_points - 1
@@ -402,8 +216,7 @@ void cache::write(const std::string& out_prefix, const szv& atom_types, const st
 				exit(EXIT_FAILURE);
 			} else {
 
-				filename = out_prefix + "." + atom_type + ".map";
-				path p(filename);
+				path p(out_prefix + "." + atom_type + ".map");
 				ofile out(p);
 
 				// write header
@@ -431,94 +244,110 @@ void cache::write(const std::string& out_prefix, const szv& atom_types, const st
 						} // x
 					} // y
 				} // z
+				written.set(t);
 			} // even voxels
 		} // map initialized
 	} // map atom type
 } // cache::write
 
 void cache::populate(const model& m, const precalculate& p, const szv_grid& receptor_index,
-                     const szv& atom_types_needed) {
+                     const std::bitset<XS_TYPE_SIZE>& map_types_needed) {
 	szv needed;
-	bool got_C_H_already = false;
-	bool got_C_P_already = false;
-
-	VINA_FOR_IN(i, atom_types_needed) {
-		sz t = atom_types_needed[i];
-		switch (t)
-		{
-			case XS_TYPE_G0:
-			case XS_TYPE_G1:
-			case XS_TYPE_G2:
-			case XS_TYPE_G3:
-				continue;
-			case XS_TYPE_C_H_CG0:
-			case XS_TYPE_C_H_CG1:
-			case XS_TYPE_C_H_CG2:
-			case XS_TYPE_C_H_CG3:
-				if (got_C_H_already) continue;
-				t = XS_TYPE_C_H;
-				got_C_H_already = true;
-				break;
-			case XS_TYPE_C_P_CG0:
-			case XS_TYPE_C_P_CG1:
-			case XS_TYPE_C_P_CG2:
-			case XS_TYPE_C_P_CG3:
-				if (got_C_P_already) continue;
-				t = XS_TYPE_C_P;
-				got_C_P_already = true;
-				break;
-		}
-		if(!m_grids[t].initialized()) {
+	VINA_FOR(t, XS_TYPE_SIZE) {
+		if (map_types_needed[t] && !m_grids[t].initialized())
 			needed.push_back(t);
-			m_grids[t].init(m_gd);
-		}
 	}
 	if(needed.empty())
 		return;
-	flv affinities(needed.size());
+	// Publish these maps only once every new grid has been filled.
+	std::vector<grid> new_grids(needed.size());
+	for (auto& g : new_grids)
+		g.init(m_gd);
+	const sz num_maps = needed.size();
 
 	sz nat = num_atom_types(atom_type::XS);
 
-	grid& g = m_grids[needed.front()];
+	const grid& g = new_grids.front();
 
 	const fl cutoff_sqr = p.cutoff_sqr();
 
-	std::vector<const precalculate_element*> tables(nat * needed.size());
+	// A grid point uses one distance for all requested ligand types.
+	// Keep these energies adjacent for a contiguous read and accumulation.
+	const sz sample_count = p.fast_index(cutoff_sqr) + 1;
+	std::vector<flv> tables(nat);
 	VINA_FOR(t1, nat) {
+		if (!receptor_index.atom_types()[t1]) continue;
+		flv& samples = tables[t1];
+		samples.resize(sample_count * num_maps);
 		VINA_FOR_IN(j, needed) {
-			assert(needed[j] < nat);
-			tables[t1 * needed.size() + j] = &p.element(
-				triangular_matrix_index_permissive(nat, t1, needed[j]));
+			const auto& pair = p.element(triangular_matrix_index_permissive(nat, t1, needed[j]));
+			VINA_FOR(i, sample_count)
+				samples[i * num_maps + j] = pair.fast_sample(i);
 		}
 	}
 
-	// array3d stores x contiguously. Visit it in storage order.
+	struct x_span {
+		sz cell;
+		sz end;
+	};
+	flv x_coords(g.m_data.dim0());
+	std::vector<x_span> spans;
+	VINA_FOR_IN(x, x_coords) {
+		const fl coord = g.index_to_argument(x, 0, 0)[0];
+		const sz cell = receptor_index.cell_index(0, coord);
+		if (spans.empty() || spans.back().cell != cell)
+			spans.push_back({cell, x + 1});
+		else
+			spans.back().end = x + 1;
+		x_coords[x] = coord;
+	}
+
+	const auto& receptor = m.grid_atoms();
+	// Project the same full-row split into each spatial cell's x span.
+	szv atom_x_split(receptor.size());
+	VINA_FOR_IN(i, receptor) {
+		const auto split = std::lower_bound(x_coords.begin(), x_coords.end(), receptor[i].coords[0]);
+		atom_x_split[i] = split - x_coords.begin();
+	}
+
+	flv affinities;
 	VINA_FOR(z, g.m_data.dim2()) {
+		const fl z_coord = g.index_to_argument(0, 0, z)[2];
+		const sz z_cell = receptor_index.cell_index(2, z_coord);
 		VINA_FOR(y, g.m_data.dim1()) {
-			VINA_FOR(x, g.m_data.dim0()) {
+			const fl y_coord = g.index_to_argument(0, y, 0)[1];
+			const sz y_cell = receptor_index.cell_index(1, y_coord);
+			sz start = 0;
+			for (const x_span& span : spans) {
+				affinities.resize((span.end - start) * num_maps);
 				std::fill(affinities.begin(), affinities.end(), 0);
-				vec probe_coords; probe_coords = g.index_to_argument(x, y, z);
-				const szv& possibilities = receptor_index.possibilities(probe_coords);
-				VINA_FOR_IN(possibilities_i, possibilities) {
-					const sz i = possibilities[possibilities_i];
-					const atom& a = m.grid_atoms[i];
-					const sz t1 = a.get(atom_type::XS);
-					if(t1 >= nat) continue;
-					const fl r2 = vec_distance_sqr(a.coords, probe_coords);
-					if(r2 <= cutoff_sqr) {
-						const precalculate_element* const* row = tables.data() + t1 * needed.size();
-						const sz sample = p.fast_index(r2);
-						VINA_FOR_IN(j, needed) {
-							affinities[j] += row[j]->fast_at(sample);
-						}
-					}
+				// Receptor order determines each point's sum. Visit only the
+				// in-range run of points on either side of this atom.
+				for (sz i : receptor_index.possibilities(span.cell, y_cell, z_cell)) {
+					const atom& a = receptor[i];
+					const fl dy2 = sqr(a.coords[1] - y_coord);
+					const fl dz2 = sqr(a.coords[2] - z_coord);
+					if (dy2 + dz2 > cutoff_sqr) continue;
+					const sz middle = (std::min)((std::max)(atom_x_split[i], start), span.end);
+					const fl* samples = tables[a.xs].data();
+					const auto accumulate = [&](sz x) {
+						const fl r2 = sqr(a.coords[0] - x_coords[x]) + dy2 + dz2;
+						if (!(r2 <= cutoff_sqr)) return false;
+						const fl* energies = samples + p.fast_index(r2) * num_maps;
+						fl* point = affinities.data() + (x - start) * num_maps;
+						VINA_FOR(j, num_maps) point[j] += energies[j];
+						return true;
+					};
+					for (sz x = middle; x < span.end && accumulate(x); ++x) {}
+					for (sz x = middle; x > start && accumulate(x - 1); --x) {}
 				}
-				VINA_FOR_IN(j, needed) {
-					sz t = needed[j];
-					assert(t < nat);
-					m_grids[t].m_data(x, y, z) = affinities[j];
-				}
+				VINA_FOR_IN(j, needed)
+					VINA_RANGE(x, start, span.end)
+						new_grids[j].m_data(x, y, z) = affinities[(x - start) * num_maps + j];
+				start = span.end;
 			}
 		}
 	}
+	VINA_FOR_IN(j, needed)
+		m_grids[needed[j]] = std::move(new_grids[j]);
 }

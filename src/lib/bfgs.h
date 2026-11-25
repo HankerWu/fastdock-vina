@@ -27,7 +27,7 @@
 #ifndef VINA_BFGS_H
 #define VINA_BFGS_H
 
-#include "matrix.h"
+#include "conf.h"
 #include <cstring>
 
 // Only the local BFGS inverse Hessian uses this full symmetric storage.
@@ -35,11 +35,10 @@ class flmat {
 	flv m_data;
 	sz m_dim;
 public:
-	flmat() : m_dim(0) {}
-	flmat(sz n, fl filler) : m_data(n * n, filler), m_dim(n) {}
+	explicit flmat(sz n) : m_data(n * n), m_dim(n) {}
+	void clear() { std::fill(m_data.begin(), m_data.end(), 0); }
 	sz dim() const { return m_dim; }
 	sz index(sz i, sz j) const { return i + j * m_dim; }
-	sz index_permissive(sz i, sz j) const { return index(i, j); }
 	const fl& operator()(sz i) const { return m_data[i]; }
 	fl& operator()(sz i) { return m_data[i]; }
 	const fl& operator()(sz i, sz j) const { return m_data[index(i, j)]; }
@@ -48,11 +47,8 @@ public:
 
 typedef fl bfgs_lane2 __attribute__((vector_size(16)));
 
-template<typename Change>
-void minus_mat_vec_product(const flmat& m, const Change& in, Change& out) {
+inline void minus_mat_vec_product(const flmat& m, const flv& values, flv& out) {
 	const sz n = m.dim();
-	flv values(n);
-	VINA_FOR(j, n) values[j] = in(j);
 	sz i = 0;
 	for(; i + 1 < n; i += 2) {
 		bfgs_lane2 sums = {0, 0};
@@ -64,77 +60,57 @@ void minus_mat_vec_product(const flmat& m, const Change& in, Change& out) {
 		}
 		fl lanes[2];
 		std::memcpy(lanes, &sums, sizeof(sums));
-		out(i) = -lanes[0];
-		out(i + 1) = -lanes[1];
+		out[i] = -lanes[0];
+		out[i + 1] = -lanes[1];
 	}
 	for(; i < n; ++i) {
 		fl sum = 0;
 		VINA_FOR(j, n)
 			sum += m(i + j * n) * values[j];
-		out(i) = -sum;
+		out[i] = -sum;
 	}
 }
 
-template<typename Change>
-inline fl scalar_product(const Change& a, const Change& b, sz n) {
-	fl tmp = 0;
-	VINA_FOR(i, n)
-		tmp += a(i) * b(i);
-	return tmp;
+inline fl scalar_product(const flv& a, const flv& b) {
+	fl sum = 0;
+	VINA_FOR_IN(i, a)
+		sum += a[i] * b[i];
+	return sum;
 }
 
-template<typename Change>
-inline bool bfgs_update(flmat& h, const Change& p, const Change& y, const fl alpha) {
-	const fl yp  = scalar_product(y, p, h.dim());
-	if(alpha * yp < epsilon_fl) return false; // FIXME?
-	Change minus_hy(y); minus_mat_vec_product(h, y, minus_hy);
-	const fl yhy = - scalar_product(y, minus_hy, h.dim());
-	const fl r = 1 / (alpha * yp); // 1 / (s^T * y) , where s = alpha * p // FIXME   ... < epsilon
-	const sz n = p.num_floats();
-	flv p_values(n), hy_values(n);
-	VINA_FOR(i, n) {
-		p_values[i] = p(i);
-		hy_values[i] = minus_hy(i);
-	}
-	VINA_FOR(j, n)
+inline void bfgs_update(flmat& h, const flv& direction, const flv& y, fl alpha, fl yp, flv& minus_hy) {
+	if(alpha * yp < epsilon_fl) return;
+	minus_mat_vec_product(h, y, minus_hy);
+	const fl yhy = -scalar_product(y, minus_hy);
+	const fl r = 1 / (alpha * yp);
+	VINA_FOR(j, h.dim())
 		for(sz i = 0; i <= j; ++i) {
-			h(i, j) +=   alpha * r * (hy_values[i] * p_values[j]
-	                                + hy_values[j] * p_values[i]) +
-			           + alpha * alpha * (r*r * yhy  + r) * p_values[i] * p_values[j]; // s * s == alpha * alpha * p * p
+			h(i, j) += alpha * r * (minus_hy[i] * direction[j] + minus_hy[j] * direction[i])
+			         + alpha * alpha * (r*r * yhy + r) * direction[i] * direction[j];
 			h(j, i) = h(i, j);
 		}
-	return true;
 }
 
-template<typename Change>
-bool finite_change(const Change& g, sz n) {
-	VINA_FOR(i, n)
-		if(!std::isfinite(g(i))) return false;
-	return true;
-}
-
-template<bool StrictArmijo = false, typename F, typename Conf, typename Change>
-fl line_search(F& f, sz n, const Conf& x, const Change& g, const fl f0, const Change& p, Conf& x_new, Change& g_new, fl& f1, int& evalcount) { // returns alpha
+template<bool StrictArmijo = false, typename F>
+fl line_search(F& f, const conf& x, fl f0, const flv& p, fl pg, conf& x_new, flv& g_new, fl& f1, int& evalcount) {
+	if (StrictArmijo && (!std::isfinite(pg) || pg >= 0))
+		return 0;
 	const fl c0 = 0.0001;
 	const unsigned max_trials = 10;
 	const fl multiplier = 0.5;
 	fl alpha = 1;
 
-	const fl pg = scalar_product(p, g, n);
-	if(StrictArmijo && (!std::isfinite(pg) || pg >= 0))
-		return 0;
-
 	VINA_U_FOR(trial, max_trials) {
-		x_new = x; x_new.increment(p, alpha);
+		x_new.set_incremented(x, p, alpha);
 		f1 = f(x_new, g_new);
-		evalcount++;
-		if(StrictArmijo) {
-			if(std::isfinite(f1) && f1 < f0 && f1 - f0 <= c0 * alpha * pg &&
-			   finite_change(g_new, n))
+		++evalcount;
+		if (StrictArmijo) {
+			if (std::isfinite(f1) && f1 < f0 && f1 - f0 <= c0 * alpha * pg &&
+			    std::all_of(g_new.begin(), g_new.end(), [](fl x) { return std::isfinite(x); }))
 				return alpha;
-		}
-		else if(f1 - f0 < c0 * alpha * pg) // FIXME check - div by norm(p) ? no?
+		} else if (f1 - f0 < c0 * alpha * pg) {
 			break;
+		}
 		alpha *= multiplier;
 	}
 	return StrictArmijo ? 0 : alpha;
@@ -145,80 +121,81 @@ inline void set_diagonal(flmat& m, fl x) {
 		m(i, i) = x;
 }
 
-template<typename Change>
-void subtract_change(Change& b, const Change& a, sz n) { // b -= a
-	VINA_FOR(i, n)
-		b(i) -= a(i);
-}
+struct bfgs_result {
+	fl energy;
+	bool restore_coordinates;
+};
 
-template<bool StrictArmijo = false, typename F, typename Conf, typename Change>
-fl bfgs(F& f, Conf& x, Change& g, const unsigned max_steps, const fl average_required_improvement, const sz over,
-		int& evalcount) { // x is I/O, final value is returned
-	sz n = g.num_floats();
-	flmat h(n, 0);
-	set_diagonal(h, 1);
+// Each search or refinement loop owns a workspace for its fixed conformation
+// layout. Every minimization starts with a fresh identity inverse Hessian.
+class bfgs_workspace {
+	conf trial, original;
+	flv gradient, trial_gradient, direction, minus_hy;
+	flmat h;
 
-	Change g_new(g);
-	Conf x_new(x);
-	fl f0 = f(x, g);
-	evalcount++;
-	if(StrictArmijo && (!std::isfinite(f0) || !finite_change(g, n) ||
-	   std::sqrt(scalar_product(g, g, n)) < 1e-5))
-		return f0;
+public:
+	explicit bfgs_workspace(const conf_size& size)
+		: trial(size), original(size), gradient(size.num_degrees_of_freedom()),
+		  trial_gradient(gradient.size()), direction(gradient.size()),
+		  minus_hy(gradient.size()), h(gradient.size()) {}
 
-	fl f_orig = f0;
-	Change g_orig(g);
-	Conf x_orig(x);
+	template<bool StrictArmijo = false, typename F>
+	bfgs_result minimize(F& f, conf& x, unsigned max_steps, int& evalcount) {
+		h.clear();
+		set_diagonal(h, 1);
+		original = x;
+		fl energy = f(x, gradient);
+		++evalcount;
+		const fl initial_energy = energy;
+		if (StrictArmijo && (!std::isfinite(energy) ||
+		    !std::all_of(gradient.begin(), gradient.end(), [](fl x) { return std::isfinite(x); }) ||
+		    std::sqrt(scalar_product(gradient, gradient)) < 1e-5))
+			return {energy, false};
 
-	Change p(g);
+		VINA_U_FOR(step, max_steps) {
+			minus_mat_vec_product(h, gradient, direction);
+			fl trial_energy = 0;
+			const fl alpha = line_search<StrictArmijo>(f, x, energy, direction, scalar_product(direction, gradient),
+			                                           trial, trial_gradient, trial_energy, evalcount);
+			if (StrictArmijo && alpha == 0)
+				return {energy, true}; // The model may reflect the last rejected trial.
+			energy = trial_energy;
+			std::swap(x, trial);
+			// The inverse Hessian is only used by subsequent steps.
+			if (step + 1 == max_steps) break;
+			const auto& convergence_gradient = StrictArmijo ? trial_gradient : gradient;
+			if (!(std::sqrt(scalar_product(convergence_gradient, convergence_gradient)) >= 1e-5)) break;
+			gradient.swap(trial_gradient);
+			// The previous gradient is now scratch until the next trial.
+			flv& y = trial_gradient;
+			VINA_FOR_IN(i, y)
+				y[i] = gradient[i] - y[i];
 
-	flv f_values; f_values.reserve(max_steps+1);
-	f_values.push_back(f0);
-
-	VINA_U_FOR(step, max_steps) {
-		minus_mat_vec_product(h, g, p);
-		fl f1 = 0;
-		const fl alpha = line_search<StrictArmijo>(f, n, x, g, f0, p, x_new, g_new, f1, evalcount);
-		if(StrictArmijo && alpha == 0)
-			break;
-		Change y(g_new); subtract_change(y, g, n);
-
-		f_values.push_back(f1);
-		f0 = f1;
-		x = x_new;
-		if(StrictArmijo)
-			g = g_new;
-		if(!(std::sqrt(scalar_product(g, g, n)) >= 1e-5)) break; // breaks for nans too // FIXME !!?? 
-		if(!StrictArmijo)
-			g = g_new; // ?
-
-		if(StrictArmijo) {
-			const fl sy = alpha * scalar_product(y, p, n);
-			if(!std::isfinite(sy) || sy < epsilon_fl)
+			const fl yp = scalar_product(y, direction);
+			const fl sy = alpha * yp;
+			if (StrictArmijo && (!std::isfinite(sy) || sy < epsilon_fl))
 				continue;
-			if(step == 0) {
-				const fl yy = scalar_product(y, y, n);
-				if(std::isfinite(yy) && yy > epsilon_fl) {
-					const fl scale = sy / yy;
-					if(std::isfinite(scale) && scale > 0)
-						set_diagonal(h, scale);
+			if (step == 0) {
+				const fl yy = scalar_product(y, y);
+				if (StrictArmijo) {
+					if (std::isfinite(yy) && yy > epsilon_fl) {
+						const fl scale = sy / yy;
+						if (std::isfinite(scale) && scale > 0)
+							set_diagonal(h, scale);
+					}
+				} else if (std::abs(yy) > epsilon_fl) {
+					set_diagonal(h, sy / yy);
 				}
 			}
-		}
-		else if(step == 0) {
-			const fl yy = scalar_product(y, y, n);
-			if(std::abs(yy) > epsilon_fl)
-				set_diagonal(h, alpha * scalar_product(y, p, n) / yy);
+			bfgs_update(h, direction, y, alpha, yp, minus_hy);
 		}
 
-		bool h_updated = bfgs_update(h, p, y, alpha);
+		if (!(energy <= initial_energy)) { // also reverts when the comparison is unordered
+			std::swap(x, original);
+			return {initial_energy, true};
+		}
+		return {energy, false};
 	}
-	if(!(f0 <= f_orig)) { // succeeds for nans too
-		f0 = f_orig;
-		x = x_orig;
-		g = g_orig;
-	}
-	return f0;
-}
+};
 
 #endif

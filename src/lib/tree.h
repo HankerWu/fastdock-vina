@@ -20,6 +20,8 @@
 
 */
 
+// FastDock: write tree derivatives in search-vector order.
+
 #ifndef VINA_TREE_H
 #define VINA_TREE_H
 
@@ -88,9 +90,10 @@ struct rigid_body : public atom_frame {
 		set_coords(atoms, coords);
 	}
 	void count_torsions(sz& s) const {} // do nothing
-	void set_derivative(const vecp& force_torque, rigid_change& c) const {
-		c.position     = force_torque.first;
-		c.orientation  = force_torque.second;
+	static constexpr sz derivative_size = conf_size::rigid_degrees_of_freedom;
+	void set_derivative(const vecp& force_torque, flv::iterator out) const {
+		std::copy_n(force_torque.first.data, 3, out);
+		std::copy_n(force_torque.second.data, 3, out + 3);
 	}
 };
 
@@ -101,8 +104,9 @@ struct axis_frame : public atom_frame {
 		VINA_CHECK(nrm >= epsilon_fl);
 		axis = (1/nrm) * diff;
 	}
-	void set_derivative(const vecp& force_torque, fl& c) const {
-		c = force_torque.second * axis;
+	static constexpr sz derivative_size = 1;
+	void set_derivative(const vecp& force_torque, flv::iterator out) const {
+		*out = force_torque.second * axis;
 	}
 protected:
 	vec axis;
@@ -161,6 +165,17 @@ void branches_derivative(const std::vector<T>& b, const vec& origin, const vecv&
 	}
 }
 
+template<typename Node, typename Branch>
+vecp tree_derivative(const Node& node, const std::vector<Branch>& children,
+                    const vecv& coords, const vecv& forces, flv::iterator& out) {
+	const auto root = out;
+	out += Node::derivative_size;
+	vecp force_torque = node.sum_force_and_torque(coords, forces);
+	branches_derivative(children, node.get_origin(), coords, forces, force_torque, out);
+	node.set_derivative(force_torque, root);
+	return force_torque;
+}
+
 template<typename T> // T == segment
 struct tree {
 	T node;
@@ -171,12 +186,7 @@ struct tree {
 		branches_set_conf(children, node, atoms, coords, c);
 	}
 	vecp derivative(const vecv& coords, const vecv& forces, flv::iterator& p) const {
-		vecp force_torque = node.sum_force_and_torque(coords, forces);
-		fl& d = *p; // reference
-		++p;
-		branches_derivative(children, node.get_origin(), coords, forces, force_torque, p);
-		node.set_derivative(force_torque, d);
-		return force_torque;
+		return tree_derivative(node, children, coords, forces, p);
 	}
 };
 
@@ -201,21 +211,8 @@ struct heterotree {
 		branches_set_conf(children, node, atoms, coords, p);
 		assert(p == c.torsions.end());
 	}
-	void derivative(const vecv& coords, const vecv& forces, ligand_change& c) const {
-		vecp force_torque = node.sum_force_and_torque(coords, forces);
-		flv::iterator p = c.torsions.begin();
-		branches_derivative(children, node.get_origin(), coords, forces, force_torque, p);
-		node.set_derivative(force_torque, c.rigid);
-		assert(p == c.torsions.end());
-	}
-	void derivative(const vecv& coords, const vecv& forces, residue_change& c) const {
-		vecp force_torque = node.sum_force_and_torque(coords, forces);
-		flv::iterator p = c.torsions.begin();
-		fl& d = *p; // reference
-		++p;
-		branches_derivative(children, node.get_origin(), coords, forces, force_torque, p);
-		node.set_derivative(force_torque, d);
-		assert(p == c.torsions.end());
+	void derivative(const vecv& coords, const vecv& forces, flv::iterator& out) const {
+		tree_derivative(node, children, coords, forces, out);
 	}
 };
 
@@ -242,10 +239,9 @@ struct vector_mutable : public std::vector<T> {
 			::count_torsions((*this)[i], tmp[i]);
 		return tmp;
 	}
-	template<typename C>
-	void derivative(const vecv& coords, const vecv& forces, std::vector<C>& c) const { // C == ligand_change || residue_change
-		VINA_FOR_IN(i, (*this))
-			(*this)[i].derivative(coords, forces, c[i]);
+	void derivative(const vecv& coords, const vecv& forces, flv::iterator& out) const {
+		for (const auto& tree : *this)
+			tree.derivative(coords, forces, out);
 	}
 };
 

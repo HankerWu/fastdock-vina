@@ -130,7 +130,7 @@ public:
         Destroy();
     }
 
-    fl eval(atom& a, atom& b, fl r) const{ // intentionally not checking for cutoff
+    fl eval(const atom& a, const atom& b, fl r) const{ // intentionally not checking for cutoff
         fl acc = 0;
         VINA_FOR (i, m_num_potentials)
         {

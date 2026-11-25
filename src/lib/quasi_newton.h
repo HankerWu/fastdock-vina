@@ -20,19 +20,23 @@
 
 */
 
+// Modified for FastDock Vina: reuse the BFGS workspace across local minimizations.
+
 #ifndef VINA_QUASI_NEWTON_H
 #define VINA_QUASI_NEWTON_H
 
+#include "bfgs.h"
 #include "model.h"
 
-struct quasi_newton {
+class quasi_newton {
+    bfgs_workspace workspace;
     unsigned max_steps;
-    fl average_required_improvement;
+
+public:
     bool strict_armijo = false;
-    quasi_newton() : max_steps(1000), average_required_improvement(0.0) {}
-    // clean up
-    void operator()(model& m, const precalculate_byatom& p, const igrid& ig, output_type& out,
-                    change& g, const vec& v, int& evalcount, pose_template* reference = nullptr) const;
+    quasi_newton(const conf_size& size, unsigned steps) : workspace(size), max_steps(steps) {}
+    void operator()(model& m, const precalculate_byatom& p, const igrid& ig,
+                    output_type& out, const vec& v, int& evalcount, pose_template* reference = nullptr);
 };
 
 #endif
