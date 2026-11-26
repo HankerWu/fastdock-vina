@@ -131,6 +131,7 @@ Thank you!\n";
 		double interaction_cutoff = default_xs_interaction_cutoff;
 		bool smooth_cutoff = false;
 		bool mixed_cutoff_search = false;
+		bool mixed_vinardo_search = false;
 		double buffer_size = 4;
 		double unbound_energy = NAN;
 
@@ -288,6 +289,8 @@ Thank you!\n";
 			("spacing", value<double>(&grid_spacing)->default_value(0.375), "grid spacing (Angstrom)")
 			("mixed_cutoff_search", bool_switch(&mixed_cutoff_search),
 			 "search alternating trajectories with the smooth cutoff and select pooled poses with native Late Vina")
+			("mixed_vinardo_search", bool_switch(&mixed_vinardo_search),
+			 "search alternating trajectories with Vinardo; pool and refine with native Late Vina")
 			("smooth_cutoff", bool_switch(&smooth_cutoff),
 			 "taper ordinary Vina pair energies over the final 1 Angstrom of the cutoff")
 			("interaction_cutoff", value<double>(&interaction_cutoff)->default_value(default_xs_interaction_cutoff),
@@ -362,7 +365,7 @@ Thank you!\n";
 		if (rerank_gauss2_scale >= 0 && rerank_gauss2_scale < 1 && !regular_rigid_vina)
 			throw usage_error("rerank_gauss2_scale below 1 requires regular Vina docking with a rigid receptor, one ligand per run, and explicit receptor refinement");
 
-		if ((mixed_cutoff_search || vm.count("search_anchor") || vm.count("search_amide") || vm.count("rank_amide")) && vm["pose_selection"].defaulted()) pose_selection = "late";
+		if ((mixed_cutoff_search || mixed_vinardo_search || vm.count("search_anchor") || vm.count("search_amide") || vm.count("rank_amide")) && vm["pose_selection"].defaulted()) pose_selection = "late";
 		if (vm.count("search_anchor_trajectories") && !vm.count("search_anchor"))
 			throw usage_error("search_anchor_trajectories requires search_anchor");
 		if (vm.count("search_anchor") && (search_anchor_path.empty() || !regular_rigid_vina ||
@@ -376,6 +379,13 @@ Thank you!\n";
 			throw usage_error("rank_amide requires regular rigid single-ligand Late Vina docking");
 		if (mixed_cutoff_search && (!regular_rigid_vina || pose_selection != "late" || smooth_cutoff || exhaustiveness < 2))
 			throw usage_error("mixed_cutoff_search requires regular rigid Vina docking, native Late scoring and exhaustiveness >= 2");
+		if (mixed_vinardo_search && (!regular_rigid_vina || ligand_names.size() != 1 || vm.count("batch") ||
+		    pose_selection != "late" || smooth_cutoff || mixed_cutoff_search || exhaustiveness < 2 ||
+		    rerank_gauss2_scale != 1 || refinement_optimizer != "native" || vm.count("pose_template") ||
+		    vm.count("polar_geometry") || vm.count("polar_burial") || vm.count("net_polar") ||
+		    vm.count("trajectory_archive") || vm.count("search_anchor") || vm.count("search_amide") ||
+		    vm.count("rank_amide") || rigid_reorientation != "native" || separate_hunt_chain || vm.count("pocket_start_radius")))
+			throw usage_error("mixed_vinardo_search requires rigid single-ligand Late Vina, exhaustiveness >= 2, and no other experimental search modes");
 		if (pose_selection != "native" && pose_selection != "late")
 			throw usage_error("pose_selection must be native or late");
 		if (pose_selection == "late" && !regular_rigid_vina)
@@ -559,6 +569,7 @@ Thank you!\n";
 		v.set_rigid_reorientation(rigid_reorientation == "mixed", rigid_reorientation == "centered");
 		v.set_separate_hunt_chain(separate_hunt_chain);
 		v.set_mixed_cutoff_search(mixed_cutoff_search);
+		v.set_mixed_vinardo_search(mixed_vinardo_search);
 		v.set_search_counters(search_counters);
 		if (vm.count("pocket_start_radius"))
 			v.set_pocket_start_radius(pocket_start_radius);
