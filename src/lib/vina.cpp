@@ -32,6 +32,7 @@
 #include "scoring_function.h"
 #include "precalculate.h"
 #include "pose_template.h"
+#include "anchored_search_grid.h"
 #include "polar_geometry.h"
 #include "net_polar.h"
 #include "trajectory_archive.h"
@@ -1545,6 +1546,19 @@ void Vina::global_search(const int exhaustiveness, const int n_poses, const doub
 	    rerank || m_armijo_refinement || polar_rank || burial_rank || net_polar_rank ||
 	    !m_pose_template_path.empty() || archive_enabled))
 		throw vina_runtime_error("mixed_cutoff_search requires native Late Vina refinement and ranking, a rigid receptor, exhaustiveness >= 2, and cutoff > 1 Angstrom");
+	boost::optional<anchored_search_grid> anchor_grid;
+	if (!m_search_anchor_path.empty()) {
+		if (!late_selection || !m_use_explicit_receptor || m_sf_choice != SF_VINA ||
+		    m_no_refine || m_mixed_cutoff_search || m_scoring_function->smooth_cutoff() ||
+		    rerank || m_armijo_refinement || polar_rank || burial_rank || net_polar_rank ||
+		    !m_pose_template_path.empty() || archive_enabled)
+			throw vina_runtime_error("search_anchor requires rigid single-ligand Late Vina with native refinement and ranking");
+		ifile file(m_search_anchor_path);
+		auto sites = read_search_anchors(file, m_model, m_grid.corner1(), m_grid.corner2());
+		if (m_verbosity > 0 || m_search_counters)
+			std::cout << "Search anchor: sites=" << sites.size() << " search=all_trajectories final=native_late\n";
+		anchor_grid.emplace(m_grid, std::move(sites));
+	}
 	if (archive_enabled) {
 		if (!late_selection || rerank || m_armijo_refinement || m_sf_choice != SF_VINA || m_no_refine ||
 		    polar_rank || !m_pose_template_path.empty())
@@ -1623,7 +1637,8 @@ void Vina::global_search(const int exhaustiveness, const int n_poses, const doub
 				std::cout << "\nMixed cutoff search: native=" << (exhaustiveness + 1) / 2
 				          << " smooth=" << exhaustiveness / 2 << " smooth_on_even_1based=true final=native_late\n";
 		}
-		parallelmc(m_model, poses, m_precalculated_byatom, m_grid, m_grid.corner1(), m_grid.corner2(), generator,
+		const igrid& search_grid = anchor_grid ? static_cast<const igrid&>(*anchor_grid) : static_cast<const igrid&>(m_grid);
+		parallelmc(m_model, poses, m_precalculated_byatom, search_grid, m_grid.corner1(), m_grid.corner2(), generator,
 		           m_progress_callback, archive_enabled ? &archives : nullptr, archive_support, counters,
 		           alternate.get_ptr());
 	} else {

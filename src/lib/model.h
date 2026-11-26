@@ -181,6 +181,7 @@ private:
 	friend struct parallel_mc;
 	friend struct precalculate_byatom;
 	friend struct cache;
+	friend class anchored_search_grid;
 	friend struct non_cache;
 	friend struct ad4cache;
 	friend struct szv_grid;

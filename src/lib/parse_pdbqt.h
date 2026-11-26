@@ -24,11 +24,13 @@
 #define VINA_PARSE_PDBQT_H
 
 #include <string>
+#include <map>
 #include "model.h"
 
 model parse_receptor_pdbqt(const std::string &rigid=std::string(), const std::string &flex=std::string(), atom_type::t atype=atom_type::XS); // can throw pdbqt_parse_error
 model parse_ligand_pdbqt_from_file(const std::string& name, atom_type::t atype); // can throw pdbqt_parse_error
 model parse_ligand_pdbqt_from_string(const std::string &string_name, atom_type::t atype);
+std::map<unsigned, sz> ligand_heavy_indices_by_serial(const model& ligand);
 // Validate a pose against the prepared context before replacing lab coordinates.
 void replace_fixed_pose_coordinates(model& prepared, const std::string& pose);
 model parse_ligand_pdbqt_with_bonds(const std::string& ligand_name, atom_type::t atype,

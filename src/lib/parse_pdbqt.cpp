@@ -709,6 +709,26 @@ std::string unwrap_fixed_pose(const std::string& input) {
 
 } // namespace
 
+std::map<unsigned, sz> ligand_heavy_indices_by_serial(const model& m) {
+    if (m.num_ligands() != 1)
+        throw std::invalid_argument("search_anchor requires one prepared ligand");
+    std::map<unsigned, sz> heavy;
+    std::set<unsigned> used;
+    const auto ligand = m.get_ligand(0);
+    for (const auto& line : ligand.cont) {
+        if (!line.second) continue;
+        const auto serial = fixed_pose_atom_serial(line.first);
+        if (!used.insert(serial).second)
+            throw std::invalid_argument("search_anchor atom serial is ambiguous");
+        const sz index = *line.second;
+        if (index >= m.num_movable_atoms()) continue;
+        const auto& atom = m.movable_atom(index);
+        if (atom.el != EL_TYPE_H && atom.el != EL_TYPE_Dummy)
+            heavy.emplace(serial, index);
+    }
+    return heavy;
+}
+
 void pdbqt_initializer::replace_fixed_pose_coordinates(model& prepared, const non_rigid_parsed& pose,
                                                       const context& pose_context) {
     const context& prepared_context = prepared.ligands.front().cont;
