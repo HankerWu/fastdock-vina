@@ -1,0 +1,13 @@
+assay,receptor,cap,scope,pairs,dry,steric,polar
+Ycas-Table1-unlabeled-SPR,7F5D,48000,all,1,0.0,0.0,0.0
+Ycas-Table1-unlabeled-SPR,7F5D,120000,all,1,0.0,0.0,0.0
+Ycas-Table1-unlabeled-SPR,7RWO,48000,all,1,0.0,0.0,0.0
+Ycas-Table1-unlabeled-SPR,7RWO,120000,all,1,0.0,0.0,0.0
+Zahid-Fig5B-BROMOscan,7F5D,48000,all,4,1.0,0.0,2.0
+Zahid-Fig5B-BROMOscan,7F5D,48000,without-24,2,1.0,0.0,2.0
+Zahid-Fig5B-BROMOscan,7F5D,120000,all,4,2.0,0.0,1.0
+Zahid-Fig5B-BROMOscan,7F5D,120000,without-24,2,2.0,0.0,1.0
+Zahid-Fig5B-BROMOscan,7RWO,48000,all,4,2.0,2.0,2.0
+Zahid-Fig5B-BROMOscan,7RWO,48000,without-24,2,2.0,2.0,2.0
+Zahid-Fig5B-BROMOscan,7RWO,120000,all,4,0.0,2.0,2.0
+Zahid-Fig5B-BROMOscan,7RWO,120000,without-24,2,0.0,2.0,2.0

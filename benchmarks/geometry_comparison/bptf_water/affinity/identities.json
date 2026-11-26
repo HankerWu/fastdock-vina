@@ -1,0 +1,86 @@
+{
+  "donors_and_receivers": [
+    {
+      "pdb": "7K6R",
+      "ccd": "9ST",
+      "key": "VZAFGXCWAWRULT-UONOGXRCSA-N"
+    },
+    {
+      "pdb": "7M2E",
+      "ccd": "YOV",
+      "key": "GMOXVZIZCRBKJB-UHFFFAOYSA-N"
+    },
+    {
+      "pdb": "7F5D",
+      "ccd": "EUO",
+      "key": "RTONKOFFKFVXAW-UHFFFAOYSA-N"
+    },
+    {
+      "pdb": "7RWO",
+      "ccd": "7WN",
+      "key": "VZQFJJGIJFKMFN-UHFFFAOYSA-N"
+    }
+  ],
+  "ligands": [
+    {
+      "compound": "Bromosporine",
+      "smiles": "CCOC(=O)NC1=CC(=NN2C1=NN=C2C)C3=CC(=C(C=C3)C)NS(=O)(=O)C",
+      "key": "UYBRROMMFMPJAN-UHFFFAOYSA-N",
+      "neutral_formula": "C17H20N6O4S",
+      "assay": "Ycas-Table1-unlabeled-SPR",
+      "kd_nM": 9000,
+      "protonate": false,
+      "source": "PubChem 72943187"
+    },
+    {
+      "compound": "TP-238",
+      "smiles": "CN(C)CCCOC1=CC=C(C=C1)C2=CC(=NC(=N2)S(=O)(=O)C)NCCCN3C=CC=N3",
+      "key": "MSIJJXOWLFOYIN-UHFFFAOYSA-N",
+      "neutral_formula": "C22H30N6O3S",
+      "assay": "Ycas-Table1-unlabeled-SPR",
+      "kd_nM": 200,
+      "protonate": true,
+      "source": "PubChem 137796292"
+    },
+    {
+      "compound": "BZ1",
+      "smiles": "Cn1ncc(Nc2ccc(CCN)cc2)c(Cl)c1=O",
+      "key": "UOQAFGWMKNIVAR-UHFFFAOYSA-N",
+      "neutral_formula": "C13H15ClN4O",
+      "assay": "Zahid-Fig5B-BROMOscan",
+      "kd_nM": 6.3,
+      "protonate": true,
+      "source": "CHEMBL4872300"
+    },
+    {
+      "compound": "21",
+      "smiles": "Cn1ncc(Nc2ccc(CCN)cc2)c(Br)c1=O",
+      "key": "CIUXKWFQVPTMEQ-UHFFFAOYSA-N",
+      "neutral_formula": "C13H15BrN4O",
+      "assay": "Zahid-Fig5B-BROMOscan",
+      "kd_nM": 9.3,
+      "protonate": true,
+      "source": "CHEMBL4861491"
+    },
+    {
+      "compound": "22",
+      "smiles": "CN(C)CCCc1ccc(Nc2cnn(C)c(=O)c2Cl)cc1",
+      "key": "RORQWFZBNDBULQ-UHFFFAOYSA-N",
+      "neutral_formula": "C16H21ClN4O",
+      "assay": "Zahid-Fig5B-BROMOscan",
+      "kd_nM": 70.0,
+      "protonate": true,
+      "source": "CHEMBL4848701"
+    },
+    {
+      "compound": "24",
+      "smiles": "C#CCn1ncc(Nc2ccc(CN)cc2)c(Cl)c1=O",
+      "key": "MVYOGOYZCIMNOW-UHFFFAOYSA-N",
+      "neutral_formula": "C14H13ClN4O",
+      "assay": "Zahid-Fig5B-BROMOscan",
+      "kd_nM": 200.0,
+      "protonate": true,
+      "source": "Zahid experimental section (24), propargyl corrected from CHEMBL4863631"
+    }
+  ]
+}

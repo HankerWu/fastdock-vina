@@ -1,0 +1,46 @@
+[
+  {
+    "pdb": "7RWP",
+    "ligand": "7WZ",
+    "target": "BPTF",
+    "cohort": "external",
+    "ligand.pdbqt_sha256": "54c06510c3a4185c2242e69caaf28dc53852d6801455b5d744033a0bd56b5d5a",
+    "receptor.pdbqt_sha256": "b6c268665d0f327d6a2bb27f5f941323e1d0f8b729bf5ca7f96b73dd14e76473",
+    "metadata.json_sha256": "1248da22fb9394ee5b650e64c59cc5b861cd63871364092de649148370aa428c",
+    "status": "ready",
+    "7RWP.pdb_sha256": "8d3be03aac64f3217c0a6403b6260d67b55612d077dddb780281679ca5c5ad8c",
+    "7WZ.cif_sha256": "96ebb73eb1b6de23c03b7a8be40c9e385090e4cceca4f446426930e4664a6a43",
+    "source": {
+      "pdb": "7RWP",
+      "ligand": "7WZ",
+      "target": "BPTF",
+      "pdb_sha256": "8d3be03aac64f3217c0a6403b6260d67b55612d077dddb780281679ca5c5ad8c",
+      "ccd_sha256": "96ebb73eb1b6de23c03b7a8be40c9e385090e4cceca4f446426930e4664a6a43",
+      "chain": "A",
+      "ligand_instance": "A3101 ",
+      "nearest_omitted_nonwater_A": 14.323222367889148
+    }
+  },
+  {
+    "pdb": "7RWQ",
+    "ligand": "7XE",
+    "target": "BPTF",
+    "cohort": "external",
+    "ligand.pdbqt_sha256": "f81802311e0ec9f2660d6c5f04f3d6bf4c97bd1e577d31aba785ea661b5571fd",
+    "receptor.pdbqt_sha256": "1c636fa0b16dd0f9c7b795b5523b66e891b7f9eda2779ad1363ab4640e37b1d1",
+    "metadata.json_sha256": "a0896f6fd32b7ebefd6beb00a03c1f85d370195bd6027946179dfed7cfea3dad",
+    "status": "ready",
+    "7RWQ.pdb_sha256": "3f917faf724e1f88c47929d3e90f6a739871a05fcab88a8067c90bc068e9473f",
+    "7XE.cif_sha256": "ac3bb93b0ae8226c41903bd1d56fcda10ef6bb7bbedfc1af6ab969dc55e01705",
+    "source": {
+      "pdb": "7RWQ",
+      "ligand": "7XE",
+      "target": "BPTF",
+      "pdb_sha256": "3f917faf724e1f88c47929d3e90f6a739871a05fcab88a8067c90bc068e9473f",
+      "ccd_sha256": "ac3bb93b0ae8226c41903bd1d56fcda10ef6bb7bbedfc1af6ab969dc55e01705",
+      "chain": "A",
+      "ligand_instance": "A3001 ",
+      "nearest_omitted_nonwater_A": 14.381490499944713
+    }
+  }
+]

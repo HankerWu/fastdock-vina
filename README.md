@@ -174,6 +174,8 @@ python3 benchmarks/check_pro_rerank.py build/vina /path/to/pre-pro/vina
 
 ### 显式精修的 Armijo 回退线搜索
 
+几何预条件的解析实现、对照官方 v1.2.7 的 CPU 预算实验，以及新增人源靶点的姿势和实测 Ki/Kd 结果见[跨靶点配对验证](benchmarks/geometry_comparison/README.md)。
+
 在常规刚性单配体 Vina 对接命令加 `--refinement_optimizer armijo`，可在最终显式受体精修中
 启用严格 Armijo 下降条件。默认值 `native` 沿用原优化器。Armijo 可与 `--pose_selection late`
 和 `--rerank_gauss2_scale` 分别组合，Monte Carlo 搜索、单独局部优化和其他评分模式沿用原路由。

@@ -1,0 +1,226 @@
+{
+  "7F5D": [
+    {
+      "id": 12,
+      "xyz": [
+        7.246079728142227,
+        -3.780560301590661,
+        22.799482450837992
+      ],
+      "independent_pdb_count": 2,
+      "hits": [
+        {
+          "pdb_id": "7K6R",
+          "chain": "A",
+          "source_resseq": 3259,
+          "source_icode": "",
+          "atom": "O",
+          "occupancy": 1.0,
+          "source_xyz": [
+            7.339,
+            -0.174,
+            -7.727
+          ],
+          "xyz": [
+            7.236378779858917,
+            -3.8224060498797163,
+            22.75690450088285
+          ]
+        },
+        {
+          "pdb_id": "7M2E",
+          "chain": "A",
+          "source_resseq": 3562,
+          "source_icode": "",
+          "atom": "O",
+          "occupancy": 1.0,
+          "source_xyz": [
+            7.005,
+            3.52,
+            7.597
+          ],
+          "xyz": [
+            7.2557806764255375,
+            -3.7387145533016053,
+            22.84206040079313
+          ]
+        }
+      ],
+      "same_pdb_repeats": [],
+      "observed_xyz": [
+        7.138,
+        -3.37,
+        22.665
+      ],
+      "observed_id": "A 325 ",
+      "registration_distance": 0.44533865592479754
+    }
+  ],
+  "7RWO": [
+    {
+      "id": 2,
+      "xyz": [
+        6.455673084617671,
+        0.952996202849666,
+        8.12354921611347
+      ],
+      "independent_pdb_count": 2,
+      "hits": [
+        {
+          "pdb_id": "7K6R",
+          "chain": "A",
+          "source_resseq": 3210,
+          "source_icode": "",
+          "atom": "O",
+          "occupancy": 1.0,
+          "source_xyz": [
+            6.704,
+            2.419,
+            -6.803
+          ],
+          "xyz": [
+            6.424342527336115,
+            0.8518918315985939,
+            8.19737100661154
+          ]
+        },
+        {
+          "pdb_id": "7M2E",
+          "chain": "A",
+          "source_resseq": 3524,
+          "source_icode": "",
+          "atom": "O",
+          "occupancy": 1.0,
+          "source_xyz": [
+            6.355,
+            1.062,
+            7.972
+          ],
+          "xyz": [
+            6.487003641899227,
+            1.054100574100738,
+            8.049727425615403
+          ]
+        }
+      ],
+      "same_pdb_repeats": [],
+      "observed_xyz": [
+        6.491,
+        1.009,
+        8.001
+      ],
+      "observed_id": "A3122 ",
+      "registration_distance": 0.1392936704079272
+    },
+    {
+      "id": 8,
+      "xyz": [
+        9.440006012648338,
+        -7.95780931192843,
+        5.522859132600349
+      ],
+      "independent_pdb_count": 2,
+      "hits": [
+        {
+          "pdb_id": "7K6R",
+          "chain": "A",
+          "source_resseq": 3238,
+          "source_icode": "",
+          "atom": "O",
+          "occupancy": 1.0,
+          "source_xyz": [
+            9.596,
+            8.419,
+            0.206
+          ],
+          "xyz": [
+            9.359965988179603,
+            -7.8716402642109955,
+            5.235640487214945
+          ]
+        },
+        {
+          "pdb_id": "7M2E",
+          "chain": "A",
+          "source_resseq": 3529,
+          "source_icode": "",
+          "atom": "O",
+          "occupancy": 1.0,
+          "source_xyz": [
+            9.351,
+            -8.014,
+            5.597
+          ],
+          "xyz": [
+            9.520046037117073,
+            -8.043978359645864,
+            5.810077777985753
+          ]
+        }
+      ],
+      "same_pdb_repeats": [],
+      "observed_xyz": [
+        9.489,
+        -8.049,
+        5.528
+      ],
+      "observed_id": "A3123 ",
+      "registration_distance": 0.10364642253933325
+    },
+    {
+      "id": 11,
+      "xyz": [
+        7.09084086539215,
+        3.5323899938474135,
+        7.655776803900647
+      ],
+      "independent_pdb_count": 2,
+      "hits": [
+        {
+          "pdb_id": "7K6R",
+          "chain": "A",
+          "source_resseq": 3259,
+          "source_icode": "",
+          "atom": "O",
+          "occupancy": 1.0,
+          "source_xyz": [
+            7.339,
+            -0.174,
+            -7.727
+          ],
+          "xyz": [
+            7.064973266344842,
+            3.5557410888331376,
+            7.688017052676428
+          ]
+        },
+        {
+          "pdb_id": "7M2E",
+          "chain": "A",
+          "source_resseq": 3562,
+          "source_icode": "",
+          "atom": "O",
+          "occupancy": 1.0,
+          "source_xyz": [
+            7.005,
+            3.52,
+            7.597
+          ],
+          "xyz": [
+            7.116708464439458,
+            3.5090388988616894,
+            7.623536555124867
+          ]
+        }
+      ],
+      "same_pdb_repeats": [],
+      "observed_xyz": [
+        7.202,
+        3.578,
+        7.662
+      ],
+      "observed_id": "A3154 ",
+      "registration_distance": 0.12031356547661648
+    }
+  ]
+}

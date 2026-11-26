@@ -1,0 +1,119 @@
+{
+  "runs": 48,
+  "modes": 428,
+  "max_abs_rmsd_difference_A": 7.105427357601002e-15,
+  "arms": {
+    "dry": {
+      "hits_top1_top5_any": {
+        "redock": [
+          0,
+          2,
+          2
+        ],
+        "cross": [
+          1,
+          3,
+          4
+        ]
+      },
+      "medians_by_receiver_query": {
+        "7MRH": {
+          "7MRH": -7.766,
+          "7MRG": -9.421
+        },
+        "7MRG": {
+          "7MRH": -8.21,
+          "7MRG": -9.767
+        }
+      },
+      "correct_assay_order_by_receiver": {
+        "7MRH": false,
+        "7MRG": false
+      }
+    },
+    "polar": {
+      "hits_top1_top5_any": {
+        "redock": [
+          2,
+          3,
+          3
+        ],
+        "cross": [
+          5,
+          5,
+          5
+        ]
+      },
+      "medians_by_receiver_query": {
+        "7MRH": {
+          "7MRH": -7.996,
+          "7MRG": -9.317
+        },
+        "7MRG": {
+          "7MRH": -8.593,
+          "7MRG": -9.577
+        }
+      },
+      "correct_assay_order_by_receiver": {
+        "7MRH": false,
+        "7MRG": false
+      }
+    },
+    "supported": {
+      "hits_top1_top5_any": {
+        "redock": [
+          2,
+          3,
+          3
+        ],
+        "cross": [
+          5,
+          5,
+          5
+        ]
+      },
+      "medians_by_receiver_query": {
+        "7MRH": {
+          "7MRH": -7.996,
+          "7MRG": -9.317
+        },
+        "7MRG": {
+          "7MRH": -8.593,
+          "7MRG": -9.577
+        }
+      },
+      "correct_assay_order_by_receiver": {
+        "7MRH": false,
+        "7MRG": false
+      }
+    },
+    "registered": {
+      "hits_top1_top5_any": {
+        "redock": [
+          4,
+          4,
+          4
+        ],
+        "cross": [
+          3,
+          3,
+          3
+        ]
+      },
+      "medians_by_receiver_query": {
+        "7MRH": {
+          "7MRH": -8.052,
+          "7MRG": -9.131
+        },
+        "7MRG": {
+          "7MRH": -8.063,
+          "7MRG": -9.643
+        }
+      },
+      "correct_assay_order_by_receiver": {
+        "7MRH": false,
+        "7MRG": false
+      }
+    }
+  }
+}

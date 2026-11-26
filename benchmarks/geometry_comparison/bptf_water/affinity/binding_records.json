@@ -1,0 +1,46 @@
+[
+  {
+    "activity_id": 23236694,
+    "assay_chembl_id": "CHEMBL4828237",
+    "molecule_chembl_id": "CHEMBL4872300",
+    "canonical_smiles": "Cn1ncc(Nc2ccc(CCN)cc2)c(Cl)c1=O",
+    "standard_type": "Kd",
+    "standard_relation": "=",
+    "standard_units": "nM",
+    "standard_value": "6.3",
+    "document_chembl_id": "CHEMBL4825756"
+  },
+  {
+    "activity_id": 23236695,
+    "assay_chembl_id": "CHEMBL4828237",
+    "molecule_chembl_id": "CHEMBL4861491",
+    "canonical_smiles": "Cn1ncc(Nc2ccc(CCN)cc2)c(Br)c1=O",
+    "standard_type": "Kd",
+    "standard_relation": "=",
+    "standard_units": "nM",
+    "standard_value": "9.3",
+    "document_chembl_id": "CHEMBL4825756"
+  },
+  {
+    "activity_id": 23236696,
+    "assay_chembl_id": "CHEMBL4828237",
+    "molecule_chembl_id": "CHEMBL4848701",
+    "canonical_smiles": "CN(C)CCCc1ccc(Nc2cnn(C)c(=O)c2Cl)cc1",
+    "standard_type": "Kd",
+    "standard_relation": "=",
+    "standard_units": "nM",
+    "standard_value": "70.0",
+    "document_chembl_id": "CHEMBL4825756"
+  },
+  {
+    "activity_id": 23236697,
+    "assay_chembl_id": "CHEMBL4828237",
+    "molecule_chembl_id": "CHEMBL4863631",
+    "canonical_smiles": "N#CCn1ncc(Nc2ccc(CN)cc2)c(Cl)c1=O",
+    "standard_type": "Kd",
+    "standard_relation": "=",
+    "standard_units": "nM",
+    "standard_value": "200.0",
+    "document_chembl_id": "CHEMBL4825756"
+  }
+]

@@ -1,0 +1,18 @@
+[
+  {
+    "pdb": "7MRH",
+    "auth_chain": "B",
+    "original_pdb_sha256": "b78d4b1acde1ce56921941b4e49adfcb93822a9c8f8d2fbfb8ed5e8fed20beb1",
+    "status": "ready",
+    "nearest_omitted_nonwater_A": 10.060197463270788,
+    "nearest_repaired_heavy_A": 29.66229043752353
+  },
+  {
+    "pdb": "7MRG",
+    "auth_chain": "B",
+    "original_pdb_sha256": "6177dc02c52557ebc95ddde48854800711ccc976285673d2499bb288e0bbb264",
+    "status": "excluded",
+    "reason": "Meeko receptor template matching failed. See prep.log.",
+    "nearest_omitted_nonwater_A": 8.359245061606938
+  }
+]
