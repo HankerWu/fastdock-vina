@@ -6,12 +6,12 @@ import itertools
 import json
 from pathlib import Path
 
-import numpy as np
 from ammonium_states import LIGANDS, RECEPTORS, SEEDS, xyzs
 from coordination_probe import read_models, write_csv
+from rank_anchor_pool import read_assignments, ensemble_penalty
 
 
-def rank(runs, metadata):
+def rank(runs, metadata, state_anchors=False):
     by_key = {}
     for row in csv.DictReader((runs / "candidates.csv").open()):
         by_key[
@@ -25,18 +25,13 @@ def rank(runs, metadata):
         ] = row
     for path in sorted(runs.glob("*.pdbqt")):
         rec, lig, seed, slot = path.stem.split("_", maxsplit=3)
-        sites = np.loadtxt(runs / "inputs" / f"{rec}_{lig}.anchor", ndmin=2)
-        if sites.shape[1] != 4:
-            raise ValueError("Only points are supported in this scaffold diagnostic")
+        state = "reflected" if slot == "second_reflected" else "original"
+        name = f"{rec}_{lig}_{state}.anchor" if state_anchors else f"{rec}_{lig}.anchor"
+        assignments = read_assignments((runs / "inputs" / name).read_text())
         for m, lines in read_models(path.read_text().splitlines()).items():
             row = by_key[rec, lig, int(seed), slot, m]
             atoms = xyzs("\n".join(lines))
-            d2 = np.sum(
-                (np.array([atoms[int(s)] for s in sites[:, 0]]) - sites[:, 1:]) ** 2,
-                axis=1,
-            )
-            # 4*(sqrt(1+d²)-1) is algebraically identical to the search's stable rational expression.
-            row["prior"] = 4.0 * float(np.mean(np.sqrt(1.0 + d2) - 1.0))
+            row["prior"] = ensemble_penalty(assignments, atoms)
     cells = []
     modes = []
     for rec, lig, seed in itertools.product(RECEPTORS, LIGANDS, SEEDS):

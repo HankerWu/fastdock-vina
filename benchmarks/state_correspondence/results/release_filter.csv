@@ -1,0 +1,21 @@
+receptor,ligand,donor,state,center,neighbors,input_volume,n_input,compatible,opposite,partial,fallback,n_output,decisions
+6WQ4,6WQ4,6WQ5,original,18,17 20 24,2.40106778,8,8,0,0,0,8,compatible compatible compatible compatible compatible compatible compatible compatible
+6WQ4,6WQ4,6WQ5,reflected,18,17 20 24,-2.40106778,8,0,8,0,1,8,opposite opposite opposite opposite opposite opposite opposite opposite
+6WQ8,6WQ4,6WQ5,original,18,17 20 24,2.40106778,8,8,0,0,0,8,compatible compatible compatible compatible compatible compatible compatible compatible
+6WQ8,6WQ4,6WQ5,reflected,18,17 20 24,-2.40106778,8,0,8,0,1,8,opposite opposite opposite opposite opposite opposite opposite opposite
+6WQ4,6WQ5,6WQ8,original,24,23 26 33,-2.35231325,8,0,8,0,1,8,opposite opposite opposite opposite opposite opposite opposite opposite
+6WQ4,6WQ5,6WQ8,reflected,24,23 26 33,2.35231325,8,8,0,0,0,8,compatible compatible compatible compatible compatible compatible compatible compatible
+6WQ8,6WQ5,6WQ8,original,24,23 26 33,-2.35231325,8,0,8,0,1,8,opposite opposite opposite opposite opposite opposite opposite opposite
+6WQ8,6WQ5,6WQ8,reflected,24,23 26 33,2.35231325,8,8,0,0,0,8,compatible compatible compatible compatible compatible compatible compatible compatible
+6WQ4,6WQ7,6WQ9,original,26,25 28 35,-2.31753519,16,0,16,0,1,16,opposite opposite opposite opposite opposite opposite opposite opposite opposite opposite opposite opposite opposite opposite opposite opposite
+6WQ4,6WQ7,6WQ9,reflected,26,25 28 35,2.31753519,16,16,0,0,0,16,compatible compatible compatible compatible compatible compatible compatible compatible compatible compatible compatible compatible compatible compatible compatible compatible
+6WQ8,6WQ7,6WQ9,original,26,25 28 35,-2.31753519,16,0,16,0,1,16,opposite opposite opposite opposite opposite opposite opposite opposite opposite opposite opposite opposite opposite opposite opposite opposite
+6WQ8,6WQ7,6WQ9,reflected,26,25 28 35,2.31753519,16,16,0,0,0,16,compatible compatible compatible compatible compatible compatible compatible compatible compatible compatible compatible compatible compatible compatible compatible compatible
+6WQ4,6WQ8,6WQ5,original,24,23 26 31,-2.34426278,8,0,8,0,1,8,opposite opposite opposite opposite opposite opposite opposite opposite
+6WQ4,6WQ8,6WQ5,reflected,24,23 26 31,2.34426278,8,8,0,0,0,8,compatible compatible compatible compatible compatible compatible compatible compatible
+6WQ8,6WQ8,6WQ5,original,24,23 26 31,-2.34426278,8,0,8,0,1,8,opposite opposite opposite opposite opposite opposite opposite opposite
+6WQ8,6WQ8,6WQ5,reflected,24,23 26 31,2.34426278,8,8,0,0,0,8,compatible compatible compatible compatible compatible compatible compatible compatible
+6WQ4,6WQ9,6WQ7,original,4,3 6 11,-1.88700567,16,16,0,0,0,16,compatible compatible compatible compatible compatible compatible compatible compatible compatible compatible compatible compatible compatible compatible compatible compatible
+6WQ4,6WQ9,6WQ7,reflected,4,3 6 11,1.88700567,16,0,16,0,1,16,opposite opposite opposite opposite opposite opposite opposite opposite opposite opposite opposite opposite opposite opposite opposite opposite
+6WQ8,6WQ9,6WQ7,original,4,3 6 11,-1.88700567,16,16,0,0,0,16,compatible compatible compatible compatible compatible compatible compatible compatible compatible compatible compatible compatible compatible compatible compatible compatible
+6WQ8,6WQ9,6WQ7,reflected,4,3 6 11,1.88700567,16,0,16,0,1,16,opposite opposite opposite opposite opposite opposite opposite opposite opposite opposite opposite opposite opposite opposite opposite opposite

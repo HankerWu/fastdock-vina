@@ -86,7 +86,7 @@ def xyzs(text):
     return {s: a.xyz for s, a in parse_atoms(text.splitlines()).items()}
 
 
-def prepare(work, out, scaffold_anchors):
+def prepare(work, out, scaffold_anchors, ensemble_anchors=None):
     prepared = work / "prepared"
     inputs = out / "inputs"
     inputs.mkdir()
@@ -95,7 +95,9 @@ def prepare(work, out, scaffold_anchors):
         (inputs / f"{lig}_reflected.pdbqt").write_text(mirror)
         for rec in RECEPTORS:
             destination = inputs / f"{rec}_{lig}.anchor"
-            if scaffold_anchors is not None:
+            if ensemble_anchors is not None:
+                destination.write_bytes((ensemble_anchors / f"{rec}_{lig}.multi").read_bytes())
+            elif scaffold_anchors is not None:
                 files = [
                     scaffold_anchors / f"{rec}_{lig}_{seed}_scaffold.anchor"
                     for seed in SEEDS
@@ -119,7 +121,7 @@ def input_path(prepared, out, lig, state):
     )
 
 
-def dock(item, binary, work, out):
+def dock(item, binary, work, out, anchor_file=None):
     rec, lig, seed, slot = item
     prepared = work / "prepared"
     state = "reflected" if slot == "second_reflected" else "original"
@@ -150,7 +152,7 @@ def dock(item, binary, work, out):
         "--pose_selection",
         "late",
         "--search_anchor",
-        str(out / "inputs" / f"{rec}_{lig}.anchor"),
+        str(anchor_file if anchor_file is not None else out / "inputs" / f"{rec}_{lig}.anchor"),
         "--search_counters",
         "--out",
         str(prefix.with_suffix(".pdbqt")),
@@ -326,7 +328,9 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     for key in ("work", "output", "binary"):
         parser.add_argument(f"--{key}", type=Path, required=True)
-    parser.add_argument(
+    sources = parser.add_mutually_exclusive_group()
+    sources.add_argument("--ensemble-anchors", type=Path, help="complete graph assignments for each receptor/ligand pair")
+    sources.add_argument(
         "--scaffold-anchors",
         type=Path,
         help="frozen independent-donor landmark files from the scaffold experiment",
@@ -346,7 +350,7 @@ def main():
     )
     if not args.evaluate_only:
         out.mkdir(parents=True, exist_ok=False)
-        prepare(work, out, args.scaffold_anchors)
+        prepare(work, out, args.scaffold_anchors, args.ensemble_anchors)
         with ThreadPoolExecutor(args.jobs) as pool:
             jobs = [pool.submit(dock, item, binary, work, out) for item in tasks]
             for job in jobs:
