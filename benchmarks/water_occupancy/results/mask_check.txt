@@ -1,0 +1,15 @@
+Rescored retained site lists independently for 48 BRD4 cells and 60 paired measurements.
+native dry top 1 pair credit 10.0
+native joint top 1 pair credit 14.0
+native witness top 1 pair credit 8.0
+native oracle top 1 pair credit 8.0
+native dry joint top gains/losses 0 0 pair gains/losses 7 3
+native joint witness top gains/losses 0 0 pair gains/losses 1 7
+native joint oracle top gains/losses 0 0 pair gains/losses 0 6
+transfer dry top 7 pair credit 9.0
+transfer joint top 2 pair credit 13.0
+transfer witness top 6 pair credit 7.0
+transfer oracle top 6 pair credit 12.0
+transfer dry joint top gains/losses 1 6 pair gains/losses 6 2
+transfer joint witness top gains/losses 4 0 pair gains/losses 0 6
+transfer joint oracle top gains/losses 4 0 pair gains/losses 0 1

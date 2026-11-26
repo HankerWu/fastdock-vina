@@ -1,0 +1,2 @@
+Partition, saturated clash, chemical substitution and null limits passed.
+Independent scalar partition and atom-role parsing reproduced all five scores on 1656 coordinates, max absolute difference 3.55e-15.
