@@ -40,6 +40,8 @@ struct non_cache : public igrid {
 	void prepare_for_model(const model& m, const ScoringFunction& sf, precalculate& tables) const;
 	void populate_maps(cache& maps, const model& receptor, const std::bitset<XS_TYPE_SIZE>& types,
 	                   bool retain_tables);
+	void populate_maps_from(cache& maps, const model& receptor, const std::bitset<XS_TYPE_SIZE>& types,
+	                        const ScoringFunction& scoring_function) const;
 	virtual fl eval      (const model& m, fl v) const; // needs m.coords // clean up
 	fl eval(const model& m, fl v, const precalculate& scores) const;
 	fl directional_eval(const model& m, fl v, const ScoringFunction& sf,

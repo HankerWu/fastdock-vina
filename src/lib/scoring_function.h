@@ -50,7 +50,10 @@ public:
         m_num_conf_independents = 0;
     }
     ScoringFunction(const scoring_function_choice sf_choice, const flv& weights,
-                    fl xs_cutoff = default_xs_interaction_cutoff) {
+                    fl xs_cutoff = default_xs_interaction_cutoff, bool smooth_cutoff = false)
+        : m_smooth_cutoff(smooth_cutoff) {
+        if (smooth_cutoff && (sf_choice != SF_VINA || xs_cutoff <= 1))
+            throw std::invalid_argument("smooth_cutoff requires Vina and an interaction_cutoff greater than 1 Angstrom");
         if (sf_choice != SF_AD42 && (!std::isfinite(xs_cutoff) || xs_cutoff <= 0 || xs_cutoff > macrocycle_glue_cutoff))
             throw std::invalid_argument("interaction_cutoff must be positive and at most " +
                                         std::to_string(static_cast<int>(macrocycle_glue_cutoff)) + " Angstrom");
@@ -131,24 +134,16 @@ public:
     }
 
     fl eval(const atom& a, const atom& b, fl r) const{ // intentionally not checking for cutoff
-        fl acc = 0;
-        VINA_FOR (i, m_num_potentials)
-        {
-            acc += m_weights[i] * m_potentials[i]->eval(a, b, r);
-        }
-        return acc;
-    };
-    fl eval(sz t1, sz t2, fl r) const{
-        fl acc = 0;
-        VINA_FOR (i, m_num_potentials)
-        {
-            acc += m_weights[i] * m_potentials[i]->eval(t1, t2, r);
-        }
-        return acc;
-    };
-    fl vina_hbond(sz t1, sz t2, fl r) const {
-        return m_weights[m_vina_hbond_index] * m_potentials[m_vina_hbond_index]->eval(t1, t2, r);
+        return pair_energy(a, b, r);
     }
+    fl eval(sz t1, sz t2, fl r) const {
+        return pair_energy(t1, t2, r);
+    }
+    fl vina_hbond(sz t1, sz t2, fl r) const {
+        const fl e = m_weights[m_vina_hbond_index] * m_potentials[m_vina_hbond_index]->eval(t1, t2, r);
+        return m_smooth_cutoff ? e * switch_factor(r) : e;
+    }
+    bool smooth_cutoff() const { return m_smooth_cutoff; }
     fl conf_independent(const model& m, fl e) const{
         // Iterator for weights
         flv::const_iterator it = m_weights.begin() + m_num_potentials;
@@ -176,6 +171,29 @@ public:
     flv get_weights() const { return m_weights; }
 
 private:
+    // The transition width is fixed at one Angstrom. Evaluate from the outer
+    // endpoint to retain precision as the interaction vanishes.
+    fl switch_factor(fl r) const {
+        const fl t = m_cutoff - r; // (cutoff - r) / 1 Angstrom
+        if (t >= 1) return 1;
+        if (t <= 0) return 0;
+        return t * t * t * (10 + t * (6 * t - 15));
+    }
+
+    template<typename AtomOrType>
+    fl pair_energy(const AtomOrType& a, const AtomOrType& b, fl r) const {
+        // For switched Vina, the last potential is the macrocycle closure.
+        // Add it separately so its physical range and strength are preserved.
+        const int count = m_num_potentials - int(m_smooth_cutoff);
+        fl e = 0;
+        VINA_FOR(i, count)
+            e += m_weights[i] * m_potentials[i]->eval(a, b, r);
+        if (m_smooth_cutoff)
+            e = e * switch_factor(r) + m_weights[count] * m_potentials[count]->eval(a, b, r);
+        return e;
+    }
+
+    bool m_smooth_cutoff = false;
     std::vector<Potential*> m_potentials;
     std::vector<ConfIndependent*> m_conf_independents;
     sz m_vina_hbond_index = 0;

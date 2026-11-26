@@ -33,7 +33,9 @@
 void parallel_mc::operator()(const model& m, output_container& out, const precalculate_byatom& p, const igrid& ig,
                              const vec& corner1, const vec& corner2, rng& generator, std::function<void(double)>* progress_callback,
                              std::vector<trajectory_archive>* archives, bool keep_support,
-                             std::vector<search_trajectory_counters>* counters) const {
+                             std::vector<search_trajectory_counters>* counters, const search_landscape* alternate) const {
+	// Different search energies can only be pooled after a common explicit rescore.
+	VINA_CHECK(!alternate || keep_trajectory_minima);
 	VINA_CHECK(num_tasks > 0 && num_threads > 0);
 	parallel_progress pp(progress_callback);
 	incrementable* progress = display_progress ? &pp : nullptr;
@@ -63,7 +65,10 @@ void parallel_mc::operator()(const model& m, output_container& out, const precal
 				rng placement_generator(seeds[task] ^ 0xa511e9b3u);
 				pocket_start = box_center + pocket_start_radius * random_inside_sphere(placement_generator);
 			}
-			mc(working, poses[task], p, ig, corner1, corner2, progress, task_generator,
+			const bool use_alternate = alternate && task % 2 == 1;
+			const auto& pairs = use_alternate ? alternate->ligand_pairs : p;
+			const auto& grid = use_alternate ? alternate->receptor : ig;
+			mc(working, poses[task], pairs, grid, corner1, corner2, progress, task_generator,
 			   archives ? &(*archives)[task] : nullptr, counters ? &(*counters)[task] : nullptr,
 			   pocket_start);
 			task = next_task.fetch_add(1, std::memory_order_relaxed);

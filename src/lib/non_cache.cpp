@@ -50,10 +50,15 @@ void non_cache::populate_maps(cache& maps, const model& receptor, const std::bit
 		p.populate(*scoring, sgrid.atom_types(), types);
 		maps.populate(receptor, p, sgrid, types);
 	} else {
-		precalculate temporary(scoring->get_cutoff());
-		temporary.populate(*scoring, sgrid.atom_types(), types);
-		maps.populate(receptor, temporary, sgrid, types);
+		populate_maps_from(maps, receptor, types, *scoring);
 	}
+}
+
+void non_cache::populate_maps_from(cache& maps, const model& receptor, const std::bitset<XS_TYPE_SIZE>& types,
+                                   const ScoringFunction& scoring_function) const {
+	precalculate temporary(scoring_function.get_cutoff());
+	temporary.populate(scoring_function, sgrid.atom_types(), types);
+	maps.populate(receptor, temporary, sgrid, types);
 }
 
 fl non_cache::eval(const model& m, fl v) const {

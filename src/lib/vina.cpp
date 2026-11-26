@@ -285,16 +285,17 @@ void Vina::set_ad4_weights(double weight_ad4_vdw , double weight_ad4_hb,
 void Vina::set_forcefield() {
     const fl cutoff = m_scoring_function && m_sf_choice != SF_AD42
         ? m_scoring_function->get_cutoff() : default_xs_interaction_cutoff;
-    m_scoring_function = std::make_shared<ScoringFunction>(m_sf_choice, m_weights, cutoff);
+    const bool smooth = m_scoring_function && m_scoring_function->smooth_cutoff();
+    m_scoring_function = std::make_shared<ScoringFunction>(m_sf_choice, m_weights, cutoff, smooth);
 }
 
 // FastDock: bind the cutoff before any ligand or map lookup tables are created.
-void Vina::set_interaction_cutoff(double cutoff) {
+void Vina::set_interaction_cutoff(double cutoff, bool smooth_cutoff) {
 	if (m_sf_choice == SF_AD42)
 		throw vina_runtime_error("interaction_cutoff is supported by Vina and Vinardo");
 	if (m_ligand_initialized || m_map_initialized)
 		throw vina_runtime_error("set interaction_cutoff before loading ligands or maps");
-	m_scoring_function = std::make_shared<ScoringFunction>(m_sf_choice, m_weights, cutoff);
+	m_scoring_function = std::make_shared<ScoringFunction>(m_sf_choice, m_weights, cutoff, smooth_cutoff);
 }
 
 void Vina::set_rerank_gauss2_scale(double scale) {
@@ -402,11 +403,13 @@ void Vina::build_vina_maps(const vec& center, const vec& span, fl granularity,
 		m_non_cache = non_cache();
 	}
 	m_grid = std::move(grid);
+	m_mixed_search_grid = boost::none;
 	m_deferred_map_population = defer_population;
 	if (m_rerank_gauss2_scale != 1.0) {
 		flv weights = m_weights;
 		weights[1] *= m_rerank_gauss2_scale; // Vina's second Gaussian
-		m_rerank_scoring_function = std::make_shared<ScoringFunction>(SF_VINA, weights, m_scoring_function->get_cutoff());
+		m_rerank_scoring_function = std::make_shared<ScoringFunction>(SF_VINA, weights, m_scoring_function->get_cutoff(),
+		                                                             m_scoring_function->smooth_cutoff());
 	}
 
 	m_use_explicit_receptor = !m_no_refine;
@@ -420,6 +423,8 @@ void Vina::load_maps(std::string maps) {
 		throw vina_runtime_error("late pose selection requires search maps built from a rigid receptor");
 	if (m_rerank_gauss2_scale != 1.0)
 		throw vina_runtime_error("rerank_gauss2_scale below 1 requires search maps built from a rigid receptor");
+	if (m_scoring_function->smooth_cutoff())
+		throw vina_runtime_error("map files cannot encode smooth_cutoff");
 	if (m_sf_choice != SF_AD42 && m_scoring_function->get_cutoff() != default_xs_interaction_cutoff)
 		throw vina_runtime_error("map files require the default interaction_cutoff");
 	const fl slope = 1e6; // FIXME: too large? used to be 100
@@ -462,6 +467,8 @@ void Vina::load_maps(std::string maps) {
 
 void Vina::write_maps(const std::string& map_prefix, const std::string& gpf_filename,
 					  const std::string& fld_filename, const std::string& receptor_filename) {
+	if (m_scoring_function->smooth_cutoff())
+		throw vina_runtime_error("map files cannot encode smooth_cutoff");
 	if (m_sf_choice != SF_AD42 && m_scoring_function->get_cutoff() != default_xs_interaction_cutoff)
 		throw vina_runtime_error("map files require the default interaction_cutoff");
 	if (!m_map_initialized) {
@@ -1533,6 +1540,11 @@ void Vina::global_search(const int exhaustiveness, const int n_poses, const doub
 	}
 	const bool archive_enabled = m_trajectory_archive != archive_mode::off;
 	const bool archive_support = m_trajectory_archive == archive_mode::support;
+	if (m_mixed_cutoff_search && (!late_selection || exhaustiveness < 2 || !m_use_explicit_receptor ||
+	    m_sf_choice != SF_VINA || m_scoring_function->smooth_cutoff() || m_scoring_function->get_cutoff() <= 1 ||
+	    rerank || m_armijo_refinement || polar_rank || burial_rank || net_polar_rank ||
+	    !m_pose_template_path.empty() || archive_enabled))
+		throw vina_runtime_error("mixed_cutoff_search requires native Late Vina refinement and ranking, a rigid receptor, exhaustiveness >= 2, and cutoff > 1 Angstrom");
 	if (archive_enabled) {
 		if (!late_selection || rerank || m_armijo_refinement || m_sf_choice != SF_VINA || m_no_refine ||
 		    polar_rank || !m_pose_template_path.empty())
@@ -1598,8 +1610,22 @@ void Vina::global_search(const int exhaustiveness, const int n_poses, const doub
 	sstm << "Performing docking (random seed: " << m_seed << ")";
 	doing(sstm.str(), m_verbosity, 0);
 	if (m_sf_choice == SF_VINA || m_sf_choice == SF_VINARDO) {
+		boost::optional<precalculate_byatom> smooth_pairs;
+		boost::optional<search_landscape> alternate;
+		if (m_mixed_cutoff_search) {
+			ScoringFunction smooth(SF_VINA, m_weights, m_scoring_function->get_cutoff(), true);
+			if (!m_mixed_search_grid) m_mixed_search_grid.emplace(m_grid.gd());
+			const auto missing = m_mixed_search_grid->missing_map_types(m_model.get_movable_atom_types(atom_type::XS));
+			if (missing.any()) m_non_cache.populate_maps_from(*m_mixed_search_grid, m_receptor, missing, smooth);
+			smooth_pairs.emplace(smooth, m_model);
+			alternate.emplace(search_landscape{*smooth_pairs, *m_mixed_search_grid});
+			if (m_verbosity > 0 || m_search_counters)
+				std::cout << "\nMixed cutoff search: native=" << (exhaustiveness + 1) / 2
+				          << " smooth=" << exhaustiveness / 2 << " smooth_on_even_1based=true final=native_late\n";
+		}
 		parallelmc(m_model, poses, m_precalculated_byatom, m_grid, m_grid.corner1(), m_grid.corner2(), generator,
-		           m_progress_callback, archive_enabled ? &archives : nullptr, archive_support, counters);
+		           m_progress_callback, archive_enabled ? &archives : nullptr, archive_support, counters,
+		           alternate.get_ptr());
 	} else {
 		parallelmc(m_model, poses, m_precalculated_byatom, m_ad4grid, m_ad4grid.corner1(), m_ad4grid.corner2(), generator, m_progress_callback, nullptr, false, counters);
 	}

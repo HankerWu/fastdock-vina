@@ -126,6 +126,8 @@ Thank you!\n";
 		double energy_range = 3.0;
 		double grid_spacing = 0.375;
 		double interaction_cutoff = default_xs_interaction_cutoff;
+		bool smooth_cutoff = false;
+		bool mixed_cutoff_search = false;
 		double buffer_size = 4;
 		double unbound_energy = NAN;
 
@@ -268,6 +270,10 @@ Thank you!\n";
 			("min_rmsd", value<double>(&min_rmsd)->default_value(1.0), "minimum RMSD between output poses")
 			("energy_range", value<double>(&energy_range)->default_value(3.0), "maximum energy difference between the best binding mode and the worst one displayed (kcal/mol)")
 			("spacing", value<double>(&grid_spacing)->default_value(0.375), "grid spacing (Angstrom)")
+			("mixed_cutoff_search", bool_switch(&mixed_cutoff_search),
+			 "search alternating trajectories with the smooth cutoff and select pooled poses with native Late Vina")
+			("smooth_cutoff", bool_switch(&smooth_cutoff),
+			 "taper ordinary Vina pair energies over the final 1 Angstrom of the cutoff")
 			("interaction_cutoff", value<double>(&interaction_cutoff)->default_value(default_xs_interaction_cutoff),
 			 "Vina/Vinardo interaction cutoff (Angstrom); custom values require direct receptor input")
 			("verbosity", value<int>(&verbosity)->default_value(1), "verbosity (0=no output, 1=normal, 2=verbose)")
@@ -340,6 +346,9 @@ Thank you!\n";
 		if (rerank_gauss2_scale >= 0 && rerank_gauss2_scale < 1 && !regular_rigid_vina)
 			throw usage_error("rerank_gauss2_scale below 1 requires regular Vina docking with a rigid receptor, one ligand per run, and explicit receptor refinement");
 
+		if (mixed_cutoff_search && vm["pose_selection"].defaulted()) pose_selection = "late";
+		if (mixed_cutoff_search && (!regular_rigid_vina || pose_selection != "late" || smooth_cutoff || exhaustiveness < 2))
+			throw usage_error("mixed_cutoff_search requires regular rigid Vina docking, native Late scoring and exhaustiveness >= 2");
 		if (pose_selection != "native" && pose_selection != "late")
 			throw usage_error("pose_selection must be native or late");
 		if (pose_selection == "late" && !regular_rigid_vina)
@@ -515,6 +524,7 @@ Thank you!\n";
 		v.set_armijo_refinement(refinement_optimizer == "armijo");
 		v.set_rigid_reorientation(rigid_reorientation == "mixed", rigid_reorientation == "centered");
 		v.set_separate_hunt_chain(separate_hunt_chain);
+		v.set_mixed_cutoff_search(mixed_cutoff_search);
 		v.set_search_counters(search_counters);
 		if (vm.count("pocket_start_radius"))
 			v.set_pocket_start_radius(pocket_start_radius);
@@ -531,10 +541,14 @@ Thank you!\n";
 			v.set_net_polar(net_polar, net_polar_waters);
 		if (vm.count("trajectory_archive"))
 			v.set_trajectory_archive(trajectory_archive);
-		if (!vm["interaction_cutoff"].defaulted()) {
+		if (smooth_cutoff || !vm["interaction_cutoff"].defaulted()) {
+			if (smooth_cutoff && (vm.count("maps") || vm.count("write_maps")))
+				throw usage_error("map files cannot encode smooth_cutoff");
 			if (interaction_cutoff != default_xs_interaction_cutoff && (vm.count("maps") || vm.count("write_maps")))
 				throw usage_error("map files require the default interaction_cutoff");
-			v.set_interaction_cutoff(interaction_cutoff);
+			v.set_interaction_cutoff(interaction_cutoff, smooth_cutoff);
+			if (smooth_cutoff && verbosity > 0)
+				std::cout << "Vina smooth cutoff: " << interaction_cutoff - 1 << " to " << interaction_cutoff << " Angstrom\n";
 		}
 
 		// rigid_name variable can be ignored for AD4

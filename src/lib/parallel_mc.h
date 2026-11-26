@@ -25,6 +25,11 @@
 
 #include "monte_carlo.h"
 
+struct search_landscape {
+	const precalculate_byatom& ligand_pairs;
+	const igrid& receptor;
+};
+
 struct parallel_mc {
 	monte_carlo mc;
 	sz num_tasks;
@@ -37,7 +42,8 @@ struct parallel_mc {
 	void operator()(const model& m, output_container& out, const precalculate_byatom& p, const igrid& ig,
 	                const vec& corner1, const vec& corner2, rng& generator, std::function<void(double)>* progress_callback,
 	                std::vector<trajectory_archive>* archives = nullptr, bool keep_support = false,
-	                std::vector<search_trajectory_counters>* counters = nullptr) const;
+	                std::vector<search_trajectory_counters>* counters = nullptr,
+	                const search_landscape* alternate = nullptr) const;
 };
 
 #endif

@@ -125,7 +125,7 @@ public:
 	void set_pose_coordinates_for_scoring(const std::string& pose_name);
 	void set_ligand_from_file_with_bonds(const std::string& ligand_name, const std::string& bonds_name);
 	// Configure the Vina/Vinardo cutoff before loading ligands or maps.
-	void set_interaction_cutoff(double cutoff);
+	void set_interaction_cutoff(double cutoff, bool smooth_cutoff = false);
 	// Configure final Vina pose ranking before building search maps.
 	void set_rerank_gauss2_scale(double scale);
 	// Use explicit-receptor rescoring before merging trajectories, configured before maps.
@@ -145,6 +145,7 @@ public:
 	void set_armijo_refinement(bool enabled);
 	void set_rigid_reorientation(bool mixed, bool centered = false);
 	void set_separate_hunt_chain(bool enabled);
+	void set_mixed_cutoff_search(bool enabled) { m_mixed_cutoff_search = enabled; }
 	void set_search_counters(bool enabled) { m_search_counters = enabled; }
 	void set_pocket_start_radius(double radius);
 	//void set_ligand(OpenBabel::OBMol* mol);
@@ -204,6 +205,7 @@ private:
 	std::shared_ptr<ScoringFunction> m_rerank_scoring_function;
 	// maps
 	cache m_grid;
+	boost::optional<cache> m_mixed_search_grid;
 	ad4cache m_ad4grid;
 	non_cache m_non_cache;
 	bool m_deferred_map_population = false;
@@ -219,6 +221,7 @@ private:
 	bool m_centered_rotation = false;
 	bool m_separate_hunt_chain = false;
 	bool m_search_counters = false;
+	bool m_mixed_cutoff_search = false;
 	double m_pocket_start_radius = 0;
 	enum class template_stage { rank, select, refine };
 	template_stage m_template_stage = template_stage::rank;
