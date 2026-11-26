@@ -32,6 +32,7 @@
 #include <limits>
 
 #include "vina.h"
+#include "contact_rotors.h"
 #include "scoring_function.h"
 #include "precalculate.h"
 #include "pose_template.h"
@@ -788,6 +789,9 @@ void Vina::write_pose_models(std::ostream& out, int how_many, double energy_rang
 		const bool range_excludes_first = uses_native_energy_window(m_poses[0]) &&
 		                                 m_poses[0].e > best_energy + energy_range;
 		boost::optional<model> range_reference;
+		boost::optional<contact_rotors> rotor_report;
+		if (m_contact_rotor_score)
+			rotor_report.emplace(m_model);
 
 		VINA_FOR_IN(i, m_poses) {
 			/* Stop if:
@@ -816,8 +820,10 @@ void Vina::write_pose_models(std::ostream& out, int how_many, double energy_rang
 				ub = m_model.rmsd_upper_bound(*range_reference);
 			}
 			remarks = vina_remarks(m_poses[i], lb, ub);
+			if (rotor_report)
+				remarks += rotor_report->remark(m_model, m_poses[i].total - m_poses[i].unbound);
 			// Write into the final buffer without a separate string per model.
-			const bool clean_score_remarks = m_poses[i].native_rank || m_late_pose_selection || m_armijo_refinement;
+			const bool clean_score_remarks = m_poses[i].native_rank || m_late_pose_selection || m_armijo_refinement || m_contact_rotor_score;
 			m_model.write_model(out, n + 1, remarks, clean_score_remarks ? is_vina_score_remark : nullptr);
 
 			n++;
@@ -899,6 +905,11 @@ void Vina::randomize(const int max_steps) {
 }
 
 void Vina::show_score(const std::vector<double> energies) {
+	if (m_contact_rotor_score) {
+		double raw = -energies.at(7);
+		for (sz i = 1; i <= 5; ++i) raw += energies[i];
+		std::cout << contact_rotors(m_model).remark(m_model, raw);
+	}
 	std::cout << "Estimated Free Energy of Binding   : " << std::fixed << std::setprecision(3) << energies[0] << " (kcal/mol) [=(1)+(2)+(3)-(4)]\n";
 	std::cout << "(1) Final Intermolecular Energy    : " << std::fixed << std::setprecision(3) << energies[1] + energies[2] << " (kcal/mol)\n";
 	std::cout << "    Ligand - Receptor              : " << std::fixed << std::setprecision(3) << energies[1] << " (kcal/mol)\n";
@@ -1199,12 +1210,14 @@ void Vina::set_pose_template(const std::string& filename, const std::string& sta
 		throw vina_runtime_error("pose_template must name a heavy-atom coordinate file");
 	if (stage == "rank")
 		m_template_stage = template_stage::rank;
+	else if (stage == "contact_rank")
+		m_template_stage = template_stage::contact_rank;
 	else if (stage == "select")
 		m_template_stage = template_stage::select;
 	else if (stage == "refine")
 		m_template_stage = template_stage::refine;
 	else
-		throw vina_runtime_error("template_stage must be rank, select or refine");
+		throw vina_runtime_error("template_stage must be rank, select or refine for element overlap, or contact_rank for receptor contacts");
 	m_pose_template_path = filename;
 }
 
@@ -1528,6 +1541,7 @@ void Vina::rank_polar_poses(output_container& poses) {
 const char* Vina::pose_template_stage_name() const {
 	switch (m_template_stage) {
 		case template_stage::rank: return "rank";
+		case template_stage::contact_rank: return "contact_rank";
 		case template_stage::select: return "select";
 		case template_stage::refine: return "refine";
 	}
@@ -1682,12 +1696,18 @@ void Vina::global_search(const int exhaustiveness, const int n_poses, const doub
 	}
 	std::unique_ptr<pose_template> template_reference;
 	if (!m_pose_template_path.empty()) {
-		if (!late_selection || rerank || m_armijo_refinement || m_sf_choice != SF_VINA || m_no_refine)
+		const bool contact = m_template_stage == template_stage::contact_rank;
+		if (contact) {
+			if (m_sf_choice != SF_VINA || !m_use_explicit_receptor || m_model.num_ligands() != 1 ||
+			    m_model.num_flex() != 0 || rerank || n_poses <= 0 || !std::isfinite(min_rmsd) || min_rmsd < 0)
+				throw vina_runtime_error("contact_rank requires one rigid Vina receptor, one ligand, explicit refinement, positive num_modes, finite nonnegative min_rmsd, and no Gaussian rescaling");
+		} else if (!late_selection || rerank || m_armijo_refinement || m_sf_choice != SF_VINA || m_no_refine)
 			throw vina_runtime_error("pose_template requires Late Vina docking with native refinement and no Gaussian rescaling");
 		ifile input(m_pose_template_path);
-		template_reference = std::make_unique<pose_template>(input, m_model.chemical_heavy_atom_elements());
+		const atomv* receptor = contact ? &m_model.grid_atoms() : nullptr;
+		template_reference = std::make_unique<pose_template>(input, m_model.chemical_heavy_atom_elements(), receptor);
 	}
-	const bool template_selection = template_reference && m_template_stage != template_stage::rank;
+	const bool template_selection = template_reference && (m_template_stage == template_stage::select || m_template_stage == template_stage::refine);
 	const bool template_refinement = template_reference && m_template_stage == template_stage::refine;
 	sz template_selection_evals = 0;
 	sz template_refinement_evals = 0;
@@ -1955,6 +1975,10 @@ void Vina::global_search(const int exhaustiveness, const int n_poses, const doub
 				std::cout << "Net polar scoring: mode=" << net_polar_name() << " poses=" << poses.size() << '\n';
 		}
 		if (template_reference) {
+			// Freeze the same native-order output cap before scoring. Native
+			// merge and Late selection already impose this cap on both paths.
+			if (m_template_stage == template_stage::contact_rank && poses.size() > sz(n_poses))
+				poses.erase(poses.begin() + n_poses, poses.end());
 			rank_template_poses(poses, *template_reference, template_rank_evals);
 			if (m_verbosity > 0)
 				std::cout << "Template pose scoring: stage=" << pose_template_stage_name()

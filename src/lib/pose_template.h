@@ -1,11 +1,107 @@
 #ifndef VINA_POSE_TEMPLATE_H
 #define VINA_POSE_TEMPLATE_H
 
+#include <array>
 #include <limits>
 #include <map>
+#include <boost/optional.hpp>
 #include <stdexcept>
 
-#include "common.h"
+#include "atom.h"
+
+// Two receptor-indexed contact channels. Each receptor atom contributes the
+// strongest distance contact with any heavy ligand atom, or any N/O for the
+// polar channel. A receptor atom can contribute to either molecule alone.
+class receptor_contact_template {
+public:
+	struct point { vec position; bool polar; };
+	using points = std::vector<point>;
+	using ligand_atoms = std::vector<std::pair<sz, std::string>>;
+
+	receptor_contact_template(const atomv& receptor, const points& reference, const ligand_atoms& ligand) {
+		for (const atom& a : receptor) {
+			if (a.el != EL_TYPE_H && a.el != EL_TYPE_Dummy)
+				sites.push_back({a.coords, a.el == EL_TYPE_N || a.el == EL_TYPE_O});
+		}
+		for (const auto& a : ligand)
+			ligand_indices.emplace_back(a.first, is_polar(a.second));
+		visit_contacts(reference, [&](sz i, const channels& w) {
+			sites[i].reference = w;
+			accumulate_product(reference_norm, w, w);
+		});
+	}
+
+	static bool is_polar(const std::string& element) { return element == "N" || element == "O"; }
+
+	fl overlap(const vecv& coords) const {
+		points ligand;
+		ligand.reserve(ligand_indices.size());
+		for (const auto& a : ligand_indices)
+			ligand.push_back({coords[a.first], a.second});
+		channels dot{}, ligand_norm{};
+		visit_contacts(ligand, [&](sz i, const channels& w) {
+			accumulate_product(dot, w, sites[i].reference);
+			accumulate_product(ligand_norm, w, w);
+		});
+		fl sum = 0;
+		sz active = 0;
+		for (sz k = 0; k < dot.size(); ++k) {
+			const fl denominator = ligand_norm[k] + reference_norm[k] - dot[k];
+			if (denominator > 0) {
+				sum += dot[k] / denominator;
+				++active;
+			}
+		}
+		return active ? sum / active : 0;
+	}
+
+private:
+	using channels = std::array<fl, 2>;
+	struct site { vec position; bool polar; channels reference{}; };
+	std::vector<site> sites;
+	std::vector<std::pair<sz, bool>> ligand_indices;
+	channels reference_norm{};
+
+	static void accumulate_product(channels& sum, const channels& a, const channels& b) {
+		for (sz k = 0; k < sum.size(); ++k)
+			sum[k] += a[k] * b[k];
+	}
+
+	static fl contact_weight(fl nearest_sqr, fl inner, fl outer) {
+		if (nearest_sqr <= sqr(inner)) return 1;
+		if (nearest_sqr >= sqr(outer)) return 0;
+		return (outer - std::sqrt(nearest_sqr)) / (outer - inner);
+	}
+
+	template<typename Visitor>
+	void visit_contacts(const points& ligand, Visitor visit) const {
+		// The constructor already requires a heavy atom on each molecule.
+		vec lower = ligand.front().position, upper = lower;
+		for (const point& a : ligand) {
+			for (sz k = 0; k < 3; ++k) {
+				lower[k] = std::min(lower[k], a.position[k]);
+				upper[k] = std::max(upper[k], a.position[k]);
+			}
+		}
+		lower -= 6;
+		upper += 6;
+		// Crop separately around each pose. The cached reference norm still
+		// includes all reference-only sites, including those outside this box.
+		VINA_FOR_IN(i, sites) {
+			const site& s = sites[i];
+			const vec& r = s.position;
+			if (r[0] < lower[0] || r[0] > upper[0] || r[1] < lower[1] || r[1] > upper[1] ||
+			    r[2] < lower[2] || r[2] > upper[2]) continue;
+			fl general_min = sqr(6.0), polar_min = sqr(4.5);
+			for (const point& a : ligand) {
+				const fl d = vec_distance_sqr(r, a.position);
+				general_min = std::min(general_min, d);
+				if (s.polar && a.polar) polar_min = std::min(polar_min, d);
+			}
+			visit(i, channels{{contact_weight(general_min, 4, 6), contact_weight(polar_min, 3, 4.5)}});
+		}
+	}
+};
 
 // The raw term is added before Vina's ligand-specific torsion transformation.
 class pose_template {
@@ -13,7 +109,7 @@ public:
 	using ligand_atoms = std::vector<std::pair<sz, std::string>>;
 	static constexpr fl strength = 6.0;
 
-	pose_template(std::istream& input, const ligand_atoms& ligand) {
+	pose_template(std::istream& input, const ligand_atoms& ligand, const atomv* contact_receptor = nullptr) {
 		std::map<std::string, group> by_element;
 		sz reference_count = 0;
 		sz number = 0;
@@ -40,6 +136,15 @@ public:
 			throw std::invalid_argument("Could not read pose template");
 		if (reference_count == 0 || ligand.empty())
 			throw std::invalid_argument("Pose template and ligand must each contain real heavy atoms");
+		if (contact_receptor) {
+			receptor_contact_template::points reference;
+			for (const auto& entry : by_element) {
+				for (const vec& position : entry.second.reference)
+					reference.push_back({position, receptor_contact_template::is_polar(entry.first)});
+			}
+			contacts.emplace(*contact_receptor, reference, ligand);
+			return;
+		}
 		ligand_weight = 0.5 / ligand.size();
 		reference_weight = 0.5 / reference_count;
 		for (const auto& atom : ligand) {
@@ -60,6 +165,10 @@ public:
 	// Returns overlap. If requested, add the derivative of -strength * overlap
 	// to the Cartesian gradients before the model projects them onto pose DOFs.
 	fl overlap(const vecv& coords, vecv* gradient = nullptr) {
+		if (contacts) {
+			VINA_CHECK(!gradient); // contact_rank only scores the native retained poses
+			return contacts->overlap(coords);
+		}
 		constexpr fl sigma_sqr = 1.5 * 1.5;
 		const fl infinity = std::numeric_limits<fl>::infinity();
 		fl ligand_sum = 0;
@@ -121,8 +230,9 @@ private:
 		return std::find(std::begin(symbols), std::end(symbols), name) != std::end(symbols);
 	}
 
-	fl ligand_weight;
-	fl reference_weight;
+	boost::optional<receptor_contact_template> contacts;
+	fl ligand_weight = 0;
+	fl reference_weight = 0;
 	std::vector<group> groups;
 };
 

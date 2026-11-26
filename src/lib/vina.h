@@ -154,6 +154,11 @@ public:
 	void set_cubic_search_grid(bool enabled) { m_cubic_search_grid = enabled; }
 	void set_soft_receptor_search(bool enabled) { m_soft_receptor_search = enabled; }
 	void set_mixed_cutoff_search(bool enabled) { m_mixed_cutoff_search = enabled; }
+	void set_contact_rotor_score(bool enabled) {
+		if (enabled && (m_sf_choice != SF_VINA || m_no_refine))
+			throw vina_runtime_error("contact_rotor_score requires the Vina scoring function and explicit receptor refinement");
+		m_contact_rotor_score = enabled;
+	}
 	void set_search_counters(bool enabled) { m_search_counters = enabled; }
 	void set_pocket_start_radius(double radius);
 	//void set_ligand(OpenBabel::OBMol* mol);
@@ -231,13 +236,14 @@ private:
 	bool m_centered_rotation = false;
 	bool m_separate_hunt_chain = false;
 	bool m_search_counters = false;
+	bool m_contact_rotor_score = false;
 	bool m_mixed_cutoff_search = false;
 	bool m_prepared_torsion_starts = false;
 	bool m_balanced_torsion = false;
 	bool m_cubic_search_grid = false;
 	bool m_soft_receptor_search = false;
 	double m_pocket_start_radius = 0;
-	enum class template_stage { rank, select, refine };
+	enum class template_stage { rank, select, refine, contact_rank };
 	template_stage m_template_stage = template_stage::rank;
 	std::string m_pose_template_path;
 	std::string m_search_anchor_path, m_search_amide_path, m_rank_amide_path;

@@ -98,3 +98,21 @@ python tools/score_physical_pool.py --pool poses.pdbqt --receptor receptor.pdbqt
 省略 `--ligand-bonds` 时使用同一准备坐标推断的拓扑。提供邻接时，分析不会从每个候选的距离重新推断连接。物理评分以原始 native 排名第一的 MODEL 重算内能为同配体的共同参照，重新计算 `poses[].native` 和所有相依分数，包括 GNINA 共识。历史分和顺序保留在 `poses[].saved_native` 和 `fixed_topology.saved_native_order`。该选项可以和 Vinardo 同用。指定的 Vinardo 可执行文件也会收到固定配体、候选坐标及所给邻接；不支持这些选项的版本会按逐 MODEL 失败规则记录并整池原生回退。未启用固定拓扑时，公开 Vinardo 的原调用方式不变。芳香几何的原生分窗口沿用既有历史基准，不与改变该基准的物理固定拓扑重算混用。
 
 [真实输入检查](../benchmarks/check_fixed_topology_pool.py) 读取 9FA3 与无推断键漂移的固定池，核对默认路径、稳定拓扑、同坐标 GNINA 共识、错误邻接与无支持 Vinardo 的回退。
+
+### 同靶跨化合物的 MMFF 亲和力研究分数
+
+对包含 Meeko 化学图、原始 Vina 分数和共同 UNBOUND 记录的已保存姿势池，使用 `--mmff-affinity` 可增加一个独立的 JSON 字段。下例从仓库根目录使用已归档的 BACE1 实测 Ki 面板。将 `VINA` 指向支持 `--net_polar` 的 FastDock 可执行文件。
+
+```sh
+D=benchmarks/geometry_comparison/affinity
+mkdir -p /tmp/bace1-mmff-example
+tar -xJf "$D/inputs.tar.xz" -C /tmp/bace1-mmff-example
+tar -xJf "$D/cap60000/outputs.tar.xz" -C /tmp/bace1-mmff-example
+python tools/score_physical_pool.py --binary "$VINA" \
+  --prepared-ligand /tmp/bace1-mmff-example/prepared/CHEMBL2151135.pdbqt \
+  --receptor /tmp/bace1-mmff-example/prepared/4DJW.pdbqt \
+  --pool /tmp/bace1-mmff-example/pools/4DJW_CHEMBL2151135_89609_armijo.pdbqt \
+  --mmff-affinity --output /tmp/bace1-mmff-example/affinity.json
+```
+
+`mmff_affinity.native_rank_one` 报告原生首姿对应的研究分数，此例为模型 1、−1.517234。`minimum_across_emitted_models` 取同一配体、同一受体、同一种子输出池中的最小值，此例为模型 5、−3.189035。`per_model` 按输出模型列出全部数值。分数用真空气相 MMFF94s 的束缚构象能减去八个自由构象中最低的优化能，再以单位权重替换 Vina 配体内部能差，并保留原有柔性归一化。束缚坐标只优化氢原子。两种取值约定可在实验设计中预先选定，同一测定内比较化合物时保持一致。这个经验量尚未校准到绝对结合自由能。BACE1 部分系列观察到排序改善，在独立凝血因子 Xa 系列则出现退化。详见[冻结姿势和亲和力对照](../benchmarks/frozen_core/strain/README.md)。

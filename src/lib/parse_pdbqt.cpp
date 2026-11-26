@@ -571,7 +571,7 @@ void parse_pdbqt_branch(std::istream& in, parsing_struct& p, context& c, unsigne
 bool is_vina_score_remark(const std::string& line) {
 	// A ligand split from a previous docking output retains these diagnostic rows.
 	for (const char* prefix : {"REMARK VINA RESULT:", "REMARK VINA PRO RESULT:", "REMARK VINA NATIVE:",
-	                          "REMARK VINA AMIDE RESULT:", "REMARK VINA AMIDE PENALTY:",
+	                          "REMARK VINA AMIDE RESULT:", "REMARK VINA AMIDE PENALTY:", "REMARK VINA CONTACT ROTOR SCORE:",
 	                          "REMARK VINA PRO GAUSS2 SCALE:", "REMARK VINA TEMPLATE RESULT:",
 	                          "REMARK VINA TEMPLATE STAGE:", "REMARK VINA TEMPLATE OVERLAP:",
 	                          "REMARK VINA POLAR RESULT:", "REMARK VINA POLAR SCORES:",
@@ -634,11 +634,12 @@ struct pdbqt_initializer {
             VINA_CHECK(m.ligands.size() == 1);
             auto& stored = m.ligands.front().cont;
             stored = c;
-            // A split amide-ranked pose has both native and rank-specific diagnostics.
+            // Split amide-ranked or contact-annotated poses carry scores for old coordinates.
             // Discard that score block on input, including when ordinary docking or
             // single-pose local refinement writes the molecule back out.
             if (std::any_of(stored.begin(), stored.end(), [](const parsed_line& l) {
-                return starts_with(l.first, "REMARK VINA AMIDE RESULT:");
+                return starts_with(l.first, "REMARK VINA AMIDE RESULT:") ||
+                       starts_with(l.first, "REMARK VINA CONTACT ROTOR SCORE:");
             })) {
                 stored.erase(std::remove_if(stored.begin(), stored.end(), [](const parsed_line& l) {
                     return is_vina_score_remark(l.first);

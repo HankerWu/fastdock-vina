@@ -750,6 +750,33 @@ def strain_for_pool(poses):
             "wall_seconds": perf_counter() - started}
 
 
+def mmff_affinity_score(pose, scale, bound_kcal_mol, free_kcal_mol):
+    """Replace the saved, scaled Vina intraligand contribution at unit weight."""
+    if pose.native_intra is None or pose.native_unbound is None:
+        raise ValueError("MMFF affinity requires saved Vina INTRA and UNBOUND energies")
+    return pose.native_score + scale * (bound_kcal_mol - free_kcal_mol
+                                        - (pose.native_intra - pose.native_unbound))
+
+
+def mmff_affinity_annotation(poses, strain, scale):
+    """Two affinity summaries for one seeded pool, without changing pose order."""
+    if len({p.native_unbound for p in poses}) != 1:
+        raise ValueError("MMFF affinity requires a common Vina unbound reference")
+    scores = [{"model": p.model, "native_rank": p.native_rank,
+               "affinity_score": mmff_affinity_score(
+                   p, scale, strain["pose_kcal_mol"][p.model], strain["gas_reference_kcal_mol"])}
+              for p in poses]
+    first = min(scores, key=lambda r: r["native_rank"])
+    best = min(scores, key=lambda r: (r["affinity_score"], r["native_rank"]))
+    return {"method": "MMFF94s unit-weight gas-phase intraligand replacement",
+            "reference": {"energy_kcal_mol": strain["gas_reference_kcal_mol"],
+                          "conformers_attempted": GAS_CONFORMERS,
+                          "conformers_converged": strain["gas_conformers_converged"],
+                          "embedding_seed": GAS_EMBED_SEED},
+            "vina_flexibility_scale": scale, "native_rank_one": first,
+            "minimum_across_emitted_models": best, "per_model": scores}
+
+
 def receptor_atoms(path):
     atoms = []
     for line in path.read_text().splitlines():
@@ -828,8 +855,11 @@ def rank_orders(rows, arms):
 
 
 def score_pool(binary, receptor, pool, *, waters=None, sidechains=None, timeout=120, satisfaction=False,
-               gnina_scores_sdf=None, aromatic_ccd=None, prepared_ligand=None, ligand_bonds=None):
+               gnina_scores_sdf=None, aromatic_ccd=None, prepared_ligand=None, ligand_bonds=None,
+               mmff_affinity=False):
     """Return all model scores and state evidence without reading crystal outcomes."""
+    if mmff_affinity and not prepared_ligand:
+        raise ValueError("MMFF affinity requires the source --prepared-ligand topology")
     if prepared_ligand and aromatic_ccd:
         raise ValueError("Prepared topology rescoring cannot be combined with aromatic ordering")
     poses = read_poses(pool)
@@ -948,6 +978,16 @@ def score_pool(binary, receptor, pool, *, waters=None, sidechains=None, timeout=
             "reference_model": rank1.model, "unbound": unbound,
             "saved_native_order": [pose.model for pose in sorted(poses, key=lambda pose: pose.native_rank)],
         }
+    if mmff_affinity:
+        if strain is None:
+            reasons["mmff_affinity"] = reasons["strain"]
+            result["mmff_affinity"] = None
+        else:
+            try:
+                result["mmff_affinity"] = mmff_affinity_annotation(poses, strain, reference_terms["scale"])
+            except ValueError as error:
+                reasons["mmff_affinity"] = str(error)
+                result["mmff_affinity"] = None
     return add_aromatic_order(result, poses, receptor, aromatic_ccd) if aromatic_ccd else result
 
 
@@ -960,6 +1000,8 @@ def main():
     parser.add_argument("--ligand-bonds", type=Path, help="Use validated full Meeko adjacency in the supporting build")
     parser.add_argument("--export-ligand-bonds", action="store_true",
                         help="Export the checked adjacency for one --prepared-ligand and exit")
+    parser.add_argument("--mmff-affinity", action="store_true",
+                        help="Report experimental unit-weight MMFF affinity for native rank one and the emitted pool minimum")
     parser.add_argument("--waters", type=Path)
     parser.add_argument("--sidechains", type=Path)
     parser.add_argument("--satisfaction", action="store_true",
@@ -974,6 +1016,9 @@ def main():
     parser.add_argument("--export-gnina-sdf", action="store_true",
                         help="Write the fixed MODELs to one multi-molecule SDF for GNINA")
     args = parser.parse_args()
+    if args.mmff_affinity and (not args.binary or not args.receptor or not args.prepared_ligand or
+                               args.export_gnina_sdf or args.export_ligand_bonds):
+        parser.error("--mmff-affinity requires --binary, --receptor, --prepared-ligand and a pose pool")
     if args.output.exists():
         parser.error("--output already exists")
     if args.export_ligand_bonds:
@@ -1014,7 +1059,8 @@ def main():
         result = score_pool(args.binary.resolve(strict=True), args.receptor, args.pool,
                             waters=args.waters, sidechains=args.sidechains, satisfaction=args.satisfaction,
                             gnina_scores_sdf=args.gnina_scores_sdf, aromatic_ccd=args.aromatic_ccd,
-                            prepared_ligand=args.prepared_ligand, ligand_bonds=args.ligand_bonds)
+                            prepared_ligand=args.prepared_ligand, ligand_bonds=args.ligand_bonds,
+                            mmff_affinity=args.mmff_affinity)
     elif args.gnina_scores_sdf:
         result = score_gnina_pool(args.pool, args.gnina_scores_sdf)
         if args.aromatic_ccd:

@@ -102,6 +102,7 @@ Thank you!\n";
 		unsigned rigid_window_samples = 2048;
 		std::string ligand_bonds;
 		bool search_counters = false;
+		bool contact_rotor_score = false;
 		double pocket_start_radius = 0;
 		std::string pose_template_path;
 		std::string search_anchor_path, search_amide_path, rank_amide_path;
@@ -212,6 +213,8 @@ Thank you!\n";
 			 "integrate rigid-body fluctuations around each MODEL of a native pose pool (score_only)")
 			("rigid_window_samples", value<unsigned>(&rigid_window_samples),
 			 "Sobol samples per scale for rigid_window_pool (power of two, default 2048)")
+			("contact_rotor_score", bool_switch(&contact_rotor_score),
+			 "report the experimental contact-dependent rotor score alongside each native affinity")
 			("pose_coordinates", value<std::string>(&pose_coordinates),
 			 "fixed score only: use coordinates from one pose with the topology prepared from --ligand")
 			("local_only",     bool_switch(&local_only),     "do local search only")
@@ -276,7 +279,7 @@ Thank you!\n";
 			("pose_template", value<std::string>(&pose_template_path),
 			 "aligned external template with element, x, y and z columns (Angstrom)")
 			("template_stage", value<std::string>(&template_stage),
-			 "template guidance stage: rank, select or refine")
+			 "template guidance stage: rank, select, refine (element overlap), or contact_rank (receptor contact overlap)")
 			("polar_geometry", value<std::string>(&polar_geometry),
 			 "final Late Vina ranking by polar distance, directional geometry or angular penalty (default off)")
 			("polar_burial", value<std::string>(&polar_burial),
@@ -435,9 +438,13 @@ Thank you!\n";
 			throw usage_error("Local refinement requires non-negative max_evals");
 		if (vm.count("pose_template") != vm.count("template_stage"))
 			throw usage_error("Specify pose_template and template_stage together");
-		if (vm.count("pose_template") && (!regular_rigid_vina || ligand_names.size() != 1 || vm.count("batch") ||
-		    pose_selection != "late" || rerank_gauss2_scale != 1 || refinement_optimizer != "native"))
-			throw usage_error("pose_template requires Late Vina docking with one rigid receptor, one ligand, native refinement, and no Gaussian rescaling");
+		if (vm.count("pose_template")) {
+			const bool contact = template_stage == "contact_rank";
+			if (!regular_rigid_vina || ligand_names.size() != 1 || vm.count("batch") || rerank_gauss2_scale != 1 ||
+			    (!contact && (pose_selection != "late" || refinement_optimizer != "native")))
+				throw usage_error(contact ? "contact_rank requires one rigid Vina receptor, one ligand, explicit refinement, and no Gaussian rescaling" :
+				                  "pose_template requires Late Vina docking with one rigid receptor, one ligand, native refinement, and no Gaussian rescaling");
+		}
 		if (vm.count("polar_geometry") && (!regular_rigid_vina || ligand_names.size() != 1 || vm.count("batch") ||
 		    pose_selection != "late" || rerank_gauss2_scale != 1 || vm.count("pose_template")))
 			throw usage_error("polar_geometry requires rigid single-ligand Late Vina docking without template or Gaussian rescaling");
@@ -445,6 +452,10 @@ Thank you!\n";
 		    (ligand_names.size() != 1 || rigid_name.empty() || vm.count("batch") || vm.count("flex") ||
 		     vm.count("maps") || vm.count("write_maps") || (sf_name != "vina" && sf_name != "vinardo")))
 			throw usage_error("ligand_bonds requires one prepared Vina or Vinardo ligand and a rigid receptor");
+		if (contact_rotor_score && (sf_name != "vina" || rigid_name.empty() || ligand_names.size() != 1 ||
+		    vm.count("flex") || vm.count("maps") || vm.count("batch") || vm.count("write_maps") ||
+		    vm.count("rigid_window_pool") || randomize_only || local_only || no_refine))
+			throw usage_error("contact_rotor_score requires one rigid-receptor Vina docking or explicit score_only calculation");
 		if (vm.count("pose_coordinates") &&
 		    (!score_only || local_only || randomize_only || ligand_names.size() != 1 ||
 		     rigid_name.empty() || vm.count("batch") || vm.count("flex") || vm.count("maps") ||
@@ -594,6 +605,7 @@ Thank you!\n";
 		v.set_cubic_search_grid(cubic_search_grid);
 		v.set_soft_receptor_search(soft_receptor_search);
 		v.set_search_counters(search_counters);
+		v.set_contact_rotor_score(contact_rotor_score);
 		if (vm.count("pocket_start_radius"))
 			v.set_pocket_start_radius(pocket_start_radius);
 		v.set_late_pose_selection(pose_selection == "late");

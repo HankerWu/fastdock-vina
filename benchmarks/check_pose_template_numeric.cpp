@@ -74,6 +74,34 @@ void check_cartesian() {
 	require(no_match.overlap(xyz) == 0, "A template with no matching elements must give zero overlap");
 }
 
+void check_contact_footprints() {
+	auto site = [](fl x, sz element) {
+		atom a;
+		a.coords = vec(x, 0, 0);
+		a.el = element;
+		return a;
+	};
+	const atomv receptor{site(0, EL_TYPE_C), site(12, EL_TYPE_C), site(24, EL_TYPE_C),
+	                     site(12, EL_TYPE_H), site(12, EL_TYPE_Dummy)};
+	std::istringstream nearby("C 0 0 0\nC 12 0 0\n");
+	pose_template comparison(nearby, {{0, "C"}, {1, "C"}}, &receptor);
+	require(std::abs(comparison.overlap({{12,0,0},{24,0,0}}) - 1./3) < 1e-14,
+	        "Reference-only and query-only contacts must both enter the denominator");
+
+	const atomv polar{site(0, EL_TYPE_O)};
+	std::istringstream donor("N 0 0 0\n");
+	pose_template two_channels(donor, {{0, "O"}}, &polar);
+	require(std::abs(two_channels.overlap({{3.75,0,0}}) - 5./6) < 1e-14,
+	        "Polar contact ramp or continuous Tanimoto normalization is wrong");
+
+	std::istringstream repeated("N 0 0 0\n");
+	pose_template one_sided(repeated, {{0, "C"}}, &polar);
+	require(one_sided.overlap({{0,0,0}}) == 0.5, "A one-sided polar channel is active and scores zero");
+	std::istringstream distant("N 100 0 0\n");
+	pose_template empty(distant, {{0, "O"}}, &polar);
+	require(empty.overlap({{100,0,0}}) == 0, "No contacts in either channel must score zero");
+}
+
 void check_parsed_elements() {
 	const auto molecule = parse_root(atom_record(1, "C", 0) + atom_record(2, "CG0", 1.5)
 	      + atom_record(3, "G0", 2) + atom_record(4, "W", 3) + atom_record(5, "HD", 4)
@@ -139,6 +167,7 @@ void check_optimizer(const std::string& ligand_path) {
 int main(int argc, char** argv) {
 	require(argc == 2, "Pass the 1IEP ligand PDBQT path");
 	check_cartesian();
+	check_contact_footprints();
 	check_parsed_elements();
 	check_optimizer(argv[1]);
 	std::cout << "Template overlap, exact elements, Cartesian and pose derivatives, and moving BFGS minimum passed.\n";

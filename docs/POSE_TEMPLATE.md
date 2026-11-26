@@ -45,3 +45,11 @@ PYTHONDONTWRITEBYTECODE=1 python3 benchmarks/check_pose_template.py \
 `build/template/obj/` 的 `conf_independent`、`non_cache`、`szv_grid`、`model`、
 `parse_pdbqt`、`quasi_newton`、`quaternion`、`random` 和 `utils`。运行该检查时传入
 `examples/basic/1iep_ligand.pdbqt`，它检验双向归一、元素匹配、Cartesian 与姿势自由度数值梯度，以及 BFGS 对已知极小值的收敛。
+
+### 按受体接触重排
+
+为比较一种配体与另一种已知结合配体在同一受体上的接触，可用 `--template_stage contact_rank`。模板仍是受体坐标系中的元素和重原子坐标文件。这个选项只改变精修后的排序。候选生成、局部优化、Vina 原生亲和力和原生能量窗使用原流程。
+
+受体上每个重原子记录它到最近配体重原子的距离。4 Å 以内取 1，之后线性下降，6 Å 时归零。另给受体 N/O 记录到最近配体 N/O 的距离，在 3 至 4.5 Å 内线性下降。这是极性原子接近程度，未判断氢键方向。分别计算两类接触在查询与独立模板之间的连续 Tanimoto 相似度，取非空通道的平均。只有查询产生的接触也进入分母。保留原有模板排序的强度和扭转归一化，分数并列时按原生名次排序。不同结合模式、不同亚口袋或错误的模板对齐都可能削弱这个先验。
+
+[同候选原生、元素模板、接触模板对照及复算方法](../benchmarks/frozen_core/contacts/README.md)
