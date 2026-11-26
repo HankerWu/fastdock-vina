@@ -163,19 +163,27 @@ bool cache::are_atom_types_grid_initialized(const szv& atom_types) const {
 }
 
 void cache::read(const std::string& map_prefix) {
+	// Load a complete replacement rather than mixing old and new channels.
+	std::vector<grid> loaded(m_grids.size());
+	grid_dims reference;
 	bool have_maps = false;
 	VINA_FOR(t, XS_TYPE_SIZE) {
 		if (affinity_map_type(t) != t) continue;
 		const path filename(map_prefix + "." + convert_XS_to_string(t) + ".map");
 		if (!fs::exists(filename)) continue;
-		const auto dimensions = m_grids[t].read_map(filename);
-		if (!have_maps) m_gd = dimensions;
+		const auto dimensions = loaded[t].read_map(filename);
+		if (!have_maps)
+			reference = dimensions;
+		else
+			require_matching_map_dimensions(reference, dimensions, filename.string());
 		have_maps = true;
 	}
 	if (!have_maps) {
 		std::cerr << "\nERROR: No *.map files with prefix \"" << map_prefix << "\"\n";
 		exit(EXIT_FAILURE);
 	}
+	m_grids.swap(loaded);
+	m_gd = reference;
 }
 
 void cache::write(const std::string& out_prefix, const szv& atom_types, const std::string& gpf_filename,

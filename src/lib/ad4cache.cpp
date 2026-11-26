@@ -230,7 +230,15 @@ bool ad4cache::are_atom_types_grid_initialized(szv atom_types) const {
 }
 
 void ad4cache::read(const std::string& map_prefix) {
-	bool have_atom_maps = false;
+	// AD4 combines atom, electrostatic and desolvation fields. They must
+	// describe the same lattice, and failed loads must not alter the cache.
+	std::vector<grid> loaded(m_grids.size());
+	const path electrostatic(map_prefix + ".e.map");
+	const path desolvation(map_prefix + ".d.map");
+	const auto reference = loaded[AD_TYPE_SIZE].read_map(electrostatic);
+	require_matching_map_dimensions(reference,
+	                                loaded[AD_TYPE_SIZE + 1].read_map(desolvation),
+	                                desolvation.string());
 	VINA_FOR(t, AD_TYPE_SIZE) {
 		switch (t) {
 			case AD_TYPE_G0: case AD_TYPE_G1: case AD_TYPE_G2: case AD_TYPE_G3:
@@ -239,14 +247,11 @@ void ad4cache::read(const std::string& map_prefix) {
 		}
 		const path filename(map_prefix + "." + get_adtype_str(t) + ".map");
 		if (!fs::exists(filename)) continue;
-		const auto dimensions = m_grids[t].read_map(filename);
-		if (!have_atom_maps) m_gd = dimensions;
-		have_atom_maps = true;
+		const auto dimensions = loaded[t].read_map(filename);
+		require_matching_map_dimensions(reference, dimensions, filename.string());
 	}
-
-	const auto electrostatic = m_grids[AD_TYPE_SIZE].read_map(path(map_prefix + ".e.map"));
-	m_grids[AD_TYPE_SIZE + 1].read_map(path(map_prefix + ".d.map"));
-	if (!have_atom_maps) m_gd = electrostatic;
+	m_grids.swap(loaded);
+	m_gd = reference;
 }
 
 void ad4cache::write(const std::string& out_prefix, const szv& atom_types, const std::string& gpf_filename,

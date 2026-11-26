@@ -24,6 +24,7 @@
 #define VINA_GRID_DIM_H
 
 #include <boost/array.hpp>
+#include <stdexcept>
 
 #include "common.h"
 
@@ -52,6 +53,22 @@ typedef boost::array<grid_dim, 3> grid_dims;
 
 inline bool eq(const grid_dims& a, const grid_dims& b) {
 	return eq(a[0], b[0]) && eq(a[1], b[1]) && eq(a[2], b[2]);
+}
+
+// FastDock: all channels of an imported potential must describe one lattice.
+inline void require_matching_map_dimensions(const grid_dims& reference,
+                                           const grid_dims& candidate,
+                                           const std::string& filename) {
+	// The .map header represents positions in Angstrom. Permit harmless
+	// floating-point roundoff, not physically shifted sample locations.
+	const fl tolerance = 1e-6;
+	VINA_FOR_IN(i, reference) {
+		if (reference[i].n_voxels != candidate[i].n_voxels ||
+		    std::abs(reference[i].begin - candidate[i].begin) > tolerance ||
+		    std::abs(reference[i].end - candidate[i].end) > tolerance)
+			throw std::runtime_error("Inconsistent affinity map lattice: " + filename +
+			                         " (axis " + std::to_string(i + 1) + ")");
+	}
 }
 
 inline void print(const grid_dims& gd, std::ostream& out = std::cout) {
