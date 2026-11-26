@@ -158,10 +158,10 @@ def pose_metrics(out, scores, ref, pdb, folder):
                 top1_success=rmsds[0] <= 2 and valid[0],
                 top5_success=any(r <= 2 and v for r,v in zip(rmsds,valid)))
 
-def pose_tasks(root):
+def pose_tasks(root, case_ids):
     paths = {p.stem.lower().removesuffix("_ligand"): p for p in
              root.rglob("*_ligand.sdf") if "posebusters_benchmark_set" in p.parts}
-    for case in POSE_IDS:
+    for case in case_ids:
         ref = paths.get(case.lower())
         if ref is None:
             yield case, None, None
@@ -171,7 +171,8 @@ def pose_tasks(root):
 
 def run_pose(a):
     rows = []
-    for case, refpath, pdb in pose_tasks(a.data):
+    case_ids = POSE_IDS[int(a.subset)::3] if a.subset != 'all' else POSE_IDS
+    for case, refpath, pdb in pose_tasks(a.data, case_ids):
         folder = a.output / case
         folder.mkdir(exist_ok=True, parents=True)
         common = dict(case=case)
@@ -197,14 +198,14 @@ def run_pose(a):
                         for s,arm in itertools.product(SEEDS,ARMS))
         write_rows(a.output/"pose_rows.csv",rows)
     paired = []
-    for case in POSE_IDS:
+    for case in case_ids:
         for seed in SEEDS:
             p = [r for r in rows if r["case"]==case and r["seed"]==seed]
             if len(p)==2 and all(r["status"]=="ok" for r in p):
                 paired.append(dict(case=case,seed=seed,native=p[0]["top1_success"],mixed=p[1]["top1_success"],
                                    native5=p[0]["top5_success"],mixed5=p[1]["top5_success"]))
     write_rows(a.output/"pose_pairs.csv",paired)
-    print(json.dumps(dict(planned_pairs=len(POSE_IDS)*len(SEEDS),scorable_pairs=len(paired),
+    print(json.dumps(dict(planned_pairs=len(case_ids)*len(SEEDS),scorable_pairs=len(paired),
           native=sum(p["native"] for p in paired),mixed=sum(p["mixed"] for p in paired),
           native5=sum(p["native5"] for p in paired),mixed5=sum(p["mixed5"] for p in paired)),indent=2))
     if not paired:
@@ -219,7 +220,8 @@ def write_rows(path, rows):
 
 def run_affinity(a):
     rows = []
-    for target, anchor in AFFINITY.items():
+    targets = AFFINITY if a.subset == 'all' else {a.subset: AFFINITY[a.subset]}
+    for target, anchor in targets.items():
         data = a.data / "data" / target
         folder = a.output / target
         folder.mkdir(exist_ok=True,parents=True)
@@ -284,14 +286,22 @@ def run_affinity(a):
             if len(x)<3: continue
             rho=float(spearmanr([r["ki_M"] for r in x],[r["score"] for r in x]).statistic)
             row[arm+"_rho"]=rho
-            n=correct=ties=0
+            n=correct=ties=large_n=large_correct=known_n=known_correct=0
             for u,v in itertools.combinations(x,2):
                 if u["ki_M"]==v["ki_M"]: continue
                 n+=1
                 d=(u["ki_M"]-v["ki_M"])*(u["score"]-v["score"])
                 correct+=d>0
                 ties+=d==0
-            row.update({arm+"_pairs":n,arm+"_correct":correct,arm+"_ties":ties})
+                if max(u["ki_M"],v["ki_M"])/min(u["ki_M"],v["ki_M"])>=3:
+                    large_n+=1
+                    large_correct+=d>0
+                if u["error_M"] is not None and v["error_M"] is not None and abs(u["ki_M"]-v["ki_M"])>u["error_M"]+v["error_M"]:
+                    known_n+=1
+                    known_correct+=d>0
+            row.update({arm+"_pairs":n,arm+"_correct":correct,arm+"_ties":ties,
+                        arm+"_3fold_pairs":large_n,arm+"_3fold_correct":large_correct,
+                        arm+"_nonoverlap_reported_error_pairs":known_n,arm+"_nonoverlap_reported_error_correct":known_correct})
         stats.append(row)
     write_rows(a.output/"affinity_group_stats.csv",stats)
     print("Exploratory source/table-stratified Ki/Kd metrics (not assay-adjudicated).")
@@ -306,6 +316,7 @@ def main():
     p.add_argument("output",type=Path)
     p.add_argument("--exhaustiveness",type=int,default=4)
     p.add_argument("--cap",type=int,default=3000)
+    p.add_argument("--subset",default="all",help="pose shard 0/1/2 or affinity target")
     a=p.parse_args()
     a.binary=a.binary.resolve()
     a.data=a.data.resolve()

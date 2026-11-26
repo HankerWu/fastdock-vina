@@ -5,6 +5,9 @@ on:
   workflow_dispatch:
 permissions:
   contents: read
+concurrency:
+  group: mixed-vinardo-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
   smoke:
     runs-on: ubuntu-24.04
@@ -12,15 +15,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Install build dependencies
-        run: sudo apt-get update && sudo apt-get install -y libboost-all-dev
+        run: sudo apt-get update && sudo apt-get install -y libboost-system-dev libboost-thread-dev libboost-serialization-dev libboost-filesystem-dev libboost-program-options-dev libboost-log-dev
       - name: Build FastDock Vina
         run: python3 tools/build.py --output-dir build/mixed-vinardo --jobs 2
       - name: Regression
         run: python3 benchmarks/mixed_vinardo/check.py build/mixed-vinardo/vina
+      - name: Package binary and Boost runtime
+        run: |
+          mkdir -p build/mixed-vinardo/dist/lib
+          cp build/mixed-vinardo/vina build/mixed-vinardo/dist/
+          ldd build/mixed-vinardo/vina | awk '/libboost_.* => / {print $3}' | while read -r library; do cp -L "$library" build/mixed-vinardo/dist/lib/; done
       - uses: actions/upload-artifact@v4
         with:
           name: research-vina-binary
-          path: build/mixed-vinardo/vina
+          path: build/mixed-vinardo/dist
   panel:
     needs: smoke
     runs-on: ubuntu-24.04
@@ -28,7 +36,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        mode: [pose, affinity]
+        include:
+          - {mode: pose, subset: "0"}
+          - {mode: pose, subset: "1"}
+          - {mode: pose, subset: "2"}
+          - {mode: affinity, subset: mcl1}
+          - {mode: affinity, subset: ptp1b}
+          - {mode: affinity, subset: tyk2}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
@@ -53,11 +67,14 @@ jobs:
           curl -fL --retry 3 https://github.com/openforcefield/protein-ligand-benchmark/archive/fd88824f9114244f95a14b485e6d6c96c1de716d.tar.gz | tar xz --strip-components=1 -C dataset
       - name: Run paired research panel
         run: |
-          .venv/bin/pip freeze
-          .venv/bin/python benchmarks/mixed_vinardo/paired_panel.py build/mixed-vinardo/vina ${{ matrix.mode }} dataset results --exhaustiveness 4 --cap 3000
+          source .venv/bin/activate
+          export LD_LIBRARY_PATH="$PWD/build/mixed-vinardo/lib:$LD_LIBRARY_PATH"
+          python -m pip freeze
+          python -m py_compile benchmarks/mixed_vinardo/paired_panel.py
+          python benchmarks/mixed_vinardo/paired_panel.py build/mixed-vinardo/vina ${{ matrix.mode }} dataset results --subset ${{ matrix.subset }} --exhaustiveness 4 --cap 3000
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: mixed-vinardo-${{ matrix.mode }}-results
+          name: mixed-vinardo-${{ matrix.mode }}-${{ matrix.subset }}-results
           path: results/
           if-no-files-found: warn
