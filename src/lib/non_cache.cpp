@@ -167,7 +167,7 @@ fl non_cache::eval_deriv(      model& m, fl v) const { // clean up
 	VINA_FOR(i, m.num_movable_atoms()) {
 		fl this_e = 0;
 		vec deriv(0, 0, 0);
-		vec out_of_bounds_deriv(0, 0, 0);
+		vec wall_normal(0, 0, 0);
 		fl out_of_bounds_penalty = 0;
 		const atom& a = m.atoms[i];
 		if (a.xs >= n || is_glue_type(a.xs)) {
@@ -179,12 +179,11 @@ fl non_cache::eval_deriv(      model& m, fl v) const { // clean up
 		vec adjusted_a_coords; adjusted_a_coords = a_coords;
 		VINA_FOR_IN(j, gd) {
 			if(gd[j].n_voxels > 0) {
-				if     (a_coords[j] < gd[j].begin) { adjusted_a_coords[j] = gd[j].begin; out_of_bounds_deriv[j] = -1; out_of_bounds_penalty += std::abs(a_coords[j] - gd[j].begin); }
-				else if(a_coords[j] > gd[j].end  ) { adjusted_a_coords[j] = gd[j]  .end; out_of_bounds_deriv[j] =  1; out_of_bounds_penalty += std::abs(a_coords[j] - gd[j]  .end); }
+				if     (a_coords[j] < gd[j].begin) { adjusted_a_coords[j] = gd[j].begin; wall_normal[j] = -1; out_of_bounds_penalty += std::abs(a_coords[j] - gd[j].begin); }
+				else if(a_coords[j] > gd[j].end  ) { adjusted_a_coords[j] = gd[j]  .end; wall_normal[j] =  1; out_of_bounds_penalty += std::abs(a_coords[j] - gd[j]  .end); }
 			}
 		}
 		out_of_bounds_penalty *= slope;
-		out_of_bounds_deriv *= slope;
 
 		const szv& possibilities = sgrid.possibilities(adjusted_a_coords);
 
@@ -203,7 +202,11 @@ fl non_cache::eval_deriv(      model& m, fl v) const { // clean up
 			}
 		}
 		curl(this_e, deriv, v);
-		m.minus_forces[i] = deriv + out_of_bounds_deriv;
+		// The receptor energy is evaluated at clamp(x, box). Outside a face
+		// its derivative vanishes along that normal, including when slope=0.
+		VINA_FOR(j, 3)
+			if (wall_normal[j] != 0) deriv[j] = slope * wall_normal[j];
+		m.minus_forces[i] = deriv;
 		e += this_e + out_of_bounds_penalty;
 	}
 	return e;
