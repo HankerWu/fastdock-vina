@@ -1,0 +1,2 @@
+48 runs, 422 models, worst absolute RMSD difference 0.00000073 A
+24 native outputs match prior run SHA-256

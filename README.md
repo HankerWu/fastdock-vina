@@ -243,6 +243,8 @@ PYTHONDONTWRITEBYTECODE=1 python3 benchmarks/check_refinement_input_compatibilit
 
 可用 `--smooth_cutoff` 检验普通 Vina 势最后 1 Å 的截断，用 `--mixed_cutoff_search` 让半数轨迹在平滑势上搜索，再统一用原生势筛选和精修。四个靶点的配对实测尚未显示共同的姿势和排序收益。[算法、逐例结果与复核](docs/CUTOFF_SWITCH_RESEARCH.md)
 
+`--search_anchor` 可将受体提供的配位空位或其他配体的共有骨架用于全局搜索。五个体系的配对试验检验了候选恢复、质子化叔胺的两种构型，以及相同实验条件下的 Ki/Kd 排序。[搜索引导与微态研究](docs/ANCHOR_AND_MICROSTATE_RESEARCH.md)
+
 ## 引用
 
 研究中使用时，请引用 Vina 的原始论文：

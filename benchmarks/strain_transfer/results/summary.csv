@@ -1,0 +1,16 @@
+target,arm,cells,top1,median_rmsd,near_in_pool,med_rank_if_available,pairs,credit,unique_pairs
+t4l,native,36,28,1.1797525,36,1.0,76,50.0,19
+t4l,inter_only,36,28,1.1797525,36,1.0,76,51.0,19
+t4l,gas_global,36,28,1.213932,36,1.0,76,28.0,19
+t4l,screened_global,36,28,1.213932,36,1.0,76,28.0,19
+t4l,screened_local,36,26,1.2249295,36,1.0,76,30.0,19
+hcaii,native,20,0,7.272117,0,nan,28,14.0,7
+hcaii,inter_only,20,0,7.806926,0,nan,28,12.0,7
+hcaii,gas_global,20,0,7.8383035,0,nan,28,16.0,7
+hcaii,screened_global,20,0,7.282608,0,nan,28,13.0,7
+hcaii,screened_local,20,0,7.1568985000000005,0,nan,28,15.0,7
+brd4,native,28,3,6.1320250000000005,4,1.0,30,10.0,5
+brd4,inter_only,28,3,6.55407,4,1.0,30,10.0,5
+brd4,gas_global,28,3,6.62359,4,1.0,30,6.0,5
+brd4,screened_global,28,3,6.62359,4,1.0,30,7.0,5
+brd4,screened_local,28,3,6.80791,4,1.0,30,11.0,5
