@@ -1,0 +1,1 @@
+32 FXa cross-dock pools and 285 models. Independent topology and alignment reproduce top/pool heavy-atom RMSD to 1.07e-14 A.

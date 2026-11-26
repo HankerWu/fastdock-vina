@@ -33,7 +33,20 @@ The external test of the bisector locates two independent nitrogens in 3PTB, 1BT
 | FXa, equal heavy atoms and formal charge, /17 | 8 | 14 | 11 | 13.5 |
 | Trypsin ≥3-fold Kd pairs, /3 | 0 | 0 | 0 | 0 |
 
-The only cognate whole-ligand RMSD endpoint here is benzamidine in the two trypsin receptors. The eight repeats share one ligand. FXa contacts report local geometry around the specified head. The 28 query ligands have no cognate crystal references in this panel. FXa shell ranks are 234/295 against 244.5 native in the 1FJS receptor and 228/295 against 187 native in the apixaban-bound 2P16 receptor. Across both receptors 39 chemical pairs improve, 26 deteriorate and the other 230 keep their credit. A paired ligand-vertex bootstrap (3,000 replicates) gives a 95% sensitivity interval of −7.9 to +16.8 percentage points around the +4.4-point difference. Deleting each one of the 28 ligands gives +1.5 to +6.5 points. Both calculations preserve the sharing of ligands between pair comparisons. The two related proteases share an S1-site motif. Transfer to a distant target family or a charge-neutral ligand is unresolved. [Pairs and structures](results/contrast.csv) · [Mode-level outputs](results/modes.csv)
+The cognate redocking endpoint in the main panel is benzamidine in the two trypsin receptors. The eight repeats share one ligand. FXa contacts report local geometry around the specified head. The 28 query ligands have no cognate crystal references in this panel. FXa shell ranks are 234/295 against 244.5 native in the 1FJS receptor and 228/295 against 187 native in the apixaban-bound 2P16 receptor. Across both receptors 39 chemical pairs improve, 26 deteriorate and the other 230 keep their credit. A paired ligand-vertex bootstrap (3,000 replicates) gives a 95% sensitivity interval of −7.9 to +16.8 percentage points around the +4.4-point difference. Deleting each one of the 28 ligands gives +1.5 to +6.5 points. Both calculations preserve the sharing of ligands between pair comparisons. The two related proteases share an S1-site motif. Transfer to a distant target family or a charge-neutral ligand is unresolved. [Pairs and structures](results/contrast.csv) · [Mode-level outputs](results/modes.csv)
+
+## Independent FXa cross-docking on the one-sided crystal contact
+
+We tested a structure-defined exception using the chiral ligand DX-9065a in 1FAX, whose measured Asp189 distances are 2.80 and 4.17 Å. Its aryl amidinium and acetimidoylpyrrolidine are protonated and its carboxyl group is deprotonated in the assumed +1 state. We checked the two stereocenters against the wwPDB CCD's canonical CACTVS SMILES, discarded all experimental ligand coordinates, then made a fresh conformer from the graph. Search used the prepared 1FJS and 2P16 receptors and their existing boxes. Aggregation compares the 33-heavy-atom DX9 poses with the 1FAX ligand after superimposing 74 shared receptor Cα positions within 15 Å of the 1FAX Asp189-Cγ. The receptor fits have RMSD 0.561 and 0.583 Å. The eight allowed graph permutations include the resonance-equivalent amidinium and carboxylate atoms. Every arm used the same four seeds and search budget.
+
+| ≤2 Å full-ligand cross-pose recovery | Ordinary | One point | Two points | Two shells |
+|---|---:|---:|---:|---:|
+| Top on 1FJS, /4 | 0 | 0 | 0 | 1 |
+| Top on 2P16, /4 | 0 | 1 | 4 | 4 |
+| Any of the returned candidates, /8 combined | 0 | 8 | 8 | 8 |
+| Median top RMSD, Å, /8 combined | 8.75 | 2.05 | 2.01 | 1.95 |
+
+Thus the shell gives 5/8 first-pose successes on this distinct scaffold even though it shortens the long experimental contact (median top 3.07 Å in the two cross receptors versus 4.17 Å in 1FAX). On 1FJS three top poses still miss 2 Å despite a ≤2 Å candidate in every run. This separates approximate localization of the molecule from faithful reproduction of the salt bridge and from recognition of the best saved candidate. Repeats still represent one chemical identity. An independent positional graph search and SciPy rotation fit reproduced every top and candidate-minimum RMSD in 32 additional files (285 modes) to 1.1 × 10⁻¹⁴ Å. [Actual DX9 cross-docking results](results/dx9.csv) · [Independent audit](results/verification_cross.txt) · [1FAX coordinates](https://www.rcsb.org/structure/1FAX) · [DX9 chemistry](https://www.rcsb.org/ligand/DX9)
 
 ## Separating search quality from a moving energy reference
 
@@ -76,6 +89,7 @@ mkdir -p "$w/raw" "$w/results"
 for code in 1BTY 3PTB 5MO0 1FAX; do
   curl -fsSL "https://files.rcsb.org/download/$code.pdb" -o "$w/raw/$code.pdb"
 done
+curl -fsSL https://files.rcsb.org/ligands/download/DX9.cif -o "$w/raw/DX9.cif"
 for code in 1FJS 2P16; do
   python benchmarks/affinity_partition/fxa_holdout.py prepare "$w/fxa-$code" --receptor "$code"
   python benchmarks/affinity_partition/fxa_holdout.py dock "$w/fxa-$code" --receptor "$code" --binary "$bin"
@@ -92,6 +106,8 @@ python "$d/reference.py" "$w" "$f1" "$f2" "$w/results"
 python "$d/free_ligand.py" "$w/results/free_ligand.csv"
 python "$d/ser195.py" "$w" "$w/results/ser195.csv"
 python "$d/verify.py" "$w" "$f1" "$f2" "$w/results"
+python "$d/cross_dock.py" "$w" "$f1" "$f2" "$bin" "$w/results/dx9.csv"
+python "$d/verify_cross.py" "$w" "$f1" "$f2" "$w/results/dx9.csv"
 ```
 
 The audit independently parses every PDBQT model by column, infers protonated aryl amidinium nitrogens from bonds and explicit donor hydrogens, reconstructs both N–O permutations, and enumerates element and connectivity preserving atom mappings for the entire benzamidine crystal ligand. It reproduced all 9,263 raw scores and contact distances, 1,536 distinct-pair release rows (including those below threefold), and all benzamidine RMSDs to within 4 × 10⁻¹⁵ Å. Replacing the source PDB carboxylate with the normal prepared receptor PDBQT reproduced all 198 non-native search files byte for byte. [Audit output](results/verification.txt)
