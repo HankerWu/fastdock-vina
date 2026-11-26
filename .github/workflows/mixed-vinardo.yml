@@ -50,6 +50,9 @@ jobs:
           name: research-vina-binary
           path: build/mixed-vinardo
       - run: chmod +x build/mixed-vinardo/vina
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
       - name: Dependencies
         run: |
           python3 -m venv .venv
