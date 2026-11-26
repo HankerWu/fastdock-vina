@@ -40,30 +40,91 @@ def main():
         out = tmp / "run.pdbqt"
 
         def run(binary, *flags):
-            subprocess.run(
+            result = subprocess.run(
                 [binary, *inputs, *opts, *flags, "--out", out],
                 capture_output=True,
                 check=True,
             )
-            return out.read_bytes()
+            return out.read_bytes(), re.findall(
+                rb"^Search trajectory: .*$", result.stdout, re.MULTILINE
+            )
 
         for select in ("native", "late"):
             flags = ["--pose_selection", select, "--cpu", "1"]
             assert run(args.binary, *flags) == run(args.baseline, *flags)
         anchor.write_text("3 16 52 15\n39 18 53 18 shell 2\n")
-        one = run(args.binary, "--search_anchor", anchor, "--cpu", "1")
-        assert one == run(args.binary, "--search_anchor", anchor, "--cpu", "2")
-        assert one != run(args.binary, "--pose_selection", "late", "--cpu", "1")
+        one, _ = run(args.binary, "--search_anchor", anchor, "--cpu", "1")
+        assert one == run(args.binary, "--search_anchor", anchor, "--cpu", "2")[0]
+        assert one != run(args.binary, "--pose_selection", "late", "--cpu", "1")[0]
         original = anchor.read_text()
         anchor.write_text(
             original + "OR\n" + "\n".join(reversed(original.splitlines())) + "\n"
         )
-        assert one == run(args.binary, "--search_anchor", anchor, "--cpu", "1")
+        assert one == run(args.binary, "--search_anchor", anchor, "--cpu", "1")[0]
         anchor.write_text(original + "OR\n3 18 53 18\n39 16 52 15 shell 2\n")
-        ensemble = run(args.binary, "--search_anchor", anchor, "--cpu", "1")
-        assert ensemble == run(args.binary, "--search_anchor", anchor, "--cpu", "2")
+        ensemble, guided = run(
+            args.binary, "--search_anchor", anchor, "--cpu", "1", "--search_counters"
+        )
+        assert ensemble == run(args.binary, "--search_anchor", anchor, "--cpu", "2")[0]
+        _, native = run(
+            args.binary, "--pose_selection", "late", "--cpu", "1", "--search_counters"
+        )
+        flags = [
+            "--search_anchor",
+            anchor,
+            "--search_anchor_trajectories",
+            "even",
+            "--search_counters",
+        ]
+        mixed, traces = run(args.binary, *flags, "--cpu", "1")
+        assert (mixed, traces) == run(args.binary, *flags, "--cpu", "2")
+        assert len(guided) == len(native) == 3 and guided[1] != native[1]
+        assert traces == [native[0], guided[1], native[2]]
+        odd, reverse = run(
+            args.binary,
+            "--search_anchor",
+            anchor,
+            "--search_anchor_trajectories",
+            "odd",
+            "--search_counters",
+            "--cpu",
+            "1",
+        )
+        assert reverse == [guided[0], native[1], guided[2]]
+        assert (
+            run(
+                args.binary,
+                "--search_anchor",
+                anchor,
+                "--search_anchor_trajectories",
+                "all",
+                "--cpu",
+                "1",
+            )[0]
+            == ensemble
+        )
+        for flags in (
+            ["--search_anchor", anchor, "--search_anchor_trajectories", "other"],
+            ["--search_anchor_trajectories", "even"],
+            [
+                "--search_anchor",
+                anchor,
+                "--search_anchor_trajectories",
+                "even",
+                "--exhaustiveness",
+                "1",
+            ],
+        ):
+            failed = subprocess.run(
+                [args.binary, *inputs, *flags, "--out", out],
+                capture_output=True,
+                text=True,
+            )
+            assert failed.returncode and "search_anchor_trajectories" in failed.stderr
         for model in re.findall(
-            rb"^MODEL .*?^ENDMDL$", one + ensemble, re.MULTILINE | re.DOTALL
+            rb"^MODEL .*?^ENDMDL$",
+            one + ensemble + mixed + odd,
+            re.MULTILINE | re.DOTALL,
         ):
             fixed = tmp / "fixed.pdbqt"
             fixed.write_bytes(model + b"\n")

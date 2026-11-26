@@ -105,6 +105,7 @@ Thank you!\n";
 		double pocket_start_radius = 0;
 		std::string pose_template_path;
 		std::string search_anchor_path;
+		std::string search_anchor_trajectories = "all";
 		std::string template_stage;
 		std::string polar_geometry;
 		std::string polar_burial;
@@ -262,6 +263,8 @@ Thank you!\n";
 			 "maximum Late candidates sent to explicit refinement (at least num_modes; default num_modes)")
 			("search_anchor", value<std::string>(&search_anchor_path),
 			 "guide grid search (rows: ligand serial x y z [shell radius]; OR separates alternative assignments); native Late refinement and scoring")
+			("search_anchor_trajectories", value<std::string>(&search_anchor_trajectories),
+			 "trajectories receiving search_anchor: all (default), even or odd (1-based)")
 			("pose_template", value<std::string>(&pose_template_path),
 			 "aligned external template with element, x, y and z columns (Angstrom)")
 			("template_stage", value<std::string>(&template_stage),
@@ -356,6 +359,8 @@ Thank you!\n";
 			throw usage_error("rerank_gauss2_scale below 1 requires regular Vina docking with a rigid receptor, one ligand per run, and explicit receptor refinement");
 
 		if ((mixed_cutoff_search || vm.count("search_anchor")) && vm["pose_selection"].defaulted()) pose_selection = "late";
+		if (vm.count("search_anchor_trajectories") && !vm.count("search_anchor"))
+			throw usage_error("search_anchor_trajectories requires search_anchor");
 		if (vm.count("search_anchor") && (search_anchor_path.empty() || !regular_rigid_vina ||
 		    ligand_names.size() != 1 || vm.count("batch") || pose_selection != "late"))
 			throw usage_error("search_anchor requires regular rigid single-ligand Late Vina docking");
@@ -551,7 +556,7 @@ Thank you!\n";
 		v.set_use_min_rmsd_for_merge(use_min_rmsd_for_merge);
 		v.set_rerank_gauss2_scale(rerank_gauss2_scale);
 		if (vm.count("search_anchor"))
-			v.set_search_anchor(search_anchor_path);
+			v.set_search_anchor(search_anchor_path, search_anchor_trajectories);
 		if (vm.count("pose_template"))
 			v.set_pose_template(pose_template_path, template_stage);
 		if (vm.count("polar_geometry"))

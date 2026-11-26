@@ -1139,6 +1139,18 @@ void Vina::rerank_poses(output_container& poses, const vec& authentic_v) {
 	});
 }
 
+void Vina::set_search_anchor(const std::string& filename, const std::string& trajectories) {
+	anchor_trajectories selected;
+	if (trajectories == "all") selected = anchor_trajectories::all;
+	else if (trajectories == "even") selected = anchor_trajectories::even;
+	else if (trajectories == "odd") selected = anchor_trajectories::odd;
+	else throw vina_runtime_error("search_anchor_trajectories must be all, even, or odd");
+	if (filename.empty() && selected != anchor_trajectories::all)
+		throw vina_runtime_error("search_anchor_trajectories requires search_anchor");
+	m_search_anchor_path = filename;
+	m_anchor_trajectories = selected;
+}
+
 void Vina::set_late_pose_selection(bool enabled) {
 	if (enabled && (m_sf_choice != SF_VINA || m_no_refine))
 		throw vina_runtime_error("late pose selection requires Vina scoring with explicit receptor refinement");
@@ -1604,6 +1616,9 @@ void Vina::global_search(const int exhaustiveness, const int n_poses, const doub
 	    rerank || m_armijo_refinement || polar_rank || burial_rank || net_polar_rank ||
 	    !m_pose_template_path.empty() || archive_enabled))
 		throw vina_runtime_error("mixed_cutoff_search requires native Late Vina refinement and ranking, a rigid receptor, exhaustiveness >= 2, and cutoff > 1 Angstrom");
+	const bool split_anchor = m_anchor_trajectories != anchor_trajectories::all;
+	if (split_anchor && exhaustiveness < 2)
+		throw vina_runtime_error("search_anchor_trajectories even/odd requires exhaustiveness >= 2");
 	boost::optional<anchored_search_grid> anchor_grid;
 	if (!m_search_anchor_path.empty()) {
 		if (!late_selection || !m_use_explicit_receptor || m_sf_choice != SF_VINA ||
@@ -1615,7 +1630,9 @@ void Vina::global_search(const int exhaustiveness, const int n_poses, const doub
 		auto sites = read_search_anchors(file, m_model, m_grid.corner1(), m_grid.corner2());
 		if (m_verbosity > 0 || m_search_counters)
 			std::cout << "Search anchor: sites=" << sites.front().size() << " assignments=" << sites.size()
-			          << " search=all_trajectories final=native_late\n";
+			          << (m_anchor_trajectories == anchor_trajectories::even ? " search=even_1based" :
+			              m_anchor_trajectories == anchor_trajectories::odd ? " search=odd_1based" : " search=all_trajectories")
+			          << " final=native_late\n";
 		anchor_grid.emplace(m_grid, std::move(sites));
 	}
 	if (archive_enabled) {
@@ -1685,6 +1702,9 @@ void Vina::global_search(const int exhaustiveness, const int n_poses, const doub
 	if (m_sf_choice == SF_VINA || m_sf_choice == SF_VINARDO) {
 		boost::optional<precalculate_byatom> smooth_pairs;
 		boost::optional<search_landscape> alternate;
+		const igrid& native_grid = m_grid;
+		const igrid& guided_grid = anchor_grid ? static_cast<const igrid&>(*anchor_grid) : native_grid;
+		const bool guide_even_only = m_anchor_trajectories == anchor_trajectories::even;
 		if (m_mixed_cutoff_search) {
 			ScoringFunction smooth(SF_VINA, m_weights, m_scoring_function->get_cutoff(), true);
 			if (!m_mixed_search_grid) m_mixed_search_grid.emplace(m_grid.gd());
@@ -1695,8 +1715,10 @@ void Vina::global_search(const int exhaustiveness, const int n_poses, const doub
 			if (m_verbosity > 0 || m_search_counters)
 				std::cout << "\nMixed cutoff search: native=" << (exhaustiveness + 1) / 2
 				          << " smooth=" << exhaustiveness / 2 << " smooth_on_even_1based=true final=native_late\n";
+		} else if (split_anchor) {
+			alternate.emplace(search_landscape{m_precalculated_byatom, guide_even_only ? guided_grid : native_grid});
 		}
-		const igrid& search_grid = anchor_grid ? static_cast<const igrid&>(*anchor_grid) : static_cast<const igrid&>(m_grid);
+		const igrid& search_grid = guide_even_only ? native_grid : guided_grid;
 		parallelmc(m_model, poses, m_precalculated_byatom, search_grid, m_grid.corner1(), m_grid.corner2(), generator,
 		           m_progress_callback, archive_enabled ? &archives : nullptr, archive_support, counters,
 		           alternate.get_ptr());
