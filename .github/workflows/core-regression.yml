@@ -1,0 +1,36 @@
+name: Core docking regression
+on:
+  push:
+    branches: [fastdock-vina-pro]
+    paths:
+      - 'src/**'
+      - 'tools/build.py'
+      - 'benchmarks/check_map_lattice.cpp'
+      - '.github/workflows/core-regression.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  lattice:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install compiler dependencies
+        run: sudo apt-get update && sudo apt-get install -y libboost-system-dev libboost-thread-dev libboost-serialization-dev libboost-filesystem-dev libboost-program-options-dev
+      - name: Build current engine
+        run: python3 tools/build.py --output-dir build/core --jobs 2
+      - name: Test imported map lattices
+        run: |
+          c++ -O2 -DNDEBUG -std=c++14 -pthread -Isrc/lib benchmarks/check_map_lattice.cpp $(find build/core/obj -name '*.o' ! -name main.o) -lboost_system -lboost_thread -lboost_serialization -lboost_filesystem -lboost_program_options -o build/core/check-map-lattice
+          build/core/check-map-lattice "${RUNNER_TEMP}/map-lattice-fixtures"
+      - name: Package tested binary
+        run: |
+          mkdir -p build/core/dist/lib
+          cp build/core/vina build/core/dist/
+          ldd build/core/vina | awk '/libboost_.* => / {print $3}' | while read -r library; do cp -L "$library" build/core/dist/lib/; done
+          git rev-parse HEAD > build/core/dist/revision.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: core-docking-binary
+          path: build/core/dist
