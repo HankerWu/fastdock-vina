@@ -143,6 +143,10 @@ AD4 仍需对应的原子类型、电势和去溶剂化网格。导入会检查�
 python3 benchmarks/check_local_only.py build/refine-pool/vina /path/to/pre-fix/vina
 ```
 
+### 固定搜索预算下的核心评分
+
+有独立配体共晶结构时，`--template_stage contact_rank` 按其受体接触模式重排现有候选。亲和力另有两项研究性读数，`--contact_rotor_score` 检验接触约束的扭转代价，`score_physical_pool.py --mmff-affinity` 在冻结姿势上替换配体内能差。五靶点 Ki/Kd 和因子 Xa 外部系列给出了不同的适用范围。[实测对照、新增人源靶点和复算说明](benchmarks/frozen_core/README.md)
+
 ### FastDock Vina Pro 姿势重排
 
 在上述命令加上 `--rerank_gauss2_scale 0.5`，可用一半宽高斯（`gauss_2`）权重重排姿势。

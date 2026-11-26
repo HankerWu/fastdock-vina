@@ -1,0 +1,16 @@
+{
+  "pose": {
+    "pools": 136,
+    "modes": 1214,
+    "max_abs_score_difference": 0.0014236757504955122,
+    "selected_rank_differences": 0,
+    "pose_hit_differences": 0
+  },
+  "affinity": {
+    "pools": 280,
+    "modes": 2488,
+    "max_abs_score_difference": 0.0014988344217616856,
+    "selected_rank_differences": 0,
+    "pose_hit_differences": null
+  }
+}

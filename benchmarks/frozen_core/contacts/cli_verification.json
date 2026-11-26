@@ -1,0 +1,221 @@
+[
+  {
+    "query": "4GHI",
+    "receiver": "5TBM",
+    "seed": 85231,
+    "cap": 12000,
+    "selection": "late",
+    "refinement": "native",
+    "native_pool_sha256": "6e9729934c3e4db08dd9dc6e2d168b63c87dbf852aaeb29f7c306d9819efd64f",
+    "search_accounting": [
+      "Search trajectory: index=1 steps=253 hunt_calls=253 hunt_evals=7807 second_calls=108 second_evals=4203 rigid_reorientations=0",
+      "Search trajectory: index=2 steps=177 hunt_calls=177 hunt_evals=5819 second_calls=151 second_evals=6228 rigid_reorientations=0",
+      "Search trajectory: index=3 steps=151 hunt_calls=151 hunt_evals=11551 second_calls=12 second_evals=567 rigid_reorientations=0",
+      "Search counters: rigid_reorientation=native explicit_inputs=9 explicit_calls=9 explicit_evals=331 late_prescore=19"
+    ],
+    "modes": 9,
+    "matches_archived_native_pool_sha256": true,
+    "native_coordinate_sha256": "eede66d800e4a524b9c0e5fb1319e4391afa7afac7a08c826f7d1cc630bfb406",
+    "rank": {
+      "native_ranks": [
+        1,
+        2,
+        3,
+        5,
+        8,
+        6,
+        4,
+        7,
+        9
+      ],
+      "native_order_coordinate_sha256": "eede66d800e4a524b9c0e5fb1319e4391afa7afac7a08c826f7d1cc630bfb406",
+      "max_overlap_delta": 1.440129932572809e-05,
+      "max_rank_score_delta": 7.351477475836532e-05
+    },
+    "contact_rank": {
+      "native_ranks": [
+        1,
+        2,
+        3,
+        5,
+        8,
+        4,
+        6,
+        7,
+        9
+      ],
+      "native_order_coordinate_sha256": "eede66d800e4a524b9c0e5fb1319e4391afa7afac7a08c826f7d1cc630bfb406",
+      "max_overlap_delta": 6.0107420267407896e-05,
+      "max_rank_score_delta": 0.0003068322768857712
+    },
+    "window_kcal_per_mol": 2.3345000000000002,
+    "window_modes": 4
+  },
+  {
+    "query": "2NNQ",
+    "receiver": "3FR2",
+    "seed": 85231,
+    "cap": 12000,
+    "selection": "late",
+    "refinement": "native",
+    "native_pool_sha256": "ceb956001d7a7fc59431b843a134b35b7bf90079f6b61e15fd8be77134df436f",
+    "search_accounting": [
+      "Search trajectory: index=1 steps=171 hunt_calls=171 hunt_evals=6858 second_calls=118 second_evals=5210 rigid_reorientations=0",
+      "Search trajectory: index=2 steps=201 hunt_calls=201 hunt_evals=8904 second_calls=58 second_evals=3125 rigid_reorientations=0",
+      "Search trajectory: index=3 steps=241 hunt_calls=241 hunt_evals=9657 second_calls=45 second_evals=2349 rigid_reorientations=0",
+      "Search counters: rigid_reorientation=native explicit_inputs=9 explicit_calls=9 explicit_evals=498 late_prescore=26"
+    ],
+    "modes": 9,
+    "matches_archived_native_pool_sha256": true,
+    "native_coordinate_sha256": "2d319b37615a153a52ed77dade0459eecf39f80280408f1f8c68849978502468",
+    "rank": {
+      "native_ranks": [
+        1,
+        4,
+        2,
+        3,
+        5,
+        6,
+        8,
+        7,
+        9
+      ],
+      "native_order_coordinate_sha256": "2d319b37615a153a52ed77dade0459eecf39f80280408f1f8c68849978502468",
+      "max_overlap_delta": 2.4083204771763178e-05,
+      "max_rank_score_delta": 9.65316743357647e-05
+    },
+    "contact_rank": {
+      "native_ranks": [
+        1,
+        2,
+        3,
+        6,
+        4,
+        5,
+        8,
+        7,
+        9
+      ],
+      "native_order_coordinate_sha256": "2d319b37615a153a52ed77dade0459eecf39f80280408f1f8c68849978502468",
+      "max_overlap_delta": 2.0518125954771538e-05,
+      "max_rank_score_delta": 8.224192217909376e-05
+    },
+    "window_kcal_per_mol": 0.5679999999999996,
+    "window_modes": 4
+  },
+  {
+    "query": "1FKG",
+    "receiver": "1FKH",
+    "seed": 93563,
+    "cap": 70000,
+    "selection": "native",
+    "refinement": "native",
+    "native_pool_sha256": "195e3b11e249c02c7f5ef1ed5fa1f55a7c88d660b46d75a5497ca3f6c7242db5",
+    "search_accounting": [
+      "Search trajectory: index=1 steps=1720 hunt_calls=1720 hunt_evals=68751 second_calls=32 second_evals=1274 rigid_reorientations=0",
+      "Search trajectory: index=2 steps=1658 hunt_calls=1658 hunt_evals=67781 second_calls=43 second_evals=2254 rigid_reorientations=0",
+      "Search trajectory: index=3 steps=1641 hunt_calls=1641 hunt_evals=68429 second_calls=37 second_evals=1574 rigid_reorientations=0",
+      "Search counters: rigid_reorientation=native explicit_inputs=9 explicit_calls=9 explicit_evals=392 late_prescore=0"
+    ],
+    "modes": 9,
+    "matches_archived_native_pool_sha256": true,
+    "native_coordinate_sha256": "d0eb0b1e226f98118ac154d224b66e26e3be8cf2b6b1e1611f97e69620449916",
+    "contact_rank": {
+      "native_ranks": [
+        3,
+        1,
+        2,
+        4,
+        6,
+        8,
+        7,
+        5,
+        9
+      ],
+      "native_order_coordinate_sha256": "d0eb0b1e226f98118ac154d224b66e26e3be8cf2b6b1e1611f97e69620449916",
+      "max_overlap_delta": 0.00013095226604398214,
+      "max_rank_score_delta": 0.0004782014024211634
+    },
+    "archived_native_top1_rmsd_A": 6.9143768699149595,
+    "archived_contact_top1_rmsd_A": 1.555200575042373,
+    "two_mode_cap_coordinate_parity": true,
+    "window_kcal_per_mol": 0.6779999999999999,
+    "window_modes": 4
+  },
+  {
+    "query": "1FKH",
+    "receiver": "1FKG",
+    "seed": 93529,
+    "cap": 66000,
+    "selection": "native",
+    "refinement": "native",
+    "native_pool_sha256": "49d7a2021c3e24da5ef8c24b6227b03f19e3471744a85b3015a976b974b26788",
+    "search_accounting": [
+      "Search trajectory: index=1 steps=1598 hunt_calls=1598 hunt_evals=63768 second_calls=50 second_evals=2235 rigid_reorientations=0",
+      "Search trajectory: index=2 steps=1313 hunt_calls=1313 hunt_evals=64719 second_calls=27 second_evals=1302 rigid_reorientations=0",
+      "Search trajectory: index=3 steps=1606 hunt_calls=1606 hunt_evals=64499 second_calls=33 second_evals=1513 rigid_reorientations=0",
+      "Search counters: rigid_reorientation=native explicit_inputs=9 explicit_calls=9 explicit_evals=445 late_prescore=0"
+    ],
+    "modes": 9,
+    "matches_archived_native_pool_sha256": true,
+    "native_coordinate_sha256": "055d8da607c2f55cf95e579a05c09f3e76cd6e7029d43c41daee3c451766b53b",
+    "contact_rank": {
+      "native_ranks": [
+        2,
+        6,
+        3,
+        1,
+        4,
+        5,
+        7,
+        8,
+        9
+      ],
+      "native_order_coordinate_sha256": "055d8da607c2f55cf95e579a05c09f3e76cd6e7029d43c41daee3c451766b53b",
+      "max_overlap_delta": 8.481676909388725e-05,
+      "max_rank_score_delta": 0.00030972734687928494
+    },
+    "archived_native_top1_rmsd_A": 6.035722446464805,
+    "archived_contact_top1_rmsd_A": 1.2771212889375756,
+    "two_mode_cap_coordinate_parity": true,
+    "window_kcal_per_mol": 0.9500000000000002,
+    "window_modes": 4
+  },
+  {
+    "query": "7MRG",
+    "receiver": "7MRH",
+    "seed": 95701,
+    "cap": 120000,
+    "selection": "late",
+    "refinement": "geometry",
+    "native_pool_sha256": "941a5306c3c67503167b3f891930580b377c170a4bbe0855f40d11148edd5d76",
+    "search_accounting": [
+      "Search trajectory: index=1 steps=2928 hunt_calls=2928 hunt_evals=117982 second_calls=48 second_evals=2064 rigid_reorientations=0",
+      "Search trajectory: index=2 steps=3268 hunt_calls=3268 hunt_evals=118783 second_calls=28 second_evals=1222 rigid_reorientations=0",
+      "Search trajectory: index=3 steps=2703 hunt_calls=2703 hunt_evals=119457 second_calls=15 second_evals=566 rigid_reorientations=0",
+      "Search counters: rigid_reorientation=native explicit_inputs=9 explicit_calls=9 explicit_evals=336 late_prescore=27"
+    ],
+    "modes": 8,
+    "matches_archived_native_pool_sha256": true,
+    "native_coordinate_sha256": "6f35a0b4530bd26d356f06c71d742ff568cf22afd9ae8b0f687aa56337339d56",
+    "contact_rank": {
+      "native_ranks": [
+        2,
+        1,
+        3,
+        5,
+        4,
+        6,
+        8,
+        7
+      ],
+      "native_order_coordinate_sha256": "6f35a0b4530bd26d356f06c71d742ff568cf22afd9ae8b0f687aa56337339d56",
+      "max_overlap_delta": 4.0402702707775795e-05,
+      "max_rank_score_delta": 0.00021703990997323785
+    },
+    "archived_native_top1_rmsd_A": 2.848365659333068,
+    "archived_contact_top1_rmsd_A": 0.8224502200593895,
+    "window_kcal_per_mol": 1.7024999999999997,
+    "window_modes": 4
+  }
+]

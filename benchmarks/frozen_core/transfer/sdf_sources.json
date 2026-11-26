@@ -1,0 +1,18 @@
+{
+  "1AQ1": {
+    "url": "https://models.rcsb.org/v1/1aq1/ligand?auth_asym_id=A&auth_seq_id=299&encoding=sdf",
+    "sha256": "c9423b14530d0769e5191054e625d672ac5df125ec179c1c98e46331a15612d9"
+  },
+  "2A4L": {
+    "url": "https://models.rcsb.org/v1/2a4l/ligand?auth_asym_id=A&auth_seq_id=300&encoding=sdf",
+    "sha256": "59388b86553de7a6233ff8540461a082e0fb4cdee2e4dd4f0da75e9142daa091"
+  },
+  "4UND": {
+    "url": "https://models.rcsb.org/v1/4und/ligand?auth_asym_id=A&auth_seq_id=2011&encoding=sdf",
+    "sha256": "c2b8e3176305178009db96db35b0038165f523cd9acfe4ca6111a0966a1fd480"
+  },
+  "7KK4": {
+    "url": "https://models.rcsb.org/v1/7kk4/ligand?auth_asym_id=A&auth_seq_id=9001&encoding=sdf",
+    "sha256": "ff6e4bdcabc9db76d7fc0e3ae21b5c3b8c534ba61d24f55d85534165c22ccc3a"
+  }
+}

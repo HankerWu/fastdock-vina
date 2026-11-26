@@ -1,0 +1,7 @@
+protocol,design,n,native_top,angle_top,native_top5,angle_top5,oracle,rescues,losses,switches
+cognate,fixed,20,1,1,2,2,3,0,0,4
+cognate,matched,20,3,3,9,9,10,0,0,7
+cognate,per_complex,20,2,2,8,8,8,1,1,7
+reciprocal,fixed,20,7,7,9,9,9,1,1,6
+reciprocal,matched,20,10,7,14,14,14,0,3,5
+reciprocal,per_complex,20,11,9,13,13,14,0,2,3
