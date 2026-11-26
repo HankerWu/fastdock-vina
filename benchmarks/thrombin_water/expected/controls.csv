@@ -1,0 +1,223 @@
+method,strong,weak,direction,credit
+native,4,6a,1.3004999999999995,1
+native,4,6e,0.9020000000000001,1
+native,4,6b,0.8484999999999996,1
+native,4,1c,0.39250000000000096,1
+native,4,1b,0.03950000000000031,1
+native,4,3a,0.7675000000000005,1
+native,4,1d,0.4005000000000001,1
+native,4,7a,0.7735000000000003,1
+native,4,1a,-0.15949999999999953,0
+native,4,3b,0.2290000000000001,1
+native,4,5,0.0730000000000004,1
+native,6a,1b,-1.2464999999999993,0
+native,6a,3a,-0.012999999999999456,0
+native,6a,1d,-0.4540000000000002,0
+native,6a,7a,-0.15149999999999997,0
+native,6a,1a,-1.3324999999999996,0
+native,6a,3b,-0.5399999999999996,0
+native,6a,5,-1.2364999999999995,0
+native,6e,1d,-0.26000000000000023,0
+native,6e,7a,-0.17099999999999982,0
+native,6e,1a,-1.3834999999999993,0
+native,6e,3b,-0.32650000000000023,0
+native,6e,5,-1.0949999999999998,0
+native,6b,7a,-0.12499999999999956,0
+native,6b,1a,-1.2539999999999991,0
+native,6b,3b,-0.5999999999999996,0
+native,6b,5,-1.3669999999999995,0
+native,1c,1a,-0.1274999999999995,0
+native,1c,3b,0.4389999999999996,1
+native,1c,5,-0.32150000000000034,0
+native,1b,1a,-0.3905000000000003,0
+native,1b,5,-0.14500000000000002,0
+native,3a,1a,-0.7819999999999996,0
+native,3a,5,-1.3095000000000003,0
+native,1d,1a,-0.6929999999999992,0
+native,1d,5,-0.6224999999999996,0
+native,7a,1a,-1.3174999999999994,0
+exclusion,4,6a,0.49682072758170337,1
+exclusion,4,6e,0.5638207275817035,1
+exclusion,4,6b,0.8477086228011093,1
+exclusion,4,1c,0.3365000000000009,1
+exclusion,4,1b,-0.14850000000000074,0
+exclusion,4,3a,0.46550000000000047,1
+exclusion,4,1d,0.27582072758170373,1
+exclusion,4,7a,0.5473207275817034,1
+exclusion,4,1a,-0.15564145516340622,0
+exclusion,4,3b,0.45650000000000013,1
+exclusion,4,5,-0.2026792724182962,0
+exclusion,6a,1b,-0.587820727581704,0
+exclusion,6a,3a,-0.012999999999999456,0
+exclusion,6a,1d,-0.21932072758170396,0
+exclusion,6a,7a,-0.15149999999999997,0
+exclusion,6a,1a,-0.6231414551634065,0
+exclusion,6a,3b,-0.13549999999999995,0
+exclusion,6a,5,-0.7506530737253136,0
+exclusion,6e,1d,-0.16049999999999986,0
+exclusion,6e,7a,-0.04249999999999998,0
+exclusion,6e,1a,-0.647141455163406,0
+exclusion,6e,3b,0.07899999999999974,1
+exclusion,6e,5,-0.6966530737253129,0
+exclusion,6b,7a,-0.12499999999999956,0
+exclusion,6b,1a,-0.671320727581703,0
+exclusion,6b,3b,-0.2200000000000002,0
+exclusion,6b,5,-0.8374999999999999,0
+exclusion,1c,1a,-0.05500000000000016,0
+exclusion,1c,3b,0.4984999999999995,1
+exclusion,1c,5,-0.25007882942547877,0
+exclusion,1b,1a,-0.11482072758170281,0
+exclusion,1b,5,-0.24735854483659292,0
+exclusion,3a,1a,-0.40200000000000014,0
+exclusion,3a,5,-0.7595000000000005,0
+exclusion,1d,1a,-0.21399999999999908,0
+exclusion,1d,5,-0.5185894796363986,0
+exclusion,7a,1a,-0.5466414551634062,0
+cLogP,4,6a,-3.8423999999999965,0
+cLogP,4,6e,-3.328099999999995,0
+cLogP,4,6b,-3.497419999999995,0
+cLogP,4,1c,-3.298099999999996,0
+cLogP,4,1b,-3.1889999999999956,0
+cLogP,4,3a,-2.844019999999996,0
+cLogP,4,1d,-3.1401999999999957,0
+cLogP,4,7a,-3.152439999999996,0
+cLogP,4,1a,-2.674699999999996,0
+cLogP,4,3b,-3.097999999999996,0
+cLogP,4,5,-2.535599999999996,0
+cLogP,6a,1b,0.6534000000000006,1
+cLogP,6a,3a,0.9983800000000005,1
+cLogP,6a,1d,0.7022000000000008,1
+cLogP,6a,7a,0.6899600000000006,1
+cLogP,6a,1a,1.1677000000000006,1
+cLogP,6a,3b,0.7444000000000006,1
+cLogP,6a,5,1.3068000000000004,1
+cLogP,6e,1d,0.1878999999999995,1
+cLogP,6e,7a,0.17565999999999926,1
+cLogP,6e,1a,0.6533999999999993,1
+cLogP,6e,3b,0.2300999999999993,1
+cLogP,6e,5,0.7924999999999991,1
+cLogP,6b,7a,0.3449799999999992,1
+cLogP,6b,1a,0.8227199999999992,1
+cLogP,6b,3b,0.3994199999999992,1
+cLogP,6b,5,0.961819999999999,1
+cLogP,1c,1a,0.6234,1
+cLogP,1c,3b,0.20009999999999994,1
+cLogP,1c,5,0.7624999999999997,1
+cLogP,1b,1a,0.5143,1
+cLogP,1b,5,0.6533999999999998,1
+cLogP,3a,1a,0.16932000000000014,1
+cLogP,3a,5,0.3084199999999999,1
+cLogP,1d,1a,0.4654999999999998,1
+cLogP,1d,5,0.6045999999999996,1
+cLogP,7a,1a,0.47774000000000005,1
+heavy atoms,4,6a,1,1
+heavy atoms,4,6e,1,1
+heavy atoms,4,6b,1,1
+heavy atoms,4,1c,2,1
+heavy atoms,4,1b,2,1
+heavy atoms,4,3a,2,1
+heavy atoms,4,1d,2,1
+heavy atoms,4,7a,1,1
+heavy atoms,4,1a,2,1
+heavy atoms,4,3b,1,1
+heavy atoms,4,5,3,1
+heavy atoms,6a,1b,1,1
+heavy atoms,6a,3a,1,1
+heavy atoms,6a,1d,1,1
+heavy atoms,6a,7a,0,0.5
+heavy atoms,6a,1a,1,1
+heavy atoms,6a,3b,0,0.5
+heavy atoms,6a,5,2,1
+heavy atoms,6e,1d,1,1
+heavy atoms,6e,7a,0,0.5
+heavy atoms,6e,1a,1,1
+heavy atoms,6e,3b,0,0.5
+heavy atoms,6e,5,2,1
+heavy atoms,6b,7a,0,0.5
+heavy atoms,6b,1a,1,1
+heavy atoms,6b,3b,0,0.5
+heavy atoms,6b,5,2,1
+heavy atoms,1c,1a,0,0.5
+heavy atoms,1c,3b,-1,0
+heavy atoms,1c,5,1,1
+heavy atoms,1b,1a,0,0.5
+heavy atoms,1b,5,1,1
+heavy atoms,3a,1a,0,0.5
+heavy atoms,3a,5,1,1
+heavy atoms,1d,1a,0,0.5
+heavy atoms,1d,5,1,1
+heavy atoms,7a,1a,1,1
+mass,4,6a,-25.841000000000008,0
+mass,4,6e,-9.385999999999967,0
+mass,4,6b,-5.423000000000002,0
+mass,4,1c,-35.84699999999992,0
+mass,4,1b,8.604000000000042,1
+mass,4,3a,29.022000000000048,1
+mass,4,1d,-82.84699999999992,0
+mass,4,7a,14.995000000000005,1
+mass,4,1a,25.059000000000083,1
+mass,4,3b,14.995000000000005,1
+mass,4,5,43.04900000000009,1
+mass,6a,1b,34.44500000000005,1
+mass,6a,3a,54.863000000000056,1
+mass,6a,1d,-57.005999999999915,0
+mass,6a,7a,40.83600000000001,1
+mass,6a,1a,50.90000000000009,1
+mass,6a,3b,40.83600000000001,1
+mass,6a,5,68.8900000000001,1
+mass,6e,1d,-73.46099999999996,0
+mass,6e,7a,24.380999999999972,1
+mass,6e,1a,34.44500000000005,1
+mass,6e,3b,24.380999999999972,1
+mass,6e,5,52.43500000000006,1
+mass,6b,7a,20.418000000000006,1
+mass,6b,1a,30.482000000000085,1
+mass,6b,3b,20.418000000000006,1
+mass,6b,5,48.472000000000094,1
+mass,1c,1a,60.906000000000006,1
+mass,1c,3b,50.84199999999993,1
+mass,1c,5,78.89600000000002,1
+mass,1b,1a,16.45500000000004,1
+mass,1b,5,34.44500000000005,1
+mass,3a,1a,-3.9629999999999654,0
+mass,3a,5,14.027000000000044,1
+mass,1d,1a,107.906,1
+mass,1d,5,125.89600000000002,1
+mass,7a,1a,10.064000000000078,1
+native plus octanol-transfer surrogate,4,6a,-3.941482722880565,0
+native plus octanol-transfer surrogate,4,6e,-3.638350484077346,0
+native plus octanol-transfer surrogate,4,6b,-3.9228447883242072,0
+native plus octanol-transfer surrogate,4,1c,-4.106923073686335,0
+native plus octanol-transfer surrogate,4,1b,-4.311083724564363,0
+native plus octanol-transfer surrogate,4,3a,-3.112445790008008,0
+native plus octanol-transfer surrogate,4,1d,-3.8835084703283203,0
+native plus octanol-transfer surrogate,4,7a,-3.5272068537678525,0
+native plus octanol-transfer surrogate,4,1a,-3.8084514857611476,0
+native plus octanol-transfer surrogate,4,3b,-3.9974372463782997,0
+native plus octanol-transfer surrogate,4,5,-3.386184726248164,0
+native plus octanol-transfer surrogate,6a,1b,-0.3551010016837993,0
+native plus octanol-transfer surrogate,6a,3a,1.349036932872555,1
+native plus octanol-transfer surrogate,6a,1d,0.503974252552243,1
+native plus octanol-transfer surrogate,6a,7a,0.7897758691127109,1
+native plus octanol-transfer surrogate,6a,1a,0.26053123711941595,1
+native plus octanol-transfer surrogate,6a,3b,0.4755454765022642,1
+native plus octanol-transfer surrogate,6a,5,0.5462979966323991,1
+native plus octanol-transfer surrogate,6e,1d,-0.003657986250974521,0
+native plus octanol-transfer surrogate,6e,7a,0.06864363030949341,1
+native plus octanol-transfer surrogate,6e,1a,-0.4921010016838012,0
+native plus octanol-transfer surrogate,6e,3b,-0.012586762300954013,0
+native plus octanol-transfer surrogate,6e,5,-0.013834242170818634,0
+native plus octanol-transfer surrogate,6b,7a,0.34563793455635433,1
+native plus octanol-transfer surrogate,6b,1a,-0.1316066974369403,0
+native plus octanol-transfer surrogate,6b,3b,-0.0550924580540928,0
+native plus octanol-transfer surrogate,6b,5,-0.05483993792395769,0
+native plus octanol-transfer surrogate,1c,1a,0.7229715879251896,1
+native plus octanol-transfer surrogate,1c,3b,0.7119858273080366,1
+native plus octanol-transfer surrogate,1c,5,0.7187383474381717,1
+native plus octanol-transfer surrogate,1b,1a,0.3111322388032155,1
+native plus octanol-transfer surrogate,1b,5,0.7463989983161987,1
+native plus octanol-transfer surrogate,3a,1a,-0.5510056957531386,0
+native plus octanol-transfer surrogate,3a,5,-0.8887389362401563,0
+native plus octanol-transfer surrogate,1d,1a,-0.05794301543282665,0
+native plus octanol-transfer surrogate,1d,5,0.20232374408015597,1
+native plus octanol-transfer surrogate,7a,1a,-0.6657446319932945,0

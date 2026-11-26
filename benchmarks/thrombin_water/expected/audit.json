@@ -1,0 +1,26 @@
+{
+  "pools": 72,
+  "candidate_poses": 864,
+  "cocrystal_candidate_poses": 360,
+  "largest_RMSD_difference_A": 3.552713678800501e-15,
+  "largest_distance_difference_A": 3.9968028886505635e-15,
+  "largest_score_difference_kcal": 7.993605777301127e-15,
+  "top1_all": {
+    "native": 14,
+    "exclusion": 12
+  },
+  "top1_noncognate": {
+    "native": 11,
+    "exclusion": 9
+  },
+  "unique_Kd_pairs": {
+    "native": [
+      11,
+      37
+    ],
+    "exclusion": [
+      10,
+      37
+    ]
+  }
+}

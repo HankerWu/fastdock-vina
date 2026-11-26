@@ -1,0 +1,91 @@
+{
+  "summary": [
+    {
+      "kind": "all",
+      "method": "base",
+      "n": 30,
+      "cap": "50000",
+      "top": 11,
+      "oracle": 17,
+      "total_wall": 34.909487963,
+      "total_cpu": 34.58476700000002,
+      "median_wall": 1.168780212
+    },
+    {
+      "kind": "all",
+      "method": "soft",
+      "n": 30,
+      "cap": "50000",
+      "top": 17,
+      "oracle": 23,
+      "total_wall": 40.855532628,
+      "total_cpu": 40.51332699999994,
+      "median_wall": 1.3192823325
+    },
+    {
+      "kind": "all",
+      "method": "hard_equal",
+      "n": 30,
+      "cap": "62000",
+      "top": 13,
+      "oracle": 18,
+      "total_wall": 41.759549096,
+      "total_cpu": 41.32431100000003,
+      "median_wall": 1.3989465635
+    },
+    {
+      "kind": "cross",
+      "method": "base",
+      "n": 26,
+      "cap": "50000",
+      "top": 9,
+      "oracle": 15,
+      "total_wall": 30.129203734,
+      "total_cpu": 29.87471800000003,
+      "median_wall": 1.168780212
+    },
+    {
+      "kind": "cross",
+      "method": "soft",
+      "n": 26,
+      "cap": "50000",
+      "top": 15,
+      "oracle": 20,
+      "total_wall": 35.648703819,
+      "total_cpu": 35.332488999999946,
+      "median_wall": 1.3241451995
+    },
+    {
+      "kind": "cross",
+      "method": "hard_equal",
+      "n": 26,
+      "cap": "62000",
+      "top": 11,
+      "oracle": 16,
+      "total_wall": 36.481784593,
+      "total_cpu": 36.08064800000003,
+      "median_wall": 1.3989465635
+    }
+  ],
+  "switched": [
+    {
+      "hard_policy": "base",
+      "soft_gains": 8,
+      "soft_losses": 2,
+      "n": 26,
+      "ratio_p25": 0.7791571198871865,
+      "ratio_median": 0.8387756162281914,
+      "ratio_p75": 0.9191113279874557
+    },
+    {
+      "hard_policy": "hard_equal",
+      "soft_gains": 8,
+      "soft_losses": 4,
+      "n": 26,
+      "ratio_p25": 0.9867452106508984,
+      "ratio_median": 1.020130943809105,
+      "ratio_p75": 1.0704648002046875
+    }
+  ],
+  "previous_sha256_equal": 60
+}

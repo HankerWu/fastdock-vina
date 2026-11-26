@@ -1595,6 +1595,10 @@ void Vina::global_search(const int exhaustiveness, const int n_poses, const doub
 	    rerank || m_armijo_refinement || polar_rank || burial_rank || net_polar_rank ||
 	    !m_pose_template_path.empty() || archive_enabled))
 		throw vina_runtime_error("mixed_cutoff_search requires native Late Vina refinement and ranking, a rigid receptor, exhaustiveness >= 2, and cutoff > 1 Angstrom");
+	if (m_soft_receptor_search && (!late_selection || exhaustiveness < 2 || !m_use_explicit_receptor ||
+	    m_sf_choice != SF_VINA || m_no_refine || m_mixed_cutoff_search || m_scoring_function->smooth_cutoff() ||
+	    !m_search_anchor_path.empty() || !m_search_amide_path.empty()))
+		throw vina_runtime_error("soft_receptor_search requires native Late Vina with no other search grid, a rigid receptor and at least two trajectories");
 	const bool split_anchor = m_anchor_trajectories != anchor_trajectories::all;
 	if (split_anchor && exhaustiveness < 2)
 		throw vina_runtime_error("search_anchor_trajectories even/odd requires exhaustiveness >= 2");
@@ -1700,6 +1704,7 @@ void Vina::global_search(const int exhaustiveness, const int n_poses, const doub
 	doing(sstm.str(), m_verbosity, 0);
 	if (m_sf_choice == SF_VINA || m_sf_choice == SF_VINARDO) {
 		boost::optional<precalculate_byatom> smooth_pairs;
+		boost::optional<cache> soft_receptor_grid;
 		boost::optional<search_landscape> alternate;
 		const igrid& guided_grid = anchor_grid ? static_cast<const igrid&>(*anchor_grid) : unanchored_grid;
 		const bool guide_even_only = m_anchor_trajectories == anchor_trajectories::even;
@@ -1713,6 +1718,18 @@ void Vina::global_search(const int exhaustiveness, const int n_poses, const doub
 			if (m_verbosity > 0 || m_search_counters)
 				std::cout << "\nMixed cutoff search: native=" << (exhaustiveness + 1) / 2
 				          << " smooth=" << exhaustiveness / 2 << " smooth_on_even_1based=true final=native_late\n";
+		} else if (m_soft_receptor_search) {
+			// Relax receptor contacts only. Intraligand sterics and the final
+			// explicit receptor energy must retain the original potential.
+			flv weights = m_weights;
+			weights[2] *= 0.5;
+			ScoringFunction soft(SF_VINA, weights, m_scoring_function->get_cutoff());
+			soft_receptor_grid.emplace(m_grid.gd());
+			const auto types = soft_receptor_grid->missing_map_types(m_model.get_movable_atom_types(atom_type::XS));
+			m_non_cache.populate_maps_from(*soft_receptor_grid, m_receptor, types, soft);
+			alternate.emplace(search_landscape{m_precalculated_byatom, *soft_receptor_grid});
+			if (m_verbosity > 0 || m_search_counters)
+				std::cout << "\nSoft receptor search: even_1based=true repulsion_scale=0.5 stage=search_grid_only\n";
 		} else if (split_anchor) {
 			alternate.emplace(search_landscape{m_precalculated_byatom, guide_even_only ? guided_grid : unanchored_grid});
 		}

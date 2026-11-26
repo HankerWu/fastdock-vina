@@ -1,0 +1,15 @@
+{
+  "native_mixed_commit": "4de709a6312c6424b0a78ec856f419c17c08b619",
+  "native_mixed_binary_sha256": "2de692dcfc068b8514e76b3b5b4719c86fbfbaf73122518a0ae6c6ec63a5adae",
+  "soft_binary_sha256": "c26d269353976b0cc1909d7f9398363ec26e6c83750b7cacd1207ddfbde167a4",
+  "soft_source": "Parent project soft_receptor_search implementation, experimental flag with standard final refinement.",
+  "libraries": {
+    "rdkit": "2026.9.2",
+    "meeko": "0.8.0",
+    "numpy": "2.3.5",
+    "openmm": "8.6.1",
+    "pdbfixer": "1.12.0",
+    "gemmi": "0.7.5",
+    "xlrd": "2.0.1"
+  }
+}

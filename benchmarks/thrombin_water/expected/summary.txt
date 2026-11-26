@@ -1,0 +1,17 @@
+geometry [('2ZDA', 2.69, 1.01, 0.15), ('2ZC9', 0.26, 5.01, 0.17), ('2ZF0', 0.65, 4.95, 0.19), ('2ZDV', 0.63, 5.17, 0.13), ('2ZFF', 2.21, 0.7, 0.09)]
+native all pose 14 30 oracle 19 pairs 11 37
+native noncognate pose 11 26 oracle 16 pairs 0 0
+native 3D49 pose 5 10 oracle 8 pairs 12 37
+native 2ZFF pose 5 10 oracle 6 pairs 18 37
+native 2ZC9 pose 4 10 oracle 5 pairs 10 37
+exclusion all pose 12 30 oracle 19 pairs 10 37
+exclusion noncognate pose 9 26 oracle 16 pairs 0 0
+exclusion 3D49 pose 5 10 oracle 8 pairs 16 37
+exclusion 2ZFF pose 3 10 oracle 6 pairs 21 37
+exclusion 2ZC9 pose 4 10 oracle 5 pairs 7 37
+cLogP [(26, 37), (26, 26)]
+exclusion [(10, 37), (2, 26)]
+heavy atoms [(31.0, 37), (20.0, 26)]
+mass [(29, 37), (23, 26)]
+native [(11, 37), (1, 26)]
+native plus octanol-transfer surrogate [(14, 37), (14, 26)]

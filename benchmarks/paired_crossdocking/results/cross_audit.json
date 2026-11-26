@@ -1,0 +1,183 @@
+{
+  "pools": 180,
+  "model_counts": {
+    "3000": 1069,
+    "12000": 710
+  },
+  "largest_RMSD_difference_A": 1.9095836023552692e-14,
+  "largest_CA_alignment_difference_A": 9.773302692056023e-15,
+  "identical_odd_trajectory_counters": 120,
+  "changed_even_trajectory_counters": 120,
+  "summary": [
+    {
+      "budget": 3000,
+      "arm": "native",
+      "kind": "cognate",
+      "cells": 18,
+      "top": 3,
+      "pool": 5,
+      "relative_stereo_top": 3,
+      "relative_stereo_pool": 5
+    },
+    {
+      "budget": 3000,
+      "arm": "native",
+      "kind": "cross",
+      "cells": 18,
+      "top": 5,
+      "pool": 7,
+      "relative_stereo_top": 5,
+      "relative_stereo_pool": 7
+    },
+    {
+      "budget": 3000,
+      "arm": "soft",
+      "kind": "cognate",
+      "cells": 18,
+      "top": 3,
+      "pool": 5,
+      "relative_stereo_top": 3,
+      "relative_stereo_pool": 5
+    },
+    {
+      "budget": 3000,
+      "arm": "soft",
+      "kind": "cross",
+      "cells": 18,
+      "top": 6,
+      "pool": 8,
+      "relative_stereo_top": 6,
+      "relative_stereo_pool": 8
+    },
+    {
+      "budget": 3000,
+      "arm": "mixed",
+      "kind": "cognate",
+      "cells": 18,
+      "top": 2,
+      "pool": 4,
+      "relative_stereo_top": 2,
+      "relative_stereo_pool": 4
+    },
+    {
+      "budget": 3000,
+      "arm": "mixed",
+      "kind": "cross",
+      "cells": 18,
+      "top": 6,
+      "pool": 9,
+      "relative_stereo_top": 6,
+      "relative_stereo_pool": 9
+    },
+    {
+      "budget": 12000,
+      "arm": "native",
+      "kind": "cognate",
+      "cells": 12,
+      "top": 5,
+      "pool": 6,
+      "relative_stereo_top": 5,
+      "relative_stereo_pool": 6
+    },
+    {
+      "budget": 12000,
+      "arm": "native",
+      "kind": "cross",
+      "cells": 12,
+      "top": 5,
+      "pool": 6,
+      "relative_stereo_top": 5,
+      "relative_stereo_pool": 6
+    },
+    {
+      "budget": 12000,
+      "arm": "soft",
+      "kind": "cognate",
+      "cells": 12,
+      "top": 7,
+      "pool": 8,
+      "relative_stereo_top": 8,
+      "relative_stereo_pool": 8
+    },
+    {
+      "budget": 12000,
+      "arm": "soft",
+      "kind": "cross",
+      "cells": 12,
+      "top": 4,
+      "pool": 5,
+      "relative_stereo_top": 4,
+      "relative_stereo_pool": 5
+    },
+    {
+      "budget": 12000,
+      "arm": "mixed",
+      "kind": "cognate",
+      "cells": 12,
+      "top": 5,
+      "pool": 6,
+      "relative_stereo_top": 5,
+      "relative_stereo_pool": 6
+    },
+    {
+      "budget": 12000,
+      "arm": "mixed",
+      "kind": "cross",
+      "cells": 12,
+      "top": 4,
+      "pool": 7,
+      "relative_stereo_top": 4,
+      "relative_stereo_pool": 7
+    }
+  ],
+  "costs": [
+    {
+      "budget": 3000,
+      "arm": "native",
+      "search_evals": 437025,
+      "explicit_evals": 49536,
+      "late_prescore": 1038,
+      "explicit_calls": 1053
+    },
+    {
+      "budget": 3000,
+      "arm": "soft",
+      "search_evals": 438153,
+      "explicit_evals": 52089,
+      "late_prescore": 1040,
+      "explicit_calls": 1089
+    },
+    {
+      "budget": 3000,
+      "arm": "mixed",
+      "search_evals": 438118,
+      "explicit_evals": 48157,
+      "late_prescore": 1018,
+      "explicit_calls": 1042
+    },
+    {
+      "budget": 12000,
+      "arm": "native",
+      "search_evals": 1155226,
+      "explicit_evals": 36531,
+      "late_prescore": 845,
+      "explicit_calls": 805
+    },
+    {
+      "budget": 12000,
+      "arm": "soft",
+      "search_evals": 1155018,
+      "explicit_evals": 36042,
+      "late_prescore": 861,
+      "explicit_calls": 809
+    },
+    {
+      "budget": 12000,
+      "arm": "mixed",
+      "search_evals": 1155049,
+      "explicit_evals": 37925,
+      "late_prescore": 862,
+      "explicit_calls": 835
+    }
+  ]
+}

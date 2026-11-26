@@ -1,0 +1,31 @@
+{
+  "logical_cpu": 8,
+  "original_affinity": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8
+  ],
+  "binary_hash": "c26d269353976b0cc1909d7f9398363ec26e6c83750b7cacd1207ddfbde167a4",
+  "wall": {
+    "extra_cap": 12028.870277413671,
+    "estimated_cap": 62000,
+    "hard": 20.111125438,
+    "soft": 24.346776204,
+    "probe": 28.914218888,
+    "median_paired_overhead": 0.22419538368268466
+  },
+  "cpu": {
+    "extra_cap": 12080.788873218513,
+    "estimated_cap": 62000,
+    "hard": 19.926277000000002,
+    "soft": 24.131790000000002,
+    "probe": 28.62917099999999,
+    "median_paired_overhead": 0.21996040478683387
+  }
+}

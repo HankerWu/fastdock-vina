@@ -1,0 +1,11 @@
+{
+  "data/ptp1b/00_data/ligands.yml": "3cbb66d8ffd69e5b13d45a690ef956c2f8425e2cbf4e09b1fbd27f60fe821cf3",
+  "data/ptp1b/02_ligands/ligands.sdf": "060d337e32957ff864e36958825fb2445ee94a7ff7195de3b472ad817c46edaa",
+  "data/ptp1b/01_protein/crd/protein.pdb": "bfa0f9204e96aa463b80946b788c4153cd24701291007eb77638a16fd156634e",
+  "data/mcl1/00_data/ligands.yml": "4e58c7658a1b12458e8b5b64ce22fcc85cf1c3ad231cad1d71b6bd81bdc0c5a4",
+  "data/mcl1/02_ligands/ligands.sdf": "7e1c3fa9dc5e4f31827ccd4e6e61be5f8a4f34c1d0e401228206ea552007f868",
+  "data/mcl1/01_protein/crd/protein.pdb": "f80ff9dd93a5d9dd6e90091e9631a8ce7fe0dc931e16543e22c1f92009660306",
+  "data/tyk2/00_data/ligands.yml": "8a74c0eb54aa406cb95dbc490b341287242d8d4b7152ff61c20eb1f8aaa6923e",
+  "data/tyk2/02_ligands/ligands.sdf": "410f683fa990bb8dc094521746d3aaa0c5b1134f716d9c35d45d3352db1ddffd",
+  "data/tyk2/01_protein/crd/protein.pdb": "9090684f4bdae90afbe5f2698a14c778396c024c19ceb6333de4808d9e29fae6"
+}

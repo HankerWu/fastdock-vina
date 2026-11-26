@@ -1,0 +1,54 @@
+{
+  "table1.xls": {
+    "url": "https://static-content.springer.com/esm/art%3A10.1038%2Fnbt.1990/MediaObjects/41587_2011_BFnbt1990_MOESM3_ESM.xls",
+    "sha256": "69c2957c1fa1b5ba032721031af2fffe1eb896acd0723829e4500da8f75779c9"
+  },
+  "table4.xls": {
+    "url": "https://static-content.springer.com/esm/art%3A10.1038%2Fnbt.1990/MediaObjects/41587_2011_BFnbt1990_MOESM5_ESM.xls",
+    "sha256": "e47821b2e959ff22aa6d1613b236a63fb530f0da19cfa8d45408598cf27498d7"
+  },
+  "ligands_iso.txt": {
+    "url": "https://raw.githubusercontent.com/hkmztrk/DeepDTA/c7f9e7b48cb547b98bf9963388af8ef8126c1847/data/davis/ligands_iso.txt",
+    "sha256": "58b3cd168ed12962eb856e4e4e5dab1abbd42d6c0912eed2b9987bf578c7fafd"
+  },
+  "proteins.txt": {
+    "url": "https://raw.githubusercontent.com/hkmztrk/DeepDTA/c7f9e7b48cb547b98bf9963388af8ef8126c1847/data/davis/proteins.txt",
+    "sha256": "187cedeee10cd3b58af915a2861a5ed0c4ff42a2d728f4dea5e0b47e3d75b291"
+  },
+  "drug-target_interaction_affinities_Kd__Davis_et_al.2011v1.txt": {
+    "url": "https://raw.githubusercontent.com/hkmztrk/DeepDTA/c7f9e7b48cb547b98bf9963388af8ef8126c1847/data/davis/drug-target_interaction_affinities_Kd__Davis_et_al.2011v1.txt",
+    "sha256": "e2c3d003d49aff61f70be24feafd8d084b0df9404d919338088855828e252d88"
+  },
+  "1HCK.pdb": {
+    "url": "https://files.rcsb.org/download/1HCK.pdb",
+    "sha256": "69f780603cd713311a23b744ea79b3af207d8eecd782d7a5b4bcf76ae6a979cc"
+  },
+  "1G5S.pdb": {
+    "url": "https://files.rcsb.org/download/1G5S.pdb",
+    "sha256": "5af5c0c0967cf21bcd309dbd3d99f46f76a2cbf404c682c470507f617ddb3b0c"
+  },
+  "1Q3D.pdb": {
+    "url": "https://files.rcsb.org/download/1Q3D.pdb",
+    "sha256": "7a753fcb40282c74285027a9b7d1bf1eaf0424889533f281eca54e71db9ca797"
+  },
+  "1Q5K.pdb": {
+    "url": "https://files.rcsb.org/download/1Q5K.pdb",
+    "sha256": "0b218a51c46695fabc2c9897f064d5b4e4ce2654461a7c1c34795523593329c9"
+  },
+  "1Y57.pdb": {
+    "url": "https://files.rcsb.org/download/1Y57.pdb",
+    "sha256": "4d7ddb79b9b163cb149d4b5d4d97792baafcea15d6db7a4214cc082520089fed"
+  },
+  "2SRC.pdb": {
+    "url": "https://files.rcsb.org/download/2SRC.pdb",
+    "sha256": "f588af1387a8fb69ce042ffeb2c89828ff78d601ded5d3292e36340c9b0ae150"
+  },
+  "STU.cif": {
+    "url": "https://files.rcsb.org/ligands/download/STU.cif",
+    "sha256": "97af6d3dd9f98e5a27d218b19d770d9a11d9467094a290f85b6412b6eb5d4339"
+  },
+  "identities.json": {
+    "url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/11338033,3025986,126565,5287969,176167,216239,44259,3062316,176870,123631,5328940,5329102,11984591/property/Title,InChIKey/JSON",
+    "sha256": "cfb824d7f0b4ce3c0e1793cc6e3cb40a862c2a60863e62b694692ffd11bf7332"
+  }
+}

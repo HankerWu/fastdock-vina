@@ -1,0 +1,19 @@
+target,assay,endpoint,arm,n_paired_ligands,n_seeds,pairs,correct,ties
+mcl1,10.1021/jm301448p table 3,ki,native,25,3,218,108,0
+mcl1,10.1021/jm301448p table 3,ki,soft,25,3,218,85,0
+mcl1,10.1021/jm301448p table 3,ki,mixed,25,3,218,103,0
+ptp1b,10.1021/jm0702478 table 1,ki,native,10,3,22,11,0
+ptp1b,10.1021/jm0702478 table 1,ki,soft,10,3,22,17,0
+ptp1b,10.1021/jm0702478 table 1,ki,mixed,10,3,22,17,0
+ptp1b,10.1021/jm0702478 table 2,ki,native,4,3,1,0,0
+ptp1b,10.1021/jm0702478 table 2,ki,soft,4,3,1,0,0
+ptp1b,10.1021/jm0702478 table 2,ki,mixed,4,3,1,0,0
+ptp1b,10.1021/jm0702478 table 3,ki,native,8,3,25,10,0
+ptp1b,10.1021/jm0702478 table 3,ki,soft,8,3,25,11,0
+ptp1b,10.1021/jm0702478 table 3,ki,mixed,8,3,25,10,0
+tyk2,10.1016/j.ejmech.2013.03.070 table 4,ki,native,10,3,28,8,0
+tyk2,10.1016/j.ejmech.2013.03.070 table 4,ki,soft,10,3,28,14,0
+tyk2,10.1016/j.ejmech.2013.03.070 table 4,ki,mixed,10,3,28,16,0
+tyk2,10.1021/jm400266t table 2,ki,native,3,3,1,0,0
+tyk2,10.1021/jm400266t table 2,ki,soft,3,3,1,0,0
+tyk2,10.1021/jm400266t table 2,ki,mixed,3,3,1,0,0
