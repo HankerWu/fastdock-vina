@@ -1,0 +1,16 @@
+target,arm,pose_cells,top_hits,credit,total,unique_credit,unique_pairs
+brd4,native,28,3,10.0,30,1.0,5
+brd4,no_divisor,28,3,20.0,30,3.0,5
+brd4,rotor,28,3,11.0,30,2.0,5
+brd4,rotor_reselect,28,2,12.0,30,2.0,5
+brd4,uniform_three,28,3,8.0,30,1.0,5
+hcaii,native,20,0,14.0,28,4.0,7
+hcaii,no_divisor,20,0,13.0,28,4.0,7
+hcaii,rotor,20,0,11.0,28,2.0,7
+hcaii,rotor_reselect,20,0,14.0,28,5.0,7
+hcaii,uniform_three,20,0,13.0,28,4.0,7
+t4l,native,36,28,50.0,76,12.0,19
+t4l,no_divisor,36,28,60.0,76,17.0,19
+t4l,rotor,36,28,14.0,76,3.0,19
+t4l,rotor_reselect,36,28,14.0,76,3.0,19
+t4l,uniform_three,36,28,24.0,76,8.0,19

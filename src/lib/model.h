@@ -182,6 +182,7 @@ private:
 	friend struct precalculate_byatom;
 	friend struct cache;
 	friend class anchored_search_grid;
+	friend class rotor_partition;
 	friend struct non_cache;
 	friend struct ad4cache;
 	friend struct szv_grid;
