@@ -1,0 +1,35 @@
+name: Geometry metric public structure panel
+on:
+  push:
+    branches: [fastdock-vina-pro]
+    paths:
+      - 'benchmarks/geometry_metric/panel.py'
+      - '.github/workflows/geometry-metric-panel.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  panel:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      OPENMM_CPU_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build current engine
+        run: |
+          sudo apt-get update && sudo apt-get install -y libboost-system-dev libboost-thread-dev libboost-serialization-dev libboost-filesystem-dev libboost-program-options-dev
+          python3 tools/build.py --output-dir build/geometry --jobs 2
+      - name: Prepare Python dependencies
+        run: |
+          python3 -m venv .venv
+          .venv/bin/python -m pip install rdkit==2026.9.2 meeko==0.8.0 gemmi==0.7.5 openmm==8.6.1 pdbfixer==1.12.0 scipy
+      - name: Run paired public structures
+        run: .venv/bin/python benchmarks/geometry_metric/panel.py build/geometry-panel build/geometry/vina
+      - name: Archive paired logs and inputs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: geometry-public-panel
+          path: build/geometry-panel/
