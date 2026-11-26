@@ -1,0 +1,11 @@
+pdb,target,nearest_mate_A,close_images,mate_sites_le4A,mate_symmetry,mate_shift,mate_atom,ligand_atom
+5S8I,PHIP,4.59731928009895,[],0,"-x+1/2,y+1/2,-z","-1,0,1", CE  LYS A1399 , C01D2LY A1501 
+7F5D,BPTF,6.246669539798209,[],0,"x,y,z","0,0,1", NZ  LYS A 129 , C11 EUO A 201 
+7LT0,HSP90AA1,6.1320131278398256,[],0,"-x,-y,z","-1,0,0", OH  TYR A  61 , C12 ONJ A 301 
+7JGW,BCL2L1,3.4660337923915256,"[{""symmetry"":""x+1/2,-y+1/2,-z"",""shift"":[0,-1,0],""chain"":""A"",""assemblies"":[],""distance"":3.4660337923915256,""sites"":2},{""symmetry"":""x+1/2,y+1/2,z"",""shift"":[0,0,0],""chain"":""A"",""assemblies"":[],""distance"":3.6056060863605146,""sites"":4},{""symmetry"":""-x,y,-z+1/2"",""shift"":[0,0,0],""chain"":""A"",""assemblies"":[],""distance"":3.7736561846569954,""sites"":1}]",7,"x+1/2,-y+1/2,-z","0,-1,0", CD  PRO A  -3 , C3  V9S A 301 
+7BLA,BAZ2A,3.214872548018039,"[{""symmetry"":""-x+1/2,-y,z+1/2"",""shift"":[-1,0,0],""chain"":""A"",""assemblies"":[],""distance"":3.214872548018039,""sites"":9}]",9,"-x+1/2,-y,z+1/2","-1,0,0", O   PHE A1897 , C32 WCS A1901 
+7MRH,BRDT,3.515596140375567,"[{""symmetry"":""-x,y+1/2,-z"",""shift"":[0,-1,-1],""chain"":""A"",""assemblies"":[],""distance"":3.515596140375567,""sites"":3}]",3,"-x,y+1/2,-z","0,-1,-1", CG2 VAL A  59 , C12 ZMJ A 201 
+7LZQ,BCL6,2.9388583926647174,"[{""symmetry"":""-x,y,-z"",""shift"":[-2,0,-1],""chain"":""A"",""assemblies"":[],""distance"":2.9388583926647174,""sites"":7},{""symmetry"":""-x,y,-z"",""shift"":[-1,0,-1],""chain"":""A"",""assemblies"":[""1""],""distance"":3.4955781435126845,""sites"":10}]",17,"-x,y,-z","-2,0,-1", N   MET A   1 , CAJ YJV A 201 
+7MS7,USP5,3.40562922056235,"[{""symmetry"":""-x,y,-z"",""shift"":[0,0,-1],""chain"":""B"",""assemblies"":[],""distance"":3.40562922056235,""sites"":7}]",7,"-x,y,-z","0,0,-1", O   GLY B 226 , C10 ZQ1 A 302 
+7RWO,BPTF,4.470226504328387,[],0,"-x,y+1/2,-z","1,-1,0", CD  LYS A2805 , C13 7WN A3001 
+7QK0,BCL6,3.391131391056909,"[{""symmetry"":""x,x-y,-z+1/6"",""shift"":[0,1,0],""chain"":""A"",""assemblies"":[""1""],""distance"":3.391131391056909,""sites"":16}]",16,"x,x-y,-z+1/6","0,1,0", CB  ASP A  17 , C4  EBL A 201 

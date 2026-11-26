@@ -51,7 +51,12 @@ def prepare(work, pdb, ligand, target):
     instances = sorted({l[21:27] for l in ligands})
     # Deterministically select the lexicographically first deposited instance.
     instance = instances[0]
-    obs = np.array([base.coords(l) for l in ligands if l[21:27] == instance and l[16] in " A"])
+    instance_atoms = [l for l in ligands if l[21:27] == instance]
+    # Named conformers may start at B, C or D. Match dep_records and
+    # include blank atoms shared by every named conformer.
+    labels = sorted({l[16] for l in instance_atoms} - {" "})
+    first_alt = labels[0] if labels else " "
+    obs = np.array([base.coords(l) for l in instance_atoms if l[16] in (" ", first_alt)])
     protein = [l for l in lines if l.startswith("ATOM  ") and l[76:78].strip() not in ("H", "D")]
     chains = sorted({l[21] for l in protein})
     distance = lambda l: float(np.linalg.norm(obs - np.asarray(base.coords(l)), axis=1).min())

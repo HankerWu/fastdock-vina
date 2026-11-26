@@ -1,0 +1,7 @@
+{
+  "calibration_seed": 74317,
+  "cap": 122000,
+  "official_cpu_s_at_low": 18.36,
+  "native_cpu_s_at_low": 3.31,
+  "native_cpu_s_at_high": 14.8
+}

@@ -1,0 +1,12 @@
+--- a/src/lib/model.cpp
++++ b/src/lib/model.cpp
+@@ -762,6 +762,9 @@
+ 		axis[i] = 1; // quaternion_increment applies rotations in the lab frame
+ 		diagonal[3+i] = moments.about_axis(zero_vec, axis);
+ 	}
++	// Isotropic control for the three world-frame rotational degrees of freedom.
++	const fl mean_rotation = (diagonal[3] + diagonal[4] + diagonal[5]) / 3;
++	std::fill(diagonal.begin() + 3, diagonal.begin() + 6, mean_rotation);
+ 	for (sz k = 3; k < diagonal.size(); ++k) {
+ 		const fl g = diagonal[k] / moments.count;
+ 		VINA_CHECK(std::isfinite(g));

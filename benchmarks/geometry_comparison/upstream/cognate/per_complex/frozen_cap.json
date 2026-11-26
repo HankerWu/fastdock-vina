@@ -1,0 +1,92 @@
+[
+  {
+    "query": "5S8I",
+    "receiver": "5S8I",
+    "calibration_seed": 74317,
+    "cap": 711000,
+    "official_cpu_s_at_low": 1.79,
+    "native_cpu_s_at_low": 0.21,
+    "native_cpu_s_at_high": 0.4
+  },
+  {
+    "query": "7F5D",
+    "receiver": "7F5D",
+    "calibration_seed": 74317,
+    "cap": 304000,
+    "official_cpu_s_at_low": 2.08,
+    "native_cpu_s_at_low": 0.31,
+    "native_cpu_s_at_high": 0.82
+  },
+  {
+    "query": "7LT0",
+    "receiver": "7LT0",
+    "calibration_seed": 74317,
+    "cap": 197000,
+    "official_cpu_s_at_low": 2.59,
+    "native_cpu_s_at_low": 0.52,
+    "native_cpu_s_at_high": 1.46
+  },
+  {
+    "query": "7JGW",
+    "receiver": "7JGW",
+    "calibration_seed": 74317,
+    "cap": 86000,
+    "official_cpu_s_at_low": 2.76,
+    "native_cpu_s_at_low": 0.49,
+    "native_cpu_s_at_high": 3.05
+  },
+  {
+    "query": "7BLA",
+    "receiver": "7BLA",
+    "calibration_seed": 74317,
+    "cap": 90000,
+    "official_cpu_s_at_low": 1.86,
+    "native_cpu_s_at_low": 0.37,
+    "native_cpu_s_at_high": 1.98
+  },
+  {
+    "query": "7MRH",
+    "receiver": "7MRH",
+    "calibration_seed": 74317,
+    "cap": 182000,
+    "official_cpu_s_at_low": 1.88,
+    "native_cpu_s_at_low": 0.26,
+    "native_cpu_s_at_high": 1.06
+  },
+  {
+    "query": "7LZQ",
+    "receiver": "7LZQ",
+    "calibration_seed": 74317,
+    "cap": 88000,
+    "official_cpu_s_at_low": 1.22,
+    "native_cpu_s_at_low": 0.22,
+    "native_cpu_s_at_high": 1.32
+  },
+  {
+    "query": "7MS7",
+    "receiver": "7MS7",
+    "calibration_seed": 74317,
+    "cap": 80000,
+    "official_cpu_s_at_low": 1.51,
+    "native_cpu_s_at_low": 0.31,
+    "native_cpu_s_at_high": 1.8
+  },
+  {
+    "query": "7RWO",
+    "receiver": "7RWO",
+    "calibration_seed": 74317,
+    "cap": 119000,
+    "official_cpu_s_at_low": 1.01,
+    "native_cpu_s_at_low": 0.26,
+    "native_cpu_s_at_high": 0.85
+  },
+  {
+    "query": "7QK0",
+    "receiver": "7QK0",
+    "calibration_seed": 74317,
+    "cap": 76000,
+    "official_cpu_s_at_low": 1.66,
+    "native_cpu_s_at_low": 0.36,
+    "native_cpu_s_at_high": 2.06
+  }
+]

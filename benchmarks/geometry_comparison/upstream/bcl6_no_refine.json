@@ -1,0 +1,22 @@
+[
+  {
+    "query": "7QK0",
+    "seed": 85231,
+    "official_no_refine_sha256": "64a777554f41218b35fe7322f5596b55a2e47e8894cc9c9ed0fcd681a8f280fa",
+    "branch_no_refine_sha256": "64a777554f41218b35fe7322f5596b55a2e47e8894cc9c9ed0fcd681a8f280fa",
+    "official_explicit_top1_A": 9.444442913553367,
+    "official_explicit_top_score": -3.701,
+    "native_explicit_top1_A": 9.48336862201679,
+    "native_explicit_top_score": -3.697
+  },
+  {
+    "query": "7QK0",
+    "seed": 85237,
+    "official_no_refine_sha256": "a37d54e1b046c82958b17a1bc98128ccb5f9b80bc356c453b02570ee58e15271",
+    "branch_no_refine_sha256": "a37d54e1b046c82958b17a1bc98128ccb5f9b80bc356c453b02570ee58e15271",
+    "official_explicit_top1_A": 7.062254901196479,
+    "official_explicit_top_score": -4.056,
+    "native_explicit_top1_A": 7.091994665967063,
+    "native_explicit_top_score": -4.129
+  }
+]

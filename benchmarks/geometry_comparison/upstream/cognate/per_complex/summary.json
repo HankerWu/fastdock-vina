@@ -1,0 +1,26 @@
+{
+  "official": {
+    "n": 20,
+    "top1": 2,
+    "top5": 3,
+    "oracle": 3,
+    "models": 180,
+    "cpu_s": 34.77
+  },
+  "native": {
+    "n": 20,
+    "top1": 2,
+    "top5": 8,
+    "oracle": 8,
+    "models": 180,
+    "cpu_s": 37.86
+  },
+  "geometry_analytic": {
+    "n": 20,
+    "top1": 2,
+    "top5": 8,
+    "oracle": 8,
+    "models": 177,
+    "cpu_s": 37.8
+  }
+}

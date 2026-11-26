@@ -1,0 +1,113 @@
+assay,compound,reason
+Davis-p38-alpha,176155,unspecified stereochemistry
+Davis-ALK,AZD-2171,outside verified identity dictionary
+Davis-ALK,BI-2536,outside verified identity dictionary
+Davis-ALK,BIBF-1120 (derivative),outside verified identity dictionary
+Davis-ALK,CI-1033,outside verified identity dictionary
+Davis-ALK,GSK-1838705A,outside verified identity dictionary
+Davis-ALK,INCB18424,outside verified identity dictionary
+Davis-ALK,PHA-665752,outside verified identity dictionary
+Davis-ALK,PP-242,outside verified identity dictionary
+Davis-ALK,Vandetanib,outside verified identity dictionary
+Davis-ALK,10113978,beyond first eight eligible IDs
+Davis-ALK,10138259,beyond first eight eligible IDs
+Davis-ALK,11409972,beyond first eight eligible IDs
+Davis-ALK,11427553,beyond first eight eligible IDs
+Davis-ALK,11485656,beyond first eight eligible IDs
+Davis-ALK,11626560,beyond first eight eligible IDs
+Davis-ALK,11984591,beyond first eight eligible IDs
+Davis-ALK,16038120,beyond first eight eligible IDs
+Davis-ALK,16722836,beyond first eight eligible IDs
+Davis-ALK,42642645,beyond first eight eligible IDs
+Davis-ALK,44551653,beyond first eight eligible IDs
+Davis-ALK,135398510,beyond first eight eligible IDs
+Davis-RET,AC220,outside verified identity dictionary
+Davis-RET,AMG-706,outside verified identity dictionary
+Davis-RET,AZD-2171,outside verified identity dictionary
+Davis-RET,BIBF-1120 (derivative),outside verified identity dictionary
+Davis-RET,BMS-540215,outside verified identity dictionary
+Davis-RET,CHIR-265/RAF-265,outside verified identity dictionary
+Davis-RET,CI-1033,outside verified identity dictionary
+Davis-RET,INCB18424,outside verified identity dictionary
+Davis-RET,9869779,unspecified stereochemistry
+Davis-RET,PHA-665752,outside verified identity dictionary
+Davis-RET,PP-242,outside verified identity dictionary
+Davis-RET,Vandetanib,outside verified identity dictionary
+Davis-RET,5328940,beyond first eight eligible IDs
+Davis-RET,5329102,beyond first eight eligible IDs
+Davis-RET,5494449,beyond first eight eligible IDs
+Davis-RET,6450551,beyond first eight eligible IDs
+Davis-RET,9829523,beyond first eight eligible IDs
+Davis-RET,10113978,beyond first eight eligible IDs
+Davis-RET,10138259,beyond first eight eligible IDs
+Davis-RET,11409972,beyond first eight eligible IDs
+Davis-RET,11427553,beyond first eight eligible IDs
+Davis-RET,11485656,beyond first eight eligible IDs
+Davis-RET,11984591,beyond first eight eligible IDs
+Davis-RET,16007391,beyond first eight eligible IDs
+Davis-RET,16038120,beyond first eight eligible IDs
+Davis-RET,16722836,beyond first eight eligible IDs
+Davis-RET,42642645,beyond first eight eligible IDs
+Davis-RET,44551653,beyond first eight eligible IDs
+Davis-RET,135398510,beyond first eight eligible IDs
+Davis-TNK2,BIBF-1120 (derivative),outside verified identity dictionary
+Davis-TNK2,HKI-272,outside verified identity dictionary
+Davis-TNK2,INCB18424,outside verified identity dictionary
+Davis-TNK2,9869779,unspecified stereochemistry
+Davis-TNK2,PLX-4720,outside verified identity dictionary
+Davis-TNK2,PP-242,outside verified identity dictionary
+Davis-TNK2,9829523,beyond first eight eligible IDs
+Davis-TNK2,10138259,beyond first eight eligible IDs
+Davis-TNK2,11427553,beyond first eight eligible IDs
+Davis-TNK2,11626560,beyond first eight eligible IDs
+Davis-TNK2,11984591,beyond first eight eligible IDs
+Davis-TNK2,16038120,beyond first eight eligible IDs
+Davis-TNK2,16722836,beyond first eight eligible IDs
+Davis-TNK2,42642645,beyond first eight eligible IDs
+Davis-TNK2,44551653,beyond first eight eligible IDs
+CHEMBL2015090,CHEMBL2011967,unspecified stereochemistry
+CHEMBL2015090,CHEMBL2011966,unspecified stereochemistry
+CHEMBL2015090,CHEMBL2011968,unspecified stereochemistry
+CHEMBL2015090,CHEMBL2011969,unspecified stereochemistry
+CHEMBL2015090,CHEMBL2011970,unspecified stereochemistry
+CHEMBL2015090,CHEMBL578410,unspecified stereochemistry
+CHEMBL2015090,CHEMBL2011971,unspecified stereochemistry
+CHEMBL2015090,CHEMBL2011972,unspecified stereochemistry
+CHEMBL2015090,CHEMBL2011973,unspecified stereochemistry
+CHEMBL2015090,CHEMBL2011974,unspecified stereochemistry
+CHEMBL2015090,CHEMBL2011975,unspecified stereochemistry
+CHEMBL2015090,CHEMBL2011976,unspecified stereochemistry
+CHEMBL2015090,CHEMBL2011977,unspecified stereochemistry
+CHEMBL2015090,CHEMBL2011978,unspecified stereochemistry
+CHEMBL2015090,CHEMBL2011979,unspecified stereochemistry
+CHEMBL2015090,CHEMBL2011980,unspecified stereochemistry
+CHEMBL2015090,CHEMBL2011985,unspecified stereochemistry
+CHEMBL2015090,CHEMBL2011986,unspecified stereochemistry
+CHEMBL2015090,CHEMBL2011987,unspecified stereochemistry
+CHEMBL2015090,CHEMBL2011988,unspecified stereochemistry
+CHEMBL2015090,CHEMBL2011989,unspecified stereochemistry
+CHEMBL2015090,CHEMBL2011990,unspecified stereochemistry
+CHEMBL2015090,CHEMBL2011991,unspecified stereochemistry
+CHEMBL2015090,CHEMBL2011992,unspecified stereochemistry
+CHEMBL2015090,CHEMBL2011993,unspecified stereochemistry
+CHEMBL2015090,CHEMBL2011994,unspecified stereochemistry
+CHEMBL2015090,CHEMBL2011995,unspecified stereochemistry
+CHEMBL2015090,CHEMBL2011996,nonexact Ki
+CHEMBL2015090,CHEMBL2011997,unspecified stereochemistry
+CHEMBL2015090,CHEMBL2011998,unspecified stereochemistry
+CHEMBL2015090,CHEMBL2011999,unspecified stereochemistry
+CHEMBL2015090,CHEMBL2012000,unspecified stereochemistry
+CHEMBL2015090,CHEMBL2012001,unspecified stereochemistry
+CHEMBL2015090,CHEMBL2012002,unspecified stereochemistry
+CHEMBL2015090,CHEMBL2012003,unspecified stereochemistry
+CHEMBL2015090,CHEMBL2012004,unspecified stereochemistry
+CHEMBL2015090,CHEMBL2012005,unspecified stereochemistry
+CHEMBL2015090,CHEMBL2012006,unspecified stereochemistry
+CHEMBL2015090,CHEMBL2012069,unspecified stereochemistry
+CHEMBL2015090,CHEMBL2011964,unspecified stereochemistry
+CHEMBL2155063,CHEMBL2151140,beyond first eight eligible IDs
+CHEMBL2155063,CHEMBL2151141,beyond first eight eligible IDs
+CHEMBL2155063,CHEMBL2151179,beyond first eight eligible IDs
+CHEMBL2155063,CHEMBL2151180,beyond first eight eligible IDs
+CHEMBL2155063,CHEMBL2151181,beyond first eight eligible IDs
+CHEMBL2155063,CHEMBL2151182,beyond first eight eligible IDs

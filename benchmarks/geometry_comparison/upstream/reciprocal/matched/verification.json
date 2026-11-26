@@ -1,0 +1,11 @@
+{
+  "runs": 60,
+  "models": 533,
+  "cells": 20,
+  "max_independent_rmsd_error_A": 3.219646771412954e-15,
+  "official_native_byte_identical": 1,
+  "official_native_equal_top1_rmsd_and_score": 1,
+  "geometry_fd_analytic_byte_identical": null,
+  "geometry_fd_analytic_max_abs": null,
+  "fork_hunt_and_second_evaluations_equal_in_all_cells": true
+}

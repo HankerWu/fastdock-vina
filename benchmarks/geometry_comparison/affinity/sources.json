@@ -1,0 +1,42 @@
+{
+  "7KP6.pdb": {
+    "source": "https://files.rcsb.org/download/7KP6.pdb",
+    "sha256": "44a20dd3d66b047f4f7c2a7842131e98f8109ca7b3d965e7c2acbed0c8de2604"
+  },
+  "CHEMBL2010674_Ki.json": {
+    "source": "https://www.ebi.ac.uk/chembl/api/data/activity.json?document_chembl_id=CHEMBL2010674&standard_type=Ki&limit=1000",
+    "sha256": "ab2abb1fcb1e8b88b01f8ec9c5ed7d8b56b6e5e5ce4563f15022ec936caad323"
+  },
+  "4GID.pdb": {
+    "source": "https://files.rcsb.org/download/4GID.pdb",
+    "sha256": "c9ab21894930ea0fbe29df1bc9b42459d1562cf254ba213152c789dad2ff4fe5"
+  },
+  "table1.xls": {
+    "source": "https://static-content.springer.com/esm/art%3A10.1038%2Fnbt.1990/MediaObjects/41587_2011_BFnbt1990_MOESM3_ESM.xls",
+    "sha256": "69c2957c1fa1b5ba032721031af2fffe1eb896acd0723829e4500da8f75779c9"
+  },
+  "7BTT.pdb": {
+    "source": "https://files.rcsb.org/download/7BTT.pdb",
+    "sha256": "1f033ccc2ff66c8b10983119c0b81242d1805ed105af2476b8dbd0ab365464ec"
+  },
+  "4DJW.pdb": {
+    "source": "https://files.rcsb.org/download/4DJW.pdb",
+    "sha256": "38c3762d303aa60be8af354897dd15e1ef6fc7cf1d9d1c6e057bed3af5445f0d"
+  },
+  "ligands_iso.txt": {
+    "source": "https://raw.githubusercontent.com/hkmztrk/DeepDTA/c7f9e7b48cb547b98bf9963388af8ef8126c1847/data/davis/ligands_iso.txt",
+    "sha256": "58b3cd168ed12962eb856e4e4e5dab1abbd42d6c0912eed2b9987bf578c7fafd"
+  },
+  "table4.xls": {
+    "source": "https://static-content.springer.com/esm/art%3A10.1038%2Fnbt.1990/MediaObjects/41587_2011_BFnbt1990_MOESM5_ESM.xls",
+    "sha256": "e47821b2e959ff22aa6d1613b236a63fb530f0da19cfa8d45408598cf27498d7"
+  },
+  "7DUA.pdb": {
+    "source": "https://files.rcsb.org/download/7DUA.pdb",
+    "sha256": "9930cbbb0109bdc91227f40434dae7ddd6a5c2a911562b793fe906bac385564e"
+  },
+  "CHEMBL2150878_Ki.json": {
+    "source": "https://www.ebi.ac.uk/chembl/api/data/activity.json?document_chembl_id=CHEMBL2150878&standard_type=Ki&limit=1000",
+    "sha256": "ce5cb590baa67fbd239b489f4e53155fc164591e1460c25a50a9dc54b2b4b904"
+  }
+}

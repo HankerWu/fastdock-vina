@@ -1,0 +1,11 @@
+pdb,ligand,target,smiles,murcko,heavy_atoms,torsdof
+5S8I,2LY,PHIP,CNC(=O)c1scc2c1OCCO2,c1scc2c1OCCO2,13,1
+7F5D,EUO,BPTF,CNc1cc(-c2ccc3[nH]ccc3c2)nc(S(C)(=O)=O)n1,c1cc(-c2ccc3[nH]ccc3c2)ncn1,21,3
+7LT0,ONJ,HSP90AA1,Cc1ccc(Sc2cc(C(=O)N3Cc4ccccc4C3)ccc2O)cc1C,O=C(c1cccc(Sc2ccccc2)c1)N1Cc2ccccc2C1,27,4
+7JGW,V9S,BCL2L1,O=C(NCc1ccccc1)c1csc(N/N=C2\CCCc3ccc(-c4ccc(OCCc5ccccc5)c(C(=O)O)n4)cc32)n1,O=C(NCc1ccccc1)c1csc(NN=C2CCCc3ccc(-c4ccc(OCCc5ccccc5)cn4)cc32)n1,45,12
+7BLA,WCS,BAZ2A,CN(C)CCCOc1ccc(-c2cc(NCCCn3cccn3)nc(S(C)(=O)=O)n2)cc1,c1ccc(-c2cc(NCCCn3cccn3)ncn2)cc1,32,12
+7MRH,ZMJ,BRDT,CCS(=O)(=O)Nc1cccc(-c2cn(C)c(=O)c3ccccc23)c1,O=c1[nH]cc(-c2ccccc2)c2ccccc12,24,4
+7LZQ,YJV,BCL6,Cn1ccc2c(ccn2CC(=O)Nc2ccncc2Cl)c1=O,O=C(Cn1ccc2c(=O)[nH]ccc21)Nc1ccncc1,22,3
+7MS7,ZQ1,USP5,O=C(O)CNC(=O)c1ccc(S(=O)(=O)N2CCC(c3ccc(Cl)cc3)CC2)cn1,O=S(=O)(c1cccnc1)N1CCC(c2ccccc2)CC1,29,7
+7RWO,7WN,BPTF,Cn1ncc(Nc2ccc3c(c2)CNCC3)c(Cl)c1=O,O=c1cc(Nc2ccc3c(c2)CNCC3)cn[nH]1,20,2
+7QK0,EBL,BCL6,C[C@H]1C[C@@H](O)CN(c2ncc(Cl)c(Nc3ccc4c(c3)c3c(c(=O)n4C)OCC(F)(F)[C@H](C4CC4)N3)n2)C1,O=c1[nH]c2ccc(Nc3ccnc(N4CCCCC4)n3)cc2c2c1OCCC(C1CC1)N2,38,5
