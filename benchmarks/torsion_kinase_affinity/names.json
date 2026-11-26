@@ -1,0 +1,189 @@
+{
+  "VX-680/MK-0457": {
+    "query": "tozasertib",
+    "url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/tozasertib/property/InChIKey,SMILES/JSON",
+    "record": [
+      {
+        "CID": 5494449,
+        "SMILES": "CC1=CC(=NN1)NC2=CC(=NC(=N2)SC3=CC=C(C=C3)NC(=O)C4CC4)N5CCN(CC5)C",
+        "InChIKey": "GCIKSSRWRFVXBI-UHFFFAOYSA-N"
+      }
+    ]
+  },
+  "PKC-412": {
+    "query": "midostaurin",
+    "url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/midostaurin/property/InChIKey,SMILES/JSON",
+    "record": [
+      {
+        "CID": 9829523,
+        "SMILES": "C[C@@]12[C@@H]([C@@H](C[C@@H](O1)N3C4=CC=CC=C4C5=C6C(=C7C8=CC=CC=C8N2C7=C53)CNC6=O)N(C)C(=O)C9=CC=CC=C9)OC",
+        "InChIKey": "BMGQWWVMWDBQGC-IIFHNQTCSA-N"
+      }
+    ]
+  },
+  "KW-2449": {
+    "query": "KW-2449",
+    "url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/KW-2449/property/InChIKey,SMILES/JSON",
+    "record": [
+      {
+        "CID": 11427553,
+        "SMILES": "C1CN(CCN1)C(=O)C2=CC=C(C=C2)/C=C/C3=NNC4=CC=CC=C43",
+        "InChIKey": "YYLKKYCXAOBSRM-JXMROGBWSA-N"
+      }
+    ]
+  },
+  "TAE-684": {
+    "query": "NVP-TAE684",
+    "url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/NVP-TAE684/property/InChIKey,SMILES/JSON",
+    "record": [
+      {
+        "CID": 16038120,
+        "SMILES": "CC(C)S(=O)(=O)C1=CC=CC=C1NC2=NC(=NC=C2Cl)NC3=C(C=C(C=C3)N4CCC(CC4)N5CCN(CC5)C)OC",
+        "InChIKey": "QQWUGDVOUVUTOY-UHFFFAOYSA-N"
+      }
+    ]
+  },
+  "TG-101348": {
+    "query": "fedratinib",
+    "url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/fedratinib/property/InChIKey,SMILES/JSON",
+    "record": [
+      {
+        "CID": 16722836,
+        "SMILES": "CC1=CN=C(N=C1NC2=CC(=CC=C2)S(=O)(=O)NC(C)(C)C)NC3=CC=C(C=C3)OCCN4CCCC4",
+        "InChIKey": "JOOXLOJCABQBSG-UHFFFAOYSA-N"
+      }
+    ]
+  },
+  "EXEL-2880/GSK-1363089": {
+    "query": "foretinib",
+    "url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/foretinib/property/InChIKey,SMILES/JSON",
+    "record": [
+      {
+        "CID": 42642645,
+        "SMILES": "COC1=CC2=C(C=CN=C2C=C1OCCCN3CCOCC3)OC4=C(C=C(C=C4)NC(=O)C5(CC5)C(=O)NC6=CC=C(C=C6)F)F",
+        "InChIKey": "CXQHYVUVSFXTMY-UHFFFAOYSA-N"
+      }
+    ]
+  },
+  "Crizotinib": {
+    "query": "crizotinib",
+    "url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/crizotinib/property/InChIKey,SMILES/JSON",
+    "record": [
+      {
+        "CID": 11626560,
+        "SMILES": "C[C@H](C1=C(C=CC(=C1Cl)F)Cl)OC2=C(N=CC(=C2)C3=CN(N=C3)C4CCNCC4)N",
+        "InChIKey": "KTEIFNKAUNYNJU-GFCCVEGCSA-N"
+      }
+    ]
+  },
+  "AG-013736": {
+    "query": "axitinib",
+    "url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/axitinib/property/InChIKey,SMILES/JSON",
+    "record": [
+      {
+        "CID": 6450551,
+        "SMILES": "CNC(=O)C1=CC=CC=C1SC2=CC3=C(C=C2)C(=NN3)/C=C/C4=CC=CC=N4",
+        "InChIKey": "RITAVMQDGBJQJZ-FMIVXFBMSA-N"
+      }
+    ]
+  },
+  "Pazopanib": {
+    "query": "pazopanib",
+    "url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/pazopanib/property/InChIKey,SMILES/JSON",
+    "record": [
+      {
+        "CID": 10113978,
+        "SMILES": "CC1=C(C=C(C=C1)NC2=NC=CC(=N2)N(C)C3=CC4=NN(C(=C4C=C3)C)C)S(=O)(=O)N",
+        "InChIKey": "CUIHSIWYWATEQL-UHFFFAOYSA-N"
+      }
+    ]
+  },
+  "MLN-8054": {
+    "query": "MLN8054",
+    "url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/MLN8054/property/InChIKey,SMILES/JSON",
+    "record": [
+      {
+        "CID": 11712649,
+        "SMILES": "C1C2=CN=C(N=C2C3=C(C=C(C=C3)Cl)C(=N1)C4=C(C=CC=C4F)F)NC5=CC=C(C=C5)C(=O)O",
+        "InChIKey": "HHFBDROWDBDFBR-UHFFFAOYSA-N"
+      }
+    ]
+  },
+  "CHIR-258/TKI-258": {
+    "query": "dovitinib",
+    "url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/dovitinib/property/InChIKey,SMILES/JSON",
+    "record": [
+      {
+        "CID": 135398510,
+        "SMILES": "CN1CCN(CC1)C2=CC3=C(C=C2)N=C(N3)C4=C(C5=C(C=CC=C5F)NC4=O)N",
+        "InChIKey": "PIQCTGMSNWUMAF-UHFFFAOYSA-N"
+      }
+    ]
+  },
+  "LY-333531": {
+    "query": "ruboxistaurin",
+    "url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/ruboxistaurin/property/InChIKey,SMILES/JSON",
+    "record": [
+      {
+        "CID": 153999,
+        "SMILES": "CN(C)C[C@@H]1CCN2C=C(C3=CC=CC=C32)C4=C(C5=CN(CCO1)C6=CC=CC=C65)C(=O)NC4=O",
+        "InChIKey": "ZCBUQCWBWNUWSU-SFHVURJKSA-N"
+      }
+    ]
+  },
+  "ABT-869": {
+    "query": "linifanib",
+    "url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/linifanib/property/InChIKey,SMILES/JSON",
+    "record": [
+      {
+        "CID": 11485656,
+        "SMILES": "CC1=CC(=C(C=C1)F)NC(=O)NC2=CC=C(C=C2)C3=C4C(=CC=C3)NN=C4N",
+        "InChIKey": "MPVGZUGXCQEXTM-UHFFFAOYSA-N"
+      }
+    ]
+  },
+  "JNJ-28312141": {
+    "query": "JNJ-28312141",
+    "url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/JNJ-28312141/property/InChIKey,SMILES/JSON",
+    "record": [
+      {
+        "CID": 44551653,
+        "SMILES": "CN(C)CC(=O)N1CCC(CC1)C2=CC(=C(C=C2)NC(=O)C3=NC=C(N3)C#N)C4=CCCCC4.Cl",
+        "InChIKey": "MVPKLZHNOLVZAU-UHFFFAOYSA-N"
+      }
+    ]
+  },
+  "SU-14813": {
+    "query": "SU-14813",
+    "url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/SU-14813/property/InChIKey,SMILES/JSON",
+    "record": [
+      {
+        "CID": 10138259,
+        "SMILES": "CC1=C(NC(=C1C(=O)NC[C@@H](CN2CCOCC2)O)C)/C=C\\3/C4=C(C=CC(=C4)F)NC3=O",
+        "InChIKey": "CTNPALGJUAXMMC-PMFHANACSA-N"
+      }
+    ]
+  },
+  "Ki-20227": {
+    "query": "Ki20227",
+    "url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/Ki20227/property/InChIKey,SMILES/JSON",
+    "record": [
+      {
+        "CID": 9869779,
+        "SMILES": "CC(C1=NC=CS1)NC(=O)NC2=C(C=C(C=C2)OC3=C4C=C(C(=CC4=NC=C3)OC)OC)OC",
+        "InChIKey": "SHPFDGWALWEPGS-UHFFFAOYSA-N"
+      }
+    ]
+  },
+  "AZD-1152HQPA": {
+    "query": "AZD1152-HQPA",
+    "url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/AZD1152-HQPA/property/InChIKey,SMILES/JSON",
+    "record": [
+      {
+        "CID": 16007391,
+        "SMILES": "CCN(CCCOC1=CC2=C(C=C1)C(=NC=N2)NC3=NNC(=C3)CC(=O)NC4=CC(=CC=C4)F)CCO",
+        "InChIKey": "QYZOGCMHVIGURT-UHFFFAOYSA-N"
+      }
+    ]
+  }
+}

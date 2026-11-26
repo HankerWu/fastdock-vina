@@ -70,7 +70,7 @@ void parallel_mc::operator()(const model& m, output_container& out, const precal
 			const auto& grid = use_alternate ? alternate->receptor : ig;
 			mc(working, poses[task], pairs, grid, corner1, corner2, progress, task_generator,
 			   archives ? &(*archives)[task] : nullptr, counters ? &(*counters)[task] : nullptr,
-			   pocket_start);
+			   pocket_start, prepared_torsion_starts && task % 2 == 1);
 			task = next_task.fetch_add(1, std::memory_order_relaxed);
 			if(task >= num_tasks)
 				break;

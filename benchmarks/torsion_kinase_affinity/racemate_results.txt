@@ -1,0 +1,3 @@
+native all 111 151 involving racemate 13 15
+balanced all 106 151 involving racemate 12 15
+prepared all 103 151 involving racemate 11 15

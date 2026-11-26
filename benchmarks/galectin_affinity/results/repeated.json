@@ -1,0 +1,14 @@
+{
+  "native_pdbqt_outputs": {
+    "files": 1040,
+    "identical": 1040,
+    "mismatch": []
+  },
+  "prepared_inputs_and_boxes_and_anchors": {
+    "files": 74,
+    "identical": 74,
+    "mismatch": []
+  },
+  "early_binary_sha256": "24e422020cfd0034eed3a017fab30fcbb303cb24279a6e9ecc8ba09412c613f6",
+  "repeat_final_binary_sha256": "db259cba4f3d81b1e3b987689455bf33f2471fdc43534c4f18363dbdc0d4bb39"
+}

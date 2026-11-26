@@ -1599,6 +1599,8 @@ void Vina::global_search(const int exhaustiveness, const int n_poses, const doub
 	    m_sf_choice != SF_VINA || m_no_refine || m_mixed_cutoff_search || m_scoring_function->smooth_cutoff() ||
 	    !m_search_anchor_path.empty() || !m_search_amide_path.empty()))
 		throw vina_runtime_error("soft_receptor_search requires native Late Vina with no other search grid, a rigid receptor and at least two trajectories");
+	if (m_prepared_torsion_starts && exhaustiveness < 2)
+		throw vina_runtime_error("prepared_torsion_starts requires at least two trajectories");
 	const bool split_anchor = m_anchor_trajectories != anchor_trajectories::all;
 	if (split_anchor && exhaustiveness < 2)
 		throw vina_runtime_error("search_anchor_trajectories even/odd requires exhaustiveness >= 2");
@@ -1691,6 +1693,8 @@ void Vina::global_search(const int exhaustiveness, const int n_poses, const doub
 	parallelmc.mc.mixed_reorientation = m_mixed_reorientation;
 	parallelmc.mc.separate_hunt_chain = m_separate_hunt_chain;
 	parallelmc.mc.centered_rotation = m_centered_rotation;
+	parallelmc.mc.balanced_torsion = m_balanced_torsion;
+	parallelmc.prepared_torsion_starts = m_prepared_torsion_starts;
 	parallelmc.num_tasks = exhaustiveness;
 	parallelmc.num_threads = m_cpu;
 	parallelmc.display_progress = (m_verbosity > 0);

@@ -108,6 +108,7 @@ struct axis_frame : public atom_frame {
 	void set_derivative(const vecp& force_torque, flv::iterator out) const {
 		*out = force_torque.second * axis;
 	}
+	const vec& get_axis() const { return axis; }
 protected:
 	vec axis;
 };

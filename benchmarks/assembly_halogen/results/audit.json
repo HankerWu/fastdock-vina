@@ -1,0 +1,10 @@
+{
+  "models": 297,
+  "pools": 33,
+  "max_RMSD_difference_A": 8.681945615762743e-07,
+  "max_correction_difference": 5.062227870500369e-07,
+  "max_stereo_map_difference_A": 0.7033332026836807,
+  "models_changing_stereo_threshold": 0,
+  "byte_identical_native_replays": 33,
+  "replay_binary_sha256": "24e422020cfd0034eed3a017fab30fcbb303cb24279a6e9ecc8ba09412c613f6"
+}

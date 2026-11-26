@@ -52,6 +52,7 @@ struct monte_carlo {
 	bool mixed_reorientation = false;
 	bool separate_hunt_chain = false;
 	bool centered_rotation = false;
+	bool balanced_torsion = false;
     // T = 600K, R = 2cal/(K*mol) -> temperature = RT = 1.2;  global_steps = 50*lig_atoms = 2500
     monte_carlo() : max_evals(0), global_steps(2500), temperature(1.2), hunt_cap(10, 1.5, 10), min_rmsd(0.5), num_saved_mins(50), mutation_amplitude(2) {}
 
@@ -61,7 +62,8 @@ struct monte_carlo {
 	void operator()(model& m, output_container& out, const precalculate_byatom& p, const igrid& ig,
                     const vec& corner1, const vec& corner2, incrementable* increment_me, rng& generator,
                     trajectory_archive* archive = nullptr, search_trajectory_counters* counters = nullptr,
-                    const boost::optional<vec>& pocket_start = boost::none) const;
+                    const boost::optional<vec>& pocket_start = boost::none,
+	                bool prepared_torsions = false) const;
 };
 
 #endif

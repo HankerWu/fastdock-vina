@@ -1,0 +1,8 @@
+pose/2E9P/ligand.pdbqt proposals=49 excess_scan_SSE=5.68434189e-14 max_reverse_A=1.60426267e-14 max_shape_A=1.59872116e-14 max_RMSD_reduction_A=1.13113926
+pose/2YWP/ligand.pdbqt proposals=28 excess_scan_SSE=0 max_reverse_A=8.92608265e-15 max_shape_A=1.0658141e-14 max_RMSD_reduction_A=1.11969614
+pose/3ANS/ligand.pdbqt proposals=21 excess_scan_SSE=4.26325641e-14 max_reverse_A=7.95651228e-15 max_shape_A=7.10542736e-15 max_RMSD_reduction_A=1.0150518
+pose/1VJ5/ligand.pdbqt proposals=14 excess_scan_SSE=0 max_reverse_A=4.09430021e-15 max_shape_A=7.10542736e-15 max_RMSD_reduction_A=1.36953446
+pose/2B8L/ligand.pdbqt proposals=98 excess_scan_SSE=5.68434189e-14 max_reverse_A=2.71730346e-14 max_shape_A=2.13162821e-14 max_RMSD_reduction_A=1.85755067
+pose/2ZJM/ligand.pdbqt proposals=77 excess_scan_SSE=1.13686838e-13 max_reverse_A=1.48620676e-14 max_shape_A=1.42108547e-14 max_RMSD_reduction_A=0.746493123
+pose/6Y7L/ligand.pdbqt proposals=28 excess_scan_SSE=5.68434189e-14 max_reverse_A=8.0947365e-15 max_shape_A=1.42108547e-14 max_RMSD_reduction_A=1.16942362
+pose/6YQW/ligand.pdbqt proposals=7 excess_scan_SSE=0 max_reverse_A=3.0767403e-15 max_shape_A=2.66453526e-15 max_RMSD_reduction_A=0.00794334704

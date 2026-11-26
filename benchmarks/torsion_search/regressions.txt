@@ -1,0 +1,6 @@
+Default byte parity, threads 1/2, odd trajectories, rigid-fragment null and one-trajectory rejection passed.
+Default native: 0 global rotations, 3 explicit calls, 134 explicit evaluations
+Default mixed: 2 global rotations, 3 explicit calls, 134 explicit evaluations
+Late native: 0 global rotations, 3 explicit calls, 138 explicit evaluations
+Late mixed: 2 global rotations, 3 explicit calls, 134 explicit evaluations
+Default byte parity, deterministic late search, Gauss2 composition and invalid modes passed. Saved 9, refined 3 in 3 calls, retained 3.

@@ -1,0 +1,14 @@
+id,group,donors,target,gene,mutation,heavy_atoms,source,PDBe,status
+6YQW_82I,Cl,Cl,Bromodomain-containing protein 9,BRD9;UNQ3040/PRO9856,,11,PoseBusters v1,https://www.ebi.ac.uk/pdbe/api/pdb/entry/molecules/6yqw,measured
+6Z2C_Q5E,Cl,Cl,Neutrophil gelatinase-associated lipocalin,HNL;LCN2;NGAL,,26,PoseBusters v1,https://www.ebi.ac.uk/pdbe/api/pdb/entry/molecules/6z2c,measured
+7BJ6_TVK,Cl,Cl,E3 ubiquitin-protein ligase Mdm2,MDM2,,37,PoseBusters v1,https://www.ebi.ac.uk/pdbe/api/pdb/entry/molecules/7bj6,measured
+7LZQ_YJV,Cl,Cl,B-cell lymphoma 6 protein,BCL5;BCL6;LAZ3;ZBTB27;ZNF51,"C8Q, C67R, C84N",22,PoseBusters v1,https://www.ebi.ac.uk/pdbe/api/pdb/entry/molecules/7lzq,measured
+7MS7_ZQ1,Cl,Cl,Ubiquitin carboxyl-terminal hydrolase 5,ISOT;USP5,,29,PoseBusters v1,https://www.ebi.ac.uk/pdbe/api/pdb/entry/molecules/7ms7,measured
+7NML_I7B,Cl,Cl,Galectin-1,LGALS1,,16,PoseBusters v1,https://www.ebi.ac.uk/pdbe/api/pdb/entry/molecules/7nml,measured
+7NPL_UKZ,Cl,Cl,Alpha-1-antitrypsin,AAT;PI;PRO0684;PRO2209;SERPINA1,,27,PoseBusters v1,https://www.ebi.ac.uk/pdbe/api/pdb/entry/molecules/7npl,measured
+7RWO_7WN,Cl,Cl,Nucleosome-remodeling factor subunit BPTF,BPTF;FAC1;FALZ,,20,PoseBusters v1,https://www.ebi.ac.uk/pdbe/api/pdb/entry/molecules/7rwo,measured
+8BTI_RFO,Cl,Cl,Palmitoleoyl-protein carboxylesterase NOTUM,NOTUM;OK/SW-CL.30,,15,PoseBusters v1,https://www.ebi.ac.uk/pdbe/api/pdb/entry/molecules/8bti,exclusion: nearby dropped PRO 287
+8DW5_FQ7,Cl,Cl,Transthyretin,PALB;TTR,,18,PoseBusters v1,https://www.ebi.ac.uk/pdbe/api/pdb/entry/molecules/8dw5,measured
+6XUM_30L,null,,Aldo-keto reductase family 1 member B1,AKR1B1;ALDR1;ALR2,L300/301A,25,PoseBusters v1,https://www.ebi.ac.uk/pdbe/api/pdb/entry/molecules/6xum,measured
+6ZC3_JOR,null,,Segment polarity protein dishevelled homolog DVL-3,DVL3;KIAA0208,,15,PoseBusters v1,https://www.ebi.ac.uk/pdbe/api/pdb/entry/molecules/6zc3,measured
+2ROX_T44,assembly transfer,I,Transthyretin,TTR,,24,RCSB 2ROX chain A residue 128 SDF,https://www.ebi.ac.uk/pdbe/api/pdb/entry/molecules/2rox,measured on fresh seeds

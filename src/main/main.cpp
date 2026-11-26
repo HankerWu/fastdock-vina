@@ -131,6 +131,8 @@ Thank you!\n";
 		double interaction_cutoff = default_xs_interaction_cutoff;
 		bool smooth_cutoff = false;
 		bool mixed_cutoff_search = false;
+		bool prepared_torsion_starts = false;
+		bool balanced_torsion_search = false;
 		bool soft_receptor_search = false;
 		double buffer_size = 4;
 		double unbound_energy = NAN;
@@ -287,6 +289,10 @@ Thank you!\n";
 			("min_rmsd", value<double>(&min_rmsd)->default_value(1.0), "minimum RMSD between output poses")
 			("energy_range", value<double>(&energy_range)->default_value(3.0), "maximum energy difference between the best binding mode and the worst one displayed (kcal/mol)")
 			("spacing", value<double>(&grid_spacing)->default_value(0.375), "grid spacing (Angstrom)")
+			("prepared_torsion_starts", bool_switch(&prepared_torsion_starts),
+			 "start even trajectories at input ligand torsions with a random rigid placement")
+			("balanced_torsion_search", bool_switch(&balanced_torsion_search),
+			 "distribute each ligand torsion proposal between both sides to minimize heavy-atom motion about the bond")
 			("soft_receptor_search", bool_switch(&soft_receptor_search),
 			 "halve receptor repulsion on even search trajectories only; keep configured Late postprocessing")
 			("mixed_cutoff_search", bool_switch(&mixed_cutoff_search),
@@ -403,6 +409,10 @@ Thank you!\n";
 			    vm.count("write_maps") || (sf_name != "vina" && sf_name != "vinardo"))
 				throw usage_error("pocket_start_radius requires global Vina or Vinardo docking with one ligand and a rigid receptor");
 		}
+		if (prepared_torsion_starts && (randomize_only || score_only || local_only || exhaustiveness < 2))
+			throw usage_error("prepared_torsion_starts requires global docking with at least two trajectories");
+		if (balanced_torsion_search && (randomize_only || score_only || local_only))
+			throw usage_error("balanced_torsion_search requires global docking");
 		if (search_counters && (randomize_only || score_only || local_only))
 			throw usage_error("search_counters requires global docking");
 		if (refinement_optimizer != "native" && refinement_optimizer != "armijo")
@@ -565,6 +575,8 @@ Thank you!\n";
 		v.set_rigid_reorientation(rigid_reorientation == "mixed", rigid_reorientation == "centered");
 		v.set_separate_hunt_chain(separate_hunt_chain);
 		v.set_mixed_cutoff_search(mixed_cutoff_search);
+		v.set_prepared_torsion_starts(prepared_torsion_starts);
+		v.set_balanced_torsion_search(balanced_torsion_search);
 		v.set_soft_receptor_search(soft_receptor_search);
 		v.set_search_counters(search_counters);
 		if (vm.count("pocket_start_radius"))

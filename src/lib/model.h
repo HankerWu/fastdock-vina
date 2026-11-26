@@ -139,6 +139,7 @@ public:
 
 	void set (const conf& c);
 
+	void set_balanced_torsion(ligand_conf& c, sz ligand_number, sz torsion, fl angle);
 	fl gyration_radius(sz ligand_number) const; // uses coords
 	vec ligand_heavy_centroid(sz ligand_number) const;
 	vec ligand_heavy_centroid(const ligand_conf& conf) const;

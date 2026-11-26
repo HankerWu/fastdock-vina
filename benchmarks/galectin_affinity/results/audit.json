@@ -1,0 +1,8 @@
+{
+  "top_poses": 1040,
+  "binary_sha256": "db259cba4f3d81b1e3b987689455bf33f2471fdc43534c4f18363dbdc0d4bb39",
+  "max_abs_score_readback_difference": 0.011231839999999771,
+  "max_abs_log_saved_difference": 0.0005000000000006111,
+  "unique_target_compound_pairs": 58,
+  "arm_pair_decisions_checked": 290
+}

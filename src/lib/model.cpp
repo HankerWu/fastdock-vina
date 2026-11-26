@@ -814,6 +814,57 @@ vec model::ligand_heavy_centroid(sz ligand_number, const vecv& positions, const 
 	return count ? (1.0 / fl(count)) * center : origin;
 }
 
+// Both visits follow the same depth-first torsion order as branches_set_conf.
+static const branch* torsion_branch(const branches& children, sz& index) {
+	for (const auto& child : children) {
+		if (index == 0) return &child;
+		--index;
+		if (const auto* found = torsion_branch(child.children, index)) return found;
+	}
+	return nullptr;
+}
+
+void model::set_balanced_torsion(ligand_conf& c, sz ligand_number, sz torsion, fl angle) {
+	auto& lig = ligands[ligand_number];
+	// A rejected trial can leave coords at a different minimum than c.
+	lig.set_conf(atoms, coords, c);
+	sz index = torsion;
+	const branch* rotor = torsion_branch(lig.children, index);
+	VINA_CHECK(rotor != nullptr);
+	const vec& pivot = rotor->node.get_origin();
+	const vec& axis = rotor->node.get_axis();
+	auto moment = [&](const atom_range& group) {
+		fl sum = 0;
+		VINA_RANGE(i, group.begin, group.end) {
+			if (chemical_heavy_atom(atoms[i])) {
+				const vec radial = cross_product(axis, coords[i] - pivot);
+				sum += radial * radial;
+			}
+		}
+		return sum;
+	};
+	// Visit the actual subtree. Atom numbering need not make it contiguous.
+	auto subtree_moment = [&](const auto& self, const branch& b) -> fl {
+		fl sum = moment(b.node);
+		for (const auto& child : b.children) sum += self(self, child);
+		return sum;
+	};
+	const fl moving = subtree_moment(subtree_moment, *rotor);
+	const fl fixed = (std::max)(fl(0), moment(lig) - moving);
+	const fl delta = std::remainder(angle - c.torsions[torsion], 2 * pi);
+	c.torsions[torsion] = angle;
+	if (moving == 0) return;
+	const fl sine = moving * std::sin(delta);
+	const fl cosine = fixed + moving * std::cos(delta);
+	// For equal moments at a half-turn every counterrotation is optimal.
+	const fl tolerance = 32 * std::numeric_limits<fl>::epsilon() * (fixed + moving);
+	const fl offset = std::hypot(sine, cosine) <= tolerance ? -delta / 2 : -std::atan2(sine, cosine);
+	const qt rotation = angle_to_quaternion(axis, offset);
+	c.rigid.position = pivot + quaternion_to_r3(rotation) * (c.rigid.position - pivot);
+	c.rigid.orientation = rotation * c.rigid.orientation;
+	quaternion_normalize_approx(c.rigid.orientation);
+}
+
 fl model::gyration_radius(sz ligand_number) const {
 	VINA_CHECK(ligand_number < ligands.size());
 	const ligand& lig = ligands[ligand_number];

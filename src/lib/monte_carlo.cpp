@@ -43,12 +43,17 @@ bool metropolis_accept(fl old_f, fl new_f, fl temperature, rng& generator) {
 
 // out is sorted
 void monte_carlo::operator()(model& m, output_container& out, const precalculate_byatom& p, const igrid& ig, const vec& corner1, const vec& corner2, incrementable* increment_me, rng& generator, trajectory_archive* archive, search_trajectory_counters* counters,
-                             const boost::optional<vec>& pocket_start) const {
+                             const boost::optional<vec>& pocket_start, bool prepared_torsions) const {
     int evalcount = 0;
 	vec authentic_v(1000, 1000, 1000); // FIXME? this is here to avoid max_fl/max_fl
 	const conf_size s = m.get_size();
 	output_type tmp(s, 0);
 	tmp.c.randomize(corner1, corner2, generator);
+	// Zero offsets reproduce the prepared internal geometry. Draw all native
+	// random values first to preserve the placement and subsequent RNG stream.
+	if (prepared_torsions)
+		for (auto& lig : tmp.c.ligands)
+			std::fill(lig.torsions.begin(), lig.torsions.end(), 0.0);
 	if (pocket_start || (counters && m.num_ligands() == 1 && m.num_flex() == 0)) {
 		auto& ligand = tmp.c.ligands.front();
 		vec center = m.ligand_heavy_centroid(ligand);
@@ -73,7 +78,7 @@ void monte_carlo::operator()(model& m, output_container& out, const precalculate
 			break;
 		candidate.c = tmp.c;
 		const bool reoriented = mutate_conf(candidate.c, m, mutation_amplitude, generator,
-		                                    mixed_reorientation, separate_hunt_chain, centered_rotation);
+		                                    mixed_reorientation, separate_hunt_chain, centered_rotation, balanced_torsion);
 		const int before_hunt = evalcount;
 		quasi_newton_par(m, p, ig, candidate, hunt_cap, evalcount);
 		if (counters) {

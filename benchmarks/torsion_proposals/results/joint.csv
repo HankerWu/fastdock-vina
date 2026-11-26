@@ -1,0 +1,15 @@
+cap,cohort,arm,n,pb_valid,joint
+12000,fresh,native,48,47,8
+12000,fresh,prepared,48,48,7
+12000,original,balanced,48,46,5
+12000,original,native,48,47,8
+12000,original,prepared,48,46,12
+24000,fresh,native,48,47,8
+24000,fresh,prepared,48,47,8
+24000,original,native,48,45,8
+24000,original,prepared,48,45,12
+250000,deep,native,16,15,0
+250000,deep,prepared,16,13,1
+3000,original,balanced,48,45,5
+3000,original,native,48,47,5
+3000,original,prepared,48,45,8

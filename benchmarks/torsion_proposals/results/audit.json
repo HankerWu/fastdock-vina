@@ -1,0 +1,128 @@
+[
+  {
+    "table": "modes-balanced-12000.csv",
+    "cap": "12000",
+    "arm": "balanced",
+    "runs": 48,
+    "modes": 480,
+    "max_rmsd_diff": 1.9539925233402755e-14,
+    "max_ca_diff": 1.4549795041242807e-14
+  },
+  {
+    "table": "modes-balanced-3000.csv",
+    "cap": "3000",
+    "arm": "balanced",
+    "runs": 48,
+    "modes": 480,
+    "max_rmsd_diff": 2.1316282072803006e-14,
+    "max_ca_diff": 1.4549795041242807e-14
+  },
+  {
+    "table": "modes-native-12000-bridge.csv",
+    "cap": "12000",
+    "arm": "native",
+    "runs": 48,
+    "modes": 480,
+    "max_rmsd_diff": 2.220446049250313e-14,
+    "max_ca_diff": 1.4549795041242807e-14
+  },
+  {
+    "table": "modes-native-12000.csv",
+    "cap": "12000",
+    "arm": "native",
+    "runs": 48,
+    "modes": 480,
+    "max_rmsd_diff": 2.042810365310288e-14,
+    "max_ca_diff": 1.4549795041242807e-14
+  },
+  {
+    "table": "modes-native-24000-bridge.csv",
+    "cap": "24000",
+    "arm": "native",
+    "runs": 48,
+    "modes": 480,
+    "max_rmsd_diff": 2.042810365310288e-14,
+    "max_ca_diff": 1.4549795041242807e-14
+  },
+  {
+    "table": "modes-native-24000.csv",
+    "cap": "24000",
+    "arm": "native",
+    "runs": 48,
+    "modes": 480,
+    "max_rmsd_diff": 2.220446049250313e-14,
+    "max_ca_diff": 1.4549795041242807e-14
+  },
+  {
+    "table": "modes-native-250000.csv",
+    "cap": "250000",
+    "arm": "native",
+    "runs": 16,
+    "modes": 160,
+    "max_rmsd_diff": 2.1316282072803006e-14,
+    "max_ca_diff": 1.2212453270876722e-15
+  },
+  {
+    "table": "modes-native-3000.csv",
+    "cap": "3000",
+    "arm": "native",
+    "runs": 48,
+    "modes": 480,
+    "max_rmsd_diff": 2.042810365310288e-14,
+    "max_ca_diff": 1.4549795041242807e-14
+  },
+  {
+    "table": "modes-prepared-12000-bridge.csv",
+    "cap": "12000",
+    "arm": "prepared",
+    "runs": 48,
+    "modes": 480,
+    "max_rmsd_diff": 2.220446049250313e-14,
+    "max_ca_diff": 1.4549795041242807e-14
+  },
+  {
+    "table": "modes-prepared-12000.csv",
+    "cap": "12000",
+    "arm": "prepared",
+    "runs": 48,
+    "modes": 480,
+    "max_rmsd_diff": 2.220446049250313e-14,
+    "max_ca_diff": 1.4549795041242807e-14
+  },
+  {
+    "table": "modes-prepared-24000-bridge.csv",
+    "cap": "24000",
+    "arm": "prepared",
+    "runs": 48,
+    "modes": 480,
+    "max_rmsd_diff": 2.220446049250313e-14,
+    "max_ca_diff": 1.4549795041242807e-14
+  },
+  {
+    "table": "modes-prepared-24000.csv",
+    "cap": "24000",
+    "arm": "prepared",
+    "runs": 48,
+    "modes": 480,
+    "max_rmsd_diff": 2.220446049250313e-14,
+    "max_ca_diff": 1.4549795041242807e-14
+  },
+  {
+    "table": "modes-prepared-250000.csv",
+    "cap": "250000",
+    "arm": "prepared",
+    "runs": 16,
+    "modes": 160,
+    "max_rmsd_diff": 2.1316282072803006e-14,
+    "max_ca_diff": 1.2212453270876722e-15
+  },
+  {
+    "table": "modes-prepared-3000.csv",
+    "cap": "3000",
+    "arm": "prepared",
+    "runs": 48,
+    "modes": 480,
+    "max_rmsd_diff": 2.1316282072803006e-14,
+    "max_ca_diff": 1.4549795041242807e-14
+  }
+]

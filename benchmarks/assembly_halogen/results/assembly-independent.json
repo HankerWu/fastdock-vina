@@ -1,0 +1,14 @@
+[
+  {
+    "source": "assembly-modes.csv",
+    "pools": 48,
+    "models": 432,
+    "max_RMSD_error_A": 2.741903202263529e-07
+  },
+  {
+    "source": "assembly-modes-high.csv",
+    "pools": 36,
+    "models": 324,
+    "max_RMSD_error_A": 4.706128611253746e-07
+  }
+]
