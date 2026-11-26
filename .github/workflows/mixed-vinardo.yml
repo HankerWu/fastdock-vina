@@ -17,3 +17,47 @@ jobs:
         run: python3 tools/build.py --output-dir build/mixed-vinardo --jobs 2
       - name: Regression
         run: python3 benchmarks/mixed_vinardo/check.py build/mixed-vinardo/vina
+      - uses: actions/upload-artifact@v4
+        with:
+          name: research-vina-binary
+          path: build/mixed-vinardo/vina
+  panel:
+    needs: smoke
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        mode: [pose, affinity]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: research-vina-binary
+          path: build/mixed-vinardo
+      - run: chmod +x build/mixed-vinardo/vina
+      - name: Dependencies
+        run: |
+          python3 -m venv .venv
+          .venv/bin/pip install rdkit==2025.3.5 meeko==0.6.1 gemmi==0.7.3 posebusters==0.6.3 pyyaml scipy
+      - name: Acquire official PoseBusters data
+        if: matrix.mode == 'pose'
+        run: |
+          curl -fL --retry 3 https://zenodo.org/records/8278563/files/posebusters_paper_data.zip -o pb.zip
+          echo 'f004ac7c4e68317b5348497d2bb6bee6  pb.zip' | md5sum -c -
+          unzip -q pb.zip -d dataset
+      - name: Acquire frozen OpenFF affinity data
+        if: matrix.mode == 'affinity'
+        run: |
+          mkdir -p dataset
+          curl -fL --retry 3 https://github.com/openforcefield/protein-ligand-benchmark/archive/fd88824f9114244f95a14b485e6d6c96c1de716d.tar.gz | tar xz --strip-components=1 -C dataset
+      - name: Run paired research panel
+        run: |
+          .venv/bin/pip freeze
+          .venv/bin/python benchmarks/mixed_vinardo/paired_panel.py build/mixed-vinardo/vina ${{ matrix.mode }} dataset results --exhaustiveness 4 --cap 3000
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: mixed-vinardo-${{ matrix.mode }}-results
+          path: results/
+          if-no-files-found: warn
