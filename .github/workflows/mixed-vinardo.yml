@@ -1,0 +1,80 @@
+name: Mixed Vinardo research verification
+on:
+  push:
+    branches: ["research/mixed-vinardo-20261126"]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: mixed-vinardo-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  smoke:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install build dependencies
+        run: sudo apt-get update && sudo apt-get install -y libboost-system-dev libboost-thread-dev libboost-serialization-dev libboost-filesystem-dev libboost-program-options-dev libboost-log-dev
+      - name: Build FastDock Vina
+        run: python3 tools/build.py --output-dir build/mixed-vinardo --jobs 2
+      - name: Regression
+        run: python3 benchmarks/mixed_vinardo/check.py build/mixed-vinardo/vina
+      - name: Package binary and Boost runtime
+        run: |
+          mkdir -p build/mixed-vinardo/dist/lib
+          cp build/mixed-vinardo/vina build/mixed-vinardo/dist/
+          ldd build/mixed-vinardo/vina | awk '/libboost_.* => / {print $3}' | while read -r library; do cp -L "$library" build/mixed-vinardo/dist/lib/; done
+      - uses: actions/upload-artifact@v4
+        with:
+          name: research-vina-binary
+          path: build/mixed-vinardo/dist
+  panel:
+    needs: smoke
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - {mode: pose, subset: "0"}
+          - {mode: pose, subset: "1"}
+          - {mode: pose, subset: "2"}
+          - {mode: affinity, subset: mcl1}
+          - {mode: affinity, subset: ptp1b}
+          - {mode: affinity, subset: tyk2}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: research-vina-binary
+          path: build/mixed-vinardo
+      - run: chmod +x build/mixed-vinardo/vina
+      - name: Dependencies
+        run: |
+          python3 -m venv .venv
+          .venv/bin/pip install rdkit==2025.3.5 meeko==0.6.1 gemmi==0.7.3 posebusters==0.6.3 pyyaml scipy
+      - name: Acquire official PoseBusters data
+        if: matrix.mode == 'pose'
+        run: |
+          curl -fL --retry 3 https://zenodo.org/records/8278563/files/posebusters_paper_data.zip -o pb.zip
+          echo 'f004ac7c4e68317b5348497d2bb6bee6  pb.zip' | md5sum -c -
+          unzip -q pb.zip -d dataset
+      - name: Acquire frozen OpenFF affinity data
+        if: matrix.mode == 'affinity'
+        run: |
+          mkdir -p dataset
+          curl -fL --retry 3 https://github.com/openforcefield/protein-ligand-benchmark/archive/fd88824f9114244f95a14b485e6d6c96c1de716d.tar.gz | tar xz --strip-components=1 -C dataset
+      - name: Run paired research panel
+        run: |
+          source .venv/bin/activate
+          export LD_LIBRARY_PATH="$PWD/build/mixed-vinardo/lib:$LD_LIBRARY_PATH"
+          python -m pip freeze
+          python -m py_compile benchmarks/mixed_vinardo/paired_panel.py
+          python benchmarks/mixed_vinardo/paired_panel.py build/mixed-vinardo/vina ${{ matrix.mode }} dataset results --subset ${{ matrix.subset }} --exhaustiveness 4 --cap 3000
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: mixed-vinardo-${{ matrix.mode }}-${{ matrix.subset }}-results
+          path: results/
+          if-no-files-found: warn

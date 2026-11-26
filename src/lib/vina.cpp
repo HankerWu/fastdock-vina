@@ -1595,6 +1595,13 @@ void Vina::global_search(const int exhaustiveness, const int n_poses, const doub
 	    rerank || m_armijo_refinement || polar_rank || burial_rank || net_polar_rank ||
 	    !m_pose_template_path.empty() || archive_enabled))
 		throw vina_runtime_error("mixed_cutoff_search requires native Late Vina refinement and ranking, a rigid receptor, exhaustiveness >= 2, and cutoff > 1 Angstrom");
+	if (m_mixed_vinardo_search && (!late_selection || exhaustiveness < 2 || !m_use_explicit_receptor ||
+	    m_sf_choice != SF_VINA || m_no_refine || m_scoring_function->smooth_cutoff() || m_mixed_cutoff_search ||
+	    rerank || m_armijo_refinement || polar_rank || burial_rank || net_polar_rank ||
+	    !m_pose_template_path.empty() || archive_enabled || !m_search_anchor_path.empty() ||
+	    !m_search_amide_path.empty() || !m_rank_amide_path.empty() || m_mixed_reorientation ||
+	    m_centered_rotation || m_separate_hunt_chain || m_pocket_start_radius > 0))
+		throw vina_runtime_error("mixed_vinardo_search requires unmodified rigid Late Vina refinement and ranking, exhaustiveness >= 2, and no other experimental search modes");
 	const bool split_anchor = m_anchor_trajectories != anchor_trajectories::all;
 	if (split_anchor && exhaustiveness < 2)
 		throw vina_runtime_error("search_anchor_trajectories even/odd requires exhaustiveness >= 2");
@@ -1699,7 +1706,8 @@ void Vina::global_search(const int exhaustiveness, const int n_poses, const doub
 	sstm << "Performing docking (random seed: " << m_seed << ")";
 	doing(sstm.str(), m_verbosity, 0);
 	if (m_sf_choice == SF_VINA || m_sf_choice == SF_VINARDO) {
-		boost::optional<precalculate_byatom> smooth_pairs;
+		boost::optional<precalculate_byatom> alternate_pairs;
+		boost::optional<cache> vinardo_grid;
 		boost::optional<search_landscape> alternate;
 		const igrid& guided_grid = anchor_grid ? static_cast<const igrid&>(*anchor_grid) : unanchored_grid;
 		const bool guide_even_only = m_anchor_trajectories == anchor_trajectories::even;
@@ -1708,11 +1716,24 @@ void Vina::global_search(const int exhaustiveness, const int n_poses, const doub
 			if (!m_mixed_search_grid) m_mixed_search_grid.emplace(m_grid.gd());
 			const auto missing = m_mixed_search_grid->missing_map_types(m_model.get_movable_atom_types(atom_type::XS));
 			if (missing.any()) m_non_cache.populate_maps_from(*m_mixed_search_grid, m_receptor, missing, smooth);
-			smooth_pairs.emplace(smooth, m_model);
-			alternate.emplace(search_landscape{*smooth_pairs, *m_mixed_search_grid});
+			alternate_pairs.emplace(smooth, m_model);
+			alternate.emplace(search_landscape{*alternate_pairs, *m_mixed_search_grid});
 			if (m_verbosity > 0 || m_search_counters)
 				std::cout << "\nMixed cutoff search: native=" << (exhaustiveness + 1) / 2
 				          << " smooth=" << exhaustiveness / 2 << " smooth_on_even_1based=true final=native_late\n";
+		} else if (m_mixed_vinardo_search) {
+			// Vinardo changes both the ligand pair and receptor grid potentials.
+			// Keep its grid local so another scoring configuration cannot reuse it.
+			const flv weights{-0.045, 0.8, -0.035, -0.600, m_weights[5], m_weights[6]};
+			ScoringFunction vinardo(SF_VINARDO, weights, m_scoring_function->get_cutoff());
+			vinardo_grid.emplace(m_grid.gd());
+			const auto missing = vinardo_grid->missing_map_types(m_model.get_movable_atom_types(atom_type::XS));
+			if (missing.any()) m_non_cache.populate_maps_from(*vinardo_grid, m_receptor, missing, vinardo);
+			alternate_pairs.emplace(vinardo, m_model);
+			alternate.emplace(search_landscape{*alternate_pairs, *vinardo_grid});
+			if (m_verbosity > 0 || m_search_counters)
+				std::cout << "\nMixed Vinardo search: vina=" << (exhaustiveness + 1) / 2
+				          << " vinardo=" << exhaustiveness / 2 << " vinardo_on_even_1based=true final=native_late\n";
 		} else if (split_anchor) {
 			alternate.emplace(search_landscape{m_precalculated_byatom, guide_even_only ? guided_grid : unanchored_grid});
 		}

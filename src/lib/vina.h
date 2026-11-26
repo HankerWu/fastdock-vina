@@ -150,6 +150,7 @@ public:
 	void set_rigid_reorientation(bool mixed, bool centered = false);
 	void set_separate_hunt_chain(bool enabled);
 	void set_mixed_cutoff_search(bool enabled) { m_mixed_cutoff_search = enabled; }
+	void set_mixed_vinardo_search(bool enabled) { m_mixed_vinardo_search = enabled; }
 	void set_search_counters(bool enabled) { m_search_counters = enabled; }
 	void set_pocket_start_radius(double radius);
 	//void set_ligand(OpenBabel::OBMol* mol);
@@ -226,6 +227,7 @@ private:
 	bool m_separate_hunt_chain = false;
 	bool m_search_counters = false;
 	bool m_mixed_cutoff_search = false;
+	bool m_mixed_vinardo_search = false;
 	double m_pocket_start_radius = 0;
 	enum class template_stage { rank, select, refine };
 	template_stage m_template_stage = template_stage::rank;
