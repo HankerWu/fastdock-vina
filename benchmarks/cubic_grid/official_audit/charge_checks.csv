@@ -1,0 +1,7 @@
+query,state,heavy_atoms,net_formal_charge,summed_pdbqt_charge,torsdof,max_input_heavy_shift_A
+2NNQ,A,36,-1,-0.998,8,0.0
+2NNQ,HA,36,0,0.0,9,0.0
+3FMZ,A,28,-1,-1.0,4,0.0
+3FMZ,HA,28,0,-0.0,5,0.0
+3FR2,A,23,-1,-1.001,3,0.0
+3FR2,HA,23,0,0.0,4,0.0

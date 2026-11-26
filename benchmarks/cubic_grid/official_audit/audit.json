@@ -1,0 +1,12 @@
+{
+  "acid_modes": 637,
+  "flex_modes": 425,
+  "acid_max_rmsd_error": 1.4210854715202004e-14,
+  "flex_max_rmsd_error": 1.4210854715202004e-14,
+  "receptor_atom_records_verified": {
+    "2NNQ": 1264,
+    "3FR2": 1264,
+    "1RBP": 1732,
+    "3FMZ": 1732
+  }
+}

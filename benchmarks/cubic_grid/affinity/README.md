@@ -23,6 +23,21 @@ FAK binds PKE in chain B. The other chain's closest heavy atom lies 21.82 Å fro
 
 SYK binds QF8 in chain A. The prepared model contains 48 added heavy-atom positions, the nearest 6.09 Å from QF8; the nearest Cα bounding a numbering gap lies 6.06 Å away. The previous explicit protein model contained a 1.68 Å contact between modeled Lys386 NZ and an experimental backbone oxygen. Adjusting the dihedrals of Lys386 and Ser379 changes three reconstructed heavy-atom coordinates. All retained observed heavy atoms have zero displacement. After correction the recorded check finds zero contacts below 2 Å between reconstructed heavy atoms and non-adjacent residues. The discarded coordinates gave 49 → 44 correct pairs on the same 68 SYK pairs, versus 43 → 47 in the corrected model. This change in sign makes the sensitivity to structural preparation part of the interpretation. The crystal pose only defines the search box and preparation-distance audit. Protein-only clash calculations selected modeled rotamers. [Structure 6ZCY](https://www.rcsb.org/structure/6ZCY) · [Coordinate comparison](coordinate_audit.json) · [All preparation details](structure_audit.json)
 
+## Compute-budget sensitivity
+
+On the interpolation-only build, a separate seed (78317) and three compounds per target (smallest, median and largest by heavy-atom count, CID tie-break) calibrated the longer native arm. We interpolated between native 8k and 20k end-to-end wall times measured on one fixed logical CPU to match cubic 12k as closely as possible, rounded to 500 evaluations. Confirmation used the two original seeds, interleaved arm order and the same fixed CPU. A separate native 24k sweep brackets cubic with a more expensive control. The two original 12k arms reproduce the archived pool bytes in all 104 cells.
+
+| Target | Native 12k | Calibrated native | Cubic 12k | Native 24k |
+|---|---:|---:|---:|---:|
+| SYK | 43/68, 10.43 s | 44/68, 11.05 s (14k) | 47/68, 12.89 s | 52/68, 14.48 s |
+| FAK | 9/47, 9.05 s | 11/47, 10.04 s (16k) | 19/47, 10.61 s | 11/47, 11.87 s |
+
+Times sum the same target's paired runs. Calibration undershot cubic by 14% on SYK and 5% on FAK. Extending native search overtakes cubic on SYK in the more expensive arm. FAK's two longer native budgets fail to recover the cubic count. Docking scores remain markedly weaker than the size-only ranking on FAK. [Calibration and times](time-summary.csv) · [Individual raw runs](time-control.tar.xz)
+
+## Integrated branch check
+
+Revision f6977da also corrects the explicit receptor gradient at the search-box wall. We redocked all 104 cells with that binary. Compared with the interpolation-only experiment, 37 entire mode pools change at least one byte. The integrated branch gives **43 → 47 of 68** correct pairs on SYK (Spearman 0.367 → 0.402) and **8 → 19 of 47** on FAK (−0.643 → −0.175). The preceding release comparison above applies to the earlier interpolation-only commit. All integrated top poses were independently rescored within 0.006 kcal/mol. These four counts reproduce directly from the assay tables and serialized coordinates. [Integrated summary](wall-summary.csv) · [All raw inputs to this check and scores](wall-integration.tar.xz)
+
 ## Replay
 
 Run commands from the repository root, substituting this benchmark's directory for B. The archive includes the original assay tables, chemical identity records, original coordinate pairs, prepared PDBQT and all accepted raw pools/logs. The reference archive additionally includes the discarded-repair protein, 56 raw pools and byte-parity verification. Use the archived prepared inputs to replay docking directly.
@@ -44,6 +59,7 @@ cp "$B"/panel.csv "$F"
 python "$B/run.py" "$F" build/vina
 python "$B/analyze.py" "$F" build/vina
 python "$B/check_native.py" "$F" /path/to/ce9a89f/vina
+python "$B/time_control.py" "$F" build/vina "$F/cpu-control"
 ```
 
 For regeneration of the prepared ligand and protein inputs use Python 3.12, RDKit 2026.09.2, Meeko 0.8.0, PDBFixer 1.12.0, OpenMM 8.6.1 and xlrd 2.0.2. Source coordinates are in the two original PoseBusters folders under sources. Preparation logs record an intermediate SYK repair superseded by the final protein-based rotamer selection.

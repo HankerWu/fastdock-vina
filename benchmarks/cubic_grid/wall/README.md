@@ -1,0 +1,7 @@
+# Derivative of a box-projected explicit receptor score
+
+Outside a search box the explicit receptor energy uses coordinates projected onto the box and adds a linear wall energy. Strictly outside a face the receptor contribution to the normal derivative vanishes. Axes still inside the box retain their receptor derivative. The correction preserves the explicit scorer's convention at the nondifferentiable box face.
+
+The C++ test covers positive and negative faces, an edge, a corner and an interior point at wall slopes 0, 1.7 and 100. It compares the gradient to a wide-box field using the projection chain rule and to centered finite differences. The preceding implementation failed all 21 strictly exterior normal components of the 45 tested components. Their largest finite-difference discrepancy dropped from 1.627 to below 5.1e-9 kcal/mol/Å. The remaining 24 tangential or interior components match the projected gradient on both versions. Their largest difference from finite differences was 0.00553 kcal/mol/Å, reflecting the explicit evaluator's separate radial energy and derivative tables. [Before](wall_before.csv) · [After](wall_after.csv)
+
+Compile check_projected_wall.cpp against the build's library object files excluding main.o, linking the same Boost libraries. Run the executable with benchmarks/fixtures/flex-rigid.pdbqt as the only argument. It returns a nonzero exit status when the projected-gradient check fails.

@@ -1,0 +1,6 @@
+{
+  "native_24k_cpu": 2.25,
+  "cubic_24k_cpu": 3.17,
+  "native_48k_cpu": 3.5500000000000003,
+  "native_matched_cap": 41000
+}

@@ -1,0 +1,9 @@
+target,arm,cap,runs,wall_s,cpu_s,correct,pairs
+SYK,native,12000,28,10.431,10.348,43,68
+SYK,cubic,12000,28,12.887,12.786,47,68
+SYK,native_time,14000,28,11.053,10.992,44,68
+SYK,native_double,24000,28,14.482,14.41,52,68
+FAK,native,12000,24,9.053,8.938,9,47
+FAK,cubic,12000,24,10.613,10.563,19,47
+FAK,native_time,16000,24,10.043,9.958,11,47
+FAK,native_double,24000,24,11.871,11.812,11,47
