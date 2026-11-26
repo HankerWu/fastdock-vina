@@ -13,7 +13,7 @@ import numpy as np
 from prep import CASES, RECS, xyz
 from rdkit import Chem
 from rdkit.Chem import rdMolAlign
-from scipy.optimize import least_squares
+from scipy.optimize import least_squares, minimize
 from scipy.spatial.transform import Rotation
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "tools"))
@@ -54,7 +54,7 @@ def align_to_reference(coords, heavy, target):
     return (coords - center) @ (left @ right) + target_center
 
 
-def project(prepared, serials, reference, edges):
+def project(prepared, serials, reference, edges, *, analytic=False):
     """Only rigid placement and BRANCH rotations are fitted. Fragment geometry stays fixed."""
     coords = atom_coordinates(prepared)
     initial = np.zeros((max(coords) + 1, 3))
@@ -95,11 +95,34 @@ def project(prepared, serials, reference, edges):
             moved[indices] = rotation.apply(moved[indices] - moved[u]) + moved[u]
         return align_to_reference(moved, serials, reference)
 
-    fit = least_squares(
-        lambda angles: (conformation(angles)[serials] - reference).ravel(),
-        guess,
-        max_nfev=250,
-    )
+    if analytic:
+        # At the optimal rigid-body alignment the envelope theorem cancels
+        # rotation/translation derivatives from the scalar squared-error gradient.
+        def objective(angles):
+            placed = conformation(angles)
+            residual = np.zeros_like(placed)
+            residual[serials] = placed[serials] - reference
+            grad = np.empty(len(tree))
+            for i, (u, v, moved) in enumerate(tree):
+                axis = placed[v] - placed[u]
+                axis /= np.linalg.norm(axis)
+                velocity = np.cross(axis, placed[moved] - placed[u])
+                grad[i] = np.sum(velocity * residual[moved])
+            return 0.5 * np.sum(residual**2), grad
+
+        fit = minimize(
+            objective,
+            guess,
+            jac=True,
+            method="L-BFGS-B",
+            options={"maxiter": 600, "gtol": 1e-6, "ftol": 1e-11},
+        )
+    else:
+        fit = least_squares(
+            lambda angles: (conformation(angles)[serials] - reference).ravel(),
+            guess,
+            max_nfev=250,
+        )
     if not fit.success:
         raise ValueError(f"Torsion projection failed: {fit.message}")
     placed = conformation(fit.x)

@@ -1,0 +1,1 @@
+538 poses independently rescored with rank_anchor_pool.py; max abs difference of frozen 8-digit prior=4.9507313804e-09
