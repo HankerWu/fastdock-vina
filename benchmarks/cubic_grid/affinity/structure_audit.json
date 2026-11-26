@@ -1,0 +1,305 @@
+{
+  "FAK": {
+    "pdb": "6YT6",
+    "chain": "B",
+    "component": "PKE",
+    "additional_truncations": {},
+    "source_pdb_sha256": "6aea1a5a58d02d06a5707dca1139b447a2ee3287453ad4e4d7aedce0e700c3a7",
+    "source_sdf_sha256": "3672745e53749f2651d030e48248644b87895ec43d32480ed672000b0369c21b",
+    "nearest_omitted_A": {
+      "ATOM:A:protein": 21.817570442191773,
+      "HETATM:A:SO4": 38.384999491989056
+    },
+    "prep": {
+      "truncations": {},
+      "missing": {},
+      "closest_repaired": null,
+      "reported_gaps": {},
+      "center": [
+        2.5052903225806453,
+        6.104709677419356,
+        -21.643354838709676
+      ]
+    }
+  },
+  "SYK": {
+    "pdb": "6ZCY",
+    "chain": "A",
+    "component": "QF8",
+    "additional_truncations": {
+      "404": {
+        "original": "LEU",
+        "distance_A": 10.409236379293151
+      }
+    },
+    "ring_repair": {
+      "chi1_delta_deg": 75,
+      "chi2_delta_deg": 0,
+      "closest_observed_heavy_A": 3.929857247407988,
+      "overlap_sum_A2": 0.0,
+      "Lys386": {
+        "rotation_deg": 45,
+        "min_external_A": 3.147062976994625
+      },
+      "Ser379": {
+        "rotation_deg": -45,
+        "min_external_A": 3.1161126454407104
+      }
+    },
+    "source_pdb_sha256": "38041252aa261cf3258e5061b7fabb382bc48492ff7f9363c6508ba46495a583",
+    "source_sdf_sha256": "e4bc15b8ba0ede78733d713ad9cff42657fadecaa43028053b7f393aa628574f",
+    "nearest_omitted_A": {},
+    "prep": {
+      "truncations": {
+        "368": {
+          "original": "LYS",
+          "distance": 20.09696198433982,
+          "unresolved": [
+            "CD",
+            "CE",
+            "NZ"
+          ]
+        },
+        "391": {
+          "original": "GLN",
+          "distance": 15.924384258111834,
+          "unresolved": [
+            "CG",
+            "CD",
+            "OE1",
+            "NE2"
+          ]
+        },
+        "393": {
+          "original": "LYS",
+          "distance": 19.4254835461051,
+          "unresolved": [
+            "CG",
+            "CD",
+            "CE",
+            "NZ"
+          ]
+        },
+        "442": {
+          "original": "GLU",
+          "distance": 17.892689373037246,
+          "unresolved": [
+            "CG",
+            "CD",
+            "OE1",
+            "OE2"
+          ]
+        },
+        "464": {
+          "original": "ARG",
+          "distance": 15.62540572273245,
+          "unresolved": [
+            "CD",
+            "NE",
+            "CZ",
+            "NH1",
+            "NH2"
+          ]
+        },
+        "465": {
+          "original": "HIS",
+          "distance": 17.93987508317714,
+          "unresolved": [
+            "CG",
+            "ND1",
+            "CE1",
+            "NE2",
+            "CD2"
+          ]
+        },
+        "467": {
+          "original": "LYS",
+          "distance": 20.12911875865409,
+          "unresolved": [
+            "CD",
+            "CE",
+            "NZ"
+          ]
+        },
+        "524": {
+          "original": "ASN",
+          "distance": 23.255323369069714,
+          "unresolved": [
+            "CG",
+            "OD1",
+            "ND2"
+          ]
+        },
+        "529": {
+          "original": "GLN",
+          "distance": 22.274993804712942,
+          "unresolved": [
+            "CG",
+            "CD",
+            "OE1",
+            "NE2"
+          ]
+        },
+        "530": {
+          "original": "THR",
+          "distance": 20.8100135751998,
+          "unresolved": [
+            "CG2",
+            "OG1"
+          ]
+        },
+        "531": {
+          "original": "HIS",
+          "distance": 19.29906966669637,
+          "unresolved": [
+            "CG",
+            "ND1",
+            "CE1",
+            "NE2",
+            "CD2"
+          ]
+        },
+        "599": {
+          "original": "ARG",
+          "distance": 27.756320829677694,
+          "unresolved": [
+            "CD",
+            "NE",
+            "CZ",
+            "NH1",
+            "NH2"
+          ]
+        },
+        "614": {
+          "original": "GLU",
+          "distance": 28.596426874698874,
+          "unresolved": [
+            "CG",
+            "CD",
+            "OE1",
+            "OE2"
+          ]
+        },
+        "625": {
+          "original": "ARG",
+          "distance": 25.652735156314225,
+          "unresolved": [
+            "CG",
+            "CD",
+            "NE",
+            "CZ",
+            "NH1",
+            "NH2"
+          ]
+        },
+        "636": {
+          "original": "HIS",
+          "distance": 32.14411947775207,
+          "unresolved": [
+            "CG",
+            "ND1",
+            "CE1",
+            "NE2",
+            "CD2"
+          ]
+        },
+        "637": {
+          "original": "HIS",
+          "distance": 29.19931639610763,
+          "unresolved": [
+            "CG",
+            "ND1",
+            "CE1",
+            "NE2",
+            "CD2"
+          ]
+        }
+      },
+      "missing": {
+        "374": [
+          "CG",
+          "OD1",
+          "OD2"
+        ],
+        "375": [
+          "CG",
+          "CD",
+          "CE",
+          "NZ"
+        ],
+        "379": [
+          "OG"
+        ],
+        "382": [
+          "CG",
+          "CD1",
+          "CE1",
+          "CZ",
+          "CE2",
+          "CD2"
+        ],
+        "386": [
+          "CE",
+          "NZ"
+        ],
+        "405": [
+          "CG",
+          "CD",
+          "CE",
+          "NZ"
+        ],
+        "413": [
+          "CG",
+          "CD1",
+          "CD2"
+        ],
+        "414": [
+          "CG",
+          "CD",
+          "CE",
+          "NZ"
+        ],
+        "425": [
+          "CG",
+          "CD",
+          "OE1",
+          "NE2"
+        ],
+        "458": [
+          "CE",
+          "NZ"
+        ],
+        "462": [
+          "CD",
+          "OE1",
+          "NE2"
+        ],
+        "533": [
+          "CG",
+          "CD",
+          "CE",
+          "NZ"
+        ],
+        "570": [
+          "CG",
+          "CD",
+          "OE1",
+          "NE2"
+        ],
+        "571": [
+          "CG",
+          "CD",
+          "CE",
+          "NZ"
+        ]
+      },
+      "closest_repaired": 4.686872731363632,
+      "reported_gaps": {},
+      "center": [
+        1.3903333333333332,
+        0.9268484848484848,
+        13.68712121212121
+      ]
+    }
+  }
+}

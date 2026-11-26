@@ -1,0 +1,26 @@
+{
+  "FAK": {
+    "exact_assay_entries": 18,
+    "checked_entries": 12,
+    "unique_pairs": 47,
+    "pair_counts": {
+      "native": 9,
+      "cubic": 19,
+      "native-readback": 9,
+      "cubic-readback": 19
+    },
+    "all_cids_distinct": true
+  },
+  "SYK": {
+    "exact_assay_entries": 19,
+    "checked_entries": 14,
+    "unique_pairs": 68,
+    "pair_counts": {
+      "native": 43,
+      "cubic": 47,
+      "native-readback": 43,
+      "cubic-readback": 47
+    },
+    "all_cids_distinct": true
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "affinity": {
+    "n_unique_pairs": 15,
+    "n_unique_compounds": 8,
+    "correct": {
+      "native": 4,
+      "cubic": 11
+    },
+    "gains": 7,
+    "losses": 0,
+    "matched_epimers": {
+      "8/10": {
+        "native": 0,
+        "cubic": 1
+      },
+      "9/11": {
+        "native": 1,
+        "cubic": 1
+      }
+    }
+  },
+  "affinity_confirmation": {
+    "n_unique_pairs": 15,
+    "n_unique_compounds": 8,
+    "correct": {
+      "native": 9,
+      "cubic": 9
+    },
+    "gains": 1,
+    "losses": 1,
+    "matched_epimers": {
+      "8/10": {
+        "native": 1,
+        "cubic": 1
+      },
+      "9/11": {
+        "native": 1,
+        "cubic": 1
+      }
+    }
+  }
+}

@@ -1,0 +1,12 @@
+target,name,reason
+SYK,AST-487,outside fixed name-structure dictionary
+SYK,BI-2536,outside fixed name-structure dictionary
+SYK,CHIR-265/RAF-265,outside fixed name-structure dictionary
+SYK,HKI-272,outside fixed name-structure dictionary
+SYK,PD-173955,outside fixed name-structure dictionary
+FAK,BI-2536,outside fixed name-structure dictionary
+FAK,BIBF-1120 (derivative),outside fixed name-structure dictionary
+FAK,BIRB-796,outside fixed name-structure dictionary
+FAK,GSK-1838705A,outside fixed name-structure dictionary
+FAK,HKI-272,outside fixed name-structure dictionary
+FAK,PHA-665752,outside fixed name-structure dictionary

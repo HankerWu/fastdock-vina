@@ -1,0 +1,38 @@
+{
+  "6YT6": {
+    "shared_atom_max_displacement_A": 0.0,
+    "added_heavy_atom_count": 0,
+    "nearest_added_atom_A": null,
+    "residue_number_gaps": [
+      {
+        "after": 567,
+        "before": 583,
+        "nearest_flanking_CA_A": 11.883375993378314
+      }
+    ],
+    "contacts_below_2A_nonadjacent_residues": []
+  },
+  "6ZCY": {
+    "shared_atom_max_displacement_A": 0.0,
+    "added_heavy_atom_count": 48,
+    "nearest_added_atom_A": 6.091827065831729,
+    "residue_number_gaps": [
+      {
+        "after": 379,
+        "before": 382,
+        "nearest_flanking_CA_A": 6.057970699830101
+      },
+      {
+        "after": 405,
+        "before": 413,
+        "nearest_flanking_CA_A": 13.561265943856421
+      },
+      {
+        "after": 531,
+        "before": 533,
+        "nearest_flanking_CA_A": 13.815672911588491
+      }
+    ],
+    "contacts_below_2A_nonadjacent_residues": []
+  }
+}
