@@ -103,51 +103,33 @@ std::bitset<XS_TYPE_SIZE> cache::missing_map_types(const szv& atom_types) const 
 	return types;
 }
 
-fl cache::eval(const model& m, fl v) const { // needs m.coords
-	fl e = 0;
-
+template<bool Cubic>
+fl cache::eval_atoms(const model& m, fl cap, vecv* gradient, bool flex_only) const {
+	if (flex_only && m.num_flex() == 0) return 0;
+	fl energy = 0;
 	VINA_FOR(i, m.num_movable_atoms()) {
-		const sz t = affinity_map_type(m.atoms[i].xs);
-		if (t >= XS_TYPE_SIZE) continue;
-
-		const grid& g = m_grids[t];
-		e += g.evaluate(m.coords[i], m_slope, v);
-	}
-	return e;
-}
-
-fl cache::eval_intra(model& m, fl v) const {
-	if (m.num_flex() == 0) return 0;
-	fl e = 0;
-
-	VINA_FOR(i, m.num_movable_atoms()) {
-		if(m.is_atom_in_ligand(i)) continue; // we only want flex-rigid interaction
-		const sz t = affinity_map_type(m.atoms[i].xs);
-		if (t >= XS_TYPE_SIZE) continue;
-
-		const grid& g = m_grids[t];
-		e += g.evaluate(m.coords[i], m_slope, v);
-	}
-	return e;
-}
-
-fl cache::eval_deriv(model& m, fl v) const { // needs m.coords, sets m.minus_forces
-	fl e = 0;
-
-	VINA_FOR(i, m.num_movable_atoms()) {
+		if (flex_only && m.is_atom_in_ligand(i)) continue;
 		const sz t = affinity_map_type(m.atoms[i].xs);
 		if (t >= XS_TYPE_SIZE) {
-			m.minus_forces[i].assign(0);
+			if (gradient) (*gradient)[i].assign(0);
 			continue;
 		}
-
-		vec deriv;
-		const grid& g = m_grids[t];
-		e += g.evaluate(m.coords[i], m_slope, v, deriv);
-		m.minus_forces[i] = deriv;
+		const grid& field = m_grids[t];
+		if (Cubic)
+			energy += field.evaluate_cubic(m.coords[i], m_slope, cap, gradient ? &(*gradient)[i] : nullptr);
+		else if (gradient)
+			energy += field.evaluate(m.coords[i], m_slope, cap, (*gradient)[i]);
+		else
+			energy += field.evaluate(m.coords[i], m_slope, cap);
 	}
-	return e;
+	return energy;
 }
+
+template fl cache::eval_atoms<true>(const model&, fl, vecv*, bool) const;
+
+fl cache::eval(const model& m, fl v) const { return eval_atoms<false>(m, v, nullptr, false); }
+fl cache::eval_intra(model& m, fl v) const { return eval_atoms<false>(m, v, nullptr, true); }
+fl cache::eval_deriv(model& m, fl v) const { return eval_atoms<false>(m, v, &m.minus_forces, false); }
 
 bool cache::is_in_grid(const model& m, fl margin) const {
 	VINA_FOR(i, m.num_movable_atoms()) {

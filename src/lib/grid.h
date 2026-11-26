@@ -47,13 +47,16 @@ public:
 	bool initialized() const {
 		return m_data.dim0() > 0 && m_data.dim1() > 0 && m_data.dim2() > 0;
 	}
-	fl evaluate(const vec& location, fl slope, fl c)             const { return evaluate_aux(location, slope, c, NULL);   }
-	fl evaluate(const vec& location, fl slope, fl c, vec& deriv) const { return evaluate_aux(location, slope, c, &deriv); } // sets deriv
+	fl evaluate(const vec& location, fl slope, fl c)             const { return evaluate_aux<false>(location, slope, c, NULL);   }
+	fl evaluate(const vec& location, fl slope, fl c, vec& deriv) const { return evaluate_aux<false>(location, slope, c, &deriv); } // sets deriv
+	fl evaluate_cubic(const vec& location, fl slope, fl cap, vec* gradient) const {
+		return evaluate_aux<true>(location, slope, cap, gradient);
+	}
 private:
     vec m_factor;
     vec m_dim_fl_minus_1;
 
-	fl evaluate_aux(const vec& location, fl slope, fl v, vec* deriv) const; // sets *deriv if not NULL
+	template<bool Cubic> fl evaluate_aux(const vec& location, fl slope, fl v, vec* deriv) const; // sets *deriv if not NULL
 	friend class boost::serialization::access;
 	template<class Archive>
 	void serialize(Archive& ar, const unsigned version) {

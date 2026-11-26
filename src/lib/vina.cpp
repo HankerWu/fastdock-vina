@@ -1595,6 +1595,9 @@ void Vina::global_search(const int exhaustiveness, const int n_poses, const doub
 	    rerank || m_armijo_refinement || polar_rank || burial_rank || net_polar_rank ||
 	    !m_pose_template_path.empty() || archive_enabled))
 		throw vina_runtime_error("mixed_cutoff_search requires native Late Vina refinement and ranking, a rigid receptor, exhaustiveness >= 2, and cutoff > 1 Angstrom");
+	if (m_cubic_search_grid && (!late_selection || !m_use_explicit_receptor || m_sf_choice != SF_VINA ||
+	                            m_soft_receptor_search || m_mixed_cutoff_search))
+		throw vina_runtime_error("cubic_search_grid requires rigid Late Vina with a single receptor search grid");
 	if (m_soft_receptor_search && (!late_selection || exhaustiveness < 2 || !m_use_explicit_receptor ||
 	    m_sf_choice != SF_VINA || m_no_refine || m_mixed_cutoff_search || m_scoring_function->smooth_cutoff() ||
 	    !m_search_anchor_path.empty() || !m_search_amide_path.empty()))
@@ -1619,16 +1622,18 @@ void Vina::global_search(const int exhaustiveness, const int n_poses, const doub
 		rank_amides.erase(std::remove_if(rank_amides.begin(), rank_amides.end(),
 			[](const amide_search_site& site) { return site.barrier == 0; }), rank_amides.end());
 	}
+	const cache::cubic_view cubic_grid(m_grid);
+	const igrid& base_grid = m_cubic_search_grid ? static_cast<const igrid&>(cubic_grid) : static_cast<const igrid&>(m_grid);
 	boost::optional<amide_search_grid> amide_grid;
 	if (!m_search_amide_path.empty()) {
 		ifile file(m_search_amide_path);
 		auto sites = read_search_amides(file, m_model);
 		if (m_verbosity > 0 || m_search_counters)
 			std::cout << "Search amide: sites=" << sites.size() << " search=all_trajectories final=native_late\n";
-		amide_grid.emplace(m_grid, std::move(sites));
+		amide_grid.emplace(base_grid, std::move(sites));
 	}
 	// Anchor trajectory selection affects only the anchor. Amides guide both subsets.
-	const igrid& unanchored_grid = amide_grid ? static_cast<const igrid&>(*amide_grid) : static_cast<const igrid&>(m_grid);
+	const igrid& unanchored_grid = amide_grid ? static_cast<const igrid&>(*amide_grid) : base_grid;
 	boost::optional<anchored_search_grid> anchor_grid;
 	if (!m_search_anchor_path.empty()) {
 		ifile file(m_search_anchor_path);

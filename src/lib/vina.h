@@ -151,6 +151,7 @@ public:
 	void set_separate_hunt_chain(bool enabled);
 	void set_prepared_torsion_starts(bool enabled) { m_prepared_torsion_starts = enabled; }
 	void set_balanced_torsion_search(bool enabled) { m_balanced_torsion = enabled; }
+	void set_cubic_search_grid(bool enabled) { m_cubic_search_grid = enabled; }
 	void set_soft_receptor_search(bool enabled) { m_soft_receptor_search = enabled; }
 	void set_mixed_cutoff_search(bool enabled) { m_mixed_cutoff_search = enabled; }
 	void set_search_counters(bool enabled) { m_search_counters = enabled; }
@@ -231,6 +232,7 @@ private:
 	bool m_mixed_cutoff_search = false;
 	bool m_prepared_torsion_starts = false;
 	bool m_balanced_torsion = false;
+	bool m_cubic_search_grid = false;
 	bool m_soft_receptor_search = false;
 	double m_pocket_start_radius = 0;
 	enum class template_stage { rank, select, refine };

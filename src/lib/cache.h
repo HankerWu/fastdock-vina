@@ -65,7 +65,18 @@ public:
                const std::string& fld_filename="NULL", const std::string& receptor_filename="NULL");
 	void populate(const model& m, const precalculate& p, const szv_grid& receptor_index,
 	              const std::bitset<XS_TYPE_SIZE>& map_types_needed);
+	// Read-only search view of these same maps. Explicit refinement continues
+	// through non_cache and does not see the interpolant.
+	struct cubic_view : public igrid {
+		explicit cubic_view(const cache& maps) : maps(maps) {}
+		fl eval(const model& m, fl v) const override { return maps.eval_atoms<true>(m, v, nullptr, false); }
+		fl eval_intra(model& m, fl v) const override { return maps.eval_atoms<true>(m, v, nullptr, true); }
+		fl eval_deriv(model& m, fl v) const override { return maps.eval_atoms<true>(m, v, &m.minus_forces, false); }
+	private:
+		const cache& maps;
+	};
 private:
+	template<bool Cubic> fl eval_atoms(const model& m, fl v, vecv* gradient, bool flex_only) const;
 	grid_dims m_gd;
 	fl m_slope; // does not get (de-)serialized
 	std::vector<grid> m_grids;

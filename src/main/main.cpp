@@ -133,6 +133,7 @@ Thank you!\n";
 		bool mixed_cutoff_search = false;
 		bool prepared_torsion_starts = false;
 		bool balanced_torsion_search = false;
+		bool cubic_search_grid = false;
 		bool soft_receptor_search = false;
 		double buffer_size = 4;
 		double unbound_energy = NAN;
@@ -293,6 +294,8 @@ Thank you!\n";
 			 "start even trajectories at input ligand torsions with a random rigid placement")
 			("balanced_torsion_search", bool_switch(&balanced_torsion_search),
 			 "distribute each ligand torsion proposal between both sides to minimize heavy-atom motion about the bond")
+			("cubic_search_grid", bool_switch(&cubic_search_grid),
+			 "use tricubic receptor-map interpolation in Late Vina search")
 			("soft_receptor_search", bool_switch(&soft_receptor_search),
 			 "halve receptor repulsion on even search trajectories only; keep configured Late postprocessing")
 			("mixed_cutoff_search", bool_switch(&mixed_cutoff_search),
@@ -371,7 +374,7 @@ Thank you!\n";
 		if (rerank_gauss2_scale >= 0 && rerank_gauss2_scale < 1 && !regular_rigid_vina)
 			throw usage_error("rerank_gauss2_scale below 1 requires regular Vina docking with a rigid receptor, one ligand per run, and explicit receptor refinement");
 
-		if ((mixed_cutoff_search || soft_receptor_search || vm.count("search_anchor") || vm.count("search_amide") || vm.count("rank_amide")) && vm["pose_selection"].defaulted()) pose_selection = "late";
+		if ((cubic_search_grid || mixed_cutoff_search || soft_receptor_search || vm.count("search_anchor") || vm.count("search_amide") || vm.count("rank_amide")) && vm["pose_selection"].defaulted()) pose_selection = "late";
 		if (vm.count("search_anchor_trajectories") && !vm.count("search_anchor"))
 			throw usage_error("search_anchor_trajectories requires search_anchor");
 		if (vm.count("search_anchor") && (search_anchor_path.empty() || !regular_rigid_vina ||
@@ -383,6 +386,8 @@ Thank you!\n";
 		if (vm.count("rank_amide") && (rank_amide_path.empty() || !regular_rigid_vina ||
 		    ligand_names.size() != 1 || vm.count("batch") || pose_selection != "late"))
 			throw usage_error("rank_amide requires regular rigid single-ligand Late Vina docking");
+		if (cubic_search_grid && (!regular_rigid_vina || pose_selection != "late" || soft_receptor_search || mixed_cutoff_search))
+			throw usage_error("cubic_search_grid requires rigid Late Vina with a single receptor search grid");
 		if (soft_receptor_search && (!regular_rigid_vina || ligand_names.size() != 1 || vm.count("batch") ||
 		    pose_selection != "late" || exhaustiveness < 2))
 			throw usage_error("soft_receptor_search requires rigid single-ligand Late Vina docking and at least two trajectories");
@@ -577,6 +582,7 @@ Thank you!\n";
 		v.set_mixed_cutoff_search(mixed_cutoff_search);
 		v.set_prepared_torsion_starts(prepared_torsion_starts);
 		v.set_balanced_torsion_search(balanced_torsion_search);
+		v.set_cubic_search_grid(cubic_search_grid);
 		v.set_soft_receptor_search(soft_receptor_search);
 		v.set_search_counters(search_counters);
 		if (vm.count("pocket_start_radius"))
