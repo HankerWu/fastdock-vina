@@ -1,0 +1,1 @@
+Raw first MODELs independently reproduce all 9 reported chemical pair scores (1128 file reads).

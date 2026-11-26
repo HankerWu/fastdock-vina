@@ -1,0 +1,9 @@
+panel,receptor,ligand,seed,trajectories,search_evaluations
+cross_wrong,1FJS,DX9,271828,4,200157
+cross_wrong,1FJS,DX9,314159,4,200077
+cross_wrong,1FJS,DX9,161803,4,200290
+cross_wrong,1FJS,DX9,141421,4,200228
+cross_wrong,2P16,DX9,271828,4,200115
+cross_wrong,2P16,DX9,314159,4,200080
+cross_wrong,2P16,DX9,161803,4,200085
+cross_wrong,2P16,DX9,141421,4,200076

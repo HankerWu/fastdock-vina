@@ -249,6 +249,8 @@ PYTHONDONTWRITEBYTECODE=1 python3 benchmarks/check_refinement_input_compatibilit
 
 `--search_anchor` 可将受体提供的配位空位或其他配体的共有骨架用于全局搜索。五个体系的配对试验检验了候选恢复、质子化叔胺的两种构型，以及相同实验条件下的 Ki/Kd 排序。[搜索引导与微态研究](docs/ANCHOR_AND_MICROSTATE_RESEARCH.md)
 
+在结构先验可能只适用于部分配体时，可加 `--search_anchor_trajectories even` 或 `odd`，按从 1 开始的轨迹序号选择接受引导的那一半；其余轨迹在原生势上搜索，所有候选统一用 Late 原生精修与排序。默认 `all`。不同轨迹分配、正确与错误头部及实测 Ki/Kd 的结果见[等预算混合搜索实验](benchmarks/mixed_anchors/README.md)。
+
 同一供体有多种合法原子对应时，搜索引导现支持在完整分配之间平滑切换。三体系的配对复算、独立烷基苯晶体系列及 28 个因子 Xa 配体给出了姿势与亲和力的适用范围。[多对应搜索、受体构象与亲和力实验](docs/CORRESPONDENCE_AND_AFFINITY.md)
 
 ## 引用
