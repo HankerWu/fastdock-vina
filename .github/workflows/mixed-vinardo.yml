@@ -1,0 +1,19 @@
+name: Mixed Vinardo research verification
+on:
+  push:
+    branches: ["research/mixed-vinardo-20261126"]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  smoke:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install build dependencies
+        run: sudo apt-get update && sudo apt-get install -y libboost-all-dev
+      - name: Build FastDock Vina
+        run: python3 tools/build.py --output-dir build/mixed-vinardo --jobs 2
+      - name: Regression
+        run: python3 benchmarks/mixed_vinardo/check.py build/mixed-vinardo/vina
