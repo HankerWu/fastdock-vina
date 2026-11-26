@@ -158,6 +158,8 @@ python3 benchmarks/check_pro_rerank.py build/vina /path/to/pre-pro/vina
 
 通过 `--score_only --rigid_window_pool POOL` 可以在已生成的姿势上积分平移和转动。已知芳基脒与受体羧酸根配对时，`tools/make_ion_pair_anchors.py` 可生成只用于搜索的方向约束；有实测 pKa 和参考 pH 亲和力时，`tools/ionization.py` 可计算条件换算。适用范围、反例与同一候选池中的实测结果见[局部运动、质子化和晶体环境研究](docs/LOCAL_MOTION_AND_LINKAGE.md)。
 
+在五个 hCA II 磺酰胺的固定候选池上，给可动非环羧酰胺的非平面扭转加上能量代价，将联合首姿命中从 0/20 提到 6/20。独立运行的等预算候选池从 2/20 提到 8/20。此项是可选的姿势重排，跨体系亲和力效果随候选池而变。[酰胺扭转与复现实验](benchmarks/amide_search/README.md) · [胰蛋白酶和因子 Xa 的水相转移检验](benchmarks/trypsin_transfer/README.md)
+
 ### 显式精修的 Armijo 回退线搜索
 
 在常规刚性单配体 Vina 对接命令加 `--refinement_optimizer armijo`，可在最终显式受体精修中

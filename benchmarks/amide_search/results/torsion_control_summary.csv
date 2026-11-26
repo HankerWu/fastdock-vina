@@ -1,0 +1,17 @@
+cohort,scope,variant,hits,cells,median_rmsd,unique,pairs
+new,all,zero,2,20,4.599608808021547,3.0,7
+new,all,amide,8,20,4.074907869509107,5.0,7
+new,all,adjacent,4,20,4.522200694780649,5.0,7
+new,all,perpendicular,0,20,4.551641589524204,3.0,7
+new,cross,zero,2,16,4.822854893662889,2.0,6
+new,cross,amide,5,16,4.645347256042149,3.0,6
+new,cross,adjacent,4,16,4.654875501924786,5.0,6
+new,cross,perpendicular,0,16,4.795762952997666,2.0,6
+archive,all,zero,0,20,4.71781661,3.0,7
+archive,all,amide,6,20,3.82995046,2.0,7
+archive,all,adjacent,2,20,4.38852249,6.0,7
+archive,all,perpendicular,1,20,4.56206422,2.0,7
+archive,cross,zero,0,16,4.79580701,3.0,6
+archive,cross,amide,4,16,4.176055565,1.0,6
+archive,cross,adjacent,2,16,4.841755845,5.0,6
+archive,cross,perpendicular,1,16,5.095643075,2.0,6

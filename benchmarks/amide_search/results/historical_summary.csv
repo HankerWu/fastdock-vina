@@ -1,0 +1,7 @@
+scope,barrier,cells,top,oracle,unique,pairs
+all,0,20,0,10,3.0,7
+cross,0,16,0,7,3.0,6
+all,5,20,6,10,3.0,7
+cross,5,16,4,7,2.0,6
+all,15,20,6,10,2.0,7
+cross,15,16,4,7,1.0,6
