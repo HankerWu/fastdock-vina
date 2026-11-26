@@ -36,3 +36,7 @@ inter/intra rows at output precision and agreed on receptor-frame RMSD to
 Run `python basins/run.py PREPARED ROTATION_WORK VINA OUT` from the parent
 benchmark directory after `rotation/run.py`. Outputs are energies.csv and
 the projection/relaxation coordinates.
+
+For independent verification from released artifacts, extract
+`starts_and_relaxations.tar.xz` to POSES, then run
+`python basins/verify.py PREPARED POSES VINA`.
