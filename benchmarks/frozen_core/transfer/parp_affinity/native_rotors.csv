@@ -1,0 +1,5 @@
+compound,num_tors,torsdof,num_rotors,heavy_atoms
+niraparib,3,3,3,24
+olaparib,4,4,4,32
+talazoparib,2,2,2,28
+veliparib,2,2,2,18

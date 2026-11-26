@@ -1,4 +1,4 @@
-# Late 对接的外部模板引导
+# 外部共晶配体引导的姿势选择
 
 模板应来自不同的共晶配体，且预先对齐到本次刚性受体的坐标系。文本每行四列，用空格或制表符分隔，依次为大小写准确的元素符号和三个 Å 坐标。示例写两行，实际可使用参照配体的全部重原子。
 
@@ -13,7 +13,7 @@ build/template/vina --receptor receptor.pdbqt --ligand ligand.pdbqt --config box
   --seed 42 --cpu 1 --exhaustiveness 8 --num_modes 9 --energy_range 100 --out template_rank.pdbqt
 ```
 
-`--pose_template` 和 `--template_stage` 成对提供。支持一个刚性受体、一个配体、直接生成搜索网格、Vina 力场和原生显式受体精修。命令支持已有 Vina 权重参数。同一个对照使用相同权重和搜索预算。模板模式与 `--batch`、柔性受体、预计算网格、既有 Gauss2 重排、Armijo 精修、禁用精修、单点打分或局部优化模式互斥。
+`--pose_template` 和 `--template_stage` 成对提供。下述三个元素重叠阶段支持一个刚性受体、一个配体、直接生成搜索网格、Vina 力场和原生显式受体精修。命令支持已有 Vina 权重参数。同一个对照使用相同权重和搜索预算。这三个阶段与 `--batch`、柔性受体、预计算网格、既有 Gauss2 重排、Armijo 精修、禁用精修、单点打分或局部优化模式互斥。
 
 ## 重叠项和三个作用阶段
 
@@ -42,13 +42,13 @@ PYTHONDONTWRITEBYTECODE=1 python3 benchmarks/check_pose_template.py \
 ```
 
 数值检查 `benchmarks/check_pose_template_numeric.cpp` 使用同一 Boost 配置链接
-`build/template/obj/` 的 `conf_independent`、`non_cache`、`szv_grid`、`model`、
+`build/template/obj/` 的 `cache`、`grid`、`coords`、`conf_independent`、`non_cache`、`szv_grid`、`model`、
 `parse_pdbqt`、`quasi_newton`、`quaternion`、`random` 和 `utils`。运行该检查时传入
 `examples/basic/1iep_ligand.pdbqt`，它检验双向归一、元素匹配、Cartesian 与姿势自由度数值梯度，以及 BFGS 对已知极小值的收敛。
 
 ### 按受体接触重排
 
-为比较一种配体与另一种已知结合配体在同一受体上的接触，可用 `--template_stage contact_rank`。模板仍是受体坐标系中的元素和重原子坐标文件。这个选项只改变精修后的排序。候选生成、局部优化、Vina 原生亲和力和原生能量窗使用原流程。
+为比较一种配体与另一种已知结合配体在同一受体上的接触，可用 `--template_stage contact_rank`。模板仍是受体坐标系中的元素和重原子坐标文件。默认 Native 和 Late 均支持该选项，也可沿用已有的显式 Armijo 或 geometry 精修。这个选项只改变精修后的排序。候选生成、局部优化、Vina 原生亲和力和原生能量窗使用原流程。
 
 受体上每个重原子记录它到最近配体重原子的距离。4 Å 以内取 1，之后线性下降，6 Å 时归零。另给受体 N/O 记录到最近配体 N/O 的距离，在 3 至 4.5 Å 内线性下降。这是极性原子接近程度，未判断氢键方向。分别计算两类接触在查询与独立模板之间的连续 Tanimoto 相似度，取非空通道的平均。只有查询产生的接触也进入分母。保留原有模板排序的强度和扭转归一化，分数并列时按原生名次排序。不同结合模式、不同亚口袋或错误的模板对齐都可能削弱这个先验。
 

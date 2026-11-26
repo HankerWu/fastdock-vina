@@ -1,0 +1,16 @@
+receptor,method,pairs,correct
+4UND,native,4,4
+4UND,raw,4,4
+4UND,uniform,4,4
+4UND,contact,4,4
+4UND,mmff,4,4
+7KK4,native,4,4
+7KK4,raw,4,4
+7KK4,uniform,4,4
+7KK4,contact,4,4
+7KK4,mmff,4,4
+mean_receptors,native,4,4
+mean_receptors,raw,4,4
+mean_receptors,uniform,4,4
+mean_receptors,contact,4,4
+mean_receptors,mmff,4,4
