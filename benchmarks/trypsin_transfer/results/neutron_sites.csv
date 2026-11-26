@@ -1,0 +1,7 @@
+residue,number,atom,alternate,occupancy
+HIS,57,HD1,A,0.09
+HIS,57,DD1,B,0.91
+HIS,57,DE2,A,0.35
+SER,195,OG,A,0.47
+SER,195,OG,C,0.53
+SER,195,DG,C,0.53
