@@ -68,6 +68,11 @@ def chemical_examples():
     unspecified = Chem.MolFromSmiles("CCC=CCC")
     known = Chem.MolFromSmiles("CC/C=C/CC")
     assert all(len(pairs) == 6 for pairs in check_invariance(known, unspecified, rng))
+    known_tetra = Chem.MolFromSmiles("CC[C@H](F)CO")
+    unknown_tetra = Chem.MolFromSmiles("CCC(F)CO")
+    assert all(
+        len(pairs) == 6 for pairs in check_invariance(known_tetra, unknown_tetra, rng)
+    )
     for smi, flipped, center in (
         ("CC[C@H](F)CO", "CC[C@@H](F)CO", 2),
         ("CC[C@](F)(Cl)CO", "CC[C@@](F)(Cl)CO", 2),

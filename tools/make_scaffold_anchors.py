@@ -129,14 +129,22 @@ def all_correspondences(query, donor):
     query_stereo = stereo_constraints(query)
     donor_stereo = stereo_constraints(donor)
     molecules = [query, donor]
-    if query_stereo[1] or donor_stereo[1]:
+    if (
+        query_stereo[1]
+        or donor_stereo[1]
+        or bool(query_stereo[0]) != bool(donor_stereo[0])
+    ):
         # RDKit's tetrahedral FMCS final check can reject even an alkene matched
-        # to itself. Use explicit local orientation checks for these inputs.
+        # to itself or reject an unassigned tetrahedron in just one search direction.
+        # Use explicit local orientation checks for these inputs.
         params.AtomCompareParameters.MatchChiralTag = False
         params.FinalMatchChecker = StereoMatch((query_stereo, donor_stereo))
         molecules = [Chem.Mol(mol) for mol in molecules]
         for index, mol in enumerate(molecules):
             mol.SetIntProp("_stereo_source", index)
+    elif query_stereo[0]:
+        # Keep the same FMCS candidate family when the external reference is exchanged.
+        molecules.sort(key=Chem.MolToSmiles)
     result = rdFMCS.FindMCS(molecules, params)
     if result.canceled:
         raise ValueError("Incomplete maximum common substructure search")
