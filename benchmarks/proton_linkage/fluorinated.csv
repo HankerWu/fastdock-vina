@@ -1,0 +1,8 @@
+ligand,neutral_smiles,pka,measured_kd_nm,kd_deviation_nm,fluorines
+BS,NS(=O)(=O)c1ccccc1,10.1,730,60,0
+2F,NS(=O)(=O)c1c(F)cccc1,9.6,230,20,1
+3F,NS(=O)(=O)c1cc(F)ccc1,9.7,75,8,1
+4F,NS(=O)(=O)c1ccc(F)cc1,10.0,590,40,1
+26F,NS(=O)(=O)c1c(F)cccc1F,9.1,190,14,2
+35F,NS(=O)(=O)c1cc(F)cc(F)c1,9.4,57,12,2
+5F,NS(=O)(=O)c1c(F)c(F)c(F)c(F)c1F,8.2,25,4,5

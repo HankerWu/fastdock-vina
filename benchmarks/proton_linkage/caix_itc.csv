@@ -1,0 +1,5 @@
+reference,reference_ph,reference_kd_nm,reference_fit_error_nm,test_ph,test_kd_nm,test_fit_error_nm
+FTSA_S2_ph7,7.0,0.0046,,10.0,26.6,7.50
+ITC_S25C_panel,9.5,1.04,0.684,10.0,26.6,7.50
+ITC_S25C_caption,9.6,1.04,0.684,10.0,26.6,7.50
+ITC_S25C_methods,9.7,1.04,0.684,10.0,26.6,7.50
