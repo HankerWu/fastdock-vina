@@ -1,3 +1,4 @@
 Independent legacy single points 60 max |E difference| 0.00551188212557463
 Independent angular sums and matched gap rows 60
 16 full-protein double-precision OBC2 checks; max absolute error 4.504749432676647e-05
+Fine-grid/cross-run common energies and independent nested partitions: 96 shared angles, 64 reductions

@@ -116,6 +116,10 @@ def audit_legacy(prepared, results, exe):
         for r, l, t, i in (k,)
     ]
     write(results / "independent_quantum.csv", rows)
+    if any(abs(row["delta"]) > 0.02 for row in rows):
+        raise ValueError(
+            "Independent xTB total-energy difference exceeds 0.02 kcal/mol"
+        )
     print(
         "Independent legacy single points",
         len(rows),
@@ -174,6 +178,50 @@ def audit_edges(prepared, results):
     print("Independent angular sums and matched gap rows", count)
 
 
+def audit_resolution(results):
+    # Compare fine and coarse independently generated grids at their common angles.
+    key = lambda row: (
+        row["receptor"],
+        row["ligand"],
+        row["seed"],
+        float(row["angle_deg"]),
+    )
+    coarse = {
+        key(r): r
+        for r in read(results / "energies.csv")
+        if r["fragment"] == "triad"
+        and r["solvent"] == "water"
+        and r["histidine"] == "delta"
+        and r["arm"] == "shell"
+        and r["ligand"] in ("NH2", "OCH3")
+    }
+    fine = {key(r): r for r in read(results / "angular_raw.csv")}
+    assert len(coarse) == 96 and len(fine) == 768
+    for k, x in coarse.items():
+        for name in ("pocket", "complex"):
+            assert abs(float(fine[k][name]) - float(x[name])) < 0.002
+    stored = read(results / "angular.csv")
+    assert len(stored) == 64
+    for row in stored:
+        rec, lig, seed = row["receptor"], row["ligand"], row["seed"]
+        spacing = float(row["step_deg"])
+        values = [
+            r
+            for (rrec, rlig, rseed, phi), r in fine.items()
+            if (rrec, rlig, rseed) == (rec, lig, seed) and phi % spacing == 0
+        ]
+        Z = lambda term: sum(
+            math.exp(-(float(r[term]) - min(float(v[term]) for v in values)) / RT)
+            for r in values
+        )
+        E = lambda term: min(float(r[term]) for r in values) - RT * math.log(Z(term))
+        fixed = float(coarse[rec, lig, seed, 0]["ligand_water"])
+        assert abs((E("complex") - E("pocket") - fixed) - float(row["transfer"])) < 1e-8
+    print(
+        "Fine-grid/cross-run common energies and independent nested partitions: 96 shared angles, 64 reductions"
+    )
+
+
 def neutron(path, results):
     """Read deposited alternative identities and H/D occupancies independently of the prepared protonation."""
     chosen = {
@@ -213,3 +261,4 @@ if __name__ == "__main__":
     if a.xtb:
         audit_legacy(a.prepared, a.results, a.xtb.resolve())
     audit_edges(a.prepared, a.results)
+    audit_resolution(a.results)
