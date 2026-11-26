@@ -1,7 +1,13 @@
 """Select one independent scaffold donor using only the prepared ligand graphs."""
 
+import sys
+from pathlib import Path
+
 from rdkit import Chem
 from rdkit.Chem import rdFMCS
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "tools"))
+from make_scaffold_anchors import mcs_parameters
 
 
 def canonical_match(mol, pattern):
@@ -16,16 +22,7 @@ def canonical_match(mol, pattern):
 def choose_reference(query_id, molecules):
     """Return (donor ID, matched query atoms, matched donor atoms) or None."""
     query = molecules[query_id]
-    params = rdFMCS.MCSParameters()
-    params.MaximizeBonds = False
-    params.Timeout = 60
-    params.AtomTyper = rdFMCS.AtomCompare.CompareElements
-    params.BondTyper = rdFMCS.BondCompare.CompareOrderExact
-    params.AtomCompareParameters.MatchFormalCharge = True
-    params.AtomCompareParameters.MatchChiralTag = True
-    params.AtomCompareParameters.RingMatchesRingOnly = True
-    params.BondCompareParameters.RingMatchesRingOnly = True
-    params.BondCompareParameters.CompleteRingsOnly = True
+    params = mcs_parameters()
     best = None
     for donor_id, donor in sorted(molecules.items()):
         if donor_id == query_id:

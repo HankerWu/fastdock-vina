@@ -54,7 +54,17 @@ def main():
         one = run(args.binary, "--search_anchor", anchor, "--cpu", "1")
         assert one == run(args.binary, "--search_anchor", anchor, "--cpu", "2")
         assert one != run(args.binary, "--pose_selection", "late", "--cpu", "1")
-        for model in re.findall(rb"^MODEL .*?^ENDMDL$", one, re.MULTILINE | re.DOTALL):
+        original = anchor.read_text()
+        anchor.write_text(
+            original + "OR\n" + "\n".join(reversed(original.splitlines())) + "\n"
+        )
+        assert one == run(args.binary, "--search_anchor", anchor, "--cpu", "1")
+        anchor.write_text(original + "OR\n3 18 53 18\n39 16 52 15 shell 2\n")
+        ensemble = run(args.binary, "--search_anchor", anchor, "--cpu", "1")
+        assert ensemble == run(args.binary, "--search_anchor", anchor, "--cpu", "2")
+        for model in re.findall(
+            rb"^MODEL .*?^ENDMDL$", one + ensemble, re.MULTILINE | re.DOTALL
+        ):
             fixed = tmp / "fixed.pdbqt"
             fixed.write_bytes(model + b"\n")
             score = subprocess.check_output(
@@ -76,6 +86,10 @@ def main():
             assert abs(inter - saved) < 0.06
         for bad in (
             "",
+            "OR\n3 16 52 15",
+            "3 16 52 15\nOR",
+            "3 16 52 15\nOR\nOR\n3 16 52 15",
+            "3 16 52 15\nOR extra\n39 16 52 15",
             "3 0 0 0",
             "99999 16 52 15",
             "4 16 52 15",

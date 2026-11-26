@@ -5,9 +5,12 @@ import itertools
 import json
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
+import sys
 
-from coordination_probe import ligand_mapping
 from rdkit import Chem
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "cutoff_switch" / "hcaii"))
+from coordination_probe import ligand_mapping
 from run_hcaii import LIGANDS, RECEPTORS, SEEDS, dock, evaluate
 from transfer_mapping import choose_reference
 

@@ -47,7 +47,36 @@ def anchor_penalty(sites, coords):
     return energy / len(sites)
 
 
+def read_assignments(text):
+    """A line containing OR separates equally weighted, complete assignments."""
+    blocks = [[]]
+    for line in text.splitlines():
+        if line.strip() == "OR":
+            blocks.append([])
+        else:
+            blocks[-1].append(line)
+    unique = {}
+    for block in blocks:
+        sites = read_sites("\n".join(block))
+        key = tuple(sorted(sites.items()))
+        unique.setdefault(key, sites)
+    return list(unique.values())
+
+
+def ensemble_penalty(alternatives, coords):
+    values = [anchor_penalty(sites, coords) for sites in alternatives]
+    if len(values) == 1:
+        return values[0]
+    lowest = min(values)
+    tau = 0.6
+    return lowest - tau * math.log(
+        math.fsum(math.exp((lowest - e) / tau) for e in values) / len(values)
+    )
+
+
 def ranked_pool(text, sites):
+    alternatives = [sites] if isinstance(sites, dict) else sites
+    serials = {s for assignment in alternatives for s in assignment}
     rows = []
     for model, lines in read_models(text.splitlines()).items():
         # Only native Late headers specify the expected component ordering.
@@ -64,10 +93,10 @@ def ranked_pool(text, sites):
         if any(
             i not in atoms
             or atoms[i].atom_type in {"H", "HD", "HS", "W", "G0", "G1", "G2", "G3"}
-            for i in sites
+            for i in serials
         ):
             raise ValueError("Landmark must identify a real heavy atom in every model")
-        bias = anchor_penalty(sites, {i: atoms[i].xyz for i in sites})
+        bias = ensemble_penalty(alternatives, {i: atoms[i].xyz for i in serials})
         rows.append(
             {
                 "model": model,
@@ -98,7 +127,9 @@ if __name__ == "__main__":
     args = parser.parse_args()
     print(
         json.dumps(
-            ranked_pool(args.pool.read_text(), read_sites(args.sites.read_text())),
+            ranked_pool(
+                args.pool.read_text(), read_assignments(args.sites.read_text())
+            ),
             indent=2,
             allow_nan=False,
         )

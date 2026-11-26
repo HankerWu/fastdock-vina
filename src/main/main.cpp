@@ -153,6 +153,7 @@ Thank you!\n";
 		double weight_vinardo_repulsion = 0.8;
 		double weight_vinardo_hydrophobic = -0.035;
 		double weight_vinardo_hydrogen = -0.600;
+		double weight_vinardo_rot = 0.05846;
 
 		// macrocycle closure
 		double weight_glue        = 50.000000; // linear attraction
@@ -231,7 +232,7 @@ Thank you!\n";
 			("weight_vinardo_repulsion", value<double>(&weight_vinardo_repulsion)->default_value(weight_vinardo_repulsion), "Vinardo repulsion weight")
 			("weight_vinardo_hydrophobic", value<double>(&weight_vinardo_hydrophobic)->default_value(weight_vinardo_hydrophobic), "Vinardo hydrophobic weight")
 			("weight_vinardo_hydrogen", value<double>(&weight_vinardo_hydrogen)->default_value(weight_vinardo_hydrogen), "Vinardo Hydrogen bond weight")
-			("weight_vinardo_rot", value<double>(&weight_rot)->default_value(weight_rot), "Vinardo N_rot weight")
+			("weight_vinardo_rot", value<double>(&weight_vinardo_rot)->default_value(weight_vinardo_rot), "Vinardo N_rot weight")
 
 			("weight_ad4_vdw", value<double>(&weight_ad4_vdw)->default_value(weight_ad4_vdw), "ad4_vdw weight")
 			("weight_ad4_hb", value<double>(&weight_ad4_hb)->default_value(weight_ad4_hb), "ad4_hb weight")
@@ -255,7 +256,7 @@ Thank you!\n";
 			("refine_candidates", value<int>(),
 			 "maximum Late candidates sent to explicit refinement (at least num_modes; default num_modes)")
 			("search_anchor", value<std::string>(&search_anchor_path),
-			 "guide grid search (rows: ligand serial x y z [shell radius]); native Late refinement and scoring")
+			 "guide grid search (rows: ligand serial x y z [shell radius]; OR separates alternative assignments); native Late refinement and scoring")
 			("pose_template", value<std::string>(&pose_template_path),
 			 "aligned external template with element, x, y and z columns (Angstrom)")
 			("template_stage", value<std::string>(&template_stage),
@@ -571,7 +572,7 @@ Thank you!\n";
 							   weight_hydrophobic, weight_hydrogen, weight_glue, weight_rot);
 		} else if (sf_name.compare("vinardo") == 0) {
 			v.set_vinardo_weights(weight_vinardo_gauss1, weight_vinardo_repulsion,
-								  weight_vinardo_hydrophobic, weight_vinardo_hydrogen, weight_glue, weight_rot);
+								  weight_vinardo_hydrophobic, weight_vinardo_hydrogen, weight_glue, weight_vinardo_rot);
 		} else {
 			v.set_ad4_weights(weight_ad4_vdw, weight_ad4_hb, weight_ad4_elec,
 							  weight_ad4_dsolv, weight_glue, weight_ad4_rot);

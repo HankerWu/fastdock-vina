@@ -1,0 +1,2 @@
+4 query/donor graph ensembles invariant to independent atom permutations
+144 runs, 1272 models, worst absolute RMSD difference 0.00000065 A

@@ -1,0 +1,7 @@
+['fdv-fxa'] size_charge_matched False pairs 295 native/raw/size [187, 131, 74.0]
+['fdv-fxa'] size_charge_matched True pairs 17 native/raw/size [6, 6, 8.5]
+['fdv-fxa1'] size_charge_matched False pairs 295 native/raw/size [231.5, 157, 74.0]
+['fdv-fxa1'] size_charge_matched True pairs 17 native/raw/size [12, 10, 8.5]
+['fdv-fxa', 'fdv-fxa1'] size_charge_matched False pairs 295 native/raw/size [223, 146, 74.0]
+['fdv-fxa', 'fdv-fxa1'] size_charge_matched True pairs 17 native/raw/size [9, 8, 8.5]
+28 independent experimental labels; 112 raw top models

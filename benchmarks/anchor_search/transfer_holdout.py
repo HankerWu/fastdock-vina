@@ -12,11 +12,10 @@ from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 import numpy as np
-from rdkit import Chem
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "tools"))
-from score_physical_pool import mapped_ligand_bonds, serial_index_pairs
+from make_scaffold_anchors import query_graph
 
 RECEPTORS = {"brd4": ("3MXF", "4OGI", "4OGJ"), "t4l": ("1L90", "186L")}
 SEEDS = (314159, 271828)
@@ -30,20 +29,7 @@ def write_csv(path, rows):
 
 
 def ligand_graph(prepared, ligand):
-    text = (prepared / f"{ligand}_ligand.pdbqt").read_text()
-    mapped_ligand_bonds(text)
-    lines = text.splitlines()
-    (smiles,) = [
-        line.split()[2]
-        for line in lines
-        if line.startswith("REMARK SMILES ")
-        and not line.startswith("REMARK SMILES IDX ")
-    ]
-    graph = Chem.MolFromSmiles(smiles)
-    serials = {
-        i - 1: serial for i, serial in serial_index_pairs(lines, "REMARK SMILES IDX ")
-    }
-    return graph, serials
+    return query_graph((prepared / f"{ligand}_ligand.pdbqt").read_text())
 
 
 def build_anchors(prepared, work, panel):

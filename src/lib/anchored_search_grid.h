@@ -1,7 +1,9 @@
 #ifndef VINA_ANCHORED_SEARCH_GRID_H
 #define VINA_ANCHORED_SEARCH_GRID_H
 
+#include <map>
 #include <set>
+#include <tuple>
 
 #include "igrid.h"
 #include "parse_pdbqt.h"
@@ -13,9 +15,11 @@ struct search_anchor_site {
 	fl radius;
 };
 
-inline std::vector<search_anchor_site> read_search_anchors(std::istream& file, const model& ligand,
+using anchor_assignment = std::vector<search_anchor_site>;
+
+inline std::vector<anchor_assignment> read_search_anchors(std::istream& file, const model& ligand,
                                                        const vec& lower, const vec& upper) {
-	std::vector<search_anchor_site> sites;
+	std::vector<anchor_assignment> alternatives(1);
 	std::set<sz> assigned;
 	const auto heavy = ligand_heavy_indices_by_serial(ligand);
 	std::string line;
@@ -25,7 +29,15 @@ inline std::vector<search_anchor_site> read_search_anchors(std::istream& file, c
 		std::string serial_text;
 		fl x, y, z, radius = 0;
 		std::string extra;
-		if (!(row >> serial_text >> x >> y >> z) || serial_text.size() > 5 ||
+		row >> serial_text;
+		if (serial_text == "OR") {
+			if ((row >> extra) || alternatives.back().empty())
+				throw std::invalid_argument("search_anchor requires a nonempty assignment before OR");
+			alternatives.emplace_back();
+			assigned.clear();
+			continue;
+		}
+		if (!(row >> x >> y >> z) || serial_text.size() > 5 ||
 		    serial_text.find_first_not_of("0123456789") != std::string::npos)
 			throw std::invalid_argument("search_anchor rows require a positive atom serial and three coordinates");
 		if (row >> extra) {
@@ -43,19 +55,37 @@ inline std::vector<search_anchor_site> read_search_anchors(std::istream& file, c
 		const sz index = it->second;
 		if (!assigned.insert(index).second)
 			throw std::invalid_argument("search_anchor contains a repeated atom serial");
-		sites.push_back({index, point, radius});
+		alternatives.back().push_back({index, point, radius});
 	}
-	if (file.bad() || sites.empty()) throw std::invalid_argument("Cannot read any sites from search_anchor");
-	return sites;
+	if (file.bad() || alternatives.back().empty()) throw std::invalid_argument("Cannot read any sites from search_anchor");
+	return alternatives;
 }
 
 // Guide the grid search only. Workers share immutable sites and apply
 // derivatives to their own model. Normalize so ring size cannot amplify the prior.
 class anchored_search_grid : public igrid {
 public:
-	anchored_search_grid(const igrid& base, std::vector<search_anchor_site> sites)
-		: base(base), sites(std::move(sites)) {
-		if (this->sites.empty()) throw std::invalid_argument("search_anchor needs at least one site");
+	anchored_search_grid(const igrid& base, anchor_assignment sites)
+		: anchored_search_grid(base, std::vector<anchor_assignment>{std::move(sites)}) {}
+
+	anchored_search_grid(const igrid& base, std::vector<anchor_assignment> alternatives)
+		: base(base) {
+		if (alternatives.empty()) throw std::invalid_argument("search_anchor needs at least one assignment");
+		// Shared terms are evaluated once even if a ring has many valid orientations.
+		std::map<std::tuple<sz, fl, fl, fl, fl>, sz> indices;
+		std::set<szv> seen;
+		for (const auto& alternative : alternatives) {
+			if (alternative.empty()) throw std::invalid_argument("search_anchor needs nonempty assignments");
+			szv ids;
+			for (const auto& site : alternative) {
+				const auto key = std::make_tuple(site.index, site.target[0], site.target[1], site.target[2], site.radius);
+				const auto entry = indices.emplace(key, sites.size());
+				if (entry.second) sites.push_back(site);
+				ids.push_back(entry.first->second);
+			}
+			std::sort(ids.begin(), ids.end());
+			if (seen.insert(ids).second) assignments.push_back(std::move(ids));
+		}
 	}
 
 	// Pseudo-Huber potential with a 1 Å length scale and 4 raw energy units.
@@ -85,7 +115,7 @@ public:
 	fl eval_intra(model& m, fl cap) const override { return base.eval_intra(m, cap); }
 
 private:
-	fl bias(const model& m, vecv* gradients) const {
+	fl single_bias(const model& m, vecv* gradients) const {
 		fl energy = 0;
 		const fl weight = 1.0 / sites.size();
 		for (const auto& site : sites) {
@@ -96,8 +126,48 @@ private:
 		}
 		return weight * energy;
 	}
+	fl bias(const model& m, vecv* gradients) const {
+		if (assignments.size() == 1) return single_bias(m, gradients);
+		// Immutable grids are shared by all workers. Scratch is private to each calling thread.
+		struct workspace { flv energies, weights, coefficients; vecv derivatives; };
+		thread_local workspace w;
+		w.energies.resize(sites.size());
+		if (gradients) w.derivatives.resize(sites.size());
+		VINA_FOR_IN(i, sites) {
+			const auto& site = sites[i];
+			w.energies[i] = penalty(m.coords[site.index] - site.target,
+			                        gradients ? &w.derivatives[i] : nullptr, site.radius);
+		}
+		w.weights.resize(assignments.size());
+		fl lowest = max_fl;
+		VINA_FOR_IN(j, assignments) {
+			fl total = 0;
+			for (sz i : assignments[j]) total += w.energies[i];
+			w.weights[j] = total / assignments[j].size();
+			lowest = std::min(lowest, w.weights[j]);
+		}
+		// A fixed smoothing scale in raw search units, not an assay temperature.
+		constexpr fl tau = 0.6;
+		fl sum = 0;
+		for (auto& value : w.weights) {
+			value = std::exp((lowest - value) / tau);
+			sum += value;
+		}
+		if (gradients) {
+			w.coefficients.assign(sites.size(), 0);
+			VINA_FOR_IN(j, assignments) {
+				const fl fraction = w.weights[j] / (sum * assignments[j].size());
+				for (sz i : assignments[j]) w.coefficients[i] += fraction;
+			}
+			VINA_FOR_IN(i, sites)
+				(*gradients)[sites[i].index] += w.coefficients[i] * w.derivatives[i];
+		}
+		return lowest - tau * std::log(sum / assignments.size());
+	}
+
 	const igrid& base;
-	std::vector<search_anchor_site> sites;
+	anchor_assignment sites;
+	std::vector<szv> assignments;
 };
 
 #endif

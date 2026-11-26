@@ -1556,7 +1556,8 @@ void Vina::global_search(const int exhaustiveness, const int n_poses, const doub
 		ifile file(m_search_anchor_path);
 		auto sites = read_search_anchors(file, m_model, m_grid.corner1(), m_grid.corner2());
 		if (m_verbosity > 0 || m_search_counters)
-			std::cout << "Search anchor: sites=" << sites.size() << " search=all_trajectories final=native_late\n";
+			std::cout << "Search anchor: sites=" << sites.front().size() << " assignments=" << sites.size()
+			          << " search=all_trajectories final=native_late\n";
 		anchor_grid.emplace(m_grid, std::move(sites));
 	}
 	if (archive_enabled) {

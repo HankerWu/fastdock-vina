@@ -1,0 +1,20 @@
+Tetrahedral and E/Z controls passed, including atom permutation, exchanged molecules, changed reference substituent, and partial or unspecified stereo.
+brd4 4O76 4OGJ stored 24 compatible 24
+brd4 4O77 4OGJ stored 2 compatible 2
+brd4 4OGI 4O76 stored 4 compatible 4
+brd4 4OGJ 4O76 stored 24 compatible 24
+t4l 181L 187L stored 12 compatible 12
+t4l 182L 181L stored 12 compatible 12
+t4l 183L 181L stored 12 compatible 12
+t4l 184L 186L stored 4 compatible 4
+t4l 185L 181L stored 12 compatible 12
+t4l 186L 184L stored 4 compatible 4
+t4l 187L 188L stored 8 compatible 8
+t4l 188L 187L stored 8 compatible 8
+t4l 1NHB 184L stored 2 compatible 2
+hcaii 6WQ4 6WQ5 stored 4 compatible 4
+hcaii 6WQ5 6WQ8 stored 8 compatible 8
+hcaii 6WQ7 6WQ9 stored 16 compatible 16
+hcaii 6WQ8 6WQ5 stored 8 compatible 8
+hcaii 6WQ9 6WQ7 stored 16 compatible 16
+Verified exchange, independent atom renumbering, and the historical single map for 18 experimental graph pairs.

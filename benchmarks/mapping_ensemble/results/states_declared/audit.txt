@@ -1,0 +1,3 @@
+poses=538 maximum_RMSD_delta=4.9966089e-09 max_intramolecular_distance_change=0
+both_states RMSD top/oracle and sign-compatible top/oracle [5, 12, 0, 10]
+original_only RMSD top/oracle and sign-compatible top/oracle [5, 10, 0, 2]

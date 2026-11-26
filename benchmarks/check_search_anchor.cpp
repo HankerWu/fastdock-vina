@@ -42,26 +42,45 @@ int main(int argc, char** argv) {
 	const auto indices = ligand_heavy_indices_by_serial(m);
 	const sz first = indices.at(3), second = indices.at(39);
 	const vec a(0.25, -0.52, 0.81), b(-1.9, 0.4, 0.23);
-	const anchored_search_grid guide(base, {{first, m.movable_coords(first) - a, 0},
-	                                        {second, m.movable_coords(second) - b, 2}});
+	const anchor_assignment first_map = {{first, m.movable_coords(first) - a, 0},
+	                                     {second, m.movable_coords(second) - b, 2}};
+	const vec c(1.3, 0.6, -0.3);
+	const anchor_assignment second_map = {first_map[0], {second, m.movable_coords(second) - c, 0}};
+	const anchor_assignment permuted = {first_map[1], first_map[0]};
+	const fl mean1 = (anchored_search_grid::penalty(a) + anchored_search_grid::penalty(b, nullptr, 2)) / 2;
+	const fl mean2 = (anchored_search_grid::penalty(a) + anchored_search_grid::penalty(c)) / 2;
+	const fl ensemble = -0.6 * std::log((std::exp(-mean1/0.6) + std::exp(-mean2/0.6)) / 2);
+	const std::vector<std::vector<anchor_assignment>> cases = {
+		{first_map}, {first_map, permuted}, {first_map, second_map},
+		{second_map, permuted, first_map}};
 	const vec cap(1000, 1000, 1000);
 	flv g0(m.get_size().num_degrees_of_freedom()), g1(g0.size());
 	const fl e0 = m.eval_deriv(pairs, base, cap, g0);
-	const fl e1 = m.eval_deriv(pairs, guide, cap, g1);
-	const fl mean = (anchored_search_grid::penalty(a) + anchored_search_grid::penalty(b, nullptr, 2)) / 2;
-	check(std::abs(e1 - e0 - mean) < 1e-12, "mixed-site normalization/energy");
-	check(guide.eval_intra(m, 1000) == base.eval_intra(m, 1000), "ligand-only reference");
-	for (sz i = 0; i < g0.size(); ++i) {
-		flv basis(g0.size(), 0);
-		basis[i] = 1;
-		conf shifted = origin;
-		shifted.set_incremented(origin, basis, step);
-		m.set(shifted);
-		const fl plus = guide.eval(m, 1000) - base.eval(m, 1000);
-		shifted.set_incremented(origin, basis, -step);
-		m.set(shifted);
-		const fl minus = guide.eval(m, 1000) - base.eval(m, 1000);
-		check(std::abs((plus - minus)/(2*step) - (g1[i]-g0[i])) < 1e-6, "torsion/rigid gradient");
+	for (sz k = 0; k < cases.size(); ++k) {
+		const anchored_search_grid guide(base, cases[k]);
+		m.set(origin);
+		const fl expected = k < 2 ? mean1 : ensemble;
+		const fl e1 = m.eval_deriv(pairs, guide, cap, g1);
+		check(std::abs(e1 - e0 - expected) < 1e-12, "ensemble derivative energy");
+		check(std::abs(guide.eval(m, 1000) - base.eval(m, 1000) - expected) < 1e-12, "ensemble scalar energy");
+		check(guide.eval_intra(m, 1000) == base.eval_intra(m, 1000), "ligand-only reference");
+		for (sz i = 0; i < g0.size(); ++i) {
+			flv basis(g0.size(), 0);
+			basis[i] = 1;
+			conf shifted = origin;
+			shifted.set_incremented(origin, basis, step);
+			m.set(shifted);
+			const fl plus = guide.eval(m, 1000) - base.eval(m, 1000);
+			shifted.set_incremented(origin, basis, -step);
+			m.set(shifted);
+			const fl minus = guide.eval(m, 1000) - base.eval(m, 1000);
+			check(std::abs((plus - minus)/(2*step) - (g1[i]-g0[i])) < 1e-6, "torsion/rigid gradient");
+		}
 	}
-	std::cout << "Point, shell and mixed-site energies, Cartesian and pose gradients passed\n";
+	m.set(origin);
+	const anchor_assignment distant = {{first, m.movable_coords(first) + vec(1e5, 0, 0), 0}};
+	const anchored_search_grid separated(base, std::vector<anchor_assignment>{first_map, distant});
+	check(std::abs(separated.eval(m, 1000) - base.eval(m, 1000) - mean1 - 0.6*std::log(2.)) < 1e-12,
+	      "stable large-energy separation");
+	std::cout << "Single and alternative point/shell energies, order, multiplicity, stability and pose gradients passed\n";
 }

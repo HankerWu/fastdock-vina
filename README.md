@@ -245,6 +245,8 @@ PYTHONDONTWRITEBYTECODE=1 python3 benchmarks/check_refinement_input_compatibilit
 
 `--search_anchor` 可将受体提供的配位空位或其他配体的共有骨架用于全局搜索。五个体系的配对试验检验了候选恢复、质子化叔胺的两种构型，以及相同实验条件下的 Ki/Kd 排序。[搜索引导与微态研究](docs/ANCHOR_AND_MICROSTATE_RESEARCH.md)
 
+同一供体有多种合法原子对应时，搜索引导现支持在完整分配之间平滑切换。三体系的配对复算、独立烷基苯晶体系列及 28 个因子 Xa 配体给出了姿势与亲和力的适用范围。[多对应搜索、受体构象与亲和力实验](docs/CORRESPONDENCE_AND_AFFINITY.md)
+
 ## 引用
 
 研究中使用时，请引用 Vina 的原始论文：

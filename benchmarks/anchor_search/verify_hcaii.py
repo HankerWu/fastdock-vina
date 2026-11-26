@@ -90,6 +90,8 @@ def verify(work, output):
             )
             errors.append(abs(rms - float(row["rmsd"])))
             same = handedness(probe, conf.GetPositions()) * sign > 0
+            if "sign_ok" in row and bool(int(row["sign_ok"])) != same:
+                raise ValueError(f"Nitrogen handedness differs in {name} model {row['model']}")
             hits.append((rms <= 2, same))
         cells.append(
             {
