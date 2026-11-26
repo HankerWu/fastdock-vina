@@ -154,6 +154,10 @@ PDBQT 只写本轮引擎评分，保留配体输入中的其他注释。
 python3 benchmarks/check_pro_rerank.py build/vina /path/to/pre-pro/vina
 ```
 
+### 局部刚体积分、离子对几何与 pH 条件换算
+
+通过 `--score_only --rigid_window_pool POOL` 可以在已生成的姿势上积分平移和转动。已知芳基脒与受体羧酸根配对时，`tools/make_ion_pair_anchors.py` 可生成只用于搜索的方向约束；有实测 pKa 和参考 pH 亲和力时，`tools/ionization.py` 可计算条件换算。适用范围、反例与同一候选池中的实测结果见[局部运动、质子化和晶体环境研究](docs/LOCAL_MOTION_AND_LINKAGE.md)。
+
 ### 显式精修的 Armijo 回退线搜索
 
 在常规刚性单配体 Vina 对接命令加 `--refinement_optimizer armijo`，可在最终显式受体精修中

@@ -123,6 +123,7 @@ public:
 	void set_ligand_from_file(const std::vector<std::string>& ligand_name);
 	// Fixed score only. Preserve prepared topology while replacing lab coordinates.
 	void set_pose_coordinates_for_scoring(const std::string& pose_name);
+	void show_rigid_window_pool(const std::string& path, unsigned samples) const;
 	void set_ligand_from_file_with_bonds(const std::string& ligand_name, const std::string& bonds_name);
 	// Configure the Vina/Vinardo cutoff before loading ligands or maps.
 	void set_interaction_cutoff(double cutoff, bool smooth_cutoff = false);

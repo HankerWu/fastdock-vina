@@ -98,7 +98,8 @@ Thank you!\n";
 		std::string rigid_reorientation = "native";
 		bool separate_hunt_chain = false;
 		bool use_min_rmsd_for_merge = false;
-		std::string pose_coordinates;
+		std::string pose_coordinates, rigid_window_pool;
+		unsigned rigid_window_samples = 2048;
 		std::string ligand_bonds;
 		bool search_counters = false;
 		double pocket_start_radius = 0;
@@ -202,6 +203,10 @@ Thank you!\n";
 			("score_only",     bool_switch(&score_only),     "score only - single-system receptor input defaults to autobox")
 			("ligand_bonds", value<std::string>(&ligand_bonds),
 			 "trusted complete ligand covalent graph as undirected PDBQT serial pairs")
+			("rigid_window_pool", value<std::string>(&rigid_window_pool),
+			 "integrate rigid-body fluctuations around each MODEL of a native pose pool (score_only)")
+			("rigid_window_samples", value<unsigned>(&rigid_window_samples),
+			 "Sobol samples per scale for rigid_window_pool (power of two, default 2048)")
 			("pose_coordinates", value<std::string>(&pose_coordinates),
 			 "fixed score only: use coordinates from one pose with the topology prepared from --ligand")
 			("local_only",     bool_switch(&local_only),     "do local search only")
@@ -400,6 +405,13 @@ Thank you!\n";
 		     rigid_name.empty() || vm.count("batch") || vm.count("flex") || vm.count("maps") ||
 		     vm.count("write_maps") || no_refine || (sf_name != "vina" && sf_name != "vinardo")))
 			throw usage_error("pose_coordinates requires score_only with one prepared Vina or Vinardo ligand and an explicit rigid receptor");
+		if (vm.count("rigid_window_samples") && !vm.count("rigid_window_pool"))
+			throw usage_error("rigid_window_samples requires rigid_window_pool");
+		if (vm.count("rigid_window_pool") && (!score_only || local_only || randomize_only || no_refine ||
+		    ligand_names.size()!=1 || rigid_name.empty() || sf_name!="vina" || vm.count("maps") ||
+		    vm.count("batch") || vm.count("flex") || vm.count("write_maps") || (vm.count("unbound_energy") && !vm["unbound_energy"].defaulted()) ||
+		    vm.count("pose_coordinates") || vm.count("net_polar") || vm.count("polar_burial")))
+			throw usage_error("rigid_window_pool requires score_only, one prepared ligand, and an explicit rigid Vina receptor");
 		const bool polar_burial_score_only = vm.count("polar_burial") && score_only;
 		const bool net_polar_score_only = vm.count("net_polar") && score_only;
 		if (vm.count("net_polar_waters") && (!vm.count("net_polar") || net_polar_waters.empty()))
@@ -588,6 +600,10 @@ Thank you!\n";
 				v.set_ligand_from_file_with_bonds(ligand_names.front(), ligand_bonds);
 			else
 				v.set_ligand_from_file(ligand_names);
+			if (vm.count("rigid_window_pool")) {
+				v.show_rigid_window_pool(rigid_window_pool,rigid_window_samples);
+				return 0;
+			}
 			if (vm.count("pose_coordinates"))
 				v.set_pose_coordinates_for_scoring(pose_coordinates);
 			if (net_polar_score_only) {

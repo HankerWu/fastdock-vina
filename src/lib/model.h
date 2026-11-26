@@ -143,6 +143,7 @@ public:
 	vec ligand_heavy_centroid(sz ligand_number) const;
 	vec ligand_heavy_centroid(const ligand_conf& conf) const;
 
+	const atomv& grid_atoms() const;
 	const atom_base& movable_atom  (sz i) const { assert(i < m_num_movable_atoms); return  atoms[i]; }
 	const vec&       movable_coords(sz i) const { assert(i < m_num_movable_atoms); return coords[i]; }
 
@@ -228,7 +229,6 @@ private:
     bool is_unmatched_closure_dummy(sz i, sz j) const;
 	bool is_glue_pair(sz i, sz j) const;
 
-	const atomv& grid_atoms() const;
 	atom& initializing_atom(const atom_index& i, atomv& rigid_atoms) { return i.in_grid ? rigid_atoms[i.i] : atoms[i.i]; }
 	void assign_bonds(const distance_type_matrix& mobility, atomv& rigid_atoms);
 	void assign_types(atomv& rigid_atoms);

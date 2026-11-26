@@ -24,6 +24,8 @@
    to avoid deep copies and build deferred affinity maps at use.
    See docs/PROVENANCE.md for upstream and experimental source identities. */
 
+#include "rigid_window.h"
+#include "printable_box.h"
 #include <fstream>
 #include <utility>
 #include <limits>
@@ -186,6 +188,62 @@ void Vina::set_pose_coordinates_for_scoring(const std::string& pose_name) {
 	    m_model.num_ligands() != 1 || m_model.num_flex() != 0)
 		throw vina_runtime_error("pose_coordinates requires a prepared single ligand and an explicit rigid receptor");
 	replace_fixed_pose_coordinates(m_model, get_file_contents(pose_name));
+}
+
+void Vina::show_rigid_window_pool(const std::string &path, unsigned samples) const {
+	if (!m_ligand_initialized || !m_receptor_initialized || m_no_refine ||
+		(m_map_initialized && !m_use_explicit_receptor) || m_sf_choice != SF_VINA || m_model.num_ligands() != 1 ||
+		m_model.num_flex() != 0)
+		throw vina_runtime_error(
+			"rigid_window_pool requires one prepared Vina ligand and an explicit rigid receptor");
+	std::ifstream input(path);
+	if (!input)
+		throw vina_runtime_error("Cannot open rigid_window_pool: " + path);
+	model working = m_model;
+	const rigid_window::evaluator window(working, *m_scoring_function, samples);
+	const fl slope =
+		m_scoring_function->conf_independent(working, 1) - m_scoring_function->conf_independent(working, 0);
+	const vec cap(1000, 1000, 1000);
+	std::string line, block;
+	std::set<sz> identifiers;
+	sz number = 0;
+	std::ostringstream rows;
+	rows << std::setprecision(12);
+	while (std::getline(input, line)) {
+		if (!line.empty() && line.back() == '\r')
+			line.pop_back();
+		std::istringstream fields(line);
+		std::string tag;
+		fields >> tag;
+		if (tag == "MODEL") {
+			if (!block.empty())
+				throw vina_runtime_error("Nested MODEL in rigid_window_pool");
+			long long id;
+			std::string extra;
+			if (!(fields >> id) || id <= 0 || (fields >> extra) || !identifiers.insert(static_cast<sz>(id)).second)
+				throw vina_runtime_error("rigid_window_pool requires unique positive MODEL identifiers");
+			number = static_cast<sz>(id);
+			block = "MODEL " + std::to_string(number) + "\n";
+		} else if (!block.empty()) {
+			if (tag != "ENDMDL") {
+				block += line + '\n';
+				continue;
+			}
+			std::string extra;
+			if (fields >> extra)
+				throw vina_runtime_error("Unexpected fields after ENDMDL in rigid_window_pool");
+			block += "ENDMDL\n";
+			replace_fixed_pose_coordinates(working, block);
+			const auto r = window.evaluate(working, slope);
+			rows << number << ',' << r.inter << ',' << working.evali(m_precalculated_byatom, cap) << ',' << slope
+				 << ',' << r.correction << ',' << r.half << ',' << r.uniform << ',' << r.effective << '\n';
+			block.clear();
+		} else if (line.find_first_not_of(" \t") != std::string::npos)
+			throw vina_runtime_error("Expected MODEL in rigid_window_pool");
+	}
+	if (input.bad() || !block.empty() || !number)
+		throw vina_runtime_error("Incomplete or empty rigid_window_pool");
+	std::cout << "model,inter,intra,slope,window_delta,half_delta,uniform_delta,effective_samples\n" << rows.str();
 }
 
 void Vina::set_ligand_from_file(const std::vector<std::string>& ligand_name) {
@@ -1702,6 +1760,15 @@ void Vina::global_search(const int exhaustiveness, const int n_poses, const doub
 					}
 					poses[i].coords = late_selection ? m_model.get_chemical_heavy_atom_movable_coords()
 					                                : m_model.get_heavy_atom_movable_coords();
+					if (late_selection && m_model.num_ligands() == 1 && m_model.num_flex() == 0) {
+						const vec shift = printable_box_shift(m_model.get_heavy_atom_movable_coords(),
+															  m_grid.corner1(), m_grid.corner2());
+						if (sqr(shift) > 0) {
+							poses[i].c.ligands[0].rigid.position += shift;
+							m_model.set(poses[i].c);
+							poses[i].coords = m_model.get_chemical_heavy_atom_movable_coords();
+						}
+					}
 					m_non_cache.slope = slope;
 					// rescoring in case a ligand or flex sidechain atom is outside box
 					// ensuring poses will be sorted with the same slope (a.k.a. out of
