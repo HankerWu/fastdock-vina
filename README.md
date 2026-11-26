@@ -241,6 +241,8 @@ PYTHONDONTWRITEBYTECODE=1 python3 benchmarks/check_refinement_input_compatibilit
 
 原生候选筛选可用 `--use_min_rmsd_for_merge` 把命令给定的 `--min_rmsd` 用于跨轨迹合并。 [候选筛选和距离控制](docs/NATIVE_MERGE_RMSD.md)
 
+可用 `--smooth_cutoff` 检验普通 Vina 势最后 1 Å 的截断，用 `--mixed_cutoff_search` 让半数轨迹在平滑势上搜索，再统一用原生势筛选和精修。四个靶点的配对实测尚未显示共同的姿势和排序收益。[算法、逐例结果与复核](docs/CUTOFF_SWITCH_RESEARCH.md)
+
 ## 引用
 
 研究中使用时，请引用 Vina 的原始论文：

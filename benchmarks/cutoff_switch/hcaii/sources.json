@@ -1,0 +1,46 @@
+{
+  "6WQ4.pdb": {
+    "url": "https://files.rcsb.org/download/6WQ4.pdb",
+    "sha256": "9fd06abfc3aade93e9e3bb43555aa413bbd01697a6666b409b676aacad1469b8"
+  },
+  "6WQ5.pdb": {
+    "url": "https://files.rcsb.org/download/6WQ5.pdb",
+    "sha256": "9b6b95c8ceef74700614ed944f5be0f6caf97ad290c78a0c7398a5498e017880"
+  },
+  "6WQ7.pdb": {
+    "url": "https://files.rcsb.org/download/6WQ7.pdb",
+    "sha256": "4339a316a0253ffab01a8ed28888cc7e64f3c523f48f319b573c63c4797ba8d2"
+  },
+  "6WQ8.pdb": {
+    "url": "https://files.rcsb.org/download/6WQ8.pdb",
+    "sha256": "7c1c8894d44ad9006d5c5eff3d0737deeb348547a4e4a516edae096f1c296e85"
+  },
+  "6WQ9.pdb": {
+    "url": "https://files.rcsb.org/download/6WQ9.pdb",
+    "sha256": "ccaf3ac0fda1a9ba9cead3e4ae21c0cfc95832f363bdd9b9b2f805fe37bc4ada"
+  },
+  "U7A.cif": {
+    "url": "https://files.rcsb.org/ligands/download/U7A.cif",
+    "sha256": "f864f704fd16a1749a6abf78bac21451206695d37a9a5b8427db3e70b7c6fdf2"
+  },
+  "U7G.cif": {
+    "url": "https://files.rcsb.org/ligands/download/U7G.cif",
+    "sha256": "c169c86b5f8f19db4893787a78edb4e202178d09e9c57129a45994a442e61910"
+  },
+  "U6V.cif": {
+    "url": "https://files.rcsb.org/ligands/download/U6V.cif",
+    "sha256": "076aeeaa914da646925eb8ead129d6e90901ad29509e0208cef8976a29b847f3"
+  },
+  "U77.cif": {
+    "url": "https://files.rcsb.org/ligands/download/U77.cif",
+    "sha256": "b89c85791f06012d3a09d07c9a0122486ccd52eddc5bd947318b22b36aa42d7a"
+  },
+  "U7J.cif": {
+    "url": "https://files.rcsb.org/ligands/download/U7J.cif",
+    "sha256": "e2b83c875f79cfbcd02933c65863e0ba0bb253ca00adc17ec0b79d4c88f68cc9"
+  },
+  "paper.xml": {
+    "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC8008423/fullTextXML",
+    "sha256": "21360e27166b5abdf8030783645c9e697f1b70a444185eb8fea75d12c8543261"
+  }
+}
