@@ -1,0 +1,14 @@
+SMTRY and explicit unit-cell translations reproduced 1631 candidate nearest distances and repulsion energies to 1.42e-14 A and 5.68e-13 raw units
+RDKit and independently obtained ligand-instance SDFs reproduced 1272 best-copy RMSDs to 6.46e-07 A
+2oss_validation_2fo-fc_map_coef.cif.gz (90, 100, 180) max 7.4505806e-06 RMS 1.4974047e-06
+3ks3_validation_2fo-fc_map_coef.cif.gz (144, 144, 240) max 7.6293945e-06 RMS 6.3695234e-07
+4o76_validation_2fo-fc_map_coef.cif.gz (108, 80, 200) max 2.4437904e-06 RMS 4.992109e-07
+4o77_validation_2fo-fc_map_coef.cif.gz (64, 90, 180) max 7.838011e-06 RMS 1.6090032e-06
+4ogi_validation_2fo-fc_map_coef.cif.gz (80, 108, 216) max 9.1884285e-06 RMS 1.7063244e-06
+4ogj_validation_2fo-fc_map_coef.cif.gz (80, 120, 216) max 8.881092e-06 RMS 1.7660756e-06
+6wq4_validation_2fo-fc_map_coef.cif.gz (96, 96, 160) max 3.8146973e-06 RMS 5.163358e-07
+6wq5_validation_2fo-fc_map_coef.cif.gz (96, 96, 162) max 7.6293945e-06 RMS 5.076799e-07
+6wq7_validation_2fo-fc_map_coef.cif.gz (96, 96, 162) max 3.8146973e-06 RMS 5.015916e-07
+6wq8_validation_2fo-fc_map_coef.cif.gz (90, 90, 150) max 3.8146973e-06 RMS 4.99709e-07
+6wq9_validation_2fo-fc_map_coef.cif.gz (96, 96, 162) max 7.6293945e-06 RMS 5.2437366e-07
+6728 pose/donor overlaps matched original C++ to 1.1e-11
