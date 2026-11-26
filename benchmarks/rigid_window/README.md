@@ -32,3 +32,26 @@ python benchmarks/rigid_window/verify.py "$BASE" "$BIN" /path/to/reference "$BAS
 The checked tables and complete raw scores are archived separately. `summary.csv` and `numerics.csv` refer to 2048 points per scale, `sensitivity.csv` compares 128, 2048 and 8192 as available. The two diagnostic boundary re-reads are in `boundary.csv`. Replays compare all originally returned models using atomwise displacements, report additions and losses separately, and preserve both SHA-256 digests for every pool. Reproduction of optional probes requires Python, NumPy and SciPy. The independent reference uses a second implementation of the sampling distribution, rotation, full explicit potential evaluation and log-sum-exp.
 
 The independent analytic.cpp checks geometric and numerical limits. Compile with C++14 and the same Boost headers. Run `python benchmarks/rigid_window/cli_checks.py BIN` for PDBQT reader coverage. Pass `--replayed "$BASE/replay"` to verify.py to independently re-score repaired poses through the normal entry point.
+
+## Exact evaluation at lower cost
+
+The evaluator stores the native midpoint potential for each used atom-type pair and squared-distance bin. A clipped lookup plus an extra zero entry implements the strict cutoff at any supported radius, including a cutoff within a lookup bin. The weighted sum still follows the original receptor and ligand atom order. A probe at distance d from the ligand centre can move at most sR + 2d sin(sa/2) on proposal scale s. Applying this bound separately to each scale removes only unreachable neighbours. This optimization changes the cost of fixed-pose integration; search and its predicted poses are outside this code path.
+
+The five pairs below time complete CLI executions at 2,048 Sobol points per scale and nine experimental-pool models. The reference and optimized binaries use the same source tree at 1b3bdcb except for rigid_window.h, the same GCC 14.2.0 -O3 build, one pinned AMD EPYC 9V74 CPU, and identical inputs. The first archived pool of each panel is specified by the table. Each timing pair was repeated five times, alternating which executable ran first. Times are medians of process CPU seconds including initialization, I/O and final output. Speedups are the median of within-repeat ratios. Wall-clock time varies with host load. [All timers and output hashes](results/fast_timings.csv)
+
+| Archive panel | Receptor/ligand | Baseline CPU s | Optimized CPU s | Paired speedup |
+|---|---|---:|---:|---:|
+| Human CA II | 6WQ4 / 6WQ4 | 1.366 | 0.686 | 2.16× |
+| BRD4 | 3MXF / 4O76 | 1.080 | 0.484 | 2.24× |
+| Bovine trypsin | 3PTB / benzamidine | 0.177 | 0.119 | 1.48× |
+| Human FXa | 1FJS / CHEMBL369583 | 0.993 | 0.483 | 2.04× |
+| Bovine CA II | 1V9E / BS | 0.301 | 0.170 | 1.71× |
+
+At the minimum 16 points per scale, process CPU medians were 0.017–0.032 s for the optimized binary. Paired speedups in panel order were 1.45×, 1.32×, 1.06×, 1.17× and 0.99× (three repeats). [Short-run timings](results/fast_timings_16.csv)
+
+On the full fixed 2,048-point archive the eight CSV fields of all 5,807 models match the original serialized values. This covers both candidate-pool preparations for FXa. The full-grid and analytic checks still apply. The comparison driver also evaluates a non-grid-aligned 7.73 Å cutoff on each panel and directly checks the zero/nonzero boundary on one-atom molecules at cutoff minus 0.001 Å, exactly at cutoff and cutoff plus 0.001 Å for three cutoff radii. The optimized command reproduces the baseline bytes in all of these tests.
+
+```sh
+python benchmarks/rigid_window/compare_fast.py "$BASE" "$BIN" --frozen "$BASE/fdv-window-fine" --jobs 4
+python benchmarks/rigid_window/compare_fast.py "$BASE" "$BIN" --baseline "$BASELINE_BIN" --timings timings.csv
+```

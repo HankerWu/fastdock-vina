@@ -2,12 +2,14 @@
 #ifndef VINA_RIGID_WINDOW_H
 #define VINA_RIGID_WINDOW_H
 
+#include <array>
 #include <boost/random/sobol.hpp>
 #include "precalculate.h"
 #include "curl.h"
 
 namespace rigid_window {
 constexpr fl radius = 1.0;
+constexpr std::array<fl, 3> scales{{1., 0.5, 0.25}};
 const fl angle = 15.0 * pi / 180.0;
 constexpr fl thermal = 0.00198720425864 * 298.15;
 
@@ -32,7 +34,6 @@ inline std::vector<sample> make_samples(unsigned count) {
 	if (count < 16 || count > 65536 || (count & (count - 1)))
 		throw std::invalid_argument("rigid_window_samples requires a power of two between 16 and 65536");
 	boost::random::sobol engine(6);
-	const fl scales[] = {1., 0.5, 0.25};
 	std::vector<sample> nodes;
 	nodes.reserve(3 * count);
 	for (unsigned i = 0; i < count; ++i) {
@@ -112,11 +113,11 @@ struct integral {
 
 struct neighbor {
 	vec coords;
-	const precalculate_element *table;
+	const fl *midpoints;
 };
 struct probe_atom {
 	vec displacement;
-	std::vector<neighbor> neighbors;
+	std::array<std::vector<neighbor>, scales.size()> neighbors;
 };
 struct result {
 	fl inter, correction, half, uniform, effective;
@@ -125,7 +126,8 @@ struct result {
 class evaluator {
 public:
 	evaluator(const model &m, const ScoringFunction &sf, unsigned count)
-		: nodes(make_samples(count)), tables(sf.get_cutoff()), cutoff(sf.get_cutoff()) {
+		: nodes(make_samples(count)), radial_bins(sf.get_cutoff()), midpoints(XS_TYPE_SIZE, flv()),
+		  cutoff(sf.get_cutoff()) {
 		std::bitset<XS_TYPE_SIZE> rec, lig;
 		for (const atom &a : m.grid_atoms())
 			if (a.xs < XS_TYPE_SIZE)
@@ -133,7 +135,26 @@ public:
 		for (sz t : m.get_movable_atom_types(atom_type::XS))
 			if (!is_glue_type(t))
 				lig.set(t);
-		tables.populate(sf, rec, lig);
+		precalculate native(cutoff);
+		native.populate(sf, rec, lig);
+		// The native fast potential is the midpoint of adjacent radial samples.
+		// Materialize it once per used type pair instead of for every trial.
+		const sz bins = radial_bins.fast_index(radial_bins.cutoff_sqr()) + 1;
+		VINA_FOR(receptor_type, XS_TYPE_SIZE) {
+			if (!rec[receptor_type])
+				continue;
+			VINA_FOR(ligand_type, XS_TYPE_SIZE) {
+				if (!lig[ligand_type])
+					continue;
+				const sz pair = triangular_matrix_index_permissive(XS_TYPE_SIZE, receptor_type, ligand_type);
+				flv &values = midpoints(pair);
+				if (!values.empty())
+					continue;
+				values.resize(bins + 1, 0);
+				const auto &element = native.element(pair);
+				VINA_FOR(i, bins) values[i] = element.fast_sample(i);
+			}
+		}
 	}
 
 	result evaluate(const model &m, fl slope) const {
@@ -154,37 +175,52 @@ public:
 				continue;
 			const vec &p = m.movable_coords(i);
 			probe_atom probe{p - center, {}};
-			const fl reach = cutoff + radius + 2 * std::sin(angle / 2) * probe.displacement.norm();
+			const fl arm = probe.displacement.norm();
+			std::array<fl, scales.size()> reach_sqr;
+			for (sz k = 0; k < scales.size(); ++k) {
+				// A rotated point moves by at most the chord of its limiting angle.
+				const fl scale = scales[k];
+				reach_sqr[k] = sqr(cutoff + radius * scale + 2 * std::sin(angle * scale / 2) * arm);
+			}
 			for (const atom &b : m.grid_atoms()) {
-				if (b.xs < XS_TYPE_SIZE && vec_distance_sqr(p, b.coords) <= reach * reach)
-					probe.neighbors.push_back(
-						{b.coords, &tables.element(get_type_pair_index(atom_type::XS, a, b))});
+				if (b.xs >= XS_TYPE_SIZE)
+					continue;
+				const fl d2 = vec_distance_sqr(p, b.coords);
+				if (d2 > reach_sqr[0])
+					continue;
+				const neighbor entry{b.coords, midpoints(get_type_pair_index(atom_type::XS, a, b)).data()};
+				for (sz k = 0; k < scales.size() && d2 <= reach_sqr[k]; ++k)
+					probe.neighbors[k].push_back(entry);
 			}
 			atoms.push_back(std::move(probe));
 		}
-		const auto energy = [&](const vec &shift, const vec &axis, fl sn, fl cs) {
+		const auto energy = [&](const vec &shift, const vec &axis, fl sn, fl cs, sz scale_index) {
 			fl energy = 0;
 			for (const auto &a : atoms) {
 				const vec &v = a.displacement;
 				const vec pos =
 					center + shift + cs * v + sn * cross_product(axis, v) + ((1 - cs) * (axis * v)) * axis;
 				fl e = 0;
-				for (const neighbor &b : a.neighbors) {
+				for (const neighbor &b : a.neighbors[scale_index]) {
 					const fl d2 = vec_distance_sqr(pos, b.coords);
-					if (d2 < tables.cutoff_sqr())
-						e += b.table->fast_sample(tables.fast_index(d2));
+					// Clamp before conversion even for a partial terminal bin.
+					// Out-of-cutoff distances then look up the extra zero.
+					const fl limit = radial_bins.cutoff_sqr();
+					const sz bin = radial_bins.fast_index(std::min(d2, limit)) + (d2 >= limit);
+					e += b.midpoints[bin];
 				}
 				curl(e, 1000);
 				energy += e;
 			}
 			return energy;
 		};
-		const fl initial = energy(vec(0, 0, 0), vec(0, 0, 0), 0, 1);
+		const fl initial = energy(vec(0, 0, 0), vec(0, 0, 0), 0, 1, 0);
 		integral full, half, uniform;
 		VINA_FOR_IN(i, nodes) {
 			const auto &p = nodes[i];
 			const fl delta =
-				slope * (energy(basis.apply(p.shift), basis.apply(p.axis), p.sine, p.cosine) - initial);
+				slope *
+				(energy(basis.apply(p.shift), basis.apply(p.axis), p.sine, p.cosine, i % scales.size()) - initial);
 			full.add(delta, p.weight);
 			if (i < nodes.size() / 2)
 				half.add(delta, p.weight);
@@ -196,7 +232,8 @@ public:
 
 private:
 	std::vector<sample> nodes;
-	precalculate tables;
+	precalculate radial_bins; // owns the native cutoff and index rule only
+	triangular_matrix<flv> midpoints;
 	fl cutoff;
 };
 } // namespace rigid_window
