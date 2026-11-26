@@ -6,6 +6,8 @@ on:
       - 'src/**'
       - 'tools/build.py'
       - 'benchmarks/check_map_lattice.cpp'
+      - 'benchmarks/check_geometry_metric.cpp'
+      - 'benchmarks/check_armijo_numeric.cpp'
       - '.github/workflows/core-regression.yml'
   workflow_dispatch:
 permissions:
@@ -28,6 +30,8 @@ jobs:
         run: |
           c++ -O2 -DNDEBUG -std=c++14 -pthread -Isrc/lib benchmarks/check_armijo_numeric.cpp $(find build/core/obj -name '*.o' ! -name main.o) -lboost_system -lboost_thread -lboost_serialization -lboost_filesystem -lboost_program_options -o build/core/check-armijo
           build/core/check-armijo
+          c++ -O2 -DNDEBUG -std=c++14 -pthread -Isrc/lib benchmarks/check_geometry_metric.cpp $(find build/core/obj -name '*.o' ! -name main.o) -lboost_system -lboost_thread -lboost_serialization -lboost_filesystem -lboost_program_options -o build/core/check-geometry
+          build/core/check-geometry examples/basic/1iep_ligand.pdbqt benchmarks/fixtures/cyclododecane.pdbqt
       - name: Reproduce archived pose and affinity aggregation
         run: python3 benchmarks/search_budget/replay.py
       - name: Package tested binary

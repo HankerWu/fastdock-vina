@@ -24,41 +24,6 @@
 
 #include "quasi_newton.h"
 
-namespace {
-// Diagonal of the pullback of the Cartesian RMS displacement metric, J^T J/N.
-// The central coordinate probes do not evaluate the scoring function. This is
-// an experimental preconditioner, not a force-field energy or entropy term.
-flv geometry_inverse_metric(model& m, const conf& base) {
-    const conf_size size = m.get_size();
-    VINA_CHECK(size.ligands.size() == 1 && size.flex.empty());
-    flv inverse(size.num_degrees_of_freedom(), 1);
-    flv delta(inverse.size(), 0);
-    conf trial(size);
-    const fl eps = 1e-4;
-    // Translational entries are analytically one. Angular entries can have
-    // very different lever arms and are estimated in the actual conf chart.
-    for (sz k = 3; k < inverse.size(); ++k) {
-        delta[k] = 1;
-        trial.set_incremented(base, delta, eps);
-        m.set(trial);
-        const vecv plus = m.get_chemical_heavy_atom_movable_coords();
-        trial.set_incremented(base, delta, -eps);
-        m.set(trial);
-        const vecv minus = m.get_chemical_heavy_atom_movable_coords();
-        VINA_CHECK(!plus.empty() && plus.size() == minus.size());
-        fl sum = 0;
-        VINA_FOR_IN(i, plus) sum += vec_distance_sqr(plus[i], minus[i]);
-        const fl g = sum / (4 * eps * eps * plus.size());
-        VINA_CHECK(std::isfinite(g) && g >= 0);
-        // Bound the inverse to [1/64, 4] to regularize weak/large DOFs.
-        inverse[k] = 1 / std::min(fl(64), std::max(fl(0.25), g));
-        delta[k] = 0;
-    }
-    m.set(base);
-    return inverse;
-}
-} // namespace
-
 void quasi_newton::operator()(model& m, const precalculate_byatom& p, const igrid& ig,
                               output_type& out, const vec& v, int& evalcount, pose_template* reference) {
     auto evaluate = [&](const conf& c, flv& gradient) {
@@ -66,7 +31,7 @@ void quasi_newton::operator()(model& m, const precalculate_byatom& p, const igri
         return m.eval_deriv(p, ig, v, gradient, reference);
     };
     VINA_CHECK(!geometry_metric || strict_armijo);
-    const flv inverse = geometry_metric ? geometry_inverse_metric(m, out.c) : flv();
+    const flv inverse = geometry_metric ? m.geometry_inverse_metric(out.c) : flv();
     const bfgs_result result = strict_armijo
         ? workspace.minimize<true>(evaluate, out.c, max_steps, evalcount,
                                    geometry_metric ? &inverse : nullptr)

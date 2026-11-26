@@ -50,7 +50,7 @@ def main():
                 "Gauss2 changed Armijo-refined configurations or native scores")
 
         for name, flags, message in (
-            ("invalid-mode", ("--refinement_optimizer", "other"), "must be native or armijo"),
+            ("invalid-mode", ("--refinement_optimizer", "other"), "must be native, armijo, or geometry"),
             ("no-refine", options + ("--no_refine",), "Armijo refinement requires regular"),
             ("maps", options + ("--maps", "unused"), "Armijo refinement requires regular"),
             ("local", options + ("--local_only",), "Armijo refinement requires regular"),

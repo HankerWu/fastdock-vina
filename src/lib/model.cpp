@@ -688,6 +688,88 @@ vecv model::get_chemical_heavy_atom_movable_coords() const {
 	return heavy_movable_coords<false>(*this);
 }
 
+namespace {
+// Unweighted second central moments of the chemical heavy atoms. All centers
+// use ligand-root-relative coordinates to avoid subtracting large world offsets.
+struct subtree_moments {
+	sz count = 0;
+	vec center{0, 0, 0};
+	mat scatter{0, 0, 0, 0, 0, 0, 0, 0, 0}; // upper triangle
+
+	void merge_center(sz n, const vec& other_center) {
+		if (!n) return;
+		const vec offset = other_center - center;
+		const fl fraction = fl(n) / (count + n);
+		const fl weight = count * fraction;
+		for (sz j = 0; j < 3; ++j)
+			for (sz i = 0; i <= j; ++i)
+				scatter(i,j) += weight * offset[i] * offset[j];
+		center += fraction * offset;
+		count += n;
+	}
+
+	void merge(const subtree_moments& other) {
+		merge_center(other.count, other.center);
+		for (sz j = 0; j < 3; ++j)
+			for (sz i = 0; i <= j; ++i)
+				scatter(i,j) += other.scatter(i,j);
+	}
+
+	// Sum of squared perpendicular distances to a unit rotation axis.
+	fl about_axis(const vec& pivot, const vec& axis) const {
+		fl moment = count * sqr(cross_product(axis, center - pivot));
+		for (sz i = 0; i < 3; ++i) {
+			moment += (1 - sqr(axis[i])) * scatter(i,i);
+			for (sz j = 0; j < i; ++j)
+				moment -= 2 * axis[i] * axis[j] * scatter(j,i);
+		}
+		return moment;
+	}
+};
+
+subtree_moments frame_moments(const model& m, const atom_range& range, const vec& root) {
+	subtree_moments moments;
+	VINA_RANGE(i, range.begin, range.end)
+		if (chemical_heavy_atom(m.movable_atom(i)))
+			moments.merge_center(1, m.movable_coords(i) - root);
+	return moments;
+}
+
+subtree_moments torsion_moments(const model& m, const branch& b, const vec& root, flv& diagonal) {
+	const sz coordinate = diagonal.size(); // conformation vector follows depth-first preorder
+	diagonal.push_back(0);
+	auto moments = frame_moments(m, b.node, root);
+	for (const auto& child : b.children)
+		moments.merge(torsion_moments(m, child, root, diagonal));
+	diagonal[coordinate] = moments.about_axis(b.node.get_origin() - root, b.node.get_axis());
+	return moments;
+}
+} // namespace
+
+flv model::geometry_inverse_metric(const conf& c) {
+	VINA_CHECK(ligands.size() == 1 && flex.empty());
+	set(c);
+	const auto& l = ligands.front();
+	const vec& root = l.node.get_origin();
+	flv diagonal(6, 1);
+	diagonal.reserve(6 + c.ligands.front().torsions.size());
+	auto moments = frame_moments(*this, l.node, root);
+	for (const auto& child : l.children)
+		moments.merge(torsion_moments(*this, child, root, diagonal));
+	VINA_CHECK(moments.count && diagonal.size() == 6 + c.ligands.front().torsions.size());
+	for (sz i = 0; i < 3; ++i) {
+		vec axis(0, 0, 0);
+		axis[i] = 1; // quaternion_increment applies rotations in the lab frame
+		diagonal[3+i] = moments.about_axis(zero_vec, axis);
+	}
+	for (sz k = 3; k < diagonal.size(); ++k) {
+		const fl g = diagonal[k] / moments.count;
+		VINA_CHECK(std::isfinite(g));
+		diagonal[k] = 1 / std::min(fl(64), std::max(fl(0.25), g));
+	}
+	return diagonal;
+}
+
 std::vector<std::pair<sz, std::string>> model::chemical_heavy_atom_elements() const {
 	std::vector<std::pair<sz, std::string>> result;
 	for (const auto& line : ligands.front().cont) {

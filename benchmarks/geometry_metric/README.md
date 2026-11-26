@@ -9,14 +9,20 @@ compatibility control.
 
 For Cartesian heavy-atom positions r(q), define the diagonal metric
 G_kk = (1/N) sum_i |d r_i / d q_k|^2. The three translational components are
-one; angular components are estimated by central coordinate probes in the
-same conformation chart as optimization, with h=1e-4 rad. Use
-D_kk=1/clip(G_kk,0.25,64). The first scalar secant rescale is
-s^T y/(y^T D y), preserving relative geometric scales. This diagonal
-approximation ignores correlations among internal coordinates, is frozen
-per refinement and has overhead O(N * number of DOFs). It is not a
-Hessian of the scoring function. Coordinate probes do not count as score
-evaluations, so both wall-clock time and actual evaluations must be compared.
+one. Each angular entry is the sum of squared perpendicular distances
+to the current axis over its rotating chemical heavy atoms, divided by the
+heavy-atom count of the entire ligand. Subtree centroids and second central
+moments are accumulated once in a postorder traversal; torsion coordinates
+are recorded in the optimizer's preorder. Initializing this metric costs
+O(N + number of torsions). Hydrogen and closure dummy atoms are omitted.
+
+D_kk = 1/clip(G_kk, 0.25, 64). The first scalar secant rescale is
+s^T y/(y^T D y). The metric is frozen for each refinement and does not
+include off-diagonal correlations. Earlier revision 142c676 estimated
+rotational entries using central coordinate probes with h = 1e-4 rad.
+The numerical regression compares each analytic entry against that method
+on transformed, branched and macrocycle ligand conformations. Floating-point
+differences can change the local optimization trajectory.
 
 Motivation: a positive geometry-related preconditioner can mitigate disparate
 Cartesian displacement scales of rotations and torsions. Mones et al. used
