@@ -30,6 +30,7 @@
 model parse_receptor_pdbqt(const std::string &rigid=std::string(), const std::string &flex=std::string(), atom_type::t atype=atom_type::XS); // can throw pdbqt_parse_error
 model parse_ligand_pdbqt_from_file(const std::string& name, atom_type::t atype); // can throw pdbqt_parse_error
 model parse_ligand_pdbqt_from_string(const std::string &string_name, atom_type::t atype);
+bool is_vina_score_remark(const std::string& line);
 std::map<unsigned, sz> ligand_heavy_indices_by_serial(const model& ligand);
 // Validate a pose against the prepared context before replacing lab coordinates.
 void replace_fixed_pose_coordinates(model& prepared, const std::string& pose);

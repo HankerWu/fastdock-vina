@@ -568,6 +568,30 @@ void parse_pdbqt_branch(std::istream& in, parsing_struct& p, context& c, unsigne
 
 
 //////////// new stuff //////////////////
+bool is_vina_score_remark(const std::string& line) {
+	// A ligand split from a previous docking output retains these diagnostic rows.
+	for (const char* prefix : {"REMARK VINA RESULT:", "REMARK VINA PRO RESULT:", "REMARK VINA NATIVE:",
+	                          "REMARK VINA AMIDE RESULT:", "REMARK VINA AMIDE PENALTY:",
+	                          "REMARK VINA PRO GAUSS2 SCALE:", "REMARK VINA TEMPLATE RESULT:",
+	                          "REMARK VINA TEMPLATE STAGE:", "REMARK VINA TEMPLATE OVERLAP:",
+	                          "REMARK VINA POLAR RESULT:", "REMARK VINA POLAR SCORES:",
+	                          "REMARK VINA POLAR TERMS:", "REMARK VINA POLAR MODE:",
+	                          "REMARK VINA POLAR BURIAL RESULT:", "REMARK VINA POLAR BURIAL TERMS:",
+	                          "REMARK VINA POLAR BURIAL DELTAS:", "REMARK VINA POLAR BURIAL MODE:",
+	                          "REMARK VINA POLAR BURIAL NATIVE RANK:",
+	                          "REMARK VINA NET POLAR RESULT:", "REMARK VINA NET POLAR TERMS:",
+	                          "REMARK VINA NET POLAR DELTAS:", "REMARK VINA NET POLAR MODE:",
+	                          "REMARK VINA NET POLAR WATER POINTS:", "REMARK VINA NET POLAR SATISFACTION:",
+	                          "REMARK VINA ARCHIVE RESULT:", "REMARK VINA ARCHIVE SUPPORT:",
+	                          "REMARK VINA ARCHIVE SOURCE:", "REMARK VINA ARCHIVE MODE:",
+	                          "REMARK INTER + INTRA:", "REMARK INTER:",
+	                          "REMARK INTRA:", "REMARK CONF_INDEPENDENT:", "REMARK UNBOUND:"}) {
+		if (starts_with(line, prefix))
+			return true;
+	}
+	return false;
+}
+
 struct pdbqt_initializer {
 
     atom_type::t atom_typing_used;
@@ -608,7 +632,18 @@ struct pdbqt_initializer {
 
         if(is_ligand) {
             VINA_CHECK(m.ligands.size() == 1);
-            m.ligands.front().cont = c;
+            auto& stored = m.ligands.front().cont;
+            stored = c;
+            // A split amide-ranked pose has both native and rank-specific diagnostics.
+            // Discard that score block on input, including when ordinary docking or
+            // single-pose local refinement writes the molecule back out.
+            if (std::any_of(stored.begin(), stored.end(), [](const parsed_line& l) {
+                return starts_with(l.first, "REMARK VINA AMIDE RESULT:");
+            })) {
+                stored.erase(std::remove_if(stored.begin(), stored.end(), [](const parsed_line& l) {
+                    return is_vina_score_remark(l.first);
+                }), stored.end());
+            }
         }
         else
             m.flex_context = c;

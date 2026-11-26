@@ -133,6 +133,8 @@ public:
 	void set_late_pose_selection(bool enabled);
 	void set_use_min_rmsd_for_merge(bool enabled) { m_use_min_rmsd_for_merge = enabled; }
 	// Enable experimental template guidance before building search maps.
+	void set_rank_amide(const std::string& filename) { m_rank_amide_path = filename; }
+	void set_search_amide(const std::string& filename) { m_search_amide_path = filename; }
 	void set_search_anchor(const std::string& filename, const std::string& trajectories = "all");
 	void set_pose_template(const std::string& filename, const std::string& stage);
 	// Enable experimental polar-geometry final ranking before building search maps.
@@ -228,7 +230,7 @@ private:
 	enum class template_stage { rank, select, refine };
 	template_stage m_template_stage = template_stage::rank;
 	std::string m_pose_template_path;
-	std::string m_search_anchor_path;
+	std::string m_search_anchor_path, m_search_amide_path, m_rank_amide_path;
 	enum class anchor_trajectories { all, even, odd };
 	anchor_trajectories m_anchor_trajectories = anchor_trajectories::all;
 	enum class polar_mode { off, distance, directional, penalty };

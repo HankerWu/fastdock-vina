@@ -104,7 +104,7 @@ Thank you!\n";
 		bool search_counters = false;
 		double pocket_start_radius = 0;
 		std::string pose_template_path;
-		std::string search_anchor_path;
+		std::string search_anchor_path, search_amide_path, rank_amide_path;
 		std::string search_anchor_trajectories = "all";
 		std::string template_stage;
 		std::string polar_geometry;
@@ -263,6 +263,10 @@ Thank you!\n";
 			 "maximum Late candidates sent to explicit refinement (at least num_modes; default num_modes)")
 			("search_anchor", value<std::string>(&search_anchor_path),
 			 "guide grid search (rows: ligand serial x y z [shell radius]; OR separates alternative assignments); native Late refinement and scoring")
+			("search_amide", value<std::string>(&search_amide_path),
+			 "guide all search trajectories with amide planarity (one O C N X [X2] barrier row per active C-N; native Late refinement and scoring)")
+			("rank_amide", value<std::string>(&rank_amide_path),
+			 "rank refined Late poses by native affinity plus amide strain (O C N X [X2] barrier); energy_range uses native affinity")
 			("search_anchor_trajectories", value<std::string>(&search_anchor_trajectories),
 			 "trajectories receiving search_anchor: all (default), even or odd (1-based)")
 			("pose_template", value<std::string>(&pose_template_path),
@@ -358,12 +362,18 @@ Thank you!\n";
 		if (rerank_gauss2_scale >= 0 && rerank_gauss2_scale < 1 && !regular_rigid_vina)
 			throw usage_error("rerank_gauss2_scale below 1 requires regular Vina docking with a rigid receptor, one ligand per run, and explicit receptor refinement");
 
-		if ((mixed_cutoff_search || vm.count("search_anchor")) && vm["pose_selection"].defaulted()) pose_selection = "late";
+		if ((mixed_cutoff_search || vm.count("search_anchor") || vm.count("search_amide") || vm.count("rank_amide")) && vm["pose_selection"].defaulted()) pose_selection = "late";
 		if (vm.count("search_anchor_trajectories") && !vm.count("search_anchor"))
 			throw usage_error("search_anchor_trajectories requires search_anchor");
 		if (vm.count("search_anchor") && (search_anchor_path.empty() || !regular_rigid_vina ||
 		    ligand_names.size() != 1 || vm.count("batch") || pose_selection != "late"))
 			throw usage_error("search_anchor requires regular rigid single-ligand Late Vina docking");
+		if (vm.count("search_amide") && (search_amide_path.empty() || !regular_rigid_vina ||
+		    ligand_names.size() != 1 || vm.count("batch") || pose_selection != "late"))
+			throw usage_error("search_amide requires regular rigid single-ligand Late Vina docking");
+		if (vm.count("rank_amide") && (rank_amide_path.empty() || !regular_rigid_vina ||
+		    ligand_names.size() != 1 || vm.count("batch") || pose_selection != "late"))
+			throw usage_error("rank_amide requires regular rigid single-ligand Late Vina docking");
 		if (mixed_cutoff_search && (!regular_rigid_vina || pose_selection != "late" || smooth_cutoff || exhaustiveness < 2))
 			throw usage_error("mixed_cutoff_search requires regular rigid Vina docking, native Late scoring and exhaustiveness >= 2");
 		if (pose_selection != "native" && pose_selection != "late")
@@ -557,6 +567,10 @@ Thank you!\n";
 		v.set_rerank_gauss2_scale(rerank_gauss2_scale);
 		if (vm.count("search_anchor"))
 			v.set_search_anchor(search_anchor_path, search_anchor_trajectories);
+		if (vm.count("rank_amide"))
+			v.set_rank_amide(rank_amide_path);
+		if (vm.count("search_amide"))
+			v.set_search_amide(search_amide_path);
 		if (vm.count("pose_template"))
 			v.set_pose_template(pose_template_path, template_stage);
 		if (vm.count("polar_geometry"))

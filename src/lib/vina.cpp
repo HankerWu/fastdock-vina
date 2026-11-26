@@ -35,6 +35,7 @@
 #include "precalculate.h"
 #include "pose_template.h"
 #include "anchored_search_grid.h"
+#include "amide_search_grid.h"
 #include "polar_geometry.h"
 #include "net_polar.h"
 #include "trajectory_archive.h"
@@ -560,7 +561,7 @@ void Vina::write_maps(const std::string& map_prefix, const std::string& gpf_file
 }
 
 static bool uses_native_energy_window(const output_type& pose) {
-	return pose.template_overlap >= 0 || pose.polar_radial >= 0 || pose.polar_burial >= 0 || pose.net_polar_score || pose.archive_votes >= 0;
+	return pose.amide_penalty >= 0 || pose.template_overlap >= 0 || pose.polar_radial >= 0 || pose.polar_burial >= 0 || pose.net_polar_score || pose.archive_votes >= 0;
 }
 
 fl Vina::output_energy_reference() const {
@@ -675,13 +676,19 @@ std::string Vina::vina_remarks(output_type &pose, fl lb, fl ub) {
 	remark.setf(std::ios::fixed, std::ios::floatfield);
 	remark.setf(std::ios::showpoint);
 
-	if (pose.net_polar_score) {
-		const auto& score = *pose.net_polar_score;
+	if (pose.amide_penalty >= 0 || pose.net_polar_score || pose.polar_burial >= 0) {
 		remark << "REMARK VINA RESULT: " << std::setw(9) << std::setprecision(3) << pose.e
 		       << "  " << std::setw(9) << lb << "  " << std::setw(9) << ub << '\n';
 		remark << std::defaultfloat << std::noshowpoint
 		       << std::setprecision(std::numeric_limits<fl>::max_digits10);
 		remark << "REMARK VINA NATIVE: " << pose.e << ' ' << pose.native_rank << '\n';
+	}
+	if (pose.amide_penalty >= 0) {
+		remark << "REMARK VINA AMIDE RESULT: " << pose.amide_rank_score() << ' ' << lb << ' ' << ub << '\n';
+		remark << "REMARK VINA AMIDE PENALTY: " << pose.amide_penalty << '\n';
+		remark << std::fixed << std::showpoint;
+	} else if (pose.net_polar_score) {
+		const auto& score = *pose.net_polar_score;
 		remark << "REMARK VINA NET POLAR RESULT: " << score.rank_score << ' ' << lb << ' ' << ub << '\n';
 		remark << "REMARK VINA NET POLAR TERMS: " << score.terms.native_hbond << ' '
 		       << score.terms.directed_hbond << ' ' << score.terms.direction_delta << ' '
@@ -696,11 +703,6 @@ std::string Vina::vina_remarks(output_type &pose, fl lb, fl ub) {
 			                             score.terms, *score.satisfaction);
 		remark << std::fixed << std::showpoint;
 	} else if (pose.polar_burial >= 0) {
-		remark << "REMARK VINA RESULT: " << std::setw(9) << std::setprecision(3) << pose.e
-		       << "  " << std::setw(9) << lb << "  " << std::setw(9) << ub << '\n';
-		remark << std::defaultfloat << std::noshowpoint
-		       << std::setprecision(std::numeric_limits<fl>::max_digits10);
-		remark << "REMARK VINA NATIVE: " << pose.e << ' ' << pose.native_rank << '\n';
 		remark << "REMARK VINA POLAR BURIAL NATIVE RANK: " << pose.native_rank << '\n';
 		remark << "REMARK VINA POLAR BURIAL RESULT: " << pose.polar_burial_rank_score
 		       << ' ' << lb << ' ' << ub << '\n';
@@ -759,29 +761,6 @@ std::string Vina::vina_remarks(output_type &pose, fl lb, fl ub) {
 	remark << "REMARK UNBOUND:          " << std::setw(12) << std::setprecision(3) << pose.unbound << "\n";
 
 	return remark.str();
-}
-
-static bool is_vina_score_remark(const std::string& line) {
-	// A ligand split from a previous docking output retains these diagnostic rows.
-	for (const char* prefix : {"REMARK VINA RESULT:", "REMARK VINA PRO RESULT:", "REMARK VINA NATIVE:",
-	                          "REMARK VINA PRO GAUSS2 SCALE:", "REMARK VINA TEMPLATE RESULT:",
-	                          "REMARK VINA TEMPLATE STAGE:", "REMARK VINA TEMPLATE OVERLAP:",
-	                          "REMARK VINA POLAR RESULT:", "REMARK VINA POLAR SCORES:",
-	                          "REMARK VINA POLAR TERMS:", "REMARK VINA POLAR MODE:",
-	                          "REMARK VINA POLAR BURIAL RESULT:", "REMARK VINA POLAR BURIAL TERMS:",
-	                          "REMARK VINA POLAR BURIAL DELTAS:", "REMARK VINA POLAR BURIAL MODE:",
-	                          "REMARK VINA POLAR BURIAL NATIVE RANK:",
-	                          "REMARK VINA NET POLAR RESULT:", "REMARK VINA NET POLAR TERMS:",
-	                          "REMARK VINA NET POLAR DELTAS:", "REMARK VINA NET POLAR MODE:",
-	                          "REMARK VINA NET POLAR WATER POINTS:", "REMARK VINA NET POLAR SATISFACTION:",
-	                          "REMARK VINA ARCHIVE RESULT:", "REMARK VINA ARCHIVE SUPPORT:",
-	                          "REMARK VINA ARCHIVE SOURCE:", "REMARK VINA ARCHIVE MODE:",
-	                          "REMARK INTER + INTRA:", "REMARK INTER:",
-	                          "REMARK INTRA:", "REMARK CONF_INDEPENDENT:", "REMARK UNBOUND:"}) {
-		if (boost::starts_with(line, prefix))
-			return true;
-	}
-	return false;
 }
 
 std::string Vina::get_poses(int how_many, double energy_range) {
@@ -1619,13 +1598,33 @@ void Vina::global_search(const int exhaustiveness, const int n_poses, const doub
 	const bool split_anchor = m_anchor_trajectories != anchor_trajectories::all;
 	if (split_anchor && exhaustiveness < 2)
 		throw vina_runtime_error("search_anchor_trajectories even/odd requires exhaustiveness >= 2");
-	boost::optional<anchored_search_grid> anchor_grid;
-	if (!m_search_anchor_path.empty()) {
+	if (!m_search_anchor_path.empty() || !m_search_amide_path.empty() || !m_rank_amide_path.empty()) {
 		if (!late_selection || !m_use_explicit_receptor || m_sf_choice != SF_VINA ||
 		    m_no_refine || m_mixed_cutoff_search || m_scoring_function->smooth_cutoff() ||
 		    rerank || m_armijo_refinement || polar_rank || burial_rank || net_polar_rank ||
 		    !m_pose_template_path.empty() || archive_enabled)
-			throw vina_runtime_error("search_anchor requires rigid single-ligand Late Vina with native refinement and ranking");
+			throw vina_runtime_error("search_anchor, search_amide and rank_amide require rigid single-ligand Late Vina with native refinement and ranking");
+	}
+	std::vector<amide_search_site> rank_amides;
+	if (!m_rank_amide_path.empty()) {
+		ifile file(m_rank_amide_path);
+		rank_amides = read_search_amides(file, m_model);
+		// Keep a zero-barrier control byte-for-byte identical to native Late output.
+		rank_amides.erase(std::remove_if(rank_amides.begin(), rank_amides.end(),
+			[](const amide_search_site& site) { return site.barrier == 0; }), rank_amides.end());
+	}
+	boost::optional<amide_search_grid> amide_grid;
+	if (!m_search_amide_path.empty()) {
+		ifile file(m_search_amide_path);
+		auto sites = read_search_amides(file, m_model);
+		if (m_verbosity > 0 || m_search_counters)
+			std::cout << "Search amide: sites=" << sites.size() << " search=all_trajectories final=native_late\n";
+		amide_grid.emplace(m_grid, std::move(sites));
+	}
+	// Anchor trajectory selection affects only the anchor. Amides guide both subsets.
+	const igrid& unanchored_grid = amide_grid ? static_cast<const igrid&>(*amide_grid) : static_cast<const igrid&>(m_grid);
+	boost::optional<anchored_search_grid> anchor_grid;
+	if (!m_search_anchor_path.empty()) {
 		ifile file(m_search_anchor_path);
 		auto sites = read_search_anchors(file, m_model, m_grid.corner1(), m_grid.corner2());
 		if (m_verbosity > 0 || m_search_counters)
@@ -1633,7 +1632,7 @@ void Vina::global_search(const int exhaustiveness, const int n_poses, const doub
 			          << (m_anchor_trajectories == anchor_trajectories::even ? " search=even_1based" :
 			              m_anchor_trajectories == anchor_trajectories::odd ? " search=odd_1based" : " search=all_trajectories")
 			          << " final=native_late\n";
-		anchor_grid.emplace(m_grid, std::move(sites));
+		anchor_grid.emplace(unanchored_grid, std::move(sites));
 	}
 	if (archive_enabled) {
 		if (!late_selection || rerank || m_armijo_refinement || m_sf_choice != SF_VINA || m_no_refine ||
@@ -1702,8 +1701,7 @@ void Vina::global_search(const int exhaustiveness, const int n_poses, const doub
 	if (m_sf_choice == SF_VINA || m_sf_choice == SF_VINARDO) {
 		boost::optional<precalculate_byatom> smooth_pairs;
 		boost::optional<search_landscape> alternate;
-		const igrid& native_grid = m_grid;
-		const igrid& guided_grid = anchor_grid ? static_cast<const igrid&>(*anchor_grid) : native_grid;
+		const igrid& guided_grid = anchor_grid ? static_cast<const igrid&>(*anchor_grid) : unanchored_grid;
 		const bool guide_even_only = m_anchor_trajectories == anchor_trajectories::even;
 		if (m_mixed_cutoff_search) {
 			ScoringFunction smooth(SF_VINA, m_weights, m_scoring_function->get_cutoff(), true);
@@ -1716,9 +1714,9 @@ void Vina::global_search(const int exhaustiveness, const int n_poses, const doub
 				std::cout << "\nMixed cutoff search: native=" << (exhaustiveness + 1) / 2
 				          << " smooth=" << exhaustiveness / 2 << " smooth_on_even_1based=true final=native_late\n";
 		} else if (split_anchor) {
-			alternate.emplace(search_landscape{m_precalculated_byatom, guide_even_only ? guided_grid : native_grid});
+			alternate.emplace(search_landscape{m_precalculated_byatom, guide_even_only ? guided_grid : unanchored_grid});
 		}
-		const igrid& search_grid = guide_even_only ? native_grid : guided_grid;
+		const igrid& search_grid = guide_even_only ? unanchored_grid : guided_grid;
 		parallelmc(m_model, poses, m_precalculated_byatom, search_grid, m_grid.corner1(), m_grid.corner2(), generator,
 		           m_progress_callback, archive_enabled ? &archives : nullptr, archive_support, counters,
 		           alternate.get_ptr());
@@ -1877,6 +1875,18 @@ void Vina::global_search(const int exhaustiveness, const int n_poses, const doub
 			poses.sort();
 		if (rerank)
 			rerank_poses(poses, authentic_v);
+		if (!rank_amides.empty()) {
+			VINA_FOR_IN(i, poses) {
+				auto& pose = poses[i];
+				m_model.set(pose.c);
+				pose.native_rank = i + 1;
+				pose.amide_penalty = amide_search_grid::penalty(m_model, rank_amides);
+			}
+			poses.sort([](const output_type& a, const output_type& b) {
+				return a.amide_rank_score() == b.amide_rank_score() ? a.native_rank < b.native_rank
+				                                                  : a.amide_rank_score() < b.amide_rank_score();
+			});
+		}
 		if (polar_rank) {
 			rank_polar_poses(poses);
 			if (m_verbosity > 0)
@@ -1935,8 +1945,8 @@ void Vina::global_search(const int exhaustiveness, const int n_poses, const doub
 			std::cout << '\n';
 			if (rerank)
 				std::cout << "Pose ranking: FastDock Vina Pro\n";
-			if (template_reference || polar_rank || burial_rank || net_polar_rank) {
-				std::cout << "mode | " << (net_polar_rank ? "net polar score" : burial_rank ? "polar burial score" : polar_rank ? "polar score" : "template score") << " | dist from best mode\n";
+			if (!rank_amides.empty() || template_reference || polar_rank || burial_rank || net_polar_rank) {
+				std::cout << "mode | " << (!rank_amides.empty() ? "amide score" : net_polar_rank ? "net polar score" : burial_rank ? "polar burial score" : polar_rank ? "polar score" : "template score") << " | dist from best mode\n";
 				std::cout << "     | (rank score)   | rmsd l.b.| rmsd u.b.\n";
 			} else {
 				std::cout << "mode |   affinity | dist from best mode\n";
@@ -1953,7 +1963,8 @@ void Vina::global_search(const int exhaustiveness, const int n_poses, const doub
 			poses[i].ub = m_model.rmsd_upper_bound(best_model);
 
 			if (m_verbosity > 0) {
-				const fl reported_score = net_polar_rank ? poses[i].net_polar_score->rank_score
+				const fl reported_score = !rank_amides.empty() ? poses[i].amide_rank_score()
+				                        : net_polar_rank ? poses[i].net_polar_score->rank_score
 				                        : burial_rank ? poses[i].polar_burial_rank_score
 				                        : polar_rank ? polar_rank_score(poses[i])
 				                        : template_reference ? poses[i].template_rank_score : poses[i].e;

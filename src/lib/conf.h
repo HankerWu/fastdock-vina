@@ -309,6 +309,8 @@ struct output_type {
     fl total;
 	fl native_energy = 0;
 	sz native_rank = 0;
+	fl amide_penalty = -1;
+	fl amide_rank_score() const { return e + amide_penalty; }
 	fl template_overlap = -1;
 	fl template_rank_score = 0;
 	fl polar_radial = -1;

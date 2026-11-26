@@ -1,21 +1,18 @@
-"""Generate the alternate planar rotamer of a acyclic carboxamide in a prepared ligand."""
+"""Identify movable carboxamides or generate a distinguishable alternate planar rotamer."""
 
 import argparse
+import math
 from collections import defaultdict
 from pathlib import Path
 
 import numpy as np
-from rdkit import Chem
-
 from make_scaffold_anchors import query_graph
+from rdkit import Chem
 from score_physical_pool import mapped_ligand_bonds
 
 
-def amides(text):
-    """Return (oxygen, carbonyl carbon, nitrogen, distinguished substituent) PDBQT serials."""
-    graph, serials = query_graph(text)
-    ranks = Chem.CanonicalRankAtoms(graph, breakTies=False)
-    sites = []
+def _carboxamides(graph):
+    """Yield non-ring carboxamide C–N bonds with at least one carbon on the nitrogen."""
     for carbon, oxygen, nitrogen in graph.GetSubstructMatches(
         Chem.MolFromSmarts("[CX3](=[OX1])-[NX3+0]")
     ):
@@ -33,11 +30,64 @@ def amides(text):
         ]
         if any(a.GetAtomicNum() != 6 for a in acyl + groups) or not groups:
             continue
+        yield oxygen, carbon, nitrogen, groups
+
+
+def amides(text):
+    """Return the original distinguishable rotamer sites in PDBQT serial order."""
+    graph, serials = query_graph(text)
+    ranks = Chem.CanonicalRankAtoms(graph, breakTies=False)
+    sites = []
+    for oxygen, carbon, nitrogen, groups in _carboxamides(graph):
         if len({ranks[a.GetIdx()] for a in groups}) != len(groups):
             continue
         tip = max(groups, key=lambda a: ranks[a.GetIdx()]).GetIdx()
         sites.append(tuple(serials[i] for i in (oxygen, carbon, nitrogen, tip)))
     return sites
+
+
+def active_amide_sites(text, geometry):
+    """Return each movable O, C, N and its measured N-carbon substituent(s)."""
+    active = {
+        frozenset(map(int, line.split()[1:]))
+        for line in text.splitlines()
+        if line.startswith("BRANCH ")
+    }
+    if geometry == "distinguished":
+        return [s for s in amides(text) if frozenset(s[1:3]) in active]
+    if geometry != "all-arms":
+        raise ValueError(f"Unknown amide geometry: {geometry}")
+
+    graph, serials = query_graph(text)
+    sites = []
+    for oxygen, carbon, nitrogen, groups in _carboxamides(graph):
+        if frozenset((serials[carbon], serials[nitrogen])) not in active:
+            continue
+        # An imide nitrogen shares its conjugation between two acyl groups.
+        if any(
+            bond.GetBondType() == Chem.BondType.DOUBLE
+            and bond.GetOtherAtom(arm).GetAtomicNum() == 8
+            for arm in groups
+            for bond in arm.GetBonds()
+        ):
+            continue
+        arms = sorted(serials[a.GetIdx()] for a in groups)
+        sites.append((serials[oxygen], serials[carbon], serials[nitrogen], *arms))
+    return sorted(sites)
+
+
+def check_barrier(barrier):
+    if not math.isfinite(barrier) or barrier < 0:
+        raise ValueError("Barrier must be a finite, nonnegative energy in kcal/mol")
+
+
+def search_amide_records(text, barrier):
+    """Build all-arms site rows for the search objective using prepared atom serials."""
+    check_barrier(barrier)
+    sites = active_amide_sites(text, "all-arms")
+    if not sites:
+        raise ValueError("No eligible movable carboxamide in the prepared ligand")
+    return "".join(" ".join(map(str, site)) + f" {barrier!r}\n" for site in sites)
 
 
 def dihedral_degrees(site, xyz):
@@ -192,6 +242,18 @@ def main():
         help="write one alternate ligand; omit to list eligible serials",
     )
     parser.add_argument(
+        "--search-amide",
+        type=Path,
+        metavar="SITES",
+        help="write movable O C N X [X2] B sites for all-arms amide search",
+    )
+    parser.add_argument(
+        "--barrier",
+        type=float,
+        metavar="B",
+        help="energy at a 90-degree twist in kcal/mol, required with --search-amide",
+    )
+    parser.add_argument(
         "--bond",
         type=int,
         nargs=2,
@@ -217,6 +279,26 @@ def main():
     if args.keep_orientation and not args.lock:
         parser.error("--keep-orientation requires --lock")
     text = args.ligand.read_text()
+    if args.search_amide:
+        if (
+            args.output
+            or args.bond
+            or args.lock
+            or args.keep_orientation
+            or args.planar
+        ):
+            parser.error("--search-amide cannot be combined with rotamer generation")
+        if args.barrier is None:
+            parser.error("--search-amide requires --barrier")
+        try:
+            records = search_amide_records(text, args.barrier)
+        except ValueError as exc:
+            parser.error(str(exc))
+        with args.search_amide.open("x") as out:
+            out.write(records)
+        return
+    if args.barrier is not None:
+        parser.error("--barrier requires --search-amide")
     sites = amides(text)
     if args.bond:
         sites = [s for s in sites if s[1:3] == tuple(args.bond)]
