@@ -160,6 +160,8 @@ python3 benchmarks/check_pro_rerank.py build/vina /path/to/pre-pro/vina
 
 在五个 hCA II 磺酰胺的固定候选池上，给可动非环羧酰胺的非平面扭转加上能量代价，将联合首姿命中从 0/20 提到 6/20。独立运行的等预算候选池从 2/20 提到 8/20。此项是可选的姿势重排，跨体系亲和力效果随候选池而变。[酰胺扭转与复现实验](benchmarks/amide_search/README.md) · [胰蛋白酶和因子 Xa 的水相转移检验](benchmarks/trypsin_transfer/README.md)
 
+使用 `--rank_amide SITES` 可在原生 Late 精修后按酰胺氮侧各碳取代基的扭转角重排，输出同时记录原生亲和力和几何罚分。新种子上，五个 hCA II 配体在两个受体中的 20 个合并候选池，首位命中从 1 个增加到 9 个。将同一项用于搜索后，首位命中回落至 1 个；同靶 Ki 排序的变化也因系列而异。位点文件生成、独立起始状态的共同参考、直接命令行输出的检验和备选晶体配体的对照见[酰胺搜索与姿势排序](benchmarks/amide_search/guidance.md)。
+
 ### 显式精修的 Armijo 回退线搜索
 
 在常规刚性单配体 Vina 对接命令加 `--refinement_optimizer armijo`，可在最终显式受体精修中

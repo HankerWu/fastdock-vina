@@ -45,6 +45,35 @@ def normalized_block(text, lines, num):
     return f"MODEL {num}\n" + "\n".join(block) + "\nENDMDL\n"
 
 
+def explicit_scores(binary, orig, receptor, bonds, text, models):
+    """Score Cartesian poses under one prepared topology and explicit receptor."""
+    with tempfile.TemporaryDirectory() as td:
+        patched = Path(td) / "pool.pdbqt"
+        patched.write_text(
+            "".join(normalized_block(text, lines, k) for k, lines in models.items())
+        )
+        cmd = [
+            binary,
+            "--score_only",
+            "--ligand",
+            orig,
+            "--ligand_bonds",
+            bonds,
+            "--receptor",
+            receptor,
+            "--rigid_window_pool",
+            patched,
+            "--rigid_window_samples",
+            "16",
+            "--verbosity",
+            "0",
+            "--cpu",
+            "1",
+        ]
+        out = subprocess.check_output(cmd, text=True)
+    return list(csv.DictReader(io.StringIO(out[out.index("model,inter,intra,") :])))
+
+
 def evaluate(job):
     binary, base, folder, (panel, rec, lig, states, receptor, box, anchor) = job
     orig = states["orig"]
@@ -78,31 +107,8 @@ def evaluate(job):
         models = read_models(pool.read_text().splitlines())
         if not models:
             raise ValueError(f"No output poses in {pool}")
-        with tempfile.TemporaryDirectory() as td:
-            patched = Path(td) / "pool.pdbqt"
-            patched.write_text(
-                "".join(normalized_block(text, lines, k) for k, lines in models.items())
-            )
-            cmd = [
-                binary,
-                "--score_only",
-                "--ligand",
-                orig,
-                "--ligand_bonds",
-                folder / "inputs" / f"{panel}_{lig}_orig.bonds",
-                "--receptor",
-                receptor,
-                "--rigid_window_pool",
-                patched,
-                "--rigid_window_samples",
-                "16",
-                "--verbosity",
-                "0",
-                "--cpu",
-                "1",
-            ]
-            out = subprocess.check_output(cmd, text=True)
-        ev = list(csv.DictReader(io.StringIO(out[out.index("model,inter,intra,") :])))
+        bonds = folder / "inputs" / f"{panel}_{lig}_orig.bonds"
+        ev = explicit_scores(binary, orig, receptor, bonds, text, models)
         for (k, lines), v in zip(models.items(), ev, strict=True):
             if int(v["model"]) != k:
                 raise ValueError("Model number changed")

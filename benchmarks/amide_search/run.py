@@ -103,7 +103,7 @@ def build(base, out):
     return tasks
 
 
-def dock(binary, item):
+def dock(binary, item, *, search_amide=None, rank_amide=None):
     dest, (rec, lig, box, anchor, bonds, seed) = item
     args = [
         binary,
@@ -135,6 +135,10 @@ def dock(binary, item):
         "--out",
         dest,
     ]
+    if search_amide is not None:
+        args.extend(["--search_amide", search_amide])
+    if rank_amide is not None:
+        args.extend(["--rank_amide", rank_amide])
     with dest.with_suffix(".log").open("w") as f:
         subprocess.run(args, stdout=f, stderr=subprocess.STDOUT, check=True)
 

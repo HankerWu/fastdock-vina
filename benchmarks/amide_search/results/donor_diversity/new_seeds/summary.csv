@@ -1,0 +1,13 @@
+panel,arm,barrier,cells,top,oracle,cross_top,cross_oracle,unique_score,pairs
+ca,donor1,0,20,1,12,1,8,3.0,7
+ca,donor1,5,20,9,12,7,8,1.0,7
+ca,donor1,15,20,7,12,6,8,1.0,7
+ca,donor2,0,20,0,9,0,7,0.0,7
+ca,donor2,5,20,2,9,0,7,2.0,7
+ca,donor2,15,20,3,9,1,7,2.0,7
+ca,donor2_slot0,0,20,2,13,2,9,0.0,7
+ca,donor2_slot0,5,20,6,13,4,9,2.0,7
+ca,donor2_slot0,15,20,5,13,4,9,3.0,7
+ca,donor2_slot1,0,20,0,15,0,11,2.0,7
+ca,donor2_slot1,5,20,1,15,0,11,0.0,7
+ca,donor2_slot1,15,20,5,15,4,11,1.0,7
