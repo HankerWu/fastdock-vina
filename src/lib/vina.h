@@ -183,6 +183,7 @@ public:
 	std::vector<double> score();
 	std::vector<double> score(double intramolecular_energy);
 	std::vector<double> optimize(const int max_steps=0);
+	std::vector<double> optimize(int max_steps, int max_evals, bool rigid_metric = false);
 	// An optional Late cap before explicit refinement leaves the search and output caps intact.
 	void global_search(const int exhaustiveness=8, const int n_poses=20, const double min_rmsd=1.0, const int max_evals=0,
 	                   boost::optional<int> refine_candidates=boost::none);
@@ -284,7 +285,7 @@ private:
 	                     bool force_even_voxels, bool defer_population);
 	void set_forcefield();
 	const igrid& vina_receptor_interactions();
-	std::vector<double> optimize(output_type& out, const int max_steps=0);
+	std::vector<double> optimize(output_type& out, int max_steps, int max_evals, bool rigid_metric);
 	int generate_seed(const int seed=0);
 };
 

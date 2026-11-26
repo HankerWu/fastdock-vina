@@ -218,7 +218,7 @@ Thank you!\n";
 			("unbound_energy", value<double>(&unbound_energy)->default_value(unbound_energy), "Explicitly set the Unbound System's Energy for --score_only jobs")
 			("no_refine", bool_switch(&no_refine),  "when --receptor is provided, do not use explicit receptor atoms (instead of precalculated grids) for: (1) local optimization and scoring after docking, (2) --local_only jobs, and (3) --score_only jobs")
 			("refinement_optimizer", value<std::string>(&refinement_optimizer)->default_value(refinement_optimizer),
-			 "native, armijo, or experimental geometry-preconditioned Armijo BFGS for explicit rigid Vina final refinement")
+			 "native, armijo, geometry (Cartesian preconditioning), or rigid_metric (centroid preconditioning, local_only)")
 			("rigid_reorientation", value<std::string>(&rigid_reorientation)->default_value(rigid_reorientation),
 			 "native, mixed local/global, or centered local rotation for single-ligand rigid Vina docking")
 			("separate_hunt_chain", bool_switch(&separate_hunt_chain),
@@ -257,7 +257,7 @@ Thank you!\n";
 			("cpu", value<int>(&cpu)->default_value(0), "the number of CPUs to use (the default is to try to detect the number of CPUs or, failing that, use 1)")
 			("seed", value<int>(&seed)->default_value(0), "explicit random seed")
 			("exhaustiveness", value<int>(&exhaustiveness)->default_value(8), "exhaustiveness of the global search (roughly proportional to time): 1+")
-			("max_evals", value<int>(&max_evals)->default_value(0), "number of evaluations in each MC run (if zero, which is the default, the number of MC steps is based on heuristics)")
+			("max_evals", value<int>(&max_evals)->default_value(0), "evaluation budget per MC run, or hard gradient limit for local_only with an Armijo optimizer (0 uses heuristics)")
 			("num_modes", value<int>(&num_modes)->default_value(9), "maximum number of binding modes to generate")
 			("pose_selection", value<std::string>(&pose_selection)->default_value(pose_selection),
 			 "native search merge or late selection using explicit Vina scores before refinement")
@@ -420,10 +420,19 @@ Thank you!\n";
 			throw usage_error("balanced_torsion_search requires global docking");
 		if (search_counters && (randomize_only || score_only || local_only))
 			throw usage_error("search_counters requires global docking");
-		if (refinement_optimizer != "native" && refinement_optimizer != "armijo" && refinement_optimizer != "geometry")
-			throw usage_error("refinement_optimizer must be native, armijo, or geometry");
-		if (refinement_optimizer != "native" && !regular_rigid_vina)
-			throw usage_error("Armijo refinement requires regular Vina docking with a rigid receptor, one ligand per search, and explicit receptor refinement");
+		const bool rigid_metric = refinement_optimizer == "rigid_metric";
+		if (refinement_optimizer != "native" && refinement_optimizer != "armijo" &&
+		    refinement_optimizer != "geometry" && !rigid_metric)
+			throw usage_error("refinement_optimizer must be native, armijo, geometry, or rigid_metric");
+		const bool rigid_local_vina = local_only && !score_only && !randomize_only && sf_name == "vina" &&
+		    !rigid_name.empty() && ligand_names.size() == 1 && !no_refine && !vm.count("batch") &&
+		    !vm.count("flex") && !vm.count("maps") && !vm.count("write_maps");
+		if (rigid_metric && !rigid_local_vina)
+			throw usage_error("rigid_metric requires local_only with one ligand and an explicit rigid Vina receptor");
+		if (refinement_optimizer != "native" && !regular_rigid_vina && !rigid_local_vina)
+			throw usage_error("Armijo refinement requires Vina scoring, one ligand per search, and an explicit rigid receptor");
+		if (rigid_local_vina && refinement_optimizer != "native" && max_evals < 0)
+			throw usage_error("Local refinement requires non-negative max_evals");
 		if (vm.count("pose_template") != vm.count("template_stage"))
 			throw usage_error("Specify pose_template and template_stage together");
 		if (vm.count("pose_template") && (!regular_rigid_vina || ligand_names.size() != 1 || vm.count("batch") ||
@@ -691,8 +700,7 @@ Thank you!\n";
 				}
 				v.show_score(energies);
 			} else if (local_only) {
-				std::vector<double> energies;
-				energies = v.optimize();
+				const auto energies = refinement_optimizer == "native" ? v.optimize() : v.optimize(0, max_evals, rigid_metric);
 				v.write_pose(out_name);
 				v.show_score(energies);
 			} else {

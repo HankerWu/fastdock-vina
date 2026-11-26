@@ -7,6 +7,15 @@ inverse Hessian. Both use the unchanged scoring function, fixed global search,
 strict Armijo acceptance and ordinary BFGS update. Native is a separate
 compatibility control.
 
+With an explicit rigid receptor and one ligand, `--local_only` also accepts
+either optimizer for a prepared pose. A positive `--max_evals` caps scoring
+gradients across the entire local refinement, including box retries.
+Read the actual count and the final optimization objective from
+`Local refinement`. A third local-only arm, `rigid_metric`, measures translation
+at the initial heavy-atom centroid and scales rotation by its radius of
+gyration. It leaves torsion coordinates unchanged. Use the same receptor,
+starting pose and gradient cap across arms.
+
 For Cartesian heavy-atom positions r(q), define the diagonal metric
 G_kk = (1/N) sum_i |d r_i / d q_k|^2. The three translational components are
 one. Each angular entry is the sum of squared perpendicular distances

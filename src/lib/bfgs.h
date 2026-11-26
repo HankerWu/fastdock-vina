@@ -92,7 +92,8 @@ inline void bfgs_update(flmat& h, const flv& direction, const flv& y, fl alpha, 
 }
 
 template<bool StrictArmijo = false, typename F>
-fl line_search(F& f, const conf& x, fl f0, const flv& p, fl pg, conf& x_new, flv& g_new, fl& f1, int& evalcount) {
+fl line_search(F& f, const conf& x, fl f0, const flv& p, fl pg, conf& x_new, flv& g_new, fl& f1, int& evalcount,
+               int max_evals = 0) {
 	if (StrictArmijo && (!std::isfinite(pg) || pg >= 0))
 		return 0;
 	const fl c0 = 0.0001;
@@ -101,6 +102,8 @@ fl line_search(F& f, const conf& x, fl f0, const flv& p, fl pg, conf& x_new, flv
 	fl alpha = 1;
 
 	VINA_U_FOR(trial, max_trials) {
+		if (StrictArmijo && max_evals > 0 && evalcount >= max_evals)
+			return 0;
 		x_new.set_incremented(x, p, alpha);
 		f1 = f(x_new, g_new);
 		++evalcount;
@@ -126,6 +129,29 @@ struct bfgs_result {
 	bool restore_coordinates;
 };
 
+// Fixed centroid and length scale for rigid-body steps in a single ligand.
+struct bfgs_rigid_metric {
+	vec centroid_offset;
+	fl inverse_rotation_scale;
+
+	void to_conformation_step(flv& step) const {
+		const vec angle = inverse_rotation_scale * vec(step[3], step[4], step[5]);
+		const vec shift = vec(step[0], step[1], step[2]) - cross_product(angle, centroid_offset);
+		VINA_FOR(i, 3) {
+			step[i] = shift[i];
+			step[i + 3] = angle[i];
+		}
+	}
+
+	void to_centroid_gradient(flv& gradient) const {
+		const vec force(gradient[0], gradient[1], gradient[2]);
+		const vec torque(gradient[3], gradient[4], gradient[5]);
+		const vec scaled = inverse_rotation_scale * (torque - cross_product(centroid_offset, force));
+		VINA_FOR(i, 3)
+			gradient[i + 3] = scaled[i];
+	}
+};
+
 // Each search or refinement loop owns a workspace for its fixed conformation
 // layout. Every minimization starts with a fresh positive diagonal inverse Hessian.
 class bfgs_workspace {
@@ -141,7 +167,8 @@ public:
 
 	template<bool StrictArmijo = false, typename F>
 	bfgs_result minimize(F& f, conf& x, unsigned max_steps, int& evalcount,
-	                     const flv* inverse_metric = nullptr) {
+	                     const flv* inverse_metric = nullptr, int max_evals = 0,
+	                     const bfgs_rigid_metric* rigid_metric = nullptr) {
 		h.clear();
 		if (inverse_metric) {
 			VINA_CHECK(StrictArmijo && inverse_metric->size() == h.dim());
@@ -161,9 +188,15 @@ public:
 
 		VINA_U_FOR(step, max_steps) {
 			minus_mat_vec_product(h, gradient, direction);
+			const flv* conformation_step = &direction;
+			if (StrictArmijo && rigid_metric) {
+				minus_hy = direction;
+				rigid_metric->to_conformation_step(minus_hy);
+				conformation_step = &minus_hy;
+			}
 			fl trial_energy = 0;
-			const fl alpha = line_search<StrictArmijo>(f, x, energy, direction, scalar_product(direction, gradient),
-			                                           trial, trial_gradient, trial_energy, evalcount);
+			const fl alpha = line_search<StrictArmijo>(f, x, energy, *conformation_step, scalar_product(direction, gradient),
+			                                           trial, trial_gradient, trial_energy, evalcount, max_evals);
 			if (StrictArmijo && alpha == 0)
 				return {energy, true}; // The model may reflect the last rejected trial.
 			energy = trial_energy;

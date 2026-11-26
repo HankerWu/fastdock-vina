@@ -69,6 +69,8 @@ sudo apt-get install build-essential python3 libboost-all-dev
 python3 tools/build.py --jobs 4
 ```
 
+Boost 的头文件需包含 `boost/random/sobol.hpp`，例如 Ubuntu 22.04 的 Boost 1.74。
+
 macOS（需要 Xcode 命令行工具和 Homebrew）：
 
 ```bash
@@ -109,6 +111,16 @@ Vina 和 Vinardo 的 `--score_only` 可直接用刚性受体原子评分，省�
 `--write_maps` 时会一次导出完整的类型集合。`--maps` 加载预计算网格，
 AD4 仍需对应的原子类型、电势和去溶剂化网格。导入会检查网格头部和采样值数量，
 采样值须为有限数。姿势文件逐个写出模型，PDBQT 格式保持一致。
+
+### 柔性受体的固定锚原子
+
+为 Vina 或 Vinardo 提供同一受体的无重叠刚性和柔性 PDBQT 拆分。柔性文件里的
+固定轴锚（通常是 Cα 和 Cβ）保留原位，和配体的相互作用进入显式评分与搜索梯度，
+并计入 `Ligand - Flex side chains`。读取预计算地图时，使用同一刚性部分生成的地图。
+
+用 `--score_only --unbound_energy 0` 复算固定坐标，读取 `Final Intermolecular Energy`
+及其分项。全刚性评分和柔性显式配对的正能量软化聚合顺序不同。原生去重还包含可动侧链，
+与实验配体做 RMSD 比较时只取每个模型中 `BEGIN_RES` 之前的配体原子。
 
 ### 扭转搜索、受体装配与同靶点实测排序
 
@@ -178,7 +190,20 @@ python3 benchmarks/check_pro_rerank.py build/vina /path/to/pre-pro/vina
 
 在常规刚性单配体 Vina 对接命令加 `--refinement_optimizer armijo`，可在最终显式受体精修中
 启用严格 Armijo 下降条件。默认值 `native` 沿用原优化器。Armijo 可与 `--pose_selection late`
-和 `--rerank_gauss2_scale` 分别组合，Monte Carlo 搜索、单独局部优化和其他评分模式沿用原路由。
+和 `--rerank_gauss2_scale` 分别组合。`--refinement_optimizer geometry` 使用同一
+Armijo 线搜索，按重原子位移预条件化旋转和扭转。两种选项都沿用原评分函数。
+[度量、开销与实验设计](benchmarks/geometry_metric/README.md)
+
+对给定姿势，可在显式刚性单配体 Vina 的 `--local_only` 路径使用这两种优化器。
+局部精修还支持 `--refinement_optimizer rigid_metric`。它在起始重原子质心换算平移和旋转步长，
+沿用原配体扭转坐标。三种模式可作为同一显式评分目标的配对数值对照。
+此时 `--max_evals` 为整次局部优化的梯度调用上限，包含初始梯度和盒恢复重试。
+0 沿用原迭代和盒重试约束。`Local refinement` 日志给出实际调用数和最终优化目标。
+
+```bash
+./build/vina --receptor receptor.pdbqt --ligand pose.pdbqt --config box.txt \
+  --local_only --refinement_optimizer geometry --max_evals 32 --cpu 1 --out refined.pdbqt
+```
 
 Armijo 只接收目标值和梯度均有限、满足充分下降且实际降低目标值的步长。最多尝试十个步长。
 全部试步失败时，本次 BFGS 停在当前已接受点。收敛判断使用当前点梯度，只有有限的正曲率

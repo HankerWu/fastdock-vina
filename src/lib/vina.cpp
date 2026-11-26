@@ -27,6 +27,7 @@
 #include "rigid_window.h"
 #include "printable_box.h"
 #include <fstream>
+#include <sstream>
 #include <utility>
 #include <limits>
 
@@ -1008,7 +1009,7 @@ std::vector<double> Vina::score() {
 	return energies;
 }
 
-std::vector<double> Vina::optimize(output_type& out, int max_steps) {
+std::vector<double> Vina::optimize(output_type& out, int max_steps, int max_evals, bool rigid_metric) {
 	// Local optimization of the ligand conf
 	const vec authentic_v(1000, 1000, 1000);
 	std::vector<double> energies_before_opt;
@@ -1022,6 +1023,9 @@ std::vector<double> Vina::optimize(output_type& out, int max_steps) {
 			std::cout << "Number of local optimization steps: " << max_steps << "\n";
 	}
 	quasi_newton quasi_newton_par(m_model.get_size(), max_steps);
+	quasi_newton_par.strict_armijo = m_armijo_refinement;
+	quasi_newton_par.geometry_metric = m_geometry_refinement;
+	quasi_newton_par.rigid_metric = rigid_metric;
 
 	if (m_verbosity > 1) {
 		std::cout << "Before local optimization:\n";
@@ -1030,10 +1034,10 @@ std::vector<double> Vina::optimize(output_type& out, int max_steps) {
 	}
 
 	doing("Performing local search", m_verbosity, 0);
-	// Try 5 five times to optimize locally the conformation
-	VINA_FOR(p, 5) {
+	// Share the gradient budget across all box-recovery attempts.
+	for (sz attempt = 0; attempt < 5 && (max_evals == 0 || evalcount < max_evals); ++attempt) {
 		if (m_sf_choice == SF_VINA || m_sf_choice == SF_VINARDO) {
-			quasi_newton_par(m_model, m_precalculated_byatom, vina_receptor_interactions(), out, authentic_v, evalcount);
+			quasi_newton_par(m_model, m_precalculated_byatom, vina_receptor_interactions(), out, authentic_v, evalcount, nullptr, max_evals);
 			// Break if we succeed to bring (back) the ligand within the grid
 			if (m_grid.is_in_grid(m_model))
 				break;
@@ -1046,11 +1050,23 @@ std::vector<double> Vina::optimize(output_type& out, int max_steps) {
 	done(m_verbosity, 0);
 
 	energies_after_opt = score();
+	if (m_armijo_refinement) {
+		std::ostringstream report;
+		const char* optimizer = rigid_metric ? "rigid_metric" : (m_geometry_refinement ? "geometry" : "armijo");
+		report << "Local refinement: optimizer=" << optimizer
+		       << " gradient_evals=" << evalcount << " objective_kcal_mol="
+		       << std::setprecision(std::numeric_limits<fl>::max_digits10) << out.e << '\n';
+		std::cout << report.str();
+	}
 
 	return energies_after_opt;
 }
 
 std::vector<double> Vina::optimize(int max_steps) {
+	return optimize(max_steps, 0);
+}
+
+std::vector<double> Vina::optimize(int max_steps, int max_evals, bool rigid_metric) {
 	// Local optimization of the ligand conf
 	// Check if ff, box and ligand were initialized
 	// Check if the ligand is not outside the box
@@ -1061,6 +1077,14 @@ std::vector<double> Vina::optimize(int max_steps) {
 	} else if (!m_grid.is_in_grid(m_model)) {
 		throw vina_runtime_error("The ligand is outside the grid box. Increase the size of the grid box or center it accordingly around the ligand.");
 	}
+
+	if (m_armijo_refinement && (!m_use_explicit_receptor || m_model.num_ligands() != 1 || m_model.num_flex() != 0))
+		throw vina_runtime_error("Armijo refinement requires one ligand and a rigid explicit receptor");
+	if (max_evals < 0 || (max_evals > 0 && !m_armijo_refinement))
+		throw vina_runtime_error("A local gradient budget requires Armijo refinement and non-negative max_evals");
+
+	if (rigid_metric && (!m_armijo_refinement || m_geometry_refinement))
+		throw vina_runtime_error("Rigid metric requires Armijo without Cartesian preconditioning");
 
 	double e = 0;
 	conf c;
@@ -1076,9 +1100,7 @@ std::vector<double> Vina::optimize(int max_steps) {
 
 	output_type out(c, e);
 
-	std::vector<double> energies = optimize(out, max_steps);
-
-	return energies;
+	return optimize(out, max_steps, max_evals, rigid_metric);
 }
 
 output_container Vina::remove_redundant(const output_container &in, fl min_rmsd) {

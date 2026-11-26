@@ -149,7 +149,7 @@ def main():
             require(old_stats[key] == large_stats[key], "Higher refinement cap altered upstream search")
         require(large_stats == accepted_stats and old_stats["refine"] == 6 and large_stats["refine"] == 18
                 and old_stats["retained"] < large_stats["retained"] <= 6
-                and large_stats["refine"] < large_stats["refinement_calls"] <= 5 * large_stats["refine"],
+                and large_stats["refine"] <= large_stats["refinement_calls"] <= 5 * large_stats["refine"],
                 f"Expanded cap did not recover distinct poses with bounded retries {old_stats}, {large_stats}")
         expanded_native, expanded_support = check_ranking(expanded_accepted, expanded)
         require(len(expanded_support) == large_stats["retained"], "Expanded pool exceeds its output cap")

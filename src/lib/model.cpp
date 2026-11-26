@@ -208,6 +208,7 @@ public:
 void model::append(const model& m) {
 	VINA_CHECK(atom_typing_used() == m.atom_typing_used());
 
+	const sz existing_inflex = atoms.size() - m_num_movable_atoms;
 	appender t(*this, m);
 
 	t.append(other_pairs, m.other_pairs);
@@ -265,6 +266,25 @@ void model::append(const model& m) {
 				} else {
 					other_pairs.push_back(pair); // INTRA: flex_i - flex_j
 				}
+			}
+		}
+	}
+
+	// A flexible residue's fixed torsion anchors are absent from the rigid
+	// receptor maps. Score their contacts with the appended ligand explicitly.
+	// The existing side chain--anchor internal pair list already handles the
+	// variable receptor-internal contacts and their bond-distance exclusions.
+	if (atom_typing_used() == atom_type::XS && existing_inflex > 0) {
+		const sz first_anchor = m_num_movable_atoms + m.m_num_movable_atoms;
+		VINA_RANGE(i, m_num_movable_atoms, first_anchor) {
+			const atom& ligand_atom = atoms[i];
+			if (!is_atom_in_ligand(i) || ligand_atom.xs >= XS_TYPE_SIZE) continue;
+			VINA_RANGE(j, first_anchor, first_anchor + existing_inflex) {
+				const atom& anchor = atoms[j];
+				if (anchor.xs >= XS_TYPE_SIZE || is_closure_clash(i, j) ||
+				    is_unmatched_closure_dummy(i, j)) continue;
+				inter_pairs.emplace_back(pair_table_index(atom_type::XS, ligand_atom, anchor,
+				                                          i, j, atoms.size()), i, j);
 			}
 		}
 	}

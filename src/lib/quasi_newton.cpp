@@ -24,17 +24,39 @@
 
 #include "quasi_newton.h"
 
+namespace {
+boost::optional<bfgs_rigid_metric> centroid_metric(model& m, const conf& base) {
+    m.set(base);
+    const vec centroid = m.ligand_heavy_centroid(0);
+    const auto atoms = m.get_chemical_heavy_atom_movable_coords();
+    fl squared_radius = 0;
+    for (const auto& atom : atoms)
+        squared_radius += vec_distance_sqr(atom, centroid);
+    if (squared_radius > 0) {
+        const fl scale = std::sqrt(2 * squared_radius / (3 * atoms.size()));
+        if (std::isfinite(scale) && scale > epsilon_fl)
+            return bfgs_rigid_metric{centroid - base.ligands.front().rigid.position, 1 / scale};
+    }
+    return boost::none;
+}
+
+} // namespace
+
 void quasi_newton::operator()(model& m, const precalculate_byatom& p, const igrid& ig,
-                              output_type& out, const vec& v, int& evalcount, pose_template* reference) {
+                              output_type& out, const vec& v, int& evalcount, pose_template* reference, int max_evals) {
+    const auto rigid = rigid_metric ? centroid_metric(m, out.c) : boost::none;
     auto evaluate = [&](const conf& c, flv& gradient) {
         m.set(c);
-        return m.eval_deriv(p, ig, v, gradient, reference);
+        const fl energy = m.eval_deriv(p, ig, v, gradient, reference);
+        if (rigid)
+            rigid->to_centroid_gradient(gradient);
+        return energy;
     };
     VINA_CHECK(!geometry_metric || strict_armijo);
     const flv inverse = geometry_metric ? m.geometry_inverse_metric(out.c) : flv();
     const bfgs_result result = strict_armijo
         ? workspace.minimize<true>(evaluate, out.c, max_steps, evalcount,
-                                   geometry_metric ? &inverse : nullptr)
+                                   geometry_metric ? &inverse : nullptr, max_evals, rigid ? &*rigid : nullptr)
         : workspace.minimize(evaluate, out.c, max_steps, evalcount);
     if (result.restore_coordinates)
         m.set(out.c);

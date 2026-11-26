@@ -35,9 +35,11 @@ class quasi_newton {
 public:
     bool strict_armijo = false;
     bool geometry_metric = false;
+    bool rigid_metric = false;
     quasi_newton(const conf_size& size, unsigned steps) : workspace(size), max_steps(steps) {}
     void operator()(model& m, const precalculate_byatom& p, const igrid& ig,
-                    output_type& out, const vec& v, int& evalcount, pose_template* reference = nullptr);
+                    output_type& out, const vec& v, int& evalcount, pose_template* reference = nullptr,
+                    int max_evals = 0);
 };
 
 #endif
