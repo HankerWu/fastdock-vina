@@ -1,0 +1,1 @@
+144 runs, 1276 models, worst absolute RMSD difference 0.00000046 A

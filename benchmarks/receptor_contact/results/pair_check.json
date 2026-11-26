@@ -1,0 +1,12 @@
+{
+  "pair_counts": {
+    "native": 60,
+    "multi": 60,
+    "contact": 60
+  },
+  "pair_credits": {
+    "native": 20.0,
+    "multi": 25.0,
+    "contact": 15.0
+  }
+}
