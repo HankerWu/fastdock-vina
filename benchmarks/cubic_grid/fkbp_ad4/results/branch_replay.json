@@ -1,0 +1,101 @@
+{
+  "fork_binary_sha256": "9aab1a75afcb851b9eee357d82bf7435a69eb3e342a466d1f2cc89821ddbca03",
+  "pools": [
+    {
+      "cell": "4_1FKG_131071_ad4",
+      "byte_identical": true,
+      "official_sha256": "0a3115a3622b7af30552e4f9c0f8830925dc838f1074cb5d49c5c6bd9d1195c8",
+      "fork_sha256": "0a3115a3622b7af30552e4f9c0f8830925dc838f1074cb5d49c5c6bd9d1195c8"
+    },
+    {
+      "cell": "5_1FKG_131071_ad4",
+      "byte_identical": true,
+      "official_sha256": "901f77380bb676274e27cb2beecfcde0efb9eb061f87f25e2f013b3073c74058",
+      "fork_sha256": "901f77380bb676274e27cb2beecfcde0efb9eb061f87f25e2f013b3073c74058"
+    },
+    {
+      "cell": "6_1FKG_131071_ad4",
+      "byte_identical": true,
+      "official_sha256": "72382eb04e85f59bd30e4f9f64c6419f30b11e8a8c89fd485e5a4ca382d53e06",
+      "fork_sha256": "72382eb04e85f59bd30e4f9f64c6419f30b11e8a8c89fd485e5a4ca382d53e06"
+    },
+    {
+      "cell": "7_1FKG_131071_ad4",
+      "byte_identical": true,
+      "official_sha256": "97388a09d1946b091e152992b019bafd33baaa989e2aaf1a2a1f5f223ec6876b",
+      "fork_sha256": "97388a09d1946b091e152992b019bafd33baaa989e2aaf1a2a1f5f223ec6876b"
+    },
+    {
+      "cell": "8_1FKG_131071_ad4",
+      "byte_identical": true,
+      "official_sha256": "2d6973e4bd4691d1b744392670c88dff250dd83546b9648524c832f84f3d7056",
+      "fork_sha256": "2d6973e4bd4691d1b744392670c88dff250dd83546b9648524c832f84f3d7056"
+    },
+    {
+      "cell": "9_1FKG_131071_ad4",
+      "byte_identical": true,
+      "official_sha256": "09f00475978a94a23d51e51584472cd51e9de12ff9de811ad8cac39a713564fd",
+      "fork_sha256": "09f00475978a94a23d51e51584472cd51e9de12ff9de811ad8cac39a713564fd"
+    },
+    {
+      "cell": "10_1FKG_131071_ad4",
+      "byte_identical": true,
+      "official_sha256": "c25977ac5435ee6997e055d8e385e9c49e90808a9558b893957dad0549cbc20f",
+      "fork_sha256": "c25977ac5435ee6997e055d8e385e9c49e90808a9558b893957dad0549cbc20f"
+    },
+    {
+      "cell": "11_1FKG_131071_ad4",
+      "byte_identical": true,
+      "official_sha256": "39410e86de312406a4a9c24954c3fa1739aef03c50171d096a92e4074c6d837a",
+      "fork_sha256": "39410e86de312406a4a9c24954c3fa1739aef03c50171d096a92e4074c6d837a"
+    },
+    {
+      "cell": "4_1FKH_131071_ad4",
+      "byte_identical": true,
+      "official_sha256": "ef15d1e92ce6dc107c75d900d446870262e297b99e86ce2467b808935b0edc08",
+      "fork_sha256": "ef15d1e92ce6dc107c75d900d446870262e297b99e86ce2467b808935b0edc08"
+    },
+    {
+      "cell": "5_1FKH_131071_ad4",
+      "byte_identical": true,
+      "official_sha256": "7b3b849e2717ba24598201c09874481641ade7bbe68a72fcbf8487bd87f4d56b",
+      "fork_sha256": "7b3b849e2717ba24598201c09874481641ade7bbe68a72fcbf8487bd87f4d56b"
+    },
+    {
+      "cell": "6_1FKH_131071_ad4",
+      "byte_identical": true,
+      "official_sha256": "ed2ffe75f4d23e1aea522a78aea0729b7dd81e9c36923fa26d67b7564dbc65fc",
+      "fork_sha256": "ed2ffe75f4d23e1aea522a78aea0729b7dd81e9c36923fa26d67b7564dbc65fc"
+    },
+    {
+      "cell": "7_1FKH_131071_ad4",
+      "byte_identical": true,
+      "official_sha256": "2047a7b50a6563c97a1655f72da8cd3f34b1e211c35d9bde5ec765bcabc6e257",
+      "fork_sha256": "2047a7b50a6563c97a1655f72da8cd3f34b1e211c35d9bde5ec765bcabc6e257"
+    },
+    {
+      "cell": "8_1FKH_131071_ad4",
+      "byte_identical": true,
+      "official_sha256": "43a7cc7fedd25a624431d905f197120d8390df341aa775317064fdca33ed9271",
+      "fork_sha256": "43a7cc7fedd25a624431d905f197120d8390df341aa775317064fdca33ed9271"
+    },
+    {
+      "cell": "9_1FKH_131071_ad4",
+      "byte_identical": true,
+      "official_sha256": "913506ed7f3520713764a53a449b83b645afcd874d6b8913b96bc06fac9ae75e",
+      "fork_sha256": "913506ed7f3520713764a53a449b83b645afcd874d6b8913b96bc06fac9ae75e"
+    },
+    {
+      "cell": "10_1FKH_131071_ad4",
+      "byte_identical": true,
+      "official_sha256": "d73ae4fada6c6593e0b47b4b995f9260914a994189a511c0690081295743e0d5",
+      "fork_sha256": "d73ae4fada6c6593e0b47b4b995f9260914a994189a511c0690081295743e0d5"
+    },
+    {
+      "cell": "11_1FKH_131071_ad4",
+      "byte_identical": true,
+      "official_sha256": "af696a0293e33431e553f3c6d2af0dfbdf131b04a968db6ce4058d6a35056d79",
+      "fork_sha256": "af696a0293e33431e553f3c6d2af0dfbdf131b04a968db6ce4058d6a35056d79"
+    }
+  ]
+}

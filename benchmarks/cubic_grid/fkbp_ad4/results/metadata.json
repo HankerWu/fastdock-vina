@@ -1,0 +1,62 @@
+{
+  "maps": {
+    "1FKG": {
+      "receptor.A.map": "e6ae90eab7ceae158574e85d67c6164a53c0bad469df14a851578cc046977cec",
+      "receptor.C.map": "12384239b0996681269899e38a0bf438761ea7282810fc26f0ea6444a9dfe283",
+      "receptor.N.map": "b2be1d726943986e1f430928a26f43e33fc7f8b14b61d660280a0632d459b662",
+      "receptor.OA.map": "ccee76d0761b1d3416a959204f3b0a50169514edd5e2249b7f9d3962776d5fd4",
+      "receptor.d.map": "d734dbec5dd7efaaf67d652e2d8c7d8c6eedcc7ca1437dd73a0eb13316e90446",
+      "receptor.e.map": "156d7c5962a8cc414c09f825c4a961de18e34bebb87829425beb2cce37d923a0"
+    },
+    "1FKH": {
+      "receptor.A.map": "118480040417e63c32cac17cc01305601c21c5db1461745f87fbbbfcdf2225ae",
+      "receptor.C.map": "d73ecc0edfe13bc91209f152fcce36848a8e969d9625dca846fecd5f67787664",
+      "receptor.N.map": "3779d9bfdb81d27279bf91fd68fd6fa7f02a6c36538fc5dcf5ffd95fd09bf45c",
+      "receptor.OA.map": "f5363829f82c698a5d8fb8825e8f93328bae49cd418db97d512d2459de505db6",
+      "receptor.d.map": "174116b8d2a3989e9f28ef4b0c8398e972473283e535e646843cd49c147bb3bf",
+      "receptor.e.map": "e996ee23aec962854e92d497ba80d18f0e98c4f5543669fb25e0773c1be73161"
+    }
+  },
+  "ligands": {
+    "4": "dd7abb056c793b4a0b7913205971f8169a8aa399bb779d245d0591dedafb50f7",
+    "5": "20d29e3d7a7320d3d6d6b4b7a27055a82d9dabf0e98f19e2add357c38405d2e5",
+    "6": "f020231d603d53b2c4206868da276c2405cf471a48016bc561306bdbf13e19ff",
+    "7": "1683e5955ef654afc9fdb57ce80d7368b6ae56782d8b4a930d74a33d1e503358",
+    "8": "246340fcb4c787a0833e9a051c11486b65d6304246745073f1de5b442cdcc668",
+    "9": "be09564e6bebc00138de0e3ebd8ae9487d51f8eb631363962d94649fd9c642a6",
+    "10": "8f782dcef6bb2c6d7ccbd4716105d54691052ce5d4bf974730c620d3a1dd8b77",
+    "11": "b5d69cbb235f9d851c2626c8b401d6be380cf4ab29d4fb34df9989cbe74335a1"
+  },
+  "centers_A": {
+    "1FKG": [
+      -26.245,
+      28.54,
+      5.249
+    ],
+    "1FKH": [
+      -26.148,
+      28.3,
+      43.809
+    ]
+  },
+  "receptors": {
+    "1FKG": "ef0541c08f637fbc0d50337057e7e75978e4cd5ed302a8f038bda11e94da70bc",
+    "1FKH": "35dc3af79db72c297eaf408327761ca0e226f4364e6a9fb634033a7999584e08"
+  },
+  "autogrid_sha256": "636df4a0075adeb1a04e9c26b0674ad8b77d49e0244f7a109aa302214a670846",
+  "vina_sha256": "bac6d49dbed6b5aa4b6b74ec078e9f4015ca25a4d66c37576f4988bbe612dfc3",
+  "seeds": [
+    131071,
+    196613,
+    262147
+  ],
+  "per_trajectory_max_evals": 24000,
+  "exhaustiveness": 3,
+  "cpu": 1,
+  "npts": [
+    64,
+    64,
+    64
+  ],
+  "spacing_A": 0.375
+}

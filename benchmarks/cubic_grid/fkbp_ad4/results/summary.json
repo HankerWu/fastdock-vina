@@ -1,0 +1,43 @@
+{
+  "n_compounds": 8,
+  "n_unique_pairs": 15,
+  "n_runs": 96,
+  "n_modes": 864,
+  "n_ad4_modes_reconstructed": 432,
+  "max_ad4_map_rescore_error": 0.002842296095278307,
+  "ad4_gains": 2,
+  "ad4_losses": 3,
+  "methods": {
+    "vina": {
+      "correct": 7,
+      "rho_seven_points": 0.28571428571428575,
+      "epimer_8_vs_10": -0.0600000000000005,
+      "epimer_9_vs_11": 0.19500000000000028
+    },
+    "ad4": {
+      "correct": 6,
+      "rho_seven_points": -0.1785714285714286,
+      "epimer_8_vs_10": 0.4209999999999994,
+      "epimer_9_vs_11": 0.1924999999999999
+    },
+    "ad4_on_vina_pool": {
+      "correct": 3,
+      "rho_seven_points": -0.07142857142857144,
+      "epimer_8_vs_10": -0.6221838858345352,
+      "epimer_9_vs_11": 0.48040158548979495
+    }
+  },
+  "exploratory_remove_torsion_from_ad4_pool": {
+    "pairs_correct": 10,
+    "scores": {
+      "4": -11.063486222445242,
+      "5": -10.248535044031453,
+      "6": -10.997865869931935,
+      "7": -11.620129973905527,
+      "8": -11.230280552463359,
+      "9": -11.224165228652083,
+      "10": -10.808984850361117,
+      "11": -11.031947677076854
+    }
+  }
+}
