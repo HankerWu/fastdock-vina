@@ -127,7 +127,7 @@ struct bfgs_result {
 };
 
 // Each search or refinement loop owns a workspace for its fixed conformation
-// layout. Every minimization starts with a fresh identity inverse Hessian.
+// layout. Every minimization starts with a fresh positive diagonal inverse Hessian.
 class bfgs_workspace {
 	conf trial, original;
 	flv gradient, trial_gradient, direction, minus_hy;
@@ -140,9 +140,16 @@ public:
 		  minus_hy(gradient.size()), h(gradient.size()) {}
 
 	template<bool StrictArmijo = false, typename F>
-	bfgs_result minimize(F& f, conf& x, unsigned max_steps, int& evalcount) {
+	bfgs_result minimize(F& f, conf& x, unsigned max_steps, int& evalcount,
+	                     const flv* inverse_metric = nullptr) {
 		h.clear();
-		set_diagonal(h, 1);
+		if (inverse_metric) {
+			VINA_CHECK(StrictArmijo && inverse_metric->size() == h.dim());
+			VINA_FOR(i, h.dim()) {
+				VINA_CHECK(std::isfinite((*inverse_metric)[i]) && (*inverse_metric)[i] > 0);
+				h(i, i) = (*inverse_metric)[i];
+			}
+		} else set_diagonal(h, 1);
 		original = x;
 		fl energy = f(x, gradient);
 		++evalcount;
@@ -176,12 +183,26 @@ public:
 			if (StrictArmijo && (!std::isfinite(sy) || sy < epsilon_fl))
 				continue;
 			if (step == 0) {
-				const fl yy = scalar_product(y, y);
+				fl yy = scalar_product(y, y);
+				if (inverse_metric) {
+					yy = 0;
+					VINA_FOR_IN(i, y) yy += y[i] * y[i] * (*inverse_metric)[i];
+				}
 				if (StrictArmijo) {
 					if (std::isfinite(yy) && yy > epsilon_fl) {
 						const fl scale = sy / yy;
-						if (std::isfinite(scale) && scale > 0)
-							set_diagonal(h, scale);
+						if (std::isfinite(scale) && scale > 0) {
+							if (inverse_metric) {
+								// Preserve the relative geometric scales during the first
+								// secant rescaling, rather than replacing D by identity.
+								bool valid = true;
+								VINA_FOR(i, h.dim()) {
+									const fl value = scale * (*inverse_metric)[i];
+									valid = valid && std::isfinite(value) && value > 0;
+								}
+								if (valid) VINA_FOR(i, h.dim()) h(i, i) = scale * (*inverse_metric)[i];
+							} else set_diagonal(h, scale);
+						}
 					}
 				} else if (std::abs(yy) > epsilon_fl) {
 					set_diagonal(h, sy / yy);

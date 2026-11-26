@@ -24,6 +24,12 @@ jobs:
         run: |
           c++ -O2 -DNDEBUG -std=c++14 -pthread -Isrc/lib benchmarks/check_map_lattice.cpp $(find build/core/obj -name '*.o' ! -name main.o) -lboost_system -lboost_thread -lboost_serialization -lboost_filesystem -lboost_program_options -o build/core/check-map-lattice
           build/core/check-map-lattice "${RUNNER_TEMP}/map-lattice-fixtures"
+      - name: Test strict Armijo and geometry preconditioner
+        run: |
+          c++ -O2 -DNDEBUG -std=c++14 -pthread -Isrc/lib benchmarks/check_armijo_numeric.cpp $(find build/core/obj -name '*.o' ! -name main.o) -lboost_system -lboost_thread -lboost_serialization -lboost_filesystem -lboost_program_options -o build/core/check-armijo
+          build/core/check-armijo
+      - name: Reproduce archived pose and affinity aggregation
+        run: python3 benchmarks/search_budget/replay.py
       - name: Package tested binary
         run: |
           mkdir -p build/core/dist/lib

@@ -108,5 +108,25 @@ int main() {
 	        && coordinate(current) == -3 && evaluations == 3,
 	        "Negative curvature must not give the initial inverse Hessian a negative scale");
 
-	std::cout << "Armijo numerical regressions passed.\n";
+	// An anisotropic quadratic models coordinate scaling with unequal lever arms.
+	auto anisotropic = [](const conf& p, flv& g) {
+		std::fill(g.begin(), g.end(), 0);
+		const auto& x = p.ligands.front().rigid.position;
+		g[0] = x[0];
+		g[1] = 16 * x[1];
+		return 0.5 * (x[0] * x[0] + 16 * x[1] * x[1]);
+	};
+	current = point(1);
+	current.ligands.front().rigid.position[1] = 1;
+	conf unscaled = current;
+	flv inverse(size.num_degrees_of_freedom(), 1);
+	inverse[1] = 1.0 / 16;
+	evaluations = 0;
+	require(workspace.minimize<true>(anisotropic, current, 1, evaluations, &inverse).energy == 0
+	        && evaluations == 2, "Positive diagonal preconditioner must solve separable scaled quadratic");
+	evaluations = 0;
+	require(workspace.minimize<true>(anisotropic, unscaled, 1, evaluations).energy > 0
+	        && evaluations > 2, "Identity control must not solve scaled quadratic in one step");
+
+	std::cout << "Armijo and geometry-preconditioned numerical regressions passed.\\n";
 }

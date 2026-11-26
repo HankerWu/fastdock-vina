@@ -218,7 +218,7 @@ Thank you!\n";
 			("unbound_energy", value<double>(&unbound_energy)->default_value(unbound_energy), "Explicitly set the Unbound System's Energy for --score_only jobs")
 			("no_refine", bool_switch(&no_refine),  "when --receptor is provided, do not use explicit receptor atoms (instead of precalculated grids) for: (1) local optimization and scoring after docking, (2) --local_only jobs, and (3) --score_only jobs")
 			("refinement_optimizer", value<std::string>(&refinement_optimizer)->default_value(refinement_optimizer),
-			 "native or strict Armijo BFGS for explicit rigid Vina final refinement")
+			 "native, armijo, or experimental geometry-preconditioned Armijo BFGS for explicit rigid Vina final refinement")
 			("rigid_reorientation", value<std::string>(&rigid_reorientation)->default_value(rigid_reorientation),
 			 "native, mixed local/global, or centered local rotation for single-ligand rigid Vina docking")
 			("separate_hunt_chain", bool_switch(&separate_hunt_chain),
@@ -420,9 +420,9 @@ Thank you!\n";
 			throw usage_error("balanced_torsion_search requires global docking");
 		if (search_counters && (randomize_only || score_only || local_only))
 			throw usage_error("search_counters requires global docking");
-		if (refinement_optimizer != "native" && refinement_optimizer != "armijo")
-			throw usage_error("refinement_optimizer must be native or armijo");
-		if (refinement_optimizer == "armijo" && !regular_rigid_vina)
+		if (refinement_optimizer != "native" && refinement_optimizer != "armijo" && refinement_optimizer != "geometry")
+			throw usage_error("refinement_optimizer must be native, armijo, or geometry");
+		if (refinement_optimizer != "native" && !regular_rigid_vina)
 			throw usage_error("Armijo refinement requires regular Vina docking with a rigid receptor, one ligand per search, and explicit receptor refinement");
 		if (vm.count("pose_template") != vm.count("template_stage"))
 			throw usage_error("Specify pose_template and template_stage together");
@@ -576,7 +576,7 @@ Thank you!\n";
 		}
 
 		Vina v(sf_name, cpu, seed, verbosity, no_refine);
-		v.set_armijo_refinement(refinement_optimizer == "armijo");
+		v.set_armijo_refinement(refinement_optimizer != "native", refinement_optimizer == "geometry");
 		v.set_rigid_reorientation(rigid_reorientation == "mixed", rigid_reorientation == "centered");
 		v.set_separate_hunt_chain(separate_hunt_chain);
 		v.set_mixed_cutoff_search(mixed_cutoff_search);

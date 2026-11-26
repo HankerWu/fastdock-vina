@@ -146,7 +146,7 @@ public:
 	// Enable experimental trajectory archiving before building search maps.
 	void set_trajectory_archive(const std::string& mode);
 	// Use strict Armijo line search only in explicit final refinement.
-	void set_armijo_refinement(bool enabled);
+	void set_armijo_refinement(bool enabled, bool geometry_metric = false);
 	void set_rigid_reorientation(bool mixed, bool centered = false);
 	void set_separate_hunt_chain(bool enabled);
 	void set_prepared_torsion_starts(bool enabled) { m_prepared_torsion_starts = enabled; }
@@ -225,6 +225,7 @@ private:
 	bool m_late_pose_selection = false;
 	bool m_use_min_rmsd_for_merge = false;
 	bool m_armijo_refinement = false;
+	bool m_geometry_refinement = false;
 	bool m_mixed_reorientation = false;
 	bool m_centered_rotation = false;
 	bool m_separate_hunt_chain = false;

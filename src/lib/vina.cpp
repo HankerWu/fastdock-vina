@@ -1138,12 +1138,15 @@ void Vina::set_late_pose_selection(bool enabled) {
 	m_late_pose_selection = enabled;
 }
 
-void Vina::set_armijo_refinement(bool enabled) {
+void Vina::set_armijo_refinement(bool enabled, bool geometry_metric) {
+	if (geometry_metric && !enabled)
+		throw vina_runtime_error("Geometry preconditioning requires Armijo refinement");
 	if (enabled && (m_sf_choice != SF_VINA || m_no_refine))
 		throw vina_runtime_error("Armijo refinement requires Vina scoring with explicit receptor refinement");
-	if (enabled != m_armijo_refinement && m_map_initialized)
+	if ((enabled != m_armijo_refinement || geometry_metric != m_geometry_refinement) && m_map_initialized)
 		throw vina_runtime_error("set Armijo refinement before initializing search maps");
 	m_armijo_refinement = enabled;
+	m_geometry_refinement = geometry_metric;
 }
 
 void Vina::set_rigid_reorientation(bool mixed, bool centered) {
@@ -1791,6 +1794,7 @@ void Vina::global_search(const int exhaustiveness, const int n_poses, const doub
 				quasi_newton quasi_newton_par(m_model.get_size(),
 				                             unsigned((25 + m_model.num_movable_atoms()) / 3));
 				quasi_newton_par.strict_armijo = m_armijo_refinement;
+				quasi_newton_par.geometry_metric = m_geometry_refinement;
 				int evalcount = 0;
 				const fl slope = 1e6;
 				m_non_cache.slope = slope;
