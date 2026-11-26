@@ -1,0 +1,1 @@
+1056 raw pose files; 9263 scores/NO geometries; 1536 unique-pair rows reconstructed. Max score/NO/RMSD discrepancies 0/3.55e-15/3.55e-15.

@@ -1,0 +1,2 @@
+Reversed-head initial seeds: 0 of 112 native top aryl contacts; 199 / 295 unique pairs; 13 / 17 matched
+{'target': 'fxa', 'arm': 'inverted', 'method': 'release', 'strong': 'CHEMBL177142', 'weak': 'CHEMBL369161', 'ratio': 173.0769230769231, 'experimental_gap': 3.053511098493552, 'predicted_gap': 1.853, 'credit': 1, 'min_gap': 1.0619999999999994, 'max_gap': 1.9670000000000005}
