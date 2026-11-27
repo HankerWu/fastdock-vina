@@ -1,0 +1,164 @@
+[
+  {
+    "target": "PTPN1",
+    "pdb": "1T48",
+    "ccd": "BB3",
+    "chain": "A",
+    "structure_source": "https://www.rcsb.org/structure/1T48",
+    "ccd_source": "https://files.rcsb.org/ligands/download/BB3.cif",
+    "resolution_A": 2.2,
+    "formal_charge": 0,
+    "murcko_smiles": "O=C(c1ccccc1)c1coc2ccccc12",
+    "heavy_atoms": 28,
+    "seconds": 3.156058025000675,
+    "mate_heavy_pairs_8A": 29,
+    "closest_mate_pair": [
+      6.202764038458437,
+      "O20",
+      "A",
+      "118",
+      "SER",
+      "OG"
+    ],
+    "status": "ready",
+    "repaired_distance_A": null,
+    "nearest_other_nonwater_as_deposited": null,
+    "retained_metals": [],
+    "canonical_smiles": "CCc1oc2cc(S(=O)(=O)N(C)C)ccc2c1C(=O)c1cc(Br)c(O)c(Br)c1",
+    "files": {
+      "1T48/ligand.pdbqt": "90d6e570dae00e6513186592eabc5797fae00d8b65e5a8de35ece67c9920b211",
+      "1T48/receptor.pdbqt": "237b5a2d8bd67cfb51d82cb102e75bdd5f015dc23618bc0497922622a661620e",
+      "1T48/preparation.json": "5b39d647f69289cbccaff58021e4fbbbaa7dd098d701506dd106b285dc8f038f",
+      "1T48/source.json": "98504860aff376275a0235e5baaa7ee0762b9db8a87068103d77b4a429a997a1",
+      "raw/1T48.pdb": "9caf821c1a110e3422b9b6fca820d4472f3387e3b2c36b0b5a6ed5922de99386",
+      "raw/BB3.cif": "2995a23336d1253dd7e5bf0d68900978ab9beaf1ecced66c858603dfaf5c2c32"
+    }
+  },
+  {
+    "target": "PTPN1",
+    "pdb": "1T49",
+    "ccd": "892",
+    "chain": "A",
+    "structure_source": "https://www.rcsb.org/structure/1T49",
+    "ccd_source": "https://files.rcsb.org/ligands/download/892.cif",
+    "resolution_A": 1.9,
+    "formal_charge": 0,
+    "murcko_smiles": "O=C(c1ccccc1)c1coc2cc(S(=O)(=O)Nc3ccccc3)ccc12",
+    "heavy_atoms": 36,
+    "seconds": 3.3601355270002387,
+    "mate_heavy_pairs_8A": 45,
+    "closest_mate_pair": [
+      5.396812132955827,
+      "O20",
+      "A",
+      "116",
+      "LYS",
+      "NZ"
+    ],
+    "status": "ready",
+    "repaired_distance_A": null,
+    "nearest_other_nonwater_as_deposited": [
+      27.592288560393104,
+      "MG    MG A 401"
+    ],
+    "retained_metals": [
+      "MG"
+    ],
+    "canonical_smiles": "CCc1oc2cc(S(=O)(=O)Nc3ccc(S(N)(=O)=O)cc3)ccc2c1C(=O)c1cc(Br)c(O)c(Br)c1",
+    "files": {
+      "1T49/ligand.pdbqt": "c75ff73e693af405630b7f724c1a5ad4dec6ee997253644227fdc75eff32c0ba",
+      "1T49/receptor.pdbqt": "ee4d6d619fc7f365c87782f787213b5e8d26633a418dc010a317017591eb8476",
+      "1T49/preparation.json": "087c9b135bdd1f4196f0e3aee8ed796f2b4cd7790bb06ccad0a679ea04d91054",
+      "1T49/source.json": "35d4db29f26d9328cf2b51d65dfbabc8bb0a1e5eb53c6e2e274a78a723b1cae2",
+      "raw/1T49.pdb": "f834c9a63c4db8be2e0bb19ff1f7fb1fccf783094545c027d889acaebdaccf12",
+      "raw/892.cif": "83f217839bd172c5604d4ae040ebafe6d2c4339ae9deb0f38e326ee4ab8076a3"
+    }
+  },
+  {
+    "target": "ESR1",
+    "pdb": "1SJ0",
+    "ccd": "E4D",
+    "chain": "A",
+    "structure_source": "https://www.rcsb.org/structure/1SJ0",
+    "ccd_source": "https://files.rcsb.org/ligands/download/E4D.cif",
+    "resolution_A": 1.9,
+    "formal_charge": 0,
+    "murcko_smiles": "c1ccc(C2Sc3ccccc3OC2c2ccc(OCCN3CCCCC3)cc2)cc1",
+    "heavy_atoms": 33,
+    "seconds": 3.152898787000595,
+    "mate_heavy_pairs_8A": 0,
+    "closest_mate_pair": null,
+    "status": "ready",
+    "repaired_distance_A": 15.945639686133635,
+    "nearest_other_nonwater_as_deposited": null,
+    "retained_metals": [],
+    "canonical_smiles": "Oc1ccc([C@H]2Sc3cc(O)ccc3O[C@H]2c2ccc(OCCN3CCCCC3)cc2)cc1",
+    "files": {
+      "1SJ0/ligand.pdbqt": "4304b92a3f9b85cc760df100fc285f6384a70c369dc3628515855f30d136599f",
+      "1SJ0/receptor.pdbqt": "e957859a3531a41fbecb7c961b997bd03fbe5c5bdb1734e9e585ff256763472d",
+      "1SJ0/preparation.json": "e8cc3933fa8cafdb6879019bb65f8de69a5c5f2daa4e573164251ef2195badeb",
+      "1SJ0/source.json": "933b581ef7df0b201101d5af85012e2ae6653bb949522edaee4201a66af3908a",
+      "raw/1SJ0.pdb": "33ea400521636a24ef344798faa30c7235045ec63e59e73b5526d80ccd9d623e",
+      "raw/E4D.cif": "7ee02d5a4401723e0900abbd6a491d0e1f38c00e95dee3b3cf10b5fafc7d3257"
+    }
+  },
+  {
+    "target": "ESR1",
+    "pdb": "3ERT",
+    "ccd": "OHT",
+    "chain": "A",
+    "structure_source": "https://www.rcsb.org/structure/3ERT",
+    "ccd_source": "https://files.rcsb.org/ligands/download/OHT.cif",
+    "resolution_A": 1.9,
+    "formal_charge": 0,
+    "murcko_smiles": "C(=C(c1ccccc1)c1ccccc1)c1ccccc1",
+    "heavy_atoms": 29,
+    "seconds": 3.0163615500005108,
+    "mate_heavy_pairs_8A": 0,
+    "closest_mate_pair": null,
+    "status": "rebuilt atom within 8 A",
+    "repaired_distance_A": 7.692385910756169,
+    "nearest_other_nonwater_as_deposited": null,
+    "retained_metals": [],
+    "canonical_smiles": "CC/C(=C(\\c1ccc(O)cc1)c1ccc(OCCN(C)C)cc1)c1ccccc1",
+    "files": {
+      "3ERT/ligand.pdbqt": "27b89f900fcd50f6c408585b9475d6040f3b12a0c3ee35cc08ada872826c57f2",
+      "3ERT/receptor.pdbqt": "0c9c160ee15f1544310eef762deeee3e473858876306abbb293ea6019fd1dd50",
+      "3ERT/preparation.json": "9b8901887c5e6880e414475ed52bc8e85e8d78b7226cede68001c16f45db4414",
+      "3ERT/source.json": "a65147ce01c01f0be175206b3c384c57cfc00648f50765aec40ceebc128991bb",
+      "raw/3ERT.pdb": "9810b43b6956ef1d85d0e3760a1c24189d58f0ea956820927549b56e7f44b5f3",
+      "raw/OHT.cif": "ee312e77e5f340a9c9730ac934244363f89ccbe8a9675201543b9bc1e762a4bd"
+    }
+  },
+  {
+    "target": "PARP1",
+    "pdb": "4UND",
+    "ccd": "2YQ",
+    "chain": "A",
+    "structure_source": "https://www.rcsb.org/structure/4UND",
+    "ccd_source": "https://files.rcsb.org/ligands/download/2YQ.cif",
+    "resolution_A": 2.2,
+    "formal_charge": 0,
+    "murcko_smiles": "O=c1[nH]nc2c3c(cccc13)NC(c1ccccc1)C2c1ncn[nH]1",
+    "heavy_atoms": 28,
+    "seconds": 3.806781001998388,
+    "mate_heavy_pairs_8A": 0,
+    "closest_mate_pair": null,
+    "status": "ready",
+    "repaired_distance_A": null,
+    "nearest_other_nonwater_as_deposited": [
+      20.407931889341455,
+      "OE2 GLU B 680"
+    ],
+    "retained_metals": [],
+    "canonical_smiles": "Cn1ncnc1[C@H]1c2n[nH]c(=O)c3cc(F)cc(c23)N[C@@H]1c1ccc(F)cc1",
+    "files": {
+      "4UND/ligand.pdbqt": "8628dd4585cba6035f5c2f50706d0f6d71223fb90b2d2716a5d0887a7d1568f1",
+      "4UND/receptor.pdbqt": "5735ec8e5a4daf4d8920ccd7936015866124f6b964953ef3b1fa0251fa32a398",
+      "4UND/preparation.json": "72770e4ede2d81981d67c1ab1ce2ff2354ead7f1c42575f14d0f9d5ee87a5231",
+      "4UND/source.json": "fd0d6e82f3dfc6d5685fa8c841673546dcb78ec605e61aca0ce8ecac76aefbdb",
+      "raw/4UND.pdb": "a72d65dabef3e3d7d7f5ed11178c7b629bd9e85b6f6c5a89b88ef916bba9cddd",
+      "raw/2YQ.cif": "87fbf52c3d3ee603276558fc16c05b86b2a6b06c9f30abd34df43a0658db4a87"
+    }
+  }
+]

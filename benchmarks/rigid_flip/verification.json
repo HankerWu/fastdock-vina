@@ -1,0 +1,73 @@
+{
+  "primary": {
+    "runs": 112,
+    "poses": 483,
+    "max_rmsd_delta_A": 5.329070518200751e-15,
+    "hits": {
+      "adaptive": [
+        2,
+        2,
+        2
+      ],
+      "always": [
+        4,
+        4,
+        4
+      ],
+      "parent": [
+        1,
+        1,
+        1
+      ],
+      "upstream": [
+        1,
+        1,
+        1
+      ]
+    }
+  },
+  "reduced": {
+    "runs": 56,
+    "poses": 248,
+    "max_rmsd_delta_A": 5.329070518200751e-15,
+    "hits": {
+      "adaptive": [
+        2,
+        2,
+        2
+      ],
+      "always": [
+        4,
+        4,
+        4
+      ]
+    }
+  },
+  "newseeds": {
+    "runs": 56,
+    "poses": 284,
+    "max_rmsd_delta_A": 5.329070518200751e-15,
+    "hits": {
+      "adaptive": [
+        2,
+        2,
+        2
+      ],
+      "always": [
+        3,
+        3,
+        3
+      ],
+      "parent": [
+        1,
+        1,
+        1
+      ],
+      "upstream": [
+        1,
+        1,
+        1
+      ]
+    }
+  }
+}

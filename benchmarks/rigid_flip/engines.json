@@ -1,0 +1,25 @@
+{
+  "base": "2546cd5d0415cac634b8728820588bc67bc87666",
+  "upstream_source": "3c65c0b3e6c2c1d183f6a175ecb65e3c5ba91645",
+  "binaries_sha256": {
+    "upstream": "0986fe051cd9e5a29947ba0019c665eb656b0d04056e2c0e579e1894b628ba3d",
+    "upstream_counts": "3b411b17b66135ab39ac12dac6ea8618417c27bd41d871d94423d8bf300cbce3",
+    "parent": "04c633cc62a65dacd2821d8767018b831951ad48abb3896dbbac4c27f4ad68f4",
+    "always": "0a4ab3d8e70c1ab3bc34995e0ac31f1f83d5d22abe4ebb2cc89106a1c2c7b0b9",
+    "adaptive": "94a654c2d6fd7377598d527ab79b664b7f8fdbda7176b5ebb5a4cd9fe176793c",
+    "observer_always": "2f38406df404f7412e0609a6f362d1e0fedf9f27484e8dcd70e7a9447652722a",
+    "observer_adaptive": "0195c89a0c5a111e19e5adec29c83cfac1955b7739fe442c22c81a4c7cd0528b"
+  },
+  "cpu": "AMD EPYC 9V74 80-Core Processor",
+  "native_compiler": "g++ (Debian 14.2.0-19) 14.2.0",
+  "prep_runtime": {
+    "Python": "3.12.14",
+    "rdkit": "2025.9.3",
+    "meeko": "0.7.1",
+    "gemmi": "0.7.4",
+    "numpy": "2.3.5",
+    "scipy": "1.17.0",
+    "pdbfixer": "1.12.0",
+    "openmm": "8.6.1"
+  }
+}

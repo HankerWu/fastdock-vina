@@ -55,7 +55,8 @@ def reference_geometry(work):
     metadata = {
         p: json.loads((work / p / "preparation.json").read_text()) for p in CASES
     }
-    renin_correspondence(work, metadata)
+    if any(q["target"] == "REN" for q in metadata.values()):
+        renin_correspondence(work, metadata)
     rows = []
     for q, query in metadata.items():
         query_atoms = atoms((work / q / "ligand.pdbqt").read_text().splitlines())

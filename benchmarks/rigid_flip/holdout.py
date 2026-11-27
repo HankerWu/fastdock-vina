@@ -1,20 +1,23 @@
 """Prepare the preregistered human structures and replay all four blind docking arms."""
+
 import argparse
 import hashlib
 import itertools
 import json
-from pathlib import Path
 import random
 import re
 import subprocess
 import sys
+from pathlib import Path
 
 BENCH = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(BENCH / "search_backtracking/pose"))
 import backtracking_panel as panel
 
 paired = panel.paired
-paired.RADII["Mg"] = 1.73  # Same validation radius as the existing bond_distance/pose panel.
+paired.RADII["Mg"] = (
+    1.73  # Same validation radius as the existing bond_distance/pose panel.
+)
 CASES = {
     "1T48": ("PTPN1", "BB3", "A"),
     "1T49": ("PTPN1", "892", "A"),
@@ -28,9 +31,26 @@ ARMS = ("upstream", "parent", "always", "adaptive")
 
 
 def args_for(work, meta, q, r, seed, cap, out):
-    args = ["--receptor", str(work / r / "receptor.pdbqt"), "--ligand", str(work / q / "ligand.pdbqt"),
-            "--cpu", "1", "--exhaustiveness", "1", "--seed", str(seed), "--max_evals", str(cap),
-            "--num_modes", "9", "--energy_range", "100", "--out", str(out)]
+    args = [
+        "--receptor",
+        str(work / r / "receptor.pdbqt"),
+        "--ligand",
+        str(work / q / "ligand.pdbqt"),
+        "--cpu",
+        "1",
+        "--exhaustiveness",
+        "1",
+        "--seed",
+        str(seed),
+        "--max_evals",
+        str(cap),
+        "--num_modes",
+        "9",
+        "--energy_range",
+        "100",
+        "--out",
+        str(out),
+    ]
     for k, c in zip("xyz", meta[r]["center"]):
         args.extend(["--center_" + k, str(c), "--size_" + k, "24"])
     return args
@@ -45,17 +65,41 @@ def run(work, binary, replay, meta, q, r, seed, cap, arm):
         return
     cli = args_for(work, meta, q, r, seed, cap, out)
     cost = prefix.with_suffix(".cost")
-    subprocess.run([sys.executable, "-S", str(Path(__file__).with_name("process_cost.py")), str(log),
-                    str(cost), str(binary.resolve()), *cli, *([] if arm == "upstream" else ["--search_counters"])],
-                   check=True)
+    subprocess.run(
+        [
+            sys.executable,
+            "-S",
+            str(Path(__file__).with_name("process_cost.py")),
+            str(log),
+            str(cost),
+            str(binary.resolve()),
+            *cli,
+            *([] if arm == "upstream" else ["--search_counters"]),
+        ],
+        check=True,
+    )
     observed = log.read_text()
-    row = dict(key=prefix.name, target=CASES[q][0], query=q, receiver=r, seed=seed, cap=cap, arm=arm,
-               kind="cognate" if q == r else "cross", **json.loads(cost.read_text()), sha256=hashlib.sha256(out.read_bytes()).hexdigest(),
-               upstream_counter_parity="")
+    row = dict(
+        key=prefix.name,
+        target=CASES[q][0],
+        query=q,
+        receiver=r,
+        seed=seed,
+        cap=cap,
+        arm=arm,
+        kind="cognate" if q == r else "cross",
+        **json.loads(cost.read_text()),
+        sha256=hashlib.sha256(out.read_bytes()).hexdigest(),
+        upstream_counter_parity="",
+    )
     if arm == "upstream":
         check = prefix.with_suffix(".replay")
-        result = subprocess.run([str(replay.resolve()), *args_for(work, meta, q, r, seed, cap, check)],
-                                capture_output=True, text=True, check=True)
+        result = subprocess.run(
+            [str(replay.resolve()), *args_for(work, meta, q, r, seed, cap, check)],
+            capture_output=True,
+            text=True,
+            check=True,
+        )
         if check.read_bytes() != out.read_bytes():
             raise ValueError(f"Upstream counter replay changed poses for {prefix.name}")
         check.unlink()
@@ -64,7 +108,9 @@ def run(work, binary, replay, meta, q, r, seed, cap, arm):
         row["upstream_counter_parity"] = "identical"
     row.update(paired.counts(observed))
     flip = re.search(r"\brigid_reorientations=(\d+)", observed)
-    row["rigid_reorientations"] = int(flip[1]) if flip else (0 if arm == "parent" else "")
+    row["rigid_reorientations"] = (
+        int(flip[1]) if flip else (0 if arm == "parent" else "")
+    )
     if any(v == "" for v in paired.counts(observed).values()):
         raise ValueError(f"Missing actual eval count for {prefix.name}")
     stats.write_text(json.dumps(row, indent=2) + "\n")
@@ -77,7 +123,9 @@ def main():
     p.add_argument("--ids", nargs="+", choices=CASES)
     for name in (*ARMS, "counts"):
         p.add_argument("--" + name, type=Path)
-    p.add_argument("--study", choices=("primary", "reduced", "newseeds"), default="primary")
+    p.add_argument(
+        "--study", choices=("primary", "reduced", "newseeds"), default="primary"
+    )
     a = p.parse_args()
     work = a.work.resolve()
     if a.action == "prepare":
@@ -97,10 +145,12 @@ def main():
         try:
             paired.base.alignment(meta[q], meta[r])
         except ValueError as err:
-            excluded.append(dict(q=q, r=r, reason=str(err)))
+            excluded.append({"q": q, "r": r, "reason": str(err)})
             continue
         cells.extend((q, r, s, c) for s, c in itertools.product(seeds, caps))
-    (work / "alignment_exclusions.json").write_text(json.dumps(excluded, indent=2) + "\n")
+    (work / "alignment_exclusions.json").write_text(
+        json.dumps(excluded, indent=2) + "\n"
+    )
     (work / "runs").mkdir(exist_ok=True)
     if a.action == "dock":
         order = random.Random(66759)
@@ -116,8 +166,10 @@ def main():
         row = json.loads(path.read_text())
         for k in ("hunt_evals", "second_evals", "explicit_evals"):
             if not isinstance(row[k], int):
-                raise ValueError((path, k))
-        models = paired.inspect(work / "runs", meta[row["query"]], meta[row["receiver"]], row)
+                raise TypeError((path, k))
+        models = paired.inspect(
+            work / "runs", meta[row["query"]], meta[row["receiver"]], row
+        )
         if not models:
             raise ValueError(path)
         rows.append(row)
