@@ -21,6 +21,7 @@
 */
 
 #include "mutate.h"
+#include "shape_flip.h"
 
 sz count_mutable_entities(const conf& c) {
 	sz counter = 0;
@@ -41,7 +42,7 @@ static void orient_about_centroid(conf& c, model& m, sz ligand, const qt& orient
 }
 
 bool mutate_conf(conf& c, model& m, fl amplitude, rng& generator, bool mixed_reorientation,
-                 bool use_proposal_geometry, bool centered_rotation, bool balanced_torsion) { // ONE OF: 2A for position, similar amp for orientation, randomize torsion
+                 bool use_proposal_geometry, bool centered_rotation, bool balanced_torsion, bool shape_turn) { // ONE OF: 2A for position, similar amp for orientation, randomize torsion
 	sz mutable_entities_num = count_mutable_entities(c);
 	if(mutable_entities_num == 0) return false;
 	int which_int = random_int(0, int(mutable_entities_num - 1), generator);
@@ -61,7 +62,9 @@ bool mutate_conf(conf& c, model& m, fl amplitude, rng& generator, bool mixed_reo
 				m.set(c);
 			fl gr = m.gyration_radius(i);
 			if(gr > epsilon_fl) { // FIXME? just doing nothing for 0-radius molecules. do some other mutation?
-				const vec rotation = amplitude / gr * random_inside_sphere(generator);
+				const vec draw = random_inside_sphere(generator);
+				if (shape_turn && shape_flip::apply(c, m, draw)) return true;
+				const vec rotation = amplitude / gr * draw;
 				if (centered_rotation) {
 					qt orientation = c.ligands[i].rigid.orientation;
 					quaternion_increment(orientation, rotation);

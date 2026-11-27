@@ -40,9 +40,10 @@ std::pair<sz, fl> find_closest(const vecv& a, const output_container& b) {
 	return tmp;
 }
 
-void add_to_output_container(output_container& out, const output_type& t, fl min_rmsd, sz max_size) {
+bool add_to_output_container(output_container& out, const output_type& t, fl min_rmsd, sz max_size) {
 	std::pair<sz, fl> closest_rmsd = find_closest(t.coords, out);
-	if(closest_rmsd.first < out.size() && closest_rmsd.second < min_rmsd) { // have a very similar one
+	const bool duplicate = closest_rmsd.first < out.size() && closest_rmsd.second < min_rmsd;
+	if(duplicate) { // have a very similar one
 		if(t.e < out[closest_rmsd.first].e) { // the new one is better, apparently
 			out[closest_rmsd.first] = t; // FIXME? slow
 		}
@@ -55,6 +56,7 @@ void add_to_output_container(output_container& out, const output_type& t, fl min
 				out.back() = t; // FIXME? slow
 	}
 	out.sort();
+	return duplicate;
 }
 
 output_container select_distinct_poses(const output_container& poses, fl min_rmsd, sz max_size) {

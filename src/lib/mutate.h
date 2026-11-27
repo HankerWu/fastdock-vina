@@ -29,6 +29,6 @@
 // coordinates to determine the proposed pivot before subsequent optimization.
 bool mutate_conf(conf& c, model& m, fl amplitude, rng& generator, bool mixed_reorientation,
                  bool use_proposal_geometry = false, bool centered_rotation = false,
-                 bool balanced_torsion = false);
+                 bool balanced_torsion = false, bool shape_turn = false);
 
 #endif

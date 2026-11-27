@@ -23,6 +23,9 @@
 // FastDock: reuse the trial conformation across Monte Carlo steps.
 
 #include "monte_carlo.h"
+#ifndef SHAPE_FLIP_ALWAYS
+#define SHAPE_FLIP_ALWAYS 0
+#endif
 #include "coords.h"
 #include "mutate.h"
 #include "quasi_newton.h"
@@ -70,6 +73,10 @@ void monte_carlo::operator()(model& m, output_container& out, const precalculate
 	output_type candidate(s, 0);
 	fl best_e = max_fl;
 	bool reference_from_save = false;
+	bool revisited = false;
+	const bool single_native = m.num_ligands() == 1 && m.num_flex() == 0 &&
+		!mixed_reorientation && !centered_rotation && !balanced_torsion &&
+		!separate_hunt_chain;
 	quasi_newton quasi_newton_par(s, local_steps);
 	VINA_U_FOR(step, global_steps) {
 		if(increment_me)
@@ -78,7 +85,9 @@ void monte_carlo::operator()(model& m, output_container& out, const precalculate
 			break;
 		candidate.c = tmp.c;
 		const bool reoriented = mutate_conf(candidate.c, m, mutation_amplitude, generator,
-		                                    mixed_reorientation, separate_hunt_chain, centered_rotation, balanced_torsion);
+		                                    mixed_reorientation, separate_hunt_chain, centered_rotation, balanced_torsion,
+		                                    single_native && (SHAPE_FLIP_ALWAYS || revisited));
+		if (reoriented) revisited = false;
 		const int before_hunt = evalcount;
 		quasi_newton_par(m, p, ig, candidate, hunt_cap, evalcount);
 		if (counters) {
@@ -88,6 +97,7 @@ void monte_carlo::operator()(model& m, output_container& out, const precalculate
 			counters->mixed_accept_checks += reference_from_save;
 		}
 		if(step == 0 || metropolis_accept(tmp.e, candidate.e, temperature, generator)) {
+			revisited = false;
 			std::swap(tmp.c, candidate.c);
 			tmp.e = candidate.e;
 			reference_from_save = false;
@@ -115,7 +125,7 @@ void monte_carlo::operator()(model& m, output_container& out, const precalculate
 					counters->second_evals += evalcount - before_second;
 				}
 				saved.coords = m.get_heavy_atom_movable_coords();
-				add_to_output_container(out, saved, min_rmsd, num_saved_mins); // 20 - max size
+				revisited = add_to_output_container(out, saved, min_rmsd, num_saved_mins); // 20 - max size
 				reference_from_save = !separate_hunt_chain;
 				if(tmp.e < best_e)
 					best_e = tmp.e;
