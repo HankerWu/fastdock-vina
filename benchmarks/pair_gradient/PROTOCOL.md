@@ -35,3 +35,19 @@ upstream, parent, exact-linear and monotone-cubic, including all failures.
 See the pose subdirectory for the precise preparation and audit. Receptor
 alignment and crystal symmetry labels may be used to evaluate or localize
 the known site. No template-derived ranking term is supplied to the search.
+
+## End-to-end affinity transfer
+
+To test whether changing only the optimizer's radial table alters *predicted*
+same-assay rankings through changes of pose, run all 13 compounds from the
+published Gal-1 and Gal-3 Table 1 archive. The 4 receptor states, both seeds
+from the structural panel, 12,000 nominal evaluations, 1 trajectory, 1 CPU,
+and 9 output modes apply identically to the four arms. Use the native
+selection policy throughout. No contact templates, rescoring, or additional
+conformer generation. All 13 compounds appear in both assays. Aggregate
+scores over seeds in each receptor and average the two receptor scores as a
+descriptive consensus. Report per-receptor sensitivities, within-assay rank
+correlations, all at-least-threefold pairs, the same-heavy-atom subset, and
+the predefined 12-member substituted triazole series. Record joint evaluations
+and wall time. Matched nominal caps can incur different actual work. This is
+a new test of the gradient variants on an existing assay panel.
