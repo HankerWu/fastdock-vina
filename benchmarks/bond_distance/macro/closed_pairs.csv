@@ -1,0 +1,5 @@
+ligand,listed_pairs,glue_pairs,serial_a,serial_b,closed_distance
+tutorial/solution/BACE_1_ligand.pdbqt,548,2,,,
+hsp/1YET/ligand.pdbqt,602,2,,,
+extra/1FKF/ligand.pdbqt,1327,2,,,
+extra/1FKB/ligand.pdbqt,1787,2,,,

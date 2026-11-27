@@ -1,0 +1,14 @@
+ligand,listed_pairs,glue_pairs,serial_a,serial_b,closed_distance
+tutorial/solution/BACE_1_ligand.pdbqt,551,2,7,27,3
+tutorial/solution/BACE_1_ligand.pdbqt,551,2,9,24,3
+tutorial/solution/BACE_1_ligand.pdbqt,551,2,9,29,3
+hsp/1YET/ligand.pdbqt,606,2,31,22,3
+hsp/1YET/ligand.pdbqt,606,2,35,19,3
+hsp/1YET/ligand.pdbqt,606,2,35,25,3
+hsp/1YET/ligand.pdbqt,606,2,34,22,3
+extra/1FKF/ligand.pdbqt,1330,2,11,57,3
+extra/1FKF/ligand.pdbqt,1330,2,16,54,3
+extra/1FKF/ligand.pdbqt,1330,2,16,56,3
+extra/1FKB/ligand.pdbqt,1790,2,29,68,3
+extra/1FKB/ligand.pdbqt,1790,2,32,62,3
+extra/1FKB/ligand.pdbqt,1790,2,32,66,3

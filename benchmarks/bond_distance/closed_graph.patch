@@ -1,0 +1,67 @@
+diff --git a/src/lib/model.cpp b/src/lib/model.cpp
+index 0cf6d32..6d3985d 100755
+--- a/src/lib/model.cpp
++++ b/src/lib/model.cpp
+@@ -555,6 +555,44 @@ bool model::is_unmatched_closure_dummy(sz i, sz j) const {
+ 		return false;
+ }
+ 
++// Reconstruct cut edges solely for counting covalent separation. The kinematic
++// tree, atom typing and the two directed dummy-carbon restraints stay separate.
++static szv closure_partners(const atomv& atoms) {
++	std::array<szv, 4> endpoints;
++	VINA_FOR_IN(i, atoms) {
++		const sz type = atoms[i].ad;
++		if (type >= AD_TYPE_CG0 && type <= AD_TYPE_CG3)
++			endpoints[type - AD_TYPE_CG0].push_back(i);
++	}
++	szv partner;
++	for (const auto& ends : endpoints) {
++		if (ends.size() != 2) continue;
++		if (partner.empty()) partner.assign(atoms.size(), atoms.size());
++		partner[ends[0]] = ends[1];
++		partner[ends[1]] = ends[0];
++	}
++	return partner;
++}
++
++static szv closed_neighborhood(const atomv& atoms, const szv& partner, sz origin) {
++	szv queue{origin};
++	sz start = 0;
++	for (sz depth = 0; depth < 3; ++depth) {
++		const sz end = queue.size();
++		for (; start < end; ++start) {
++			const sz i = queue[start];
++			for (const auto& bond : atoms[i].bonds) {
++				const auto& b = bond.connected_atom_index;
++				if (!b.in_grid && !ad_is_closure_dummy(atoms[b.i].ad) && !has(queue, b.i))
++					queue.push_back(b.i);
++			}
++			if (partner[i] < atoms.size() && !has(queue, partner[i]))
++				queue.push_back(partner[i]);
++		}
++	}
++	return queue;
++}
++
+ void model::initialize_pairs(const distance_type_matrix& mobility) {
+ 	/* Interactions:
+ 	- ligand_i - ligand_i : YES (1-4 only) (ligand.pairs)
+@@ -562,13 +600,16 @@ void model::initialize_pairs(const distance_type_matrix& mobility) {
+ 	- flex_i   - flex_j   : YES (other_pairs)
+ 	- intra macrocycle closure interactions: NO (1-2, 1-3, 1-4)
+ 	*/
++	const szv partner = closure_partners(atoms);
+ 	VINA_FOR_IN(i, atoms) {
+ 		sz i_lig = find_ligand(i);
+ 		szv bonded_atoms = bonded_to(i, 3);   // up to 1-4
++		const szv closed = !partner.empty() && !ad_is_closure_dummy(atoms[i].ad)
++		                   ? closed_neighborhood(atoms, partner, i) : szv();
+ 
+ 		VINA_RANGE(j, i + 1, atoms.size()) {
+ 			if (mobility(i, j) == DISTANCE_VARIABLE && !has(bonded_atoms, j)) {
+-				if (is_closure_clash(i, j) || is_unmatched_closure_dummy(i, j)) continue;
++				if (has(closed, j) || is_closure_clash(i, j) || is_unmatched_closure_dummy(i, j)) continue;
+ 				
+ 				sz t1 = atoms[i].get(atom_typing_used());
+ 				sz t2 = atoms[j].get(atom_typing_used());

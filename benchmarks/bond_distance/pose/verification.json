@@ -1,0 +1,59 @@
+{
+  "cells": {
+    "runs": 60,
+    "modes": 250,
+    "max_absolute_RMSD_disagreement_A": 5.329070518200751e-15,
+    "hits": {
+      "upstream": {
+        "cells": 20,
+        "top1": 1,
+        "top5": 1,
+        "oracle": 1
+      },
+      "parent": {
+        "cells": 20,
+        "top1": 1,
+        "top5": 1,
+        "oracle": 1
+      },
+      "fixed": {
+        "cells": 20,
+        "top1": 0,
+        "top5": 0,
+        "oracle": 0
+      }
+    }
+  },
+  "cost": {
+    "runs": 3,
+    "modes": 10,
+    "max_absolute_RMSD_disagreement_A": 3.552713678800501e-15,
+    "hits": {
+      "cost": {
+        "cells": 3,
+        "top1": 0,
+        "top5": 0,
+        "oracle": 0
+      }
+    }
+  },
+  "confirmation": {
+    "runs": 12,
+    "modes": 55,
+    "max_absolute_RMSD_disagreement_A": 5.329070518200751e-15,
+    "hits": {
+      "parent": {
+        "cells": 6,
+        "top1": 0,
+        "top5": 0,
+        "oracle": 0
+      },
+      "fixed": {
+        "cells": 6,
+        "top1": 0,
+        "top5": 0,
+        "oracle": 0
+      }
+    }
+  }
+}

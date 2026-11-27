@@ -1,0 +1,67 @@
+diff --git a/src/lib/model.cpp b/src/lib/model.cpp
+index 0cf6d32..88be957 100755
+--- a/src/lib/model.cpp
++++ b/src/lib/model.cpp
+@@ -997,8 +997,8 @@ fl eval_interacting_pairs_deriv(const precalculate_byatom& p, fl v, const intera
+ 			const sz b = pair->b;
+ 			const vec r = coords[b] - a_coords;
+ 			const fl r2 = sqr(r);
+-			if (r2 < cutoff_sqr) {
+-				pr energy_deriv = p.eval_deriv(*pair, r2);
++			if (with_max_cutoff || r2 < cutoff_sqr) {
++				pr energy_deriv = with_max_cutoff ? p.glue_deriv(*pair, r2) : p.eval_deriv(*pair, r2);
+ 				vec force = energy_deriv.second * r;
+ 				curl(energy_deriv.first, force, v);
+ 				e += energy_deriv.first;
+diff --git a/src/lib/precalculate.h b/src/lib/precalculate.h
+index e325e67..d0237c3 100755
+--- a/src/lib/precalculate.h
++++ b/src/lib/precalculate.h
+@@ -145,7 +145,8 @@ struct precalculate_byatom {
+ 
+     precalculate_byatom(const ScoringFunction& sf, const model& m, fl cap = max_fl, fl factor = 32)
+         : m_cutoff_sqr(sqr(sf.get_cutoff())), m_max_cutoff_sqr(sqr(sf.get_max_cutoff())),
+-          m_factor(factor),
++          m_factor(factor), m_glue_tail_sqr((std::ceil(factor * sqr(macrocycle_glue_cutoff)) - 2) / factor),
++          m_glue_weight(sf.glue_weight()), m_cap(cap), m_xs_glue(sf.get_atom_typing() == atom_type::XS),
+           m_data(sf.get_atom_typing() == atom_type::XS ? XS_TYPE_SIZE : m.num_atoms(), precalculate_element()) {
+         VINA_CHECK(factor > epsilon_fl);
+         const flv distances = sample_distances(factor, m_cutoff_sqr);
+@@ -176,6 +177,16 @@ struct precalculate_byatom {
+     pr eval_deriv(const interacting_pair& pair, fl r2) const {
+         return element(pair).eval_deriv(m_factor * r2, m_factor);
+     }
++    // The last two interpolated bins include a sample or centered derivative
++    // from beyond the 20-A table. Continue the actual linear constraint there.
++    pr glue_deriv(const interacting_pair& pair, fl r2) const {
++        if (m_xs_glue && r2 >= m_glue_tail_sqr && r2 > 0) {
++            const fl r = std::sqrt(r2);
++            const fl energy = m_glue_weight * r;
++            return energy < m_cap ? pr(energy, m_glue_weight / r) : pr(m_cap, 0);
++        }
++        return r2 < m_max_cutoff_sqr ? eval_deriv(pair, r2) : pr(0, 0);
++    }
+     fl cutoff_sqr() const { return m_cutoff_sqr; }
+     fl max_cutoff_sqr() const { return m_max_cutoff_sqr; }
+ 
+@@ -188,6 +199,8 @@ private:
+     fl m_cutoff_sqr = 0;
+     fl m_max_cutoff_sqr = 0;
+     fl m_factor = 0;
++    fl m_glue_tail_sqr = 0, m_glue_weight = 0, m_cap = max_fl;
++    bool m_xs_glue = false;
+     triangular_matrix<precalculate_element> m_data;
+ };
+ 
+diff --git a/src/lib/scoring_function.h b/src/lib/scoring_function.h
+index 2f39a21..d5d3542 100644
+--- a/src/lib/scoring_function.h
++++ b/src/lib/scoring_function.h
+@@ -157,6 +157,7 @@ public:
+         return e;
+     };
+     fl get_cutoff() const { return m_cutoff; }
++    fl glue_weight() const { return m_weights[m_num_potentials - 1]; }
+     fl get_max_cutoff() const { return m_max_cutoff; }
+     atom_type::t get_atom_typing() const { return m_atom_typing; }
+     szv get_atom_types() const{

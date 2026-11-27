@@ -1,0 +1,14 @@
+pdb,component,source,mapped_heavy,stereocenters_checked,double_bonds_checked,stereo_mismatch_expected_observed,serial_a,serial_b,source_path,bonds,cut_bond
+5QCT,E4Y,tutorial/data/BACE_1_ligand.mol2,38,4,0,,7,27,C13-C16-C19-C22,3,C19-C22
+5QCT,E4Y,tutorial/data/BACE_1_ligand.mol2,38,4,0,,9,24,C19-C22-N25-C26,3,C19-C22
+5QCT,E4Y,tutorial/data/BACE_1_ligand.mol2,38,4,0,,9,29,C19-C22-N25-C47,3,C19-C22
+1YET,GDM,hsp/raw/GDM.cif,40,6,3,,31,22,C9-C10-C11-C12,3,C11-C12
+1YET,GDM,hsp/raw/GDM.cif,40,6,3,,35,19,C11-C12-C13-C14,3,C11-C12
+1YET,GDM,hsp/raw/GDM.cif,40,6,3,,35,25,C11-C12-O6-C27,3,C11-C12
+1YET,GDM,hsp/raw/GDM.cif,40,6,3,,34,22,C26-C10-C11-C12,3,C11-C12
+1FKF,FK5,extra/raw/FK5.cif,57,14,2,,11,57,C21-C20-C19-C18,3,C18-C19
+1FKF,FK5,extra/raw/FK5.cif,57,14,2,,16,54,C19-C18-C17-C16,3,C18-C19
+1FKF,FK5,extra/raw/FK5.cif,57,14,2,,16,56,C19-C18-C17-C36,3,C18-C19
+1FKB,RAP,extra/raw/RAP.cif,65,15,4,,29,68,C23-C24-C25-C26,3,C25-C26
+1FKB,RAP,extra/raw/RAP.cif,65,15,4,,32,62,C25-C26-C27-C28,3,C25-C26
+1FKB,RAP,extra/raw/RAP.cif,65,15,4,,32,66,C25-C26-C27-O9,3,C25-C26

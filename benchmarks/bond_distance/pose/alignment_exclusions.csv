@@ -1,0 +1,3 @@
+query,receiver,cap,reason
+3DCT,3FLI,3000,Pocket backbone alignment RMSD > 2 Å
+3DCT,3FLI,12000,Pocket backbone alignment RMSD > 2 Å
