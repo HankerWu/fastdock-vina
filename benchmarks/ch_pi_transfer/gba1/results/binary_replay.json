@@ -1,0 +1,27 @@
+{
+  "search_binary_original": {
+    "pro": "cb37dc53eb40300a6a23570a1e8c29af22d67e7a41523a7d33ffb9caaa2b0e6c",
+    "official": "f31f774f723bba7bbe6e9d1c47577020eea9a8da16424284c043d22593570644"
+  },
+  "search_binary_replay": {
+    "pro": "156a52f18345dc5ee283c0b854a914dacc175dfb9695f2ddc6737746fa0681b1",
+    "official": "f31f774f723bba7bbe6e9d1c47577020eea9a8da16424284c043d22593570644"
+  },
+  "batches": [
+    {
+      "batch": ".",
+      "identical_pdbqt": 81,
+      "mismatches": []
+    },
+    {
+      "batch": "budget_12100",
+      "identical_pdbqt": 27,
+      "mismatches": []
+    },
+    {
+      "batch": "budget_24000",
+      "identical_pdbqt": 27,
+      "mismatches": []
+    }
+  ]
+}

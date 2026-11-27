@@ -1,0 +1,43 @@
+{
+  "modes": 1215,
+  "max_RMSD_discrepancy_A": 1.7763568394002505e-14,
+  "max_deposited_placement_roundtrip_A": 0.0006026630662079445,
+  "common_precision_placement_rows": 54,
+  "worst_native_gap_delta": 0.005241983042185427,
+  "worst_chpi_gap_delta": 0.008104778577450622,
+  "binary_sha256": "cb37dc53eb40300a6a23570a1e8c29af22d67e7a41523a7d33ffb9caaa2b0e6c",
+  "summaries": [
+    {
+      "cap": 12000,
+      "state": "neutral",
+      "mean": -0.09482781152176048,
+      "better": 4,
+      "worse": 4,
+      "n": 27
+    },
+    {
+      "cap": 12000,
+      "state": "protonated",
+      "mean": -0.6047662278178657,
+      "better": 9,
+      "worse": 2,
+      "n": 27
+    },
+    {
+      "cap": 12100,
+      "state": "protonated",
+      "mean": -0.6047662278178657,
+      "better": 9,
+      "worse": 2,
+      "n": 27
+    },
+    {
+      "cap": 24000,
+      "state": "protonated",
+      "mean": 0.36847047352643364,
+      "better": 1,
+      "worse": 5,
+      "n": 27
+    }
+  ]
+}
