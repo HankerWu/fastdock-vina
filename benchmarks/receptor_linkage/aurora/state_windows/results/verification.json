@@ -1,0 +1,256 @@
+{
+  "rows_rebuilt": 240,
+  "geometry_centers": 20,
+  "max_errors": {
+    "rmsd_A": 2.042810365310288e-14,
+    "center": 0.0,
+    "window": 0.0,
+    "printed_score": 0.0004967675704961039
+  },
+  "registrations": {
+    "2J4Z_to_2J4Z_pocket": {
+      "atoms": 70,
+      "rmsd_A": 3.2240076245442067e-07
+    },
+    "2J4Z_to_2X6E_pocket": {
+      "atoms": 60,
+      "rmsd_A": 0.7996776401237815
+    },
+    "2J4Z_to_2X6E_whole": {
+      "atoms": 249,
+      "rmsd_A": 2.70841631288815
+    },
+    "2X6E_to_2J4Z_pocket": {
+      "atoms": 60,
+      "rmsd_A": 0.7996776401237815
+    },
+    "2X6E_to_2J4Z_whole": {
+      "atoms": 249,
+      "rmsd_A": 2.7084163128881715
+    },
+    "2X6E_to_2X6E_pocket": {
+      "atoms": 67,
+      "rmsd_A": 2.3301972266446156e-07
+    }
+  },
+  "within_origin_blind_rmsd": {
+    "2J4Z_at9283": {
+      "minimum_A": 0.1501243532161628,
+      "maximum_A": 0.4431561317897532
+    },
+    "2J4Z_danusertib": {
+      "minimum_A": 3.5013648196096328,
+      "maximum_A": 12.741355655614404
+    },
+    "2X6E_at9283": {
+      "minimum_A": 4.368467118370666,
+      "maximum_A": 10.624143676416603
+    },
+    "2X6E_danusertib": {
+      "minimum_A": 0.8059879119972668,
+      "maximum_A": 1.9308450925510752
+    }
+  },
+  "decimal_mixture_checks": [
+    {
+      "registration": "pocket",
+      "nodes": "2048",
+      "model": "center",
+      "max_margin_error": 3.552713678800501e-15,
+      "max_crossover_log_odds_error": 5.329070518200751e-15
+    },
+    {
+      "registration": "pocket",
+      "nodes": "2048",
+      "model": "window",
+      "max_margin_error": 1.3322676295501878e-15,
+      "max_crossover_log_odds_error": 1.7763568394002505e-15
+    },
+    {
+      "registration": "pocket",
+      "nodes": "8192",
+      "model": "center",
+      "max_margin_error": 3.552713678800501e-15,
+      "max_crossover_log_odds_error": 5.329070518200751e-15
+    },
+    {
+      "registration": "pocket",
+      "nodes": "8192",
+      "model": "window",
+      "max_margin_error": 1.6375789613221059e-15,
+      "max_crossover_log_odds_error": 2.6645352591003757e-15
+    },
+    {
+      "registration": "pocket",
+      "nodes": "32768",
+      "model": "center",
+      "max_margin_error": 3.552713678800501e-15,
+      "max_crossover_log_odds_error": 5.329070518200751e-15
+    },
+    {
+      "registration": "pocket",
+      "nodes": "32768",
+      "model": "window",
+      "max_margin_error": 8.881784197001252e-16,
+      "max_crossover_log_odds_error": 4.440892098500626e-15
+    },
+    {
+      "registration": "pocket",
+      "nodes": "65536",
+      "model": "center",
+      "max_margin_error": 3.552713678800501e-15,
+      "max_crossover_log_odds_error": 5.329070518200751e-15
+    },
+    {
+      "registration": "pocket",
+      "nodes": "65536",
+      "model": "window",
+      "max_margin_error": 1.3322676295501878e-15,
+      "max_crossover_log_odds_error": 4.440892098500626e-15
+    },
+    {
+      "registration": "whole",
+      "nodes": "2048",
+      "model": "center",
+      "max_margin_error": 3.552713678800501e-15,
+      "max_crossover_log_odds_error": 3.552713678800501e-15
+    },
+    {
+      "registration": "whole",
+      "nodes": "2048",
+      "model": "window",
+      "max_margin_error": 1.7763568394002505e-15,
+      "max_crossover_log_odds_error": 1.7763568394002505e-15
+    },
+    {
+      "registration": "whole",
+      "nodes": "8192",
+      "model": "center",
+      "max_margin_error": 3.552713678800501e-15,
+      "max_crossover_log_odds_error": 3.552713678800501e-15
+    },
+    {
+      "registration": "whole",
+      "nodes": "8192",
+      "model": "window",
+      "max_margin_error": 1.609823385706477e-15,
+      "max_crossover_log_odds_error": 3.552713678800501e-15
+    },
+    {
+      "registration": "whole",
+      "nodes": "32768",
+      "model": "center",
+      "max_margin_error": 3.552713678800501e-15,
+      "max_crossover_log_odds_error": 3.552713678800501e-15
+    },
+    {
+      "registration": "whole",
+      "nodes": "32768",
+      "model": "window",
+      "max_margin_error": 1.887379141862766e-15,
+      "max_crossover_log_odds_error": 3.552713678800501e-15
+    },
+    {
+      "registration": "whole",
+      "nodes": "65536",
+      "model": "center",
+      "max_margin_error": 3.552713678800501e-15,
+      "max_crossover_log_odds_error": 3.552713678800501e-15
+    },
+    {
+      "registration": "whole",
+      "nodes": "65536",
+      "model": "window",
+      "max_margin_error": 1.9984014443252818e-15,
+      "max_crossover_log_odds_error": 5.329070518200751e-15
+    }
+  ],
+  "quadrature": {
+    "levels": [
+      2048,
+      8192,
+      32768,
+      65536
+    ],
+    "max_energy_changes": [
+      {
+        "coarse": 2048,
+        "fine": 8192,
+        "max_window_difference": 1.4062144445999962,
+        "case": [
+          "whole",
+          "2X6E",
+          "at9283",
+          "61211",
+          "2J4Z"
+        ]
+      },
+      {
+        "coarse": 8192,
+        "fine": 32768,
+        "max_window_difference": 1.3533804481999994,
+        "case": [
+          "pocket",
+          "2X6E",
+          "at9283",
+          "61231",
+          "2J4Z"
+        ]
+      },
+      {
+        "coarse": 32768,
+        "fine": 65536,
+        "max_window_difference": 0.8982082520000034,
+        "case": [
+          "pocket",
+          "2X6E",
+          "at9283",
+          "61231",
+          "2J4Z"
+        ]
+      }
+    ],
+    "sign_changes_any_level": [
+      {
+        "case": [
+          "pocket",
+          "2J4Z",
+          "danusertib",
+          "60913",
+          "2X6E"
+        ],
+        "blind_minus_witness": {
+          "2048": 0.31206375763717187,
+          "8192": -0.3148068206228283,
+          "32768": -0.40772401309282946,
+          "65536": -0.44234228383282925
+        }
+      },
+      {
+        "case": [
+          "whole",
+          "2J4Z",
+          "at9283",
+          "61211",
+          "2X6E"
+        ],
+        "blind_minus_witness": {
+          "2048": -0.05333905486862123,
+          "8192": 0.021484139321378715,
+          "32768": 0.0048830975513793895,
+          "65536": 0.01638367079537928
+        }
+      }
+    ],
+    "sign_changes_8192_to_finest": 0,
+    "min_effective_sample_size_at_finest": 1.72756716812,
+    "min_ess_case": [
+      "2X6E",
+      "at9283",
+      "60943",
+      "2J4Z",
+      "pocket"
+    ],
+    "reliability": "Deterministic Sobol level agreement checks sign sensitivity only. Low effective sample sizes and near-zero margins leave some crossings unresolved."
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "binary_sha256": "0fcbc40bd77174fb7e85f441d9927f98d30834120b36722c7f86c3c3f63b1bac",
+  "nodes_per_scale": [
+    2048,
+    8192,
+    32768,
+    65536
+  ],
+  "local_calls": 4,
+  "wall_s": 140.91320730900043,
+  "cpu_s": 140.54590180399998,
+  "child_maxrss_KiB": 111700,
+  "input_archives": {
+    "receptor_linkage/aurora/probe_raw.tar.xz": "7066127b96ade03756571adfa9ef711294b2e9ac80d4f0ed735c460120fd9b9b",
+    "receptor_linkage/aurora/docking.tar.xz": "783f8d17ae31ed32d9fbe167e2f50e455ea54255f033c4506651577fb0a8af7d",
+    "receptor_linkage/aurora/references.tar.xz": "a653a77c1fff3201668cf87ad3dfe859c8d93307ec8e397ef2a383ad9673d9fc",
+    "receptor_linkage/aurora/solver_replay/outputs.tar.xz": "1924587e8f10a3551eabc941d9f169ac55c859b227ebba263fb74729c42c9353",
+    "torsion_kinase_affinity/evidence.tar.xz": "72c45e52eda2b79d5241b00b4efe79b2e2c19dc100f01a3ad52356d9c50cf56e"
+  },
+  "quadrature_node_evaluations": 19537920
+}

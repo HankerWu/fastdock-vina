@@ -1,0 +1,12 @@
+{
+  "analysis_wall_seconds": 1.1520217819997924,
+  "analysis_user_seconds": 1.076467,
+  "analysis_system_seconds": 0.07510499999999999,
+  "analysis_peak_rss_KiB": 84380,
+  "docking_evaluations": 0,
+  "python": "3.12.14",
+  "openblas_num_threads": 1,
+  "pandas": "2.2.3",
+  "numpy": "2.3.5",
+  "verification_wall_seconds": 0.1306026189995464
+}

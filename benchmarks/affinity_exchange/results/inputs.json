@@ -1,0 +1,13 @@
+{
+  "affinity_exchange/PROTOCOL.md": "da77fd98ef9b30e0e95c6baa9028fa753451a725127eca53858fdd679199989d",
+  "affinity_reference_ensemble/results/primary_historical_cells.csv.xz": "6595d5d86995c625e77869a12e8841e730315c86817e065be3c766aed5e738c6",
+  "affinity_reference_ensemble/results/primary_ligands.csv": "f3f800f45144946c03f54ed315724bb3de3f6f85be0e37ba3f08c92e4159ad50",
+  "affinity_reference_ensemble/results/s6k_cells.csv.xz": "aac5498165b21e9be29659d357aff4fb0b8025011ffc86cf368f301531a1dd23",
+  "affinity_reference_ensemble/results/s6k_panel.csv": "c0866678aeda3fb4ce8c80c0a3f581fa819e3537c4dc895326287f49f1397fa5",
+  "affinity_reference_ensemble/results/s6k_sensitivity.csv.xz": "1d62429d0fc5406a5a24505d519b430862f357f0223d2e403005033c3b135d7a",
+  "affinity_reference_ensemble/results/sensitivity_historical_cells.csv.xz": "b6d5993921e0eabf84570e5de59f7942b004993c3b950dc55f87aebdb36984e4",
+  "affinity_reference_ensemble/results/sensitivity_ligands.csv": "15aa7824fb3f687381f164860ad966649ae0bed62abe3cc22e76de7bb3834d09",
+  "galectin_affinity/results/readback.csv": "2c25adeacd6b5f65224efd2ef08885ce63c4f2e8079985ec6f95d69bbfb60fdd",
+  "galectin_affinity/table1.csv": "1b5d5edcdb9e667d6e92ef8a2f132ebf2f5b08b91c320bff6d0039ce909af07f",
+  "torsion_kinase_affinity/panel.csv": "b85acfee6cb4b8bbb214be533286e1bb6db13e6687c35f38a0fa2903baac4ae5"
+}

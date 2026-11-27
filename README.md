@@ -1,8 +1,10 @@
 # FastDock Vina Pro
 
-默认 BFGS 已修复十次回溯全拒后接受错误坐标、使用未经求值步长更新曲率的问题。在 Aurora A 可恢复原先丢失的近晶体局部解。修复前后，常规预算首姿均值为 9.106 与 9.031 Å，双预算为 8.896 与 9.117 Å。FKBP12 同测定的 15 个分离对判对数由 9 降到 8，七个点值的秩相关却升高。[默认优化器、跨家族与亲和力验证](benchmarks/accepted_bfgs/README.md)
+现在的默认优化器在首次曲率无效时保留正定逆 Hessian。真实搜索中恢复了下降方向，但糖配体高预算首姿平均误差从 4.824 升到 5.703 Å，FKBP12 三倍分离表观 Ki 对从 8/15 降至 5/15。物理模型实验显示，Aurora A 的两个受体加姿势局部积分用共同权重最多识别 9/16 个晶体引导见证；跨靶点的配体交换差还能辨认任意游离配体参考都无法修正的错序。[优化器与结构数据](benchmarks/accepted_bfgs/curvature/README.md) · [同测定亲和力](benchmarks/accepted_bfgs/curvature/fkbp/README.md) · [受体与局部姿势联合积分](benchmarks/receptor_linkage/aurora/state_windows/README.md) · [交换差与实测 Kd](benchmarks/affinity_exchange/README.md)
 
-本轮从结合态和游离态的配分函数复核了 344 个历史候选池，并在 Aurora A 上冻结输入后完成 72 次对接。固定水位点的边际占据率与排斥模型，即使放宽到任意占据相关性，42 次换首中仍有 15 次错误偏好无法逆转。Aurora A 有共晶参照的 430 个输出姿势均超过 2 Å；用原有扭转自由度构造的近晶体姿势，在两个受体上分别暴露了短接触、局优偏移与干分错排。AD4 同时修复了一处缺参金属误读静电图的核心错误。[统一理论与证据](docs/BINDING_ENSEMBLE_AND_DOCKING.md) · [固定池的共享系数界](benchmarks/mechanism_interactions/shared_weight/README.md) · [水位点的可逆与不可逆案例](benchmarks/mechanism_interactions/water_correlations/README.md) · [Aurora A 动力学与盲对接](benchmarks/receptor_linkage/aurora/README.md) · [近晶体放置与局部精修](benchmarks/receptor_linkage/aurora/PROBE.md) · [AD4 修复](benchmarks/ad4_atom_field/metal_types/README.md)
+此前 BFGS 修复了十次回溯全拒后接受错误坐标、使用未经求值步长更新曲率的问题。在 Aurora A 可恢复原先丢失的近晶体局部解。修复前后，常规预算首姿均值为 9.106 与 9.031 Å，双预算为 8.896 与 9.117 Å。FKBP12 同测定的 15 个分离对判对数由 9 降到 8，七个点值的秩相关却升高。[默认优化器、跨家族与亲和力验证](benchmarks/accepted_bfgs/README.md)
+
+此前从结合态和游离态的配分函数复核了 344 个历史候选池，并在 Aurora A 上冻结输入后完成 72 次对接。固定水位点的边际占据率与排斥模型，即使放宽到任意占据相关性，42 次换首中仍有 15 次错误偏好无法逆转。Aurora A 有共晶参照的 430 个输出姿势均超过 2 Å；用原有扭转自由度构造的近晶体姿势，在两个受体上分别暴露了短接触、局优偏移与干分错排。AD4 同时修复了一处缺参金属误读静电图的核心错误。[统一理论与证据](docs/BINDING_ENSEMBLE_AND_DOCKING.md) · [固定池的共享系数界](benchmarks/mechanism_interactions/shared_weight/README.md) · [水位点的可逆与不可逆案例](benchmarks/mechanism_interactions/water_correlations/README.md) · [Aurora A 动力学与盲对接](benchmarks/receptor_linkage/aurora/README.md) · [近晶体放置与局部精修](benchmarks/receptor_linkage/aurora/PROBE.md) · [AD4 修复](benchmarks/ad4_atom_field/metal_types/README.md)
 
 本分支修复了大环闭环约束在 20 Å 处突然归零的问题。三种人源靶点复测中，超过 20 Å 的闭环标记误差消失，四轨迹首姿均值未变。固定池与同测定配体的复算还给出了两类上界：344 个历史池中有 149 个无法靠原有单项重加权选出池内几何最优；Galectin-3 的 403 对实测配体中，用两个现有受体的任意共同占比最多判对 146 对。新靶点人 α-半乳糖苷酶 A 的搜索场迁移实验分别检验了几何覆盖和最终识别。[结合系综、实验证据与算法设计](docs/BINDING_ENSEMBLE_AND_DOCKING.md) · [大环核心改动](benchmarks/mechanism_interactions/macrocycle_selection/README.md) · [GLA 配对结构](benchmarks/ch_pi_search/gla_transfer/README.md)
 
