@@ -1,0 +1,4 @@
+method,runs,modes,wall_s,cpu_s,reported_hunt_second_explicit_evals
+official,24,215,38.224886,38.127295000000004,
+pro,24,214,10.117789,9.975487,1214088
+double,24,214,14.131989,14.015472,2413806

@@ -1,0 +1,4 @@
+kinase,accession,compound,drug_column,status,kd_nM
+AURKA,NP_003591.2,danusertib,,column_absent,
+AURKA,NP_003591.2,at9283,,column_absent,
+AURKA,NP_003591.2,imatinib,Imatinib,blank,

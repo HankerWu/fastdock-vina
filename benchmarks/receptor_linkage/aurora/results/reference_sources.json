@@ -1,0 +1,26 @@
+{
+  "2J50.pdb": {
+    "url": "https://www.ebi.ac.uk/pdbe/entry-files/download/pdb2j50.ent",
+    "sha256": "f36a4b2c7e840d6ac8167d859ef2f5bda5a28ae225aa52f1d6f4f9a04c7fc1d2"
+  },
+  "2W1G.pdb": {
+    "url": "https://www.ebi.ac.uk/pdbe/entry-files/download/pdb2w1g.ent",
+    "sha256": "35d220504a433ab3d71668f3abd42413b2e18154d64811438c0261c385fafbce"
+  },
+  "6CPG.pdb": {
+    "url": "https://www.ebi.ac.uk/pdbe/entry-files/download/pdb6cpg.ent",
+    "sha256": "80ca2336c6971ec1828a8f66cee7b5099c37b96ae4179d994c7ecf1fa3fe255c"
+  },
+  "627.cif": {
+    "url": "https://files.rcsb.org/ligands/download/627.cif",
+    "sha256": "59ce79bc92e10238bbf580526c01ec6ce3c7d8783664bb21ba4a9f8cff569a31"
+  },
+  "L0G.cif": {
+    "url": "https://files.rcsb.org/ligands/download/L0G.cif",
+    "sha256": "0a0fcedbe3377b7a783fcc26d9916109b6c7fc14cbee67eeebdf209948688a25"
+  },
+  "35R.cif": {
+    "url": "https://files.rcsb.org/ligands/download/35R.cif",
+    "sha256": "3486b6529a3f76037a67d1141c3d79cdeb3330bc1a11e0e1667e04d6c9184b84"
+  }
+}

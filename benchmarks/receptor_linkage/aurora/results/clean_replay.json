@@ -1,0 +1,28 @@
+{
+  "prepare_three_ligands_and_extract_receptors": {
+    "wall_s": 4.047090097999899,
+    "cpu_s": 5.642124
+  },
+  "all_72_docking_processes_with_ledger": {
+    "wall_s": 62.99870885600103,
+    "cpu_s": 62.866358999999996
+  },
+  "geometry_primary": {
+    "wall_s": 1.1190674840036081,
+    "cpu_s": 2.7748649999999984
+  },
+  "geometry_independent_and_frame": {
+    "wall_s": 1.2209487250001985,
+    "cpu_s": 2.7317140000000038
+  },
+  "scores_and_state_probabilities": {
+    "wall_s": 0.16386755599523894,
+    "cpu_s": 0.8770819999999997
+  },
+  "byte_identical_pose_files": 72,
+  "replay_binaries": {
+    "pro": "c739422a22f8eb6485cb969f2fd496f0bc6fd5f4e7c29c1ca2358acb754f8000",
+    "official": "f31f774f723bba7bbe6e9d1c47577020eea9a8da16424284c043d22593570644"
+  },
+  "core_revision": "7bc6128541c038992877a4b4eefffd99224d3d0a"
+}

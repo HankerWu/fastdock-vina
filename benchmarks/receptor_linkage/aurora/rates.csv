@@ -1,0 +1,10 @@
+compound,figure,kinetics_C,wave_C,wave_nM,wave_sd_nM,step,start,finish,forward,reverse
+imatinib,3G,10,25,24000,7000,apo,in,out,0.01,0.008
+imatinib,3G,10,25,24000,7000,binding,out,out:E,1.1,29
+danusertib,5I,25,25,1.1,0.4,apo,in,out,0.09,0.06
+danusertib,5I,25,25,1.1,0.4,binding,out,out:E,0.45,6.3
+danusertib,5I,25,25,1.1,0.4,relaxation,out:E,out:R,19,0.00071
+at9283,7H,25,25,2.1,1.8,apo,out,in,0.09,0.06
+at9283,7H,25,25,2.1,1.8,binding,in,in:E,5.0,0.01
+at9283,7H,25,25,2.1,1.8,relaxation,in:E,in:R,0.7,0.09
+at9283,7H,25,25,2.1,1.8,binding,out,out:E,5.0,0.013
