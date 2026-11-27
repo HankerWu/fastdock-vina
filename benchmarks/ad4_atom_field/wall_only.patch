@@ -1,0 +1,47 @@
+diff --git a/src/lib/ad4cache.cpp b/src/lib/ad4cache.cpp
+--- a/src/lib/ad4cache.cpp
++++ b/src/lib/ad4cache.cpp
+@@ -84,11 +84,11 @@ fl ad4cache::eval(const model& m, fl v) const {
+ 
+ 		// elec
+ 		const grid& ge = m_grids[AD_TYPE_SIZE];
+-		e += ge.evaluate(m.coords[i], m_slope, v) * a.charge;
++		e += ge.evaluate(m.coords[i], 0, v) * a.charge;
+ 
+ 		// desolv
+ 		const grid& gd = m_grids[AD_TYPE_SIZE + 1];
+-		e += gd.evaluate(m.coords[i], m_slope, v) * std::abs(a.charge);
++		e += gd.evaluate(m.coords[i], 0, v) * std::abs(a.charge);
+ 	}
+ 	return e;
+ }
+@@ -123,11 +123,11 @@ fl ad4cache::eval_intra(model& m, fl v) const {
+ 
+ 		// elec
+ 		const grid& ge = m_grids[AD_TYPE_SIZE];
+-		e += ge.evaluate(m.coords[i], m_slope, v) * a.charge;
++		e += ge.evaluate(m.coords[i], 0, v) * a.charge;
+ 
+ 		// desolv
+ 		const grid& gd = m_grids[AD_TYPE_SIZE + 1];
+-		e += gd.evaluate(m.coords[i], m_slope, v) * std::abs(a.charge);
++		e += gd.evaluate(m.coords[i], 0, v) * std::abs(a.charge);
+ 	}
+ 	return e;
+ }
+@@ -164,13 +164,13 @@ fl ad4cache::eval_deriv(model& m, fl v) const { // sets m.minus_forces
+ 
+ 		// elec
+ 		const grid& ge = m_grids[AD_TYPE_SIZE];
+-		e += ge.evaluate(m.coords[i], m_slope, v, deriv) * a.charge;
++		e += ge.evaluate(m.coords[i], 0, v, deriv) * a.charge;
+ 		deriv *= a.charge;
+ 		m.minus_forces[i] += deriv;
+ 
+ 		// desolv
+ 		const grid& gd = m_grids[AD_TYPE_SIZE + 1];
+-		e += gd.evaluate(m.coords[i], m_slope, v, deriv) * std::abs(a.charge);
++		e += gd.evaluate(m.coords[i], 0, v, deriv) * std::abs(a.charge);
+ 		deriv *= std::abs(a.charge);
+ 		m.minus_forces[i] += deriv;
+ 	}

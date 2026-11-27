@@ -111,6 +111,14 @@ void output_lifecycle(const std::string& prefix) {
     vina.write_poses(output, 5, 100);
     if (!content().empty() || !vina.get_poses_energies(5,100).empty())
         throw std::runtime_error("infeasible completed search returned stale results");
+    for (const auto& invalid : {std::make_pair(-1, 100.0), std::make_pair(5, -1.0)}) {
+        sentinel();
+        bool rejected = false;
+        try { vina.write_poses(output, invalid.first, invalid.second); }
+        catch (const vina_runtime_error&) { rejected = true; }
+        if (!rejected || content() != "existing")
+            throw std::runtime_error("invalid output arguments modified a previous file");
+    }
     sentinel();
     vina.set_ligand_from_string(ligand);
     vina.write_poses(output, 5, 100);

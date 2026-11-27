@@ -730,7 +730,17 @@ std::string Vina::vina_remarks(output_type &pose, fl lb, fl ub) {
 	return remark.str();
 }
 
+namespace {
+void validate_pose_output(int how_many, double energy_range) {
+	if (how_many < 0)
+		throw vina_runtime_error("number of poses written must be greater than zero.");
+	if (energy_range < 0)
+		throw vina_runtime_error("energy range must be greater than zero.");
+}
+}
+
 std::string Vina::get_poses(int how_many, double energy_range) {
+	validate_pose_output(how_many, energy_range);
 	std::ostringstream out;
 	write_pose_models(out, how_many, energy_range);
 	return out.str();
@@ -739,14 +749,6 @@ std::string Vina::get_poses(int how_many, double energy_range) {
 void Vina::write_pose_models(std::ostream& out, int how_many, double energy_range) {
 	int n = 0;
 	std::string remarks;
-
-	if (how_many < 0) {
-		throw vina_runtime_error("number of poses written must be greater than zero.");
-	}
-
-	if (energy_range < 0) {
-		throw vina_runtime_error("energy range must be greater than zero.");
-	}
 
 	if (!m_poses.empty()) {
 		// Get energy from the best conf
@@ -798,6 +800,7 @@ void Vina::write_poses(const std::string& output_name, int how_many, double ener
 	}
 	// A completed search can legitimately have no in-domain output. Replace
 	// a previous run's file with an empty result rather than leaving stale poses.
+	validate_pose_output(how_many, energy_range);
 	ofile out(make_path(output_name));
 	write_pose_models(out, how_many, energy_range);
 }

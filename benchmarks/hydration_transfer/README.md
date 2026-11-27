@@ -60,3 +60,5 @@ python "$B/oracle.py" "$W" "$PRO"
 python "$B/evaluate.py" "$W" "$W/replay"
 python "$B/verify.py" "$W" "$W/replay"
 ```
+
+使用含本轮 AD4 修复的最终可执行文件重跑 32 个标准 Vina/Pro 配置，279 个输出姿势对应的全部 PDBQT 文件与分支起点逐字节一致。复核时把上述 PRO 指向当前构建，对接后在工作目录按[逐文件哈希](results/final_vina.sha256)执行 sha256sum 校验。
