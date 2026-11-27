@@ -12,6 +12,8 @@ on:
       - 'benchmarks/check_online_pose_archive.cpp'
       - 'benchmarks/archive_overlap/output_spacing/check.cpp'
       - 'benchmarks/check_macrocycle_labels.cpp'
+      - 'benchmarks/terminal_rotor_score/independent/axis_check.cpp'
+      - 'benchmarks/terminal_rotor_score/independent/verify.py'
       - 'benchmarks/bond_distance/**'
       - 'benchmarks/macrocycle_proposal/**'
       - 'benchmarks/fixtures/cyclododecane.pdbqt'
@@ -57,6 +59,11 @@ jobs:
           build/core/check-armijo
           c++ -O2 -DNDEBUG -std=c++14 -pthread -Isrc/lib benchmarks/check_geometry_metric.cpp $(find build/core/obj -name '*.o' ! -name main.o) -lboost_system -lboost_thread -lboost_serialization -lboost_filesystem -lboost_program_options -o build/core/check-geometry
           build/core/check-geometry examples/basic/1iep_ligand.pdbqt benchmarks/fixtures/cyclododecane.pdbqt
+      - name: Test two-sided ligand rotor counting
+        run: |
+          audit=benchmarks/terminal_rotor_score/independent
+          c++ -O2 -DNDEBUG -std=c++14 -pthread -Isrc/lib "$audit/axis_check.cpp" $(find build/core/obj -name '*.o' ! -name main.o ! -name split.o) -lboost_system -lboost_thread -lboost_serialization -lboost_filesystem -lboost_program_options -o build/core/check-two-sided-rotors
+          python3 -S "$audit/verify.py" build/core/check-two-sided-rotors "${RUNNER_TEMP}/two-sided-rotors" --synthetic-only
       - name: Test cyclic ligand bond-distance exclusions and gradients
         run: |
           c++ -O2 -DNDEBUG -std=c++14 -pthread -Isrc/lib benchmarks/bond_distance/audit.cpp $(find build/core/obj -name '*.o' ! -name main.o) -lboost_system -lboost_thread -lboost_serialization -lboost_filesystem -lboost_program_options -o build/core/bond-distance

@@ -1,0 +1,11 @@
+case,root,torsions,max_internal_distance_change
+normal,forward,1.0,0.629582133964
+normal,reversed,1.0,0.629582133964
+stretched_branch,forward,1.0,0.297023109167
+stretched_branch,reversed,1.0,0.297023109167
+terminal_hydrogen,forward,0.0,0.0
+terminal_hydrogen,reversed,0.0,0.0
+terminal_water_proxy,forward,0.0,0.0
+terminal_water_proxy,reversed,0.0,0.0
+collinear_tip,forward,1.0,0.0
+collinear_tip,reversed,1.0,0.0
