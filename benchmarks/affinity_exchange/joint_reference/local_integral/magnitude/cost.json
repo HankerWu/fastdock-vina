@@ -1,0 +1,23 @@
+{
+  "analysis": {
+    "wall_s": 0.53538,
+    "user_cpu_s": 0.432508,
+    "system_cpu_s": 0.137761,
+    "max_rss_KiB": 61796
+  },
+  "independent_check": {
+    "wall_s": 0.44335,
+    "user_cpu_s": 0.407664,
+    "system_cpu_s": 0.035297,
+    "max_rss_KiB": 17368
+  },
+  "additional_docking_calls": 0,
+  "new_conditional_score_evaluations": 0,
+  "replication": "Both output files byte-identical on the second execution.",
+  "versions": {
+    "python": "3.12.14",
+    "numpy": "2.3.5",
+    "scipy": "1.17.0",
+    "OPENBLAS_NUM_THREADS": 1
+  }
+}

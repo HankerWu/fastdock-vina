@@ -1,0 +1,13 @@
+nodes,family,arm,observation,cells,cycles,lower,upper
+1024,galectin,zero,mean,26,78,0.499596,0.499597
+1024,galectin,zero,one_sem,26,78,0.464927,0.464928
+1024,galectin,native,mean,26,78,0.472096,0.472627
+1024,galectin,native,one_sem,26,78,0.437427,0.437958
+1024,galectin,joint,mean,26,78,0.381378,0.382176
+1024,galectin,joint,one_sem,26,78,0.354034,0.354586
+1024,kinase,zero,mean,47,864,1.520128,1.520129
+1024,kinase,native,mean,47,864,1.307998,1.308727
+1024,kinase,joint,mean,47,864,1.462817,1.463454
+8192,galectin,joint,mean,26,78,0.373112,0.373924
+8192,galectin,joint,one_sem,26,78,0.348524,0.349228
+8192,kinase,joint,mean,47,864,1.493079,1.493883
