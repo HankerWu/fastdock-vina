@@ -51,3 +51,15 @@ correlations, all at-least-threefold pairs, the same-heavy-atom subset, and
 the predefined 12-member substituted triazole series. Record joint evaluations
 and wall time. Matched nominal caps can incur different actual work. This is
 a new test of the gradient variants on an existing assay panel.
+
+## Mechanism follow-up after the three-arm model-gradient audit
+
+The largest legacy explicit-coordinate error in the numerical panel came from
+three receptor contacts in the last two cells of the 8 Å pair table. Both
+consistent interpolants still forced the last active sample toward the
+truncated zero node. A separate fourth Pro build now shifts only the explicit
+receptor optimization potential by its pair-specific left-limit energy at the
+cutoff. Its fast scorer and grid searches are identical to the exact-linear
+build. It is compared on the same local, structural and assay panels.
+Those data are development/replay evidence for this follow-up. The separately
+frozen androgen receptor panel in holdout/ tests transfer to a new family.
