@@ -61,6 +61,18 @@ void add_to_output_container(output_container& out, const output_type& t, fl min
 	if (out.size() > max_size) out.pop_back();
 }
 
+pose_indices ranked_output_indices(const output_container& poses, sz limit, fl min_rmsd, boost::optional<fl> max_energy) {
+	pose_indices selected;
+	for (sz i = 0; i < poses.size() && selected.size() < limit; ++i) {
+		if (max_energy && (!not_max(poses[i].e) || poses[i].e > *max_energy)) continue;
+		if (min_rmsd > 0 && std::any_of(selected.begin(), selected.end(), [&](sz j) {
+			return rmsd_upper_bound(poses[i].coords, poses[j].coords) < min_rmsd;
+		})) continue;
+		selected.push_back(i);
+	}
+	return selected;
+}
+
 output_container select_distinct_poses(const output_container& poses, fl min_rmsd, sz max_size) {
 	std::vector<const output_type*> by_energy;
 	by_energy.reserve(poses.size());

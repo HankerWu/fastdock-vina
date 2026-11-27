@@ -573,8 +573,6 @@ fl Vina::output_energy_reference() const {
 }
 
 std::vector< std::vector<double> > Vina::get_poses_coordinates(int how_many, double energy_range) {
-	int n = 0;
-	double best_energy = 0;
 	std::vector< std::vector<double> > coordinates;
 
 	if (how_many < 0) {
@@ -586,28 +584,11 @@ std::vector< std::vector<double> > Vina::get_poses_coordinates(int how_many, dou
 	}
 
 	if (!m_poses.empty()) {
-		// Get energy from the best conf
-		best_energy = output_energy_reference();
-
-		VINA_FOR_IN(i, m_poses) {
-			/* Stop if:
-				- We wrote the number of conf asked
-				- If there is no conf to write
-				- The energy of the current conf is superior than best_energy + energy_range
-			*/
-			if (n >= how_many)
-				break; // check energy_range sanity FIXME
-			if (!not_max(m_poses[i].e) || m_poses[i].e > best_energy + energy_range) {
-				if (!uses_native_energy_window(m_poses[i]))
-					break;
-				continue;
-			}
-
+		const auto selected = ranked_output_indices(m_poses, how_many, m_output_min_rmsd, output_energy_reference() + energy_range);
+		for (sz i : selected) {
 			// Push the current pose to model
 			m_model.set(m_poses[i].c);
 			coordinates.push_back(m_model.get_ligand_coords());
-
-			n++;
 		}
 
 		// Push back the best conf in model
@@ -620,8 +601,6 @@ std::vector< std::vector<double> > Vina::get_poses_coordinates(int how_many, dou
 }
 
 std::vector< std::vector<double> > Vina::get_poses_energies(int how_many, double energy_range) {
-	int n = 0;
-	double best_energy = 0;
 	std::vector< std::vector<double> > energies;
 
 	if (how_many < 0) {
@@ -633,29 +612,12 @@ std::vector< std::vector<double> > Vina::get_poses_energies(int how_many, double
 	}
 
 	if (!m_poses.empty()) {
-		// Get energy from the best conf
-		best_energy = output_energy_reference();
-
-		VINA_FOR_IN(i, m_poses) {
-			/* Stop if:
-				- We wrote the number of conf asked
-				- If there is no conf to write
-				- The energy of the current conf is superior than best_energy + energy_range
-			*/
-			if (n >= how_many)
-				break; // check energy_range sanity FIXME
-			if (!not_max(m_poses[i].e) || m_poses[i].e > best_energy + energy_range) {
-				if (!uses_native_energy_window(m_poses[i]))
-					break;
-				continue;
-			}
-
+		const auto selected = ranked_output_indices(m_poses, how_many, m_output_min_rmsd, output_energy_reference() + energy_range);
+		for (sz i : selected) {
 			// Push the current pose to model
 			energies.push_back({m_poses[i].e,
 								m_poses[i].inter, m_poses[i].intra,
 								m_poses[i].conf_independent, m_poses[i].unbound});
-
-			n++;
 		}
 	} else {
 		std::cerr << "WARNING: Could not find any pose energies.\n";
@@ -793,20 +755,8 @@ void Vina::write_pose_models(std::ostream& out, int how_many, double energy_rang
 		if (m_contact_rotor_score)
 			rotor_report.emplace(m_model);
 
-		VINA_FOR_IN(i, m_poses) {
-			/* Stop if:
-				- We wrote the number of conf asked
-				- If there is no conf to write
-				- The energy of the current conf is superior than best_energy + energy_range
-			*/
-			if (n >= how_many)
-				break; // check energy_range sanity FIXME
-			if (!not_max(m_poses[i].e) || m_poses[i].e > best_energy + energy_range) {
-				if (!uses_native_energy_window(m_poses[i]))
-					break;
-				continue;
-			}
-
+		const auto selected = ranked_output_indices(m_poses, how_many, m_output_min_rmsd, best_energy + energy_range);
+		for (sz i : selected) {
 			// Push the current pose to model
 			m_model.set(m_poses[i].c);
 
@@ -1599,6 +1549,7 @@ void Vina::global_search(const int exhaustiveness, const int n_poses, const doub
 			throw vina_runtime_error("pocket_start_radius exceeds the smallest search-box half-width");
 	}
 	const bool late_selection = m_late_pose_selection;
+	fl output_radius = 0;
 	if (m_use_min_rmsd_for_merge &&
 	    (late_selection || m_sf_choice != SF_VINA || !m_use_explicit_receptor ||
 	     m_model.num_ligands() != 1 || m_model.num_flex() != 0 ||
@@ -2012,6 +1963,25 @@ void Vina::global_search(const int exhaustiveness, const int n_poses, const doub
 			}
 		}
 
+		// Native explicit optimization moves the representatives after the grid-stage merge.
+		// Native energy order makes every energy window a prefix, so prune once in place.
+		// A separately ranked native window can skip earlier poses: defer its distance test
+		// until the caller's window is known, so excluded poses never suppress eligible ones.
+		if (!late_selection && explicit_inputs && min_rmsd > 0) {
+			if (uses_native_energy_window(poses.front())) {
+				output_radius = min_rmsd;
+			} else {
+				const auto keep = ranked_output_indices(poses, poses.size(), min_rmsd, boost::none);
+				if (keep.size() != poses.size()) {
+					sz remaining = keep.size();
+					for (sz i = poses.size(); i > 0; --i) {
+						if (remaining && keep[remaining - 1] == i - 1) --remaining;
+						else poses.erase(poses.begin() + (i - 1));
+					}
+				}
+			}
+		}
+
 		// Now compute RMSD from the best model
 		// Necessary to do it in two pass for AD4 scoring function
 		m_model.set(poses[0].c);
@@ -2031,6 +2001,9 @@ void Vina::global_search(const int exhaustiveness, const int n_poses, const doub
 			std::cout << "-----+------------+----------+----------\n";
 		}
 
+		const auto visible = m_verbosity > 0
+		    ? ranked_output_indices(poses, poses.size(), output_radius, boost::none) : pose_indices();
+		sz reported = 0;
 		VINA_FOR_IN(i, poses) {
 			m_model.set(poses[i].c);
 
@@ -2038,13 +2011,14 @@ void Vina::global_search(const int exhaustiveness, const int n_poses, const doub
 			poses[i].lb = m_model.rmsd_lower_bound(best_model);
 			poses[i].ub = m_model.rmsd_upper_bound(best_model);
 
-			if (m_verbosity > 0) {
+			if (reported < visible.size() && i == visible[reported]) {
+				++reported;
 				const fl reported_score = !rank_amides.empty() ? poses[i].amide_rank_score()
 				                        : net_polar_rank ? poses[i].net_polar_score->rank_score
 				                        : burial_rank ? poses[i].polar_burial_rank_score
 				                        : polar_rank ? polar_rank_score(poses[i])
 				                        : template_reference ? poses[i].template_rank_score : poses[i].e;
-				std::cout << std::setw(4) << i + 1 << "    " << std::setw(9) << std::setprecision(4) << reported_score;
+				std::cout << std::setw(4) << reported << "    " << std::setw(9) << std::setprecision(4) << reported_score;
 				std::cout << "  " << std::setw(9) << std::setprecision(4) << poses[i].lb;
 				std::cout << "  " << std::setw(9) << std::setprecision(4) << poses[i].ub << "\n";
 			}
@@ -2088,6 +2062,7 @@ void Vina::global_search(const int exhaustiveness, const int n_poses, const doub
 
 	// Store results in Vina object
 	m_poses.swap(poses);
+	m_output_min_rmsd = output_radius;
 }
 
 Vina::~Vina() = default;

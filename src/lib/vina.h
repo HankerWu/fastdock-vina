@@ -207,6 +207,7 @@ private:
 	model m_receptor;
 	model m_model;
 	output_container m_poses;
+	fl m_output_min_rmsd = 0; // Deferred only when eligibility depends on a reranked native energy window.
 	//OpenBabel::OBMol m_mol;
 	bool m_receptor_initialized;
 	bool m_ligand_initialized;
