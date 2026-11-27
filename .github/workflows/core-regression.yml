@@ -5,6 +5,8 @@ on:
     paths:
       - 'src/**'
       - 'tools/build.py'
+      - 'benchmarks/declared_rotor_bonds/check.cpp'
+      - 'benchmarks/declared_rotor_bonds/flex.pdbqt'
       - 'benchmarks/check_map_lattice.cpp'
       - 'benchmarks/ad4_atom_field/check_field.cpp'
       - 'benchmarks/ad4_atom_field/check_release_cli.py'
@@ -33,6 +35,10 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y libboost-system-dev libboost-thread-dev libboost-serialization-dev libboost-filesystem-dev libboost-program-options-dev
       - name: Build current engine
         run: python3 tools/build.py --output-dir build/core --jobs 2
+      - name: Test declared ligand and flex-residue bonds
+        run: |
+          c++ -O2 -DNDEBUG -std=c++14 -pthread -Isrc/lib benchmarks/declared_rotor_bonds/check.cpp $(find build/core/obj -name '*.o' ! -name main.o) -lboost_system -lboost_thread -lboost_serialization -lboost_filesystem -lboost_program_options -o build/core/check-rotor-bonds
+          build/core/check-rotor-bonds benchmarks/declared_rotor_bonds/flex.pdbqt
       - name: Test online pose separation and tie ordering
         run: |
           c++ -O2 -DNDEBUG -std=c++14 -Isrc/lib benchmarks/check_online_pose_archive.cpp build/core/obj/coords.o -o build/core/check-online-archive

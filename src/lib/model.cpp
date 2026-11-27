@@ -412,6 +412,23 @@ void model::assign_bonds(const distance_type_matrix& mobility, atomv& rigid_atom
 
 		}
 	}
+	// BRANCH endpoints are declared covalent bonds. Distance/occlusion can
+	// miss one in a strained input, but cannot change the molecular graph.
+	// Keep ordinary inferred bonds in their historical order. The mobility
+	// matrix covers only non-grid atoms (empty for a fully rigid receptor).
+	VINA_FOR_IN(i, atoms) {
+		VINA_RANGE(j, i + 1, atoms.size()) {
+			if (mobility(i, j) != DISTANCE_ROTOR) continue;
+			const atom_index a(i, false), b(j, false);
+			const auto& neighbors = atoms[i].bonds;
+			if (std::any_of(neighbors.begin(), neighbors.end(), [&](const bond& edge) {
+				return edge.connected_atom_index == b;
+			})) continue;
+			const fl length = std::sqrt(distance_sqr_between(a, b));
+			atoms[i].bonds.emplace_back(b, length, true);
+			atoms[j].bonds.emplace_back(a, length, true);
+		}
+	}
 }
 
 bool model::bonded_to_HD(const atom& a) const {
