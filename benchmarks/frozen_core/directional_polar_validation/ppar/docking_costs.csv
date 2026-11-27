@@ -1,0 +1,17 @@
+pdb,target,cap,seed,engine,search_counters,wall_s,cpu_s,peak_rss_KiB
+2PRG,PPARG,3000,43103,pro,rigid_reorientation=native explicit_inputs=9 explicit_calls=9 explicit_evals=444 late_prescore=0,0.21518188499976532,0.214635,23044
+2PRG,PPARG,3000,43103,upstream,,1.5545866229986132,1.552505,458100
+2PRG,PPARG,3000,43117,pro,rigid_reorientation=native explicit_inputs=9 explicit_calls=9 explicit_evals=372 late_prescore=0,0.22104208000018843,0.220326,23124
+2PRG,PPARG,3000,43117,upstream,,1.0870317880035145,1.086022,458100
+2PRG,PPARG,12000,43103,pro,rigid_reorientation=native explicit_inputs=9 explicit_calls=9 explicit_evals=435 late_prescore=0,0.46317622200149344,0.456828,23008
+2PRG,PPARG,12000,43103,upstream,,1.3998380070006533,1.394898,458100
+2PRG,PPARG,12000,43117,pro,rigid_reorientation=native explicit_inputs=9 explicit_calls=9 explicit_evals=439 late_prescore=0,0.6019910980030545,0.59821,23052
+2PRG,PPARG,12000,43117,upstream,,1.290613017998112,1.287405,458096
+3TKM,PPARD,3000,43103,pro,rigid_reorientation=native explicit_inputs=9 explicit_calls=9 explicit_evals=349 late_prescore=0,0.22314120900045964,0.22223099999999998,23144
+3TKM,PPARD,3000,43103,upstream,,1.5691959520008822,1.551688,511168
+3TKM,PPARD,3000,43117,pro,rigid_reorientation=native explicit_inputs=9 explicit_calls=9 explicit_evals=483 late_prescore=0,0.2376401059991622,0.23707999999999999,23284
+3TKM,PPARD,3000,43117,upstream,,1.2380099170004542,1.235194,511120
+3TKM,PPARD,12000,43103,pro,rigid_reorientation=native explicit_inputs=9 explicit_calls=9 explicit_evals=392 late_prescore=0,0.4025122330021986,0.402023,23332
+3TKM,PPARD,12000,43103,upstream,,1.483857964998606,1.477371,511096
+3TKM,PPARD,12000,43117,pro,rigid_reorientation=native explicit_inputs=9 explicit_calls=9 explicit_evals=387 late_prescore=0,0.36768828500134987,0.36712999999999996,23264
+3TKM,PPARD,12000,43117,upstream,,1.3116622190027556,1.3105440000000002,511168

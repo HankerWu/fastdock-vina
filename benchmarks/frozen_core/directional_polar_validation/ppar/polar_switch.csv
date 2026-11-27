@@ -1,0 +1,4 @@
+native_rank,atom,resname,deposition_chain,deposition_number,full_raw_fixed,full_raw_ensemble,raw_fixed_to_ensemble_shift,rotor_contacts,receptor_contact_prior_range
+1,OG,SER,A,289,0.7321755688530743,1.1559041560283632,0.42372858717528883,1,0.0
+2,OG,SER,A,289,0.7944378700703145,0.891865899083084,0.09742802901276948,1,0.0
+3,OG,SER,A,289,0.1443918151888426,0.21679315561668017,0.07240134042783758,1,0.0

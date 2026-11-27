@@ -1,0 +1,151 @@
+{
+  "systems": {
+    "2PRG": {
+      "target": "PPARG",
+      "ligand": "BRL",
+      "pdb_sha256": "ccd6f2ce051b06b706f46a4375ec7b50caaa1eb81c3d090a576c739fc23b8ed8",
+      "ccd_sha256": "502b0b72dc559404a8dbfa354cd6da549e272c6c5e50156068a889aa0933da0d",
+      "receptor_status": "ready",
+      "closest_omitted_heavy_atom": [
+        11.41913289177423,
+        "CD2 LEU C 633"
+      ],
+      "closest_repaired_ligand_distance": null,
+      "metals": [],
+      "canonical_smiles": "CN(CCOc1ccc(C[C@@H]2SC(=O)NC2=O)cc1)c1ccccn1",
+      "experimental_resolution": "REMARK   2 RESOLUTION.    2.30 ANGSTROMS.",
+      "ligand_instances": [
+        "A   1 "
+      ],
+      "chemical_name": [
+        "2,4-THIAZOLIDIINEDIONE, 5-[[4-[2-(METHYL-2-",
+        "PYRIDINYLAMINO)ETHOXY]PHENYL]METHYL]-(9CL)"
+      ],
+      "ligand_LINK_records": [],
+      "environment": [
+        {
+          "chain": "A",
+          "component": "HOH",
+          "min_distance_A": 3.172,
+          "heavy_atoms_within_4A": 3,
+          "retained_in_prepared_receptor": false
+        },
+        {
+          "chain": "A",
+          "component": "protein",
+          "min_distance_A": 2.77,
+          "heavy_atoms_within_4A": 34,
+          "retained_in_prepared_receptor": true
+        },
+        {
+          "chain": "B",
+          "component": "BRL",
+          "min_distance_A": 31.211,
+          "heavy_atoms_within_4A": 0,
+          "retained_in_prepared_receptor": false
+        },
+        {
+          "chain": "B",
+          "component": "HOH",
+          "min_distance_A": 14.126,
+          "heavy_atoms_within_4A": 0,
+          "retained_in_prepared_receptor": false
+        },
+        {
+          "chain": "B",
+          "component": "protein",
+          "min_distance_A": 17.017,
+          "heavy_atoms_within_4A": 0,
+          "retained_in_prepared_receptor": false
+        },
+        {
+          "chain": "C",
+          "component": "HOH",
+          "min_distance_A": 13.687,
+          "heavy_atoms_within_4A": 0,
+          "retained_in_prepared_receptor": false
+        },
+        {
+          "chain": "C",
+          "component": "protein",
+          "min_distance_A": 11.419,
+          "heavy_atoms_within_4A": 0,
+          "retained_in_prepared_receptor": false
+        }
+      ],
+      "reference_atom_graph_maps": 2,
+      "mapped_heavy_atoms": 25,
+      "reference_alternates": 1,
+      "deposition_DOI": "https://doi.org/10.2210/pdb2PRG/pdb",
+      "pdb_url": "https://files.rcsb.org/download/2PRG.pdb",
+      "ccd_url": "https://files.rcsb.org/ligands/download/BRL.cif",
+      "publication_DOI": "10.1038/25931",
+      "prep_wall_s": 9.666425298997638
+    },
+    "3TKM": {
+      "target": "PPARD",
+      "ligand": "GW0",
+      "pdb_sha256": "9c53e4680fafea6676e80c3be1a05cd5c0fe16a92c5ab6fe296907ee4048ffb4",
+      "ccd_sha256": "d1d2a63c4c429031bba77ac8eca24178bdf17b58d452d98407493f2c48f7d361",
+      "receptor_status": "ready",
+      "closest_omitted_heavy_atom": [
+        29.37127748328288,
+        "O1  GOL A 442"
+      ],
+      "closest_repaired_ligand_distance": null,
+      "metals": [],
+      "canonical_smiles": "Cc1cc(SCc2sc(-c3ccc(C(F)(F)F)c(F)c3)nc2C)ccc1OCC(=O)O",
+      "experimental_resolution": "REMARK   2 RESOLUTION.    1.95 ANGSTROMS.",
+      "ligand_instances": [
+        "A   1 "
+      ],
+      "chemical_name": [
+        "{4-[({2-[3-FLUORO-4-(TRIFLUOROMETHYL)PHENYL]-4-METHYL-",
+        "1,3-THIAZOL-5-YL}METHYL)SULFANYL]-2-",
+        "METHYLPHENOXY}ACETIC ACID"
+      ],
+      "ligand_LINK_records": [],
+      "environment": [
+        {
+          "chain": "A",
+          "component": "GOL",
+          "min_distance_A": 29.371,
+          "heavy_atoms_within_4A": 0,
+          "retained_in_prepared_receptor": false
+        },
+        {
+          "chain": "A",
+          "component": "HOH",
+          "min_distance_A": 3.626,
+          "heavy_atoms_within_4A": 1,
+          "retained_in_prepared_receptor": false
+        },
+        {
+          "chain": "A",
+          "component": "protein",
+          "min_distance_A": 2.606,
+          "heavy_atoms_within_4A": 33,
+          "retained_in_prepared_receptor": true
+        }
+      ],
+      "reference_atom_graph_maps": 6,
+      "mapped_heavy_atoms": 31,
+      "reference_alternates": 1,
+      "deposition_DOI": "https://doi.org/10.2210/pdb3TKM/pdb",
+      "pdb_url": "https://files.rcsb.org/download/3TKM.pdb",
+      "ccd_url": "https://files.rcsb.org/ligands/download/GW0.cif",
+      "publication_DOI": "10.1371/JOURNAL.PONE.0033643",
+      "prep_wall_s": 10.417270437003026
+    }
+  },
+  "python": "3.12.14",
+  "packages": {
+    "rdkit": "2025.9.3",
+    "meeko": "0.7.1",
+    "pdbfixer": "1.12.0",
+    "OpenMM": "8.6.1",
+    "gemmi": "0.7.4",
+    "numpy": "2.3.5",
+    "scipy": "1.17.0"
+  }
+}
