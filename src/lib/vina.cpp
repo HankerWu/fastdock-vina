@@ -169,9 +169,12 @@ void Vina::set_ligand_from_string(const std::vector<std::string>& ligand_string)
 		exit(EXIT_FAILURE);
 	}
 	const atom_type::t atom_typing = m_scoring_function->get_atom_typing();
-	reset_ligand_model(atom_typing);
+	// A later ligand can fail type or topology validation. Keep the previous
+	// prepared model and its pair tables together until every input parses.
+	model combined = m_receptor_initialized ? m_receptor : model(atom_typing);
 	for (const auto& ligand : ligand_string)
-		m_model.append(parse_ligand_pdbqt_from_string(ligand, atom_typing));
+		combined.append(parse_ligand_pdbqt_from_string(ligand, atom_typing));
+	m_model = std::move(combined);
 	finish_ligand_setup(atom_typing);
 }
 

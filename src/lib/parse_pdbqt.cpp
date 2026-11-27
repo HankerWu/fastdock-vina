@@ -96,7 +96,7 @@ T checked_convert_substring(const std::string& str, sz i, sz j, const std::strin
     }
 }
 
-parsed_atom parse_pdbqt_atom_string(const std::string& str) {
+parsed_atom parse_pdbqt_atom_string(const std::string& str, atom_type::t typing) {
     unsigned number = checked_convert_substring<unsigned>(str, 7, 11, "Atom number");
     vec coords(checked_convert_substring<fl>(str, 31, 38, "Coordinate"),
                checked_convert_substring<fl>(str, 39, 46, "Coordinate"),
@@ -108,8 +108,11 @@ parsed_atom parse_pdbqt_atom_string(const std::string& str) {
     sz ad = string_to_ad_type(name);
     parsed_atom tmp(ad, charge, coords, number);
 
-    if(is_non_ad_metal_name(name))
+    if(is_non_ad_metal_name(name)) {
+        if (typing == atom_type::AD && ad == AD_TYPE_SIZE)
+            throw pdbqt_parse_error("No AD4 atom parameters for " + name + ".", str);
         tmp.xs = XS_TYPE_Met_D;
+    }
     if(tmp.acceptable_type()) 
         return tmp;
     else
@@ -154,6 +157,8 @@ struct non_rigid_parsed {
 };
 
 struct parsing_struct {
+    explicit parsing_struct(atom_type::t typing) : typing(typing) {}
+    atom_type::t typing;
     // start reading after this class
     template<typename T> // T == parsing_struct
     struct node_t {
@@ -269,7 +274,7 @@ void parse_pdbqt_rigid(const path& name, rigid& r) {
         else if(starts_with(str, "WARNING")) {} // ignore - AutoDockTools bug workaround
         else if(starts_with(str, "REMARK")) {} // ignore
         else if(starts_with(str, "ATOM  ") || starts_with(str, "HETATM"))
-            r.atoms.push_back(parse_pdbqt_atom_string(str));
+            r.atoms.push_back(parse_pdbqt_atom_string(str, atom_type::XS));
         else if(starts_with(str, "MODEL"))
             throw pdbqt_parse_error("Unexpected multi-MODEL tag found in rigid receptor. "
                                     "Only one model can be used for the rigid receptor.");
@@ -288,7 +293,7 @@ void parse_pdbqt_root_aux(std::istream& in, parsing_struct& p, context& c) {
         else if(starts_with(str, "WARNING")) {} // ignore - AutoDockTools bug workaround
         else if(starts_with(str, "REMARK")) {} // ignore
         else if(starts_with(str, "ATOM  ") || starts_with(str, "HETATM"))
-            p.add(parse_pdbqt_atom_string(str), c);
+            p.add(parse_pdbqt_atom_string(str, p.typing), c);
         else if(starts_with(str, "ENDROOT"))
             return;
         else if(starts_with(str, "MODEL"))
@@ -329,7 +334,7 @@ void parse_pdbqt_branch_aux(std::istream& in, const std::string& str, parsing_st
 
     for(; i < p.atoms.size(); ++i)
         if(p.atoms[i].a.number == first) {
-            p.atoms[i].ps.push_back(parsing_struct());
+            p.atoms[i].ps.emplace_back(p.typing);
             parse_pdbqt_branch(in, p.atoms[i].ps.back(), c, first, second);
             break;
         }
@@ -502,8 +507,8 @@ void postprocess_residue(non_rigid_parsed& nr, parsing_struct& p, context& c) {
 }
 
 //dkoes, stream version
-void parse_pdbqt_ligand(std::istream& in, non_rigid_parsed& nr, context& c) {
-    parsing_struct p;
+void parse_pdbqt_ligand(std::istream& in, non_rigid_parsed& nr, context& c, atom_type::t typing) {
+    parsing_struct p(typing);
     boost::optional<unsigned> torsdof;
 
     parse_pdbqt_aux(in, p, c, torsdof, false);
@@ -518,9 +523,9 @@ void parse_pdbqt_ligand(std::istream& in, non_rigid_parsed& nr, context& c) {
     VINA_CHECK(nr.atoms_atoms_bonds.dim() == nr.atoms.size());
 }
 
-void parse_pdbqt_ligand(const path& name, non_rigid_parsed& nr, context& c) {
+void parse_pdbqt_ligand(const path& name, non_rigid_parsed& nr, context& c, atom_type::t typing) {
     ifile in(name);
-    parsing_struct p;
+    parsing_struct p(typing);
     boost::optional<unsigned> torsdof;
 
     parse_pdbqt_aux(in, p, c, torsdof, false);
@@ -540,7 +545,7 @@ void parse_pdbqt_residue(std::istream& in, parsing_struct& p, context& c) {
     parse_pdbqt_aux(in, p, c, dummy, true);
 }
 
-void parse_pdbqt_flex(const path& name, non_rigid_parsed& nr, context& c) {
+void parse_pdbqt_flex(const path& name, non_rigid_parsed& nr, context& c, atom_type::t typing) {
     ifile in(name);
     std::string str;
 
@@ -551,7 +556,7 @@ void parse_pdbqt_flex(const path& name, non_rigid_parsed& nr, context& c) {
         else if(starts_with(str, "WARNING")) {} // ignore - AutoDockTools bug workaround
         else if(starts_with(str, "REMARK")) {} // ignore
         else if(starts_with(str, "BEGIN_RES")) {
-            parsing_struct p;
+            parsing_struct p(typing);
             parse_pdbqt_residue(in, p, c);
             postprocess_residue(nr, p, c);
         }
@@ -585,7 +590,7 @@ void parse_pdbqt_branch(std::istream& in, parsing_struct& p, context& c, unsigne
             return;
         }
         else if(starts_with(str, "ATOM  ") || starts_with(str, "HETATM")) {
-            parsed_atom a = parse_pdbqt_atom_string(str);
+            parsed_atom a = parse_pdbqt_atom_string(str, p.typing);
             if(a.number == to)
                 p.immobile_atom = p.atoms.size();
             p.add(a, c);
@@ -835,7 +840,7 @@ void replace_fixed_pose_coordinates(model& prepared, const std::string& pose) {
     context lines;
     // Parse/validate the pose tree without calling initialize(), which assigns
     // bonds, XS types and interaction pairs from the pose coordinates.
-    parse_pdbqt_ligand(input, parsed, lines);
+    parse_pdbqt_ligand(input, parsed, lines, prepared.atom_typing_used());
     pdbqt_initializer::replace_fixed_pose_coordinates(prepared, parsed, lines);
 }
 
@@ -933,7 +938,7 @@ model parse_ligand_pdbqt_with_bonds(const std::string& ligand_name, atom_type::t
                                   const std::string& bonds_name) {
     non_rigid_parsed parsed;
     context lines;
-    parse_pdbqt_ligand(make_path(ligand_name), parsed, lines);
+    parse_pdbqt_ligand(make_path(ligand_name), parsed, lines, atype);
     pdbqt_initializer prepared(atype);
     prepared.initialize_from_nrp(parsed, lines, true);
     ifile bonds(make_path(bonds_name));
@@ -944,7 +949,7 @@ model parse_ligand_pdbqt_with_bonds(const std::string& ligand_name, atom_type::t
 model parse_ligand_pdbqt_from_file(const std::string& name, atom_type::t atype) { // can throw parse_error
     non_rigid_parsed nrp;
     context c;
-    parse_pdbqt_ligand(make_path(name), nrp, c);
+    parse_pdbqt_ligand(make_path(name), nrp, c, atype);
 
     pdbqt_initializer tmp(atype);
     tmp.initialize_from_nrp(nrp, c, true);
@@ -957,7 +962,7 @@ model parse_ligand_pdbqt_from_string(const std::string& string_name, atom_type::
     context c;
 
     std::stringstream molstream(string_name);
-    parse_pdbqt_ligand(molstream, nrp, c);
+    parse_pdbqt_ligand(molstream, nrp, c, atype);
 
     pdbqt_initializer tmp(atype);
     tmp.initialize_from_nrp(nrp, c, true);
@@ -983,7 +988,7 @@ model parse_receptor_pdbqt(const std::string& rigid_name, const std::string& fle
     }
     
     if (!flex_name.empty()) {
-        parse_pdbqt_flex(make_path(flex_name), nrp, c);
+        parse_pdbqt_flex(make_path(flex_name), nrp, c, atype);
     }
 
     if (!flex_name.empty()) {

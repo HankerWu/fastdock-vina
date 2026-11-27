@@ -1,0 +1,9 @@
+pdb,probe,charge,mode,arm,exit_code
+1V4S,Na,1,local,parent,0
+1V4S,Na,1,local,fixed,1
+1V4S,Na,1,dock,parent,0
+1V4S,Na,1,dock,fixed,1
+3IDH,K,1,local,parent,0
+3IDH,K,1,local,fixed,1
+3IDH,K,1,dock,parent,0
+3IDH,K,1,dock,fixed,1

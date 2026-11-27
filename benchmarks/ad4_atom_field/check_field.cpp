@@ -2,6 +2,7 @@
 #include "vina.h"
 #include "ad4cache.h"
 #include "parse_pdbqt.h"
+#include "parse_error.h"
 #include <iostream>
 #include <stdexcept>
 #include <set>
@@ -113,6 +114,52 @@ void partitions(const std::string& prefix, const std::string& rigid, const std::
 
 }
 
+// XS-only metals do not have an AD4 probe channel. In particular, an
+// unassigned AD type shares its numeric sentinel with the electrostatic map.
+void probe_types(const std::string& prefix, const std::string& flexible) {
+    const std::string atom = "ATOM      1   X1 LIG A   1      12.000  50.000  14.000  1.00  0.00     0.000 ";
+    const auto ligand = [&](const std::string& type) { return "ROOT\n"+atom+type+"\nENDROOT\nTORSDOF 0\n"; };
+    const auto reject = [&](const std::string& type, auto read) {
+        try { read(); }
+        catch (const pdbqt_parse_error& e) {
+            if (std::string(e.what()).find("No AD4 atom parameters for "+type+".") != std::string::npos)
+                return;
+            throw;
+        }
+        throw std::runtime_error("AD4 accepted unsupported type "+type);
+    };
+    for (const auto& type : non_ad_metal_names) {
+        const auto typed = ligand(type);
+        parse_ligand_pdbqt_from_string(typed, atom_type::XS);
+        if (string_to_ad_type(type) == AD_TYPE_SIZE)
+            reject(type, [&] { parse_ligand_pdbqt_from_string(typed, atom_type::AD); });
+        else
+            parse_ligand_pdbqt_from_string(typed, atom_type::AD); // Fe has real AD4 parameters.
+    }
+    Vina engine("ad4",1,331,0);
+    engine.load_maps(prefix);
+    engine.set_ligand_from_string(ligand("C"));
+    const auto previous = engine.score();
+    reject("Ni", [&] {
+        engine.set_ligand_from_string(std::vector<std::string>{ligand("C"),ligand("C"),ligand("Ni")});
+    });
+    if (engine.score() != previous) throw std::runtime_error("partial multi-ligand replacement");
+    // The fixed root and the terminal mobile atom of a flex residue both need a valid type.
+    for (const std::string pos : {"   CA ", "   CG "}) {
+        std::ifstream input(flexible);
+        const std::string modified = prefix+".flex.pdbqt";
+        std::ofstream out(modified);
+        std::string line;
+        while (std::getline(input,line)) {
+            if (line.find(pos) != std::string::npos) line.replace(77, std::string::npos, "Cu");
+            out << line << '\n';
+        }
+        out.close();
+        reject("Cu", [&] { parse_receptor_pdbqt("",modified,atom_type::AD); });
+        parse_receptor_pdbqt("",modified,atom_type::XS);
+    }
+}
+
 // An uninitialized client must not clear a caller's file. A completed
 // no-solution search owns its requested output, and changing inputs resets it.
 void output_lifecycle(const std::string& prefix) {
@@ -154,6 +201,7 @@ int main(int argc,char** argv) {
     if (argc != 4) return 2;
     field_grid();
     partitions(argv[1],argv[2],argv[3]);
+    probe_types(argv[1],argv[3]);
     output_lifecycle(argv[1]);
     std::cout << "AD4 signed maps, redistribution, wall gradient and ligand/flex decomposition passed\n";
 }
