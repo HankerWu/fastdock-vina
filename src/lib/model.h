@@ -70,8 +70,8 @@ struct pdbqt_initializer; // forward declaration - only declared in parse_pdbqt.
 struct precalculate_byatom; // forward declaration
 class pose_template;
 
-fl eval_interacting_pairs(const precalculate_byatom& p, fl v, const interacting_pairs& pairs, const vecv& coords, const bool with_max_cutoff=false);
-fl eval_interacting_pairs_deriv(const precalculate_byatom& p, fl v, const interacting_pairs& pairs, const vecv& coords, vecv& forces, const bool with_max_cutoff=false);
+fl eval_interacting_pairs(const precalculate_byatom& p, fl v, const interacting_pairs& pairs, const vecv& coords, const bool closure_pairs=false);
+fl eval_interacting_pairs_deriv(const precalculate_byatom& p, fl v, const interacting_pairs& pairs, const vecv& coords, vecv& forces, const bool closure_pairs=false);
 
 struct model {
 	using context_line_filter = bool (*)(const std::string&);

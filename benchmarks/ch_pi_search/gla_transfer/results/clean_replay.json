@@ -1,0 +1,13 @@
+{
+  "source_commit": "3f21e02acabf023965d8160e8d375e1efd8edc43",
+  "source_files": "src, tools/build.py, benchmarks/ch_pi_search/{build.py,search.patch,search_grid.h} via git archive",
+  "first_binary_sha256": "cfb171dc6e54bafe26b65a33c0ab873a5a6f0719972a1b030eec1cc7a4cf4ef2",
+  "clean_binary_sha256": "1fd2133bc9b3b267225316c5bee9e70191b294fe6a1ff8a98463e48428ff5658",
+  "byte_identical_prediction_pools": 24,
+  "byte_identical_tables": {
+    "modes.csv": "0fa5d7ce6b9a6f4afb39cb5cfb948ec934ed956efd9e21040a4f65fb9e678797",
+    "cells.csv": "f097b5aae67498dc17d0f2df187dfeaf5063c129f00e3c7ee8d83a49a56d703a",
+    "control_modes.csv": "8f28b501058a4f21d3c264951febc873c59a6fd9bff74505af34a146d1927f91"
+  },
+  "reference_probe_geometry_and_zero_scores_reproduced": true
+}

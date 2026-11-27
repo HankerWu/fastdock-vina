@@ -1,0 +1,14 @@
+target,assay,endpoint,reference,pairs,uncertainty,half_width_per_ligand,shared_credit_nominal,shared_credit_optimistic,separate_credit_optimistic,unresolved_credit_at_least
+BACE1,CHEMBL2015090,Ki,pool,14,print_half_step,0.0005,8.0,8.0,9.0,6.0
+BACE1,CHEMBL2155063,Ki,pool,22,print_half_step,0.0005,10.0,10.0,12.0,12.0
+CDK2,Davis-CDK2,Kd,pool,17,print_half_step,0.0005,8.0,8.0,8.0,9.0
+CDK2,Davis-CDK2,Kd,prepared,17,hypothetical_energy_shift,0.0005,7.0,7.0,7.0,10.0
+FXa,CHEMBL661804,Ki,pool,295,print_half_step,0.0005,227.0,227.0,247.0,68.0
+GSK3B,Davis-GSK3B,Kd,pool,17,print_half_step,0.0005,6.0,6.0,6.0,11.0
+GSK3B,Davis-GSK3B,Kd,prepared,17,hypothetical_energy_shift,0.0005,7.0,7.0,7.0,10.0
+Gal3,Sorme_2005_FP,Kd,active_rotor_control,403,hypothetical_energy_shift,0.0005,148.0,148.0,215.0,255.0
+Gal3,Sorme_2005_FP,Kd,pool,403,print_half_step,0.0005,146.0,146.0,214.0,257.0
+MAPK14,Davis-p38-alpha,Kd,pool,29,print_half_step,0.0005,16.0,16.0,18.0,13.0
+PARP1,Ryan_2021_SPR,Kd,pool,4,print_half_step,0.0005,4.0,4.0,4.0,0.0
+SRC,Davis-SRC,Kd,pool,26,print_half_step,0.0005,16.0,16.0,16.0,10.0
+SRC,Davis-SRC,Kd,prepared,26,hypothetical_energy_shift,0.0005,14.0,14.0,15.0,12.0

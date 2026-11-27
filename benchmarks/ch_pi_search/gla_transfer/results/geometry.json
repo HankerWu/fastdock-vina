@@ -1,0 +1,30 @@
+{
+  "stereochemistry": [
+    {
+      "entry": "3GXT",
+      "chain": "A",
+      "ccd": "NOJ",
+      "matches_DGJ": false,
+      "signed_triple_c4_A3": -2.522505680000037
+    },
+    {
+      "entry": "3S5Y",
+      "chain": "A",
+      "ccd": "DGJ",
+      "matches_DGJ": true,
+      "signed_triple_c4_A3": 2.510902474000012
+    }
+  ],
+  "alignments": [
+    {
+      "receiver": "3GXT",
+      "pocket_ca": 56,
+      "rmsd_A": 0.25931171877926357
+    },
+    {
+      "receiver": "3S5Y",
+      "pocket_ca": 56,
+      "rmsd_A": 1.3045407371928036e-14
+    }
+  ]
+}

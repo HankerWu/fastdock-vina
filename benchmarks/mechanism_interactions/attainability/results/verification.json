@@ -1,0 +1,66 @@
+{
+  "poses": 3246,
+  "pools": 344,
+  "archived_winners": 688,
+  "membership_changes_allowing_print_rounding": 0,
+  "dry_readout_ambiguous": [
+    {
+      "experiment": "ch_pi",
+      "panel": "gaa",
+      "target": "GAA",
+      "cap": 12000,
+      "search": "native",
+      "query": "5NN5",
+      "receiver": "5NN5",
+      "seed": 43133,
+      "possible_modes": [
+        1,
+        2
+      ]
+    },
+    {
+      "experiment": "ch_pi",
+      "panel": "gaa",
+      "target": "GAA",
+      "cap": 24000,
+      "search": "native",
+      "query": "5NN5",
+      "receiver": "5NN5",
+      "seed": 43133,
+      "possible_modes": [
+        1,
+        2
+      ]
+    },
+    {
+      "experiment": "water",
+      "panel": "transfer",
+      "target": "BACE1",
+      "cap": 3000,
+      "search": "native",
+      "query": "2B8L",
+      "receiver": "2ZJM",
+      "seed": 43103,
+      "possible_modes": [
+        1,
+        2
+      ]
+    }
+  ],
+  "unit_readout_ambiguous": [
+    {
+      "experiment": "ch_pi",
+      "panel": "historical",
+      "target": "GBA1",
+      "cap": 24000,
+      "search": "field",
+      "query": "2V3E",
+      "receiver": "2V3D",
+      "seed": 43103,
+      "possible_modes": [
+        1,
+        4
+      ]
+    }
+  ]
+}

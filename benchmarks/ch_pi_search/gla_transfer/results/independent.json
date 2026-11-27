@@ -1,0 +1,72 @@
+{
+  "pools": 12,
+  "poses": 108,
+  "cells": 24,
+  "max_errors": {
+    "modes": 5.329070518200751e-15,
+    "cells": 5.329070518200751e-15
+  },
+  "means": [
+    {
+      "panel": "GLA",
+      "cap": 24000,
+      "conditions": 6,
+      "field_field_within_printed_score_tolerance": [
+        6.168564758222208,
+        6.168564758222208
+      ],
+      "interaction_within_printed_score_tolerance": [
+        -0.03146771362751366,
+        -0.03146771362751366
+      ],
+      "native_native": 9.463700403591183,
+      "field_native": 6.168564758222208,
+      "native_field": 9.495168117218697,
+      "field_field": 6.168564758222208,
+      "interaction": -0.03146771362751366
+    }
+  ],
+  "switched": 3,
+  "largest_reorder": [
+    {
+      "panel": "GLA",
+      "query": "3S5Y",
+      "receptor": "3GXT",
+      "seed": 43103,
+      "cap": 24000,
+      "search": "native",
+      "winner": 2,
+      "before": 12.75663717365381,
+      "after": 14.375209633095729,
+      "printed_dry_gap": 0.16599999999999993,
+      "pair_advantage": 0.6268266871836122
+    },
+    {
+      "panel": "GLA",
+      "query": "3S5Y",
+      "receptor": "3GXT",
+      "seed": 43133,
+      "cap": 24000,
+      "search": "native",
+      "winner": 7,
+      "before": 10.559585539322503,
+      "after": 9.458576879874983,
+      "printed_dry_gap": 0.3860000000000001,
+      "pair_advantage": 1.639431480924254
+    },
+    {
+      "panel": "GLA",
+      "query": "3S5Y",
+      "receptor": "3S5Y",
+      "seed": 43133,
+      "cap": 24000,
+      "search": "native",
+      "winner": 4,
+      "before": 14.41741084118908,
+      "after": 14.088653322959773,
+      "printed_dry_gap": 0.12199999999999989,
+      "pair_advantage": 2.2647152739877687
+    }
+  ],
+  "close_corrected_winners": []
+}

@@ -1,0 +1,5 @@
+panel,cap,contrast,n,mean,median,negative,unchanged,positive,query_block_lo,query_block_hi
+GLA,24000,both_minus_baseline,6,-3.29513565,-3.71179582,4,0,2,,
+GLA,24000,both_minus_search_only,6,0,0,0,6,0,,
+GLA,24000,both_minus_rerank_only,6,-3.32660336,-3.16129149,4,0,2,,
+GLA,24000,interaction,6,-0.0314677136,0,1,3,2,,

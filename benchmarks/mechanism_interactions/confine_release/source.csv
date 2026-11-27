@@ -1,0 +1,4 @@
+rotamer,apo_confine,apo_confine_sd,bound_confine,bound_confine_sd,confined_binding,confined_binding_sd
+apo_like,0.01,0.04,0.6,0.1,-2.96,0.06
+holo_like,4.24,0.2,0.28,0.08,-7.27,0.09
+other,2.82,0.2,3.52,0.1,,

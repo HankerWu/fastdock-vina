@@ -1027,18 +1027,18 @@ fl model::gyration_radius(sz ligand_number) const {
 }
 
 
-fl eval_interacting_pairs(const precalculate_byatom& p, fl v, const interacting_pairs& pairs, const vecv& coords, const bool with_max_cutoff) { // clean up
+fl eval_interacting_pairs(const precalculate_byatom& p, fl v, const interacting_pairs& pairs, const vecv& coords, const bool closure_pairs) { // clean up
 	fl e = 0;
 	fl cutoff_sqr = p.cutoff_sqr();
 
-	if (with_max_cutoff) {
+	if (closure_pairs) {
 		cutoff_sqr = p.max_cutoff_sqr();
 	}
 
 	for (const interacting_pair& ip : pairs) {
 		fl r2 = vec_distance_sqr(coords[ip.a], coords[ip.b]);
-		if(r2 < cutoff_sqr) {
-			fl tmp = p.eval_fast(ip, r2);
+		if (r2 < cutoff_sqr || closure_pairs) {
+			fl tmp = r2 < cutoff_sqr ? p.eval_fast(ip, r2) : p.glue_tail(r2).first;
 			curl(tmp, v);
 			e += tmp;
 		}
@@ -1046,9 +1046,9 @@ fl eval_interacting_pairs(const precalculate_byatom& p, fl v, const interacting_
 	return e;
 }
 
-fl eval_interacting_pairs_deriv(const precalculate_byatom& p, fl v, const interacting_pairs& pairs, const vecv& coords, vecv& forces, const bool with_max_cutoff) {
+fl eval_interacting_pairs_deriv(const precalculate_byatom& p, fl v, const interacting_pairs& pairs, const vecv& coords, vecv& forces, const bool closure_pairs) {
 	fl e = 0;
-	const fl cutoff_sqr = with_max_cutoff ? p.max_cutoff_sqr() : p.cutoff_sqr();
+	const fl cutoff_sqr = closure_pairs ? p.max_cutoff_sqr() : p.cutoff_sqr();
 
 	auto pair = pairs.begin();
 	while (pair != pairs.end()) {
@@ -1061,8 +1061,8 @@ fl eval_interacting_pairs_deriv(const precalculate_byatom& p, fl v, const intera
 			const sz b = pair->b;
 			const vec r = coords[b] - a_coords;
 			const fl r2 = sqr(r);
-			if (r2 < cutoff_sqr) {
-				pr energy_deriv = p.eval_deriv(*pair, r2);
+			if (r2 < cutoff_sqr || closure_pairs) {
+				pr energy_deriv = r2 < cutoff_sqr ? p.eval_deriv(*pair, r2) : p.glue_tail(r2);
 				vec force = energy_deriv.second * r;
 				curl(energy_deriv.first, force, v);
 				e += energy_deriv.first;

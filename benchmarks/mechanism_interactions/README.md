@@ -2,7 +2,11 @@
 
 下列结果从五靶点的逐配体、受体、种子能量，两个结构面板的逐候选 RMSD，以及原测定的浓度和 pKa 重新计算。一个组合能改变物理量、能改变候选顺序、能改善实验预测，分别需要证据。这里的各组分别保留自己的终点和分母。
 
-## 本轮新做的三组配对实验
+## 结合系综和可达到的精度
+
+固定 3,246 个历史候选，逐池求出干分加 CH–π 或水分项所能选到的全部姿势；另从九份同测定面板求两个受体状态在共用占比时的最大排序一致率。新选的 α-半乳糖苷酶 A 单列验证，大环则检验约束失效对输出的影响。[统一模型](../../docs/BINDING_ENSEMBLE_AND_DOCKING.md) · [逐池可达性](attainability/README.md) · [亲和力上界](shared_population/README.md) · [文献中的热力学循环](confine_release/README.md) · [核心约束修复](macrocycle_selection/README.md) · [GLA 新结构](../ch_pi_search/gla_transfer/README.md)
+
+## 此前的三组配对实验
 
 | 两个因素 | 两者合用的实测结果 | 原始数据与复现 |
 |---|---|---|

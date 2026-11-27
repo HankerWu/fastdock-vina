@@ -145,7 +145,7 @@ struct precalculate_byatom {
 
     precalculate_byatom(const ScoringFunction& sf, const model& m, fl cap = max_fl, fl factor = 32)
         : m_cutoff_sqr(sqr(sf.get_cutoff())), m_max_cutoff_sqr(sqr(sf.get_max_cutoff())),
-          m_factor(factor),
+          m_factor(factor), m_glue_weight(sf.glue_weight()), m_cap(cap),
           m_data(sf.get_atom_typing() == atom_type::XS ? XS_TYPE_SIZE : m.num_atoms(), precalculate_element()) {
         VINA_CHECK(factor > epsilon_fl);
         const flv distances = sample_distances(factor, m_cutoff_sqr);
@@ -176,6 +176,13 @@ struct precalculate_byatom {
     pr eval_deriv(const interacting_pair& pair, fl r2) const {
         return element(pair).eval_deriv(m_factor * r2, m_factor);
     }
+    // Beyond the table (and all ordinary AD4/XS cutoffs), only the registered
+    // covalent closure restraint remains. Preserve the constructor's pair cap.
+    pr glue_tail(fl r2) const {
+        const fl r = std::sqrt(r2);
+        const fl energy = m_glue_weight * r;
+        return energy < m_cap ? pr(energy, m_glue_weight / r) : pr(m_cap, 0);
+    }
     fl cutoff_sqr() const { return m_cutoff_sqr; }
     fl max_cutoff_sqr() const { return m_max_cutoff_sqr; }
 
@@ -188,6 +195,7 @@ private:
     fl m_cutoff_sqr = 0;
     fl m_max_cutoff_sqr = 0;
     fl m_factor = 0;
+    fl m_glue_weight = 0, m_cap = max_fl;
     triangular_matrix<precalculate_element> m_data;
 };
 

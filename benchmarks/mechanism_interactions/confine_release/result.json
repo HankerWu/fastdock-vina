@@ -1,0 +1,29 @@
+{
+  "confined_holo_minus_apo": -4.31,
+  "cycle_holo_minus_apo": 0.24000000000000066,
+  "experimental_kcal_mol": -4.67,
+  "raw_p_bound_sum": 0.9934531275144681,
+  "raw_p_free_sum": 0.9930051848011084,
+  "states": {
+    "apo_like": {
+      "cycle_kcal_mol": -3.5500000000000003,
+      "p_bound_from_figure": 0.36551825089214424,
+      "p_free_from_figure": 0.9833659155084324,
+      "signed_error_after": 1.1199999999999997,
+      "signed_error_before": 1.71
+    },
+    "holo_like": {
+      "cycle_kcal_mol": -3.3099999999999996,
+      "p_bound_from_figure": 0.6252075748665344,
+      "p_free_from_figure": 0.0008151247354661783,
+      "signed_error_after": 1.3600000000000003,
+      "signed_error_before": -2.5999999999999996
+    },
+    "other": {
+      "p_bound_from_figure": 0.002727301755789474,
+      "p_free_from_figure": 0.008824144557209798
+    }
+  },
+  "two_state_equal_weights_kcal_mol": -6.857204444331869,
+  "two_state_partial_kcal_mol": -3.404568421829006
+}

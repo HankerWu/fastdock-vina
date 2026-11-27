@@ -1,0 +1,6 @@
+{
+  "benchmarks/kinase_state_affinity/panel.csv": "7cf644aec1a3c990b6e09f635df16bf53de3655d9f754e43635cb7447a7dce4f",
+  "benchmarks/kinase_state_affinity/results/cells.csv": "c57f9d00c7edfee6809fdc14075021c2033f2a2b453eb2d24dba84cc051b8228",
+  "benchmarks/kinase_state_affinity/independent-seeds/results/cells.csv": "0433a07af4fbe56e4ca3bf9215a8db1501236dc3933e7dea9f68bc874887e63b",
+  "benchmarks/frozen_core/strain_rotor_interaction/first_poses.csv.xz": "347ad5b65cdac68d80e907d00f09a88ff525dc100c4ea775a28f587db6379298"
+}

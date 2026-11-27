@@ -4,6 +4,7 @@
 #include <iostream>
 #include <sstream>
 
+#include "curl.h"
 #include "non_cache.h"
 #include "parse_pdbqt.h"
 
@@ -20,6 +21,50 @@ std::string relabel(std::string pdbqt, char label) {
 void require(bool condition, const char* message) {
     if (!condition) throw std::runtime_error(message);
 }
+
+void check_closure_tail(const std::string& ligand) {
+    for (auto choice : {SF_VINA, SF_VINARDO, SF_AD42}) {
+        flv weights(choice == SF_VINA ? 7 : 6, 0);
+        for (fl weight : {0., 37., 50.}) {
+            weights[weights.size() - 2] = weight;
+            ScoringFunction sf(choice, weights);
+            model m = parse_ligand_pdbqt_from_string(ligand, sf.get_atom_typing());
+            const interacting_pairs pair{m.get_glue_pairs().at(0)};
+            for (fl table_cap : {max_fl, fl(250)}) {
+                const precalculate_byatom tables(sf, m, table_cap);
+                const sz a = pair[0].a, b = pair[0].b;
+                for (fl cap : {10., 1000.}) {
+                    const auto evaluate = [&](fl r) {
+                        vecv positions(m.num_atoms(), vec(0,0,0)), forces(positions);
+                        positions[b][0] = r;
+                        fl energy = eval_interacting_pairs_deriv(tables, cap, pair, positions, forces, true);
+                        require(std::abs(forces[a][0] + forces[b][0]) < 1e-12, "Unbalanced closure force");
+                        return pr(energy, forces[b][0]);
+                    };
+                    for (fl r : {19.999, 20., 20.001, 20.479, 20.48, 20.481, 23., 30.}) {
+                        const auto ed = evaluate(r);
+                        fl raw = std::min(table_cap, weight*r);
+                        fl gradient = weight*r < table_cap ? weight : 0;
+                        curl(raw, gradient, cap);
+                        const fl h = 1e-4;
+                        const fl numeric = (evaluate(r+h).first - evaluate(r-h).first)/(2*h);
+                        require(std::isfinite(ed.first) && std::isfinite(ed.second) &&
+                                std::abs(raw-ed.first) < 1e-5 && std::abs(gradient-ed.second) < 1e-4 &&
+                                std::abs(numeric-ed.second) < 0.002, "Closure energy/gradient at table boundary");
+                    }
+                    // A real intraligand non-closure pair must never use the tail.
+                    const interacting_pairs ordinary{m.get_ligand(0).pairs.at(0)};
+                    vecv positions(m.num_atoms(), vec(0,0,0)), forces(positions);
+                    positions[ordinary.front().b][0] = 30.;
+                    const fl ordinary_energy = eval_interacting_pairs_deriv(tables, cap, ordinary, positions, forces);
+                    require(ordinary_energy == 0 && forces[ordinary.front().b][0] == 0,
+                            "Ordinary cutoff changed");
+                }
+            }
+        }
+    }
+}
+
 }
 
 int main(int argc, char** argv) {
@@ -28,6 +73,8 @@ int main(int argc, char** argv) {
     std::ostringstream content;
     content << input.rdbuf();
     require(!content.str().empty(), "Missing cyclododecane fixture");
+
+    check_closure_tail(content.str());
 
     for (sz tag = XS_TYPE_C_H_CG0; tag <= XS_TYPE_C_H_CG3; tag += 3) {
         require(xs_radius(tag) == xs_radius(XS_TYPE_C_H) &&

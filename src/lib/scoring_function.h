@@ -41,7 +41,8 @@ enum scoring_function_choice {SF_VINA, SF_AD42, SF_VINARDO};
 
 // FastDock: one ordinary interaction radius for all XS potential terms.
 constexpr fl default_xs_interaction_cutoff = 8.0;
-constexpr fl macrocycle_glue_cutoff = 20.0;
+// Ordinary XS contacts and tabulated closure lookups are bounded; the closure restraint itself is not.
+constexpr fl xs_table_range_limit = 20.0;
 
 class ScoringFunction {
 public:
@@ -54,9 +55,9 @@ public:
         : m_smooth_cutoff(smooth_cutoff) {
         if (smooth_cutoff && (sf_choice != SF_VINA || xs_cutoff <= 1))
             throw std::invalid_argument("smooth_cutoff requires Vina and an interaction_cutoff greater than 1 Angstrom");
-        if (sf_choice != SF_AD42 && (!std::isfinite(xs_cutoff) || xs_cutoff <= 0 || xs_cutoff > macrocycle_glue_cutoff))
+        if (sf_choice != SF_AD42 && (!std::isfinite(xs_cutoff) || xs_cutoff <= 0 || xs_cutoff > xs_table_range_limit))
             throw std::invalid_argument("interaction_cutoff must be positive and at most " +
-                                        std::to_string(static_cast<int>(macrocycle_glue_cutoff)) + " Angstrom");
+                                        std::to_string(static_cast<int>(xs_table_range_limit)) + " Angstrom");
         switch (sf_choice)
         {
             case SF_VINA:
@@ -67,11 +68,11 @@ public:
                 m_potentials.push_back(new vina_hydrophobic(0.5, 1.5, xs_cutoff));
                 m_vina_hbond_index = m_potentials.size();
                 m_potentials.push_back(new vina_non_dir_h_bond(-0.7, 0, xs_cutoff));
-                m_potentials.push_back(new linearattraction(macrocycle_glue_cutoff));
+                m_potentials.push_back(new linearattraction());
                 m_conf_independents.push_back(new num_tors_div());
                 m_atom_typing = atom_type::XS;
                 m_cutoff = xs_cutoff;
-                m_max_cutoff = macrocycle_glue_cutoff;
+                m_max_cutoff = xs_table_range_limit;
                 break;
             }
             case SF_VINARDO:
@@ -80,11 +81,11 @@ public:
                 m_potentials.push_back(new vinardo_repulsion(0, xs_cutoff));
                 m_potentials.push_back(new vinardo_hydrophobic(0, 2.5, xs_cutoff));
                 m_potentials.push_back(new vinardo_non_dir_h_bond(-0.6, 0, xs_cutoff));
-                m_potentials.push_back(new linearattraction(macrocycle_glue_cutoff));
+                m_potentials.push_back(new linearattraction());
                 m_conf_independents.push_back(new num_tors_div());
                 m_atom_typing = atom_type::XS;
                 m_cutoff = xs_cutoff;
-                m_max_cutoff = macrocycle_glue_cutoff;
+                m_max_cutoff = xs_table_range_limit;
                 break;
             }
             case SF_AD42:
@@ -95,7 +96,7 @@ public:
                 m_potentials.push_back(new ad4_hb(0.5, 100000, ad4_short_cutoff));
                 m_potentials.push_back(new ad4_electrostatic(100, ad4_long_cutoff));
                 m_potentials.push_back(new ad4_solvation(3.6, 0.01097, true, ad4_long_cutoff));
-                m_potentials.push_back(new linearattraction(macrocycle_glue_cutoff));
+                m_potentials.push_back(new linearattraction());
                 m_conf_independents.push_back(new ad4_tors_add());
                 m_atom_typing = atom_type::AD;
                 m_cutoff = ad4_long_cutoff;
@@ -158,6 +159,7 @@ public:
     };
     fl get_cutoff() const { return m_cutoff; }
     fl get_max_cutoff() const { return m_max_cutoff; }
+    fl glue_weight() const { return m_weights[m_num_potentials - 1]; }
     atom_type::t get_atom_typing() const { return m_atom_typing; }
     szv get_atom_types() const{
         szv tmp;

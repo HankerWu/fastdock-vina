@@ -1,0 +1,58 @@
+[
+  {
+    "receptor": "3GXT",
+    "stage": "placed",
+    "rmsd_A": 1.1653504393153173,
+    "zero_reference_score": -2.612,
+    "score_cost": {
+      "wall_s": 0.0802200879988959,
+      "cpu_s": 0.07436,
+      "peak_rss_kib": 122564
+    },
+    "relaxation_cost": null
+  },
+  {
+    "receptor": "3GXT",
+    "stage": "relaxed",
+    "rmsd_A": 1.2533325648992157,
+    "zero_reference_score": -4.889,
+    "score_cost": {
+      "wall_s": 0.02732326099794591,
+      "cpu_s": 0.024207,
+      "peak_rss_kib": 122564
+    },
+    "relaxation_cost": {
+      "wall_s": 0.14397551100046257,
+      "cpu_s": 0.14277499999999999,
+      "peak_rss_kib": 122436
+    }
+  },
+  {
+    "receptor": "3S5Y",
+    "stage": "placed",
+    "rmsd_A": 1.1653585090200584,
+    "zero_reference_score": 0.324,
+    "score_cost": {
+      "wall_s": 0.026074993002112024,
+      "cpu_s": 0.025613999999999998,
+      "peak_rss_kib": 122564
+    },
+    "relaxation_cost": null
+  },
+  {
+    "receptor": "3S5Y",
+    "stage": "relaxed",
+    "rmsd_A": 1.3384517514311416,
+    "zero_reference_score": -3.33,
+    "score_cost": {
+      "wall_s": 0.02054882000084035,
+      "cpu_s": 0.019882999999999998,
+      "peak_rss_kib": 122564
+    },
+    "relaxation_cost": {
+      "wall_s": 0.14770349899845314,
+      "cpu_s": 0.14729,
+      "peak_rss_kib": 122564
+    }
+  }
+]

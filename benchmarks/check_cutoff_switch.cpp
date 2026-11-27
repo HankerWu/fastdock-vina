@@ -78,8 +78,8 @@ int main() {
     atom anchor, pseudoatom;
     anchor.xs = XS_TYPE_C_H_CG0;
     pseudoatom.xs = XS_TYPE_G0;
-    for (double r : {7.5, 8., 12., 19.9, 20.}) {
-        const double expected = r < 20. ? 50.*r : 0.;
+    for (double r : {7.5, 8., 12., 19.9, 20., 20.48, 25.}) {
+        const double expected = 50.*r;
         require_close(glue.eval(anchor, pseudoatom, r), expected, 1.e-12, "atom-pair closure");
         require_close(glue.eval(anchor.xs, pseudoatom.xs, r), expected, 1.e-12, "type-pair closure");
     }

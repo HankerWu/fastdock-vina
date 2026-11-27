@@ -492,28 +492,12 @@ private:
 };
 
 // Macrocycle - Vina and AD42
+// This is a restraint between two construction sites of a registered ring.
 class linearattraction : public Potential {
 public:
-    linearattraction(fl cutoff_): cutoff(cutoff_) { }
-    fl eval(const atom& a, const atom& b, fl r) {
-        if (r >= cutoff)
-            return 0.0;
-        if (is_glued(a.xs, b.xs))
-            return r;
-        else 
-            return 0.0;
-    };
-    fl eval(sz t1, sz t2, fl r) {
-        if (r >= cutoff)
-            return 0.0;
-        if (is_glued(t1, t2))
-            return r;
-        else
-            return 0.0;
-    };
-    fl get_cutoff() { return cutoff; }
-private:
-    fl cutoff;
+    fl eval(const atom& a, const atom& b, fl r) { return eval(a.xs, b.xs, r); }
+    fl eval(sz t1, sz t2, fl r) { return is_glued(t1, t2) ? r : 0; }
+    fl get_cutoff() { return max_fl; }
 };
 
 #endif
