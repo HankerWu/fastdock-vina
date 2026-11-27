@@ -1,0 +1,59 @@
+{
+  "reference_packing": {
+    "1E3G_1E3G": {
+      "clash_pairs": 0,
+      "minimum_heavy_distance_A": 2.790564459029749
+    },
+    "1E3G_2AM9": {
+      "clash_pairs": 0,
+      "minimum_heavy_distance_A": 2.731068816940304
+    },
+    "2AM9_1E3G": {
+      "clash_pairs": 1,
+      "minimum_heavy_distance_A": 1.2337464710923867
+    },
+    "2AM9_2AM9": {
+      "clash_pairs": 0,
+      "minimum_heavy_distance_A": 2.6620118331818126
+    }
+  },
+  "modes_checked": 187,
+  "max_rmsd_disagreement_A": 5.329070518200751e-15,
+  "max_bond_change_A": 0.001290047183946097,
+  "poses_with_chiral_changes": 0,
+  "prepared_to_aligned_crystal_rmsd_A": {
+    "1E3G": 0.4272830210206795,
+    "2AM9": 0.06823778690189956
+  },
+  "stages": {
+    "search": {
+      "comparisons": 38,
+      "identical_coords": 38,
+      "identical_coords_and_energy": 38,
+      "linear_hits": 2,
+      "shift_hits": 2
+    },
+    "before": {
+      "comparisons": 38,
+      "identical_coords": 38,
+      "identical_coords_and_energy": 38,
+      "linear_hits": 2,
+      "shift_hits": 2
+    },
+    "after": {
+      "comparisons": 38,
+      "identical_coords": 0,
+      "identical_coords_and_energy": 0,
+      "linear_hits": 2,
+      "shift_hits": 2
+    },
+    "linear_events": {
+      "0_to_0": 36,
+      "1_to_1": 2
+    },
+    "shift_events": {
+      "0_to_0": 36,
+      "1_to_1": 2
+    }
+  }
+}

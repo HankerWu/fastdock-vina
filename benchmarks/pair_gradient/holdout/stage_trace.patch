@@ -1,0 +1,39 @@
+--- a/src/lib/vina.cpp
++++ b/src/lib/vina.cpp
+@@ -1797,6 +1797,20 @@
+ 	done(m_verbosity, 1);
+ 
+ 	// Docking post-processing and rescoring
++	// Diagnostic replay: operate on a private model and isolated stream formatting.
++	auto trace_pose = [&](const char* stage, sz index, const output_type& pose) {
++		model snapshot = m_model;
++		snapshot.set(pose.c);
++		std::ostringstream line;
++		line << "STAGE " << stage << " " << index + 1 << "\n" << std::hexfloat << pose.e << "\n";
++		for (const auto& xyz : snapshot.get_chemical_heavy_atom_movable_coords())
++			line << xyz[0] << " " << xyz[1] << " " << xyz[2] << "\n";
++		line << "PDBQT\n";
++		snapshot.write_structure(line);
++		line << "END STAGE\n";
++		std::cout << line.str();
++	};
++	VINA_FOR_IN(i, poses) trace_pose("search", i, poses[i]);
+ 	const sz saved_minima = poses.size();
+ 	const sz accepted_minima = archive_enabled ? append_accepted_minima(poses, archives) : 0;
+ 	const sz prescore_inputs = poses.size();
+@@ -1842,6 +1856,7 @@
+ 				m_non_cache.slope = slope;
+ 
+ 				VINA_FOR_IN(i, poses){
++					trace_pose("before", i, poses[i]);
+ 					VINA_FOR(p, 5){
+ 						m_non_cache.slope = 100 * std::pow(10.0, 2.0*p);
+ 						quasi_newton_par(m_model, m_precalculated_byatom, m_non_cache, poses[i], authentic_v, evalcount,
+@@ -1870,6 +1885,7 @@
+ 					double intra_pairs = m_model.evalo(m_precalculated_byatom, authentic_v); // flex_i -- flex_i and flex_i -- flex_j
+ 					double lig_intra = m_model.evali(m_precalculated_byatom, authentic_v); // ligand_i -- ligand_i
+ 					poses[i].e = all_grids + inter_pairs + intra_pairs + lig_intra;
++					trace_pose("after", i, poses[i]);
+ 					if (template_refinement) {
+ 						output_type& pose = poses[i];
+ 						pose.native_energy = pose.e;
