@@ -1,0 +1,51 @@
+{
+  "workflow": ".github/workflows/core-regression.yml",
+  "scope": "local test steps, GCC 14.2.0 / Boost 1.83",
+  "old_regression": "failed as expected: native heavy projection retained G0-G3",
+  "tests": [
+    {
+      "name": "Test declared ligand and flex-residue bonds",
+      "exit_code": 0
+    },
+    {
+      "name": "Test online pose separation and tie ordering",
+      "exit_code": 0
+    },
+    {
+      "name": "Test final pose spacing across energy windows and output APIs",
+      "exit_code": 0
+    },
+    {
+      "name": "Test force-field-specific grid membership and chemical pose geometry",
+      "exit_code": 0
+    },
+    {
+      "name": "Test imported map lattices",
+      "exit_code": 0
+    },
+    {
+      "name": "Test strict Armijo and geometry preconditioner",
+      "exit_code": 0
+    },
+    {
+      "name": "Test two-sided ligand rotor counting",
+      "exit_code": 0
+    },
+    {
+      "name": "Test cyclic ligand bond-distance exclusions and gradients",
+      "exit_code": 0
+    },
+    {
+      "name": "Test macrocycle label invariance",
+      "exit_code": 0
+    },
+    {
+      "name": "Reproduce archived pose and affinity aggregation",
+      "exit_code": 0
+    },
+    {
+      "name": "Verify macrocycle research records",
+      "exit_code": 0
+    }
+  ]
+}

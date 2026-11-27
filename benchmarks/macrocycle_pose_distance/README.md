@@ -32,6 +32,8 @@ b991eb7 和修正版共 18 个配对条件，三个结构、两个种子、三�
 
 每次单线程单轨迹，逐块轮换算法顺序。历史 Vina 在完整 MC 步后检查上限，实际求值另记。官方二进制仅有时间与内存记录，其编译环境不同。单次计时不能确定普遍加速。修复版在低档 39 个姿势中仍有一个闭环碳距达 11.002 Å；高档 21 个姿势均小于 1.67 Å，首姿仍远离晶体。对高预算每个条件的池内最佳构象，允许仅作刚体对齐，6 个条件有 5 个内部 RMSD 小于 2 Å，质心却分别偏离 5.17–14.24 Å。余下的 4EGK/458921 即使知道最佳刚体位姿，内部形状残差仍有 2.447 Å。刚体对齐使用答案，仅用于将当前误差拆解。数据支持继续区分整体放置与内部构象失败，尚不能区分正确刚体位置为何未被生成或保留。[每姿势形状分解](higher/shape.csv) · [闭环、碰撞和实验 RMSD](higher/models.csv)
 
+在高预算结果上，另冻结这 6 个池内最佳构象的内部坐标，分别仅平移质心、或用允许的图映射作最小二乘刚体配准，再用原拓扑和共同零参考原位重算。5 个刚体配准后进入 2 Å 的构象，Vina 总分全部变差，恶化 4.848–11.743 kcal/mol；其中 3 个出现小于 2 Å 的蛋白重原子接触，另外两个最近接触是 2.068 和 2.165 Å。刚体不变的分子内项在 PDBQT 坐标舍入下最多偏移约 0.003 kcal/mol。剩下的 4EGK/458921 的最优配准仍为 2.447 Å，总分虽从 +23.891 到 +14.630，最终分子间项仍为 +18.672 kcal/mol。因此，给出正确的整体朝向仍不能保证这些内部构象在原有势上获得有利的局部接触。此实验没有局部驰豫，没有测量整个近晶体盆地的最低能量。[配对坐标与原始评分日志](placement.tar.xz) · [逐构象能量和碰撞](higher/placement.csv)
+
 ## 复现
 
 使用 GCC 14.2、Boost 1.83、RDKit 2025.09.3、NumPy、SciPy。重新准备新增结构另需 Meeko 0.7.1、OpenMM 8.6.1、PDBFixer 和 Gemmi 0.7.4。以下从仓库根目录执行，BOOST 指向带有 include 和 lib 的 Boost 安装前缀。上游二进制应取官方 [1.2.7 release](https://github.com/ccsb-scripps/AutoDock-Vina/releases/tag/v1.2.7)，SHA-256 为 f31f774f723bba7bbe6e9d1c47577020eea9a8da16424284c043d22593570644。
@@ -53,7 +55,10 @@ for stage in standard higher; do
     python "$D/reported.py" "$W/$stage"
     python "$D/shape.py" "$W/inputs" "$W/$stage"
 done
+python "$D/place.py" "$W/inputs" "$W/higher" "$W/bin-fixed/vina" "$W/placement"
 python "$D/no_markers.py" "$W/bin-parent/vina" "$W/bin-fixed/vina" "$W/controls"
 ```
 
 要重新准备两个新增结构，从空目录运行 `OPENMM_CPU_THREADS=1 python benchmarks/macrocycle_pose_distance/prepare.py /path/to/new-inputs`。既有 3VHA 可从 benchmarks/concerted_ring/new_inputs.tar.xz 提取。C++ 测试 benchmarks/check_late_pose_geometry.cpp 覆盖零个可观察位点、四种 G 标签、真实 CG 和水合 W，另包含 XS / AD 格点域检查。无闭环标签的 1IEP 和含可动侧链的固定测试在修改前后输出逐字节一致，六项计算计数逐项相同。[测试输出](parity.json)
+
+本地用新构建的生产对象重放了 core-regression.yml 全部 11 个测试步骤，11/11 通过（另外完成构建，未在本地执行托管制品上传）。将相同的新增几何测试链接到 b991eb7 的生产对象，原生坐标数断言如期失败；链接修复对象后通过。检查记录列出各个测试与退出状态。[本地回归记录](local_checks.json)

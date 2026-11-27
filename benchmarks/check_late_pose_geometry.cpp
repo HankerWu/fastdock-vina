@@ -60,7 +60,8 @@ int main() {
 	}
 	const auto native = a.get_heavy_atom_movable_coords();
 	const auto chemical = a.get_chemical_heavy_atom_movable_coords();
-	require(native.size() == 3 && chemical.size() == 2 && chemical[0][0] == 0 && chemical[1][0] == 1.5,
+	require(native.size() == 3, "Native inter-pose geometry must retain C, CG0 and W only");
+	require(chemical.size() == 2 && chemical[0][0] == 0 && chemical[1][0] == 1.5,
 	        "The fixed chemical index list must retain C and CG0, omit G0-G3/W/H, and preserve order");
 	require(rmsd_upper_bound(native, shifted_dummies.get_heavy_atom_movable_coords()) > 1,
 	        "Native hydrated ensemble RMSD should see the displaced W");

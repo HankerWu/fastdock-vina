@@ -171,6 +171,8 @@ python3 benchmarks/check_local_only.py build/refine-pool/vina /path/to/pre-fix/v
 
 有独立配体共晶结构时，`--template_stage contact_rank` 按其受体接触模式重排现有候选。亲和力另有两项研究性读数，`--contact_rotor_score` 检验接触约束的扭转代价，`score_physical_pool.py --mmff-affinity` 在冻结姿势上替换配体内能差。五靶点 Ki/Kd 和因子 Xa 外部系列给出了不同的适用范围。[实测对照、新增人源靶点和复算说明](benchmarks/frozen_core/README.md)
 
+新一轮在相同候选上检验了配体羟基的供氢和受氢方向，并用中子衍射、独立复合物与同测定 ITC 数据核对了预测。ERRγ 的近晶体姿势会受方向项误罚。研究评分器可单独运行。大环构造点 G0–G3 已从原生姿势距离中排除，真实闭环碳与水合位点仍按原生定义处理。[羟基实验与复现](benchmarks/ligand_hydroxyl/README.md) · [大环候选距离的源码回放](benchmarks/macrocycle_pose_distance/README.md)
+
 ### FastDock Vina Pro 姿势重排
 
 在上述命令加上 `--rerank_gauss2_scale 0.5`，可用一半宽高斯（`gauss_2`）权重重排姿势。

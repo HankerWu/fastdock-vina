@@ -55,3 +55,5 @@ python "$D/replay.py" /tmp/ligand-oh
 python "$D/check.py" /path/to/pro/vina /tmp/ligand-oh --revision b991eb7388ad314b2c26789600a7a80561d4873f
 python "$D/model.py" receptor.pdbqt ligand.pdbqt pool.pdbqt --scale "$NATIVE_FLEXIBILITY_SCALE"
 ~~~
+
+独立结构与同测定的迁移评测见 [ERRγ 和 HSP90α](transfer/README.md)。对受氢方向的后续检验包含[人 Galectin-3C 的 11 个配体氘位点](neutron/README.md)及[葡萄糖激酶和 GLUT3 的新姿势](glucose/README.md)。
