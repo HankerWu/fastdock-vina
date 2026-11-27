@@ -23,6 +23,7 @@
 // Modified for FastDock Vina: reuse coordinates from the final BFGS evaluation.
 
 #include "quasi_newton.h"
+#include "fixed_ring.h"
 
 namespace {
 boost::optional<bfgs_rigid_metric> centroid_metric(model& m, const conf& base) {
@@ -48,6 +49,7 @@ void quasi_newton::operator()(model& m, const precalculate_byatom& p, const igri
     auto evaluate = [&](const conf& c, flv& gradient) {
         m.set(c);
         const fl energy = m.eval_deriv(p, ig, v, gradient, reference);
+        if (ring) ring->project(gradient);
         if (rigid)
             rigid->to_centroid_gradient(gradient);
         return energy;

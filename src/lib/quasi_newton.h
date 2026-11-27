@@ -28,11 +28,14 @@
 #include "bfgs.h"
 #include "model.h"
 
+class fixed_ring;
+
 class quasi_newton {
     bfgs_workspace workspace;
     unsigned max_steps;
 
 public:
+    const fixed_ring* ring = nullptr;
     bool strict_armijo = false;
     bool geometry_metric = false;
     bool rigid_metric = false;

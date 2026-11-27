@@ -27,6 +27,7 @@
 #include "model.h"
 
 struct trajectory_archive;
+class fixed_ring;
 
 struct search_trajectory_counters {
 	unsigned hunt_calls = 0; // One per executed Monte Carlo step.
@@ -49,6 +50,7 @@ struct monte_carlo {
 	sz num_saved_mins;
 	fl mutation_amplitude;
 	unsigned local_steps;
+	const fixed_ring* ring = nullptr;
 	bool mixed_reorientation = false;
 	bool separate_hunt_chain = false;
 	bool centered_rotation = false;

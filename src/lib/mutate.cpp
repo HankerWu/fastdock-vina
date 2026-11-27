@@ -41,13 +41,14 @@ static void orient_about_centroid(conf& c, model& m, sz ligand, const qt& orient
 }
 
 bool mutate_conf(conf& c, model& m, fl amplitude, rng& generator, bool mixed_reorientation,
-                 bool use_proposal_geometry, bool centered_rotation, bool balanced_torsion) { // ONE OF: 2A for position, similar amp for orientation, randomize torsion
-	sz mutable_entities_num = count_mutable_entities(c);
+                 bool use_proposal_geometry, bool centered_rotation, bool balanced_torsion, const szv* allowed_moves) { // ONE OF: 2A for position, similar amp for orientation, randomize torsion
+	sz mutable_entities_num = allowed_moves ? allowed_moves->size() : count_mutable_entities(c);
 	if(mutable_entities_num == 0) return false;
 	int which_int = random_int(0, int(mutable_entities_num - 1), generator);
 	VINA_CHECK(which_int >= 0);
 	sz which = sz(which_int);
 	VINA_CHECK(which < mutable_entities_num);
+	if (allowed_moves) which = (*allowed_moves)[which];
 
 	VINA_FOR_IN(i, c.ligands) {
 		if(which == 0) { c.ligands[i].rigid.position += amplitude * random_inside_sphere(generator); return false; }

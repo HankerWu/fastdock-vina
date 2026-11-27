@@ -25,6 +25,7 @@
 #include "monte_carlo.h"
 #include "coords.h"
 #include "mutate.h"
+#include "fixed_ring.h"
 #include "quasi_newton.h"
 #include "trajectory_archive.h"
 
@@ -49,6 +50,7 @@ void monte_carlo::operator()(model& m, output_container& out, const precalculate
 	const conf_size s = m.get_size();
 	output_type tmp(s, 0);
 	tmp.c.randomize(corner1, corner2, generator);
+	if (ring) ring->prepare(tmp.c);
 	// Zero offsets reproduce the prepared internal geometry. Draw all native
 	// random values first to preserve the placement and subsequent RNG stream.
 	if (prepared_torsions)
@@ -71,6 +73,7 @@ void monte_carlo::operator()(model& m, output_container& out, const precalculate
 	fl best_e = max_fl;
 	bool reference_from_save = false;
 	quasi_newton quasi_newton_par(s, local_steps);
+	quasi_newton_par.ring = ring;
 	VINA_U_FOR(step, global_steps) {
 		if(increment_me)
 			++(*increment_me);
@@ -78,7 +81,8 @@ void monte_carlo::operator()(model& m, output_container& out, const precalculate
 			break;
 		candidate.c = tmp.c;
 		const bool reoriented = mutate_conf(candidate.c, m, mutation_amplitude, generator,
-		                                    mixed_reorientation, separate_hunt_chain, centered_rotation, balanced_torsion);
+		                                    mixed_reorientation, separate_hunt_chain, centered_rotation, balanced_torsion,
+		                                    ring ? &ring->allowed_moves() : nullptr);
 		const int before_hunt = evalcount;
 		quasi_newton_par(m, p, ig, candidate, hunt_cap, evalcount);
 		if (counters) {

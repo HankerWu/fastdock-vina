@@ -36,6 +36,7 @@
 #include "scoring_function.h"
 #include "precalculate.h"
 #include "pose_template.h"
+#include "fixed_ring.h"
 #include "anchored_search_grid.h"
 #include "amide_search_grid.h"
 #include "polar_geometry.h"
@@ -1732,7 +1733,9 @@ void Vina::global_search(const int exhaustiveness, const int n_poses, const doub
 	rng generator(static_cast<rng::result_type>(m_seed));
 
 	// Setup Monte-Carlo search
+	const fixed_ring ring(m_model);
 	parallel_mc parallelmc;
+	parallelmc.mc.ring = ring.active() ? &ring : nullptr;
 	sz heuristic = m_model.num_movable_atoms() + 10 * m_model.get_size().num_degrees_of_freedom();
 	parallelmc.mc.global_steps = unsigned(70 * 3 * (50 + heuristic) / 2); // 2 * 70 -> 8 * 20 // FIXME
 	parallelmc.mc.local_steps = unsigned((25 + m_model.num_movable_atoms()) / 3);
@@ -1835,6 +1838,7 @@ void Vina::global_search(const int exhaustiveness, const int n_poses, const doub
 				sz refinement_calls = 0;
 				quasi_newton quasi_newton_par(m_model.get_size(),
 				                             unsigned((25 + m_model.num_movable_atoms()) / 3));
+				quasi_newton_par.ring = parallelmc.mc.ring;
 				quasi_newton_par.strict_armijo = m_armijo_refinement;
 				quasi_newton_par.geometry_metric = m_geometry_refinement;
 				int evalcount = 0;
