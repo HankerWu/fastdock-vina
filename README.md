@@ -6,6 +6,8 @@ AutoDock Vina 的 CPU 优化和对接研发分支。
 
 FastDock Vina 基于 [AutoDock Vina](https://github.com/ccsb-scripps/AutoDock-Vina/tree/3c65c0b3e6c2c1d183f6a175ecb65e3c5ba91645) 做 CPU 优化。Pro 研发分支继承这些优化，并提供可选的搜索、精修和姿势重排方法。
 
+标准刚柔受体拆分下，AD4 现在会计算配体与柔性残基固定轴原子的相互作用。24 个配对条件的首姿平均 RMSD 从 7.507 降至 6.902 Å，中位数从 6.033 升至 6.184 Å；相同旧候选池上重排的两次换首均使误差上升。新增的受体 Asn/Gln 双态评分研究在 138 个固定输出池上没有改变首姿。独立的 AChE 配体质子化实验改变了对接候选，平均收益随种子变化。[AD4 修复与逐例结果](benchmarks/ad4_flex_anchors/README.md) · [预算对照](benchmarks/ad4_flex_anchors/budget/README.md) · [酰胺取向、实测排序与中子结构](benchmarks/receptor_amide_states/README.md) · [AChE 复测](benchmarks/receptor_amide_states/transfer/ache/README.md)
+
 本分支现在把 PDBQT 明确声明的转轴保留在共价邻接表中，畸变输入也能使运动树和分子内非键排除使用同一条转轴。另在同一批对接姿势上测试了受体羟基取向积分。中子结构支持部分局部供氢方向，三个同测定系列及独立 PPAR 姿势实验表明完整模型的排序收益依赖体系，积分实现保留作研究用途。[共价邻接修复](benchmarks/declared_rotor_bonds/README.md) · [三元环与可信化学图](benchmarks/cyclopropane_topology/README.md) · [羟基模型、实测亲和力及复现](benchmarks/frozen_core/hydroxyl_evidence/README.md) · [独立结构和反例](benchmarks/frozen_core/directional_polar_validation/README.md)
 
 Vina 与 Vinardo 现在按 PDBQT 声明的双侧转轴计算配体扭转分母，末端羟基不同分支写法能得到相同的分数。三个实测亲和力系列中出现了改善和退化。单独的刚体粗筛实验把原子受力投影到平移和旋转，在 BRPF1 中恢复了两个接近晶体的候选，但独立 RBP4 面板未有 2 Å 命中。该搜索方法保留为实验实现。[转子计数与同测定验证](benchmarks/terminal_rotor_score/README.md) · [刚体筛选、预算与结构验证](benchmarks/rigid_lookahead/README.md)
