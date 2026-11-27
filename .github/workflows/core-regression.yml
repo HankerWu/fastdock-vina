@@ -8,6 +8,7 @@ on:
       - 'benchmarks/check_map_lattice.cpp'
       - 'benchmarks/check_macrocycle_labels.cpp'
       - 'benchmarks/bond_distance/**'
+      - 'benchmarks/macrocycle_proposal/**'
       - 'benchmarks/fixtures/cyclododecane.pdbqt'
       - 'benchmarks/check_geometry_metric.cpp'
       - 'benchmarks/check_armijo_numeric.cpp'
@@ -45,6 +46,8 @@ jobs:
           build/core/check-labels examples/basic/1iep_receptor.pdbqt benchmarks/fixtures/cyclododecane.pdbqt
       - name: Reproduce archived pose and affinity aggregation
         run: python3 benchmarks/search_budget/replay.py
+      - name: Verify macrocycle research records
+        run: python3 benchmarks/macrocycle_proposal/verify.py
       - name: Package tested binary
         run: |
           mkdir -p build/core/dist/lib

@@ -1,0 +1,354 @@
+[
+  {
+    "pdb": "4CLI",
+    "target": "ALK",
+    "ccd": "5P8",
+    "chain": "A",
+    "status": "no opened macrocycle in default Meeko PDBQT",
+    "resolution_A": 2.05,
+    "ring_sizes": [
+      12,
+      6,
+      5,
+      6
+    ],
+    "atoms": 30,
+    "formal_charge": 0,
+    "glue_labels": [],
+    "maps": 1,
+    "pdb_sha256": "0eb9cf322f062e900b1e66ae11d929ddb4a87d819da1fb0109cf713d02ef6aef",
+    "ccd_sha256": "a951975a975c6b1eebb2606879a263751637114c6104eeb754e36c184568b5e5",
+    "nearest_omitted": null,
+    "nearest_repaired": null,
+    "torsdof": 1,
+    "preparation_wall_s": 8.303808513001059,
+    "pdb_url": "https://files.rcsb.org/download/4CLI.pdb",
+    "ccd_url": "https://files.rcsb.org/ligands/download/5P8.cif",
+    "organism": "HOMO SAPIENS",
+    "doi": "10.1021/jm500261q"
+  },
+  {
+    "pdb": "8BI2",
+    "target": "SYK",
+    "ccd": "QR7",
+    "chain": "A",
+    "status": "Meeko receptor preparation failed; see prep.log",
+    "resolution_A": 1.51,
+    "ring_sizes": [
+      5,
+      20,
+      5,
+      6,
+      6
+    ],
+    "atoms": 34,
+    "formal_charge": 0,
+    "glue_labels": [
+      "CG0",
+      "G0",
+      "CG0",
+      "G0"
+    ],
+    "maps": 1,
+    "pdb_sha256": "86eac0c0beda339f1ff945f41dcbc25387641b51251e2138cb6238c71dbd3c24",
+    "ccd_sha256": "6fdee6b7fdb4d54f52993cf7867e65006a7ea31366770ee5c4fb5a16e70dac26",
+    "nearest_omitted": null,
+    "nearest_repaired": null,
+    "torsdof": 0,
+    "preparation_wall_s": 7.95362969999951,
+    "pdb_url": "https://files.rcsb.org/download/8BI2.pdb",
+    "ccd_url": "https://files.rcsb.org/ligands/download/QR7.cif",
+    "organism": "HOMO SAPIENS",
+    "doi": "10.1016/j.bmcl.2023.129352"
+  },
+  {
+    "pdb": "8K78",
+    "target": "MET",
+    "ccd": "IYC",
+    "chain": "A",
+    "status": "Meeko receptor preparation failed; see prep.log",
+    "resolution_A": 2.67,
+    "ring_sizes": [
+      13,
+      6,
+      5,
+      6
+    ],
+    "atoms": 30,
+    "formal_charge": 0,
+    "glue_labels": [
+      "CG0",
+      "G0",
+      "CG0",
+      "G0"
+    ],
+    "maps": 1,
+    "pdb_sha256": "3125111cefd6202b14883f92028757aab533f118a46fce13fc0b4bc081dad369",
+    "ccd_sha256": "c98b60990120c31e905a7d644e1c7590a079e54338c017872858ce82ed695da3",
+    "nearest_omitted": null,
+    "nearest_repaired": null,
+    "torsdof": 2,
+    "preparation_wall_s": 17.343912031999935,
+    "pdb_url": "https://files.rcsb.org/download/8K78.pdb",
+    "ccd_url": "https://files.rcsb.org/ligands/download/IYC.cif",
+    "organism": "HOMO SAPIENS",
+    "doi": "10.1016/j.csbj.2023.11.028"
+  },
+  {
+    "pdb": "1YND",
+    "target": "PPIA",
+    "ccd": "SFA",
+    "chain": "A",
+    "status": "Embedding or MMFF convergence failed for the single frozen conformer",
+    "preparation_wall_s": 8.484354468000674,
+    "pdb_url": "https://files.rcsb.org/download/1YND.pdb",
+    "ccd_url": "https://files.rcsb.org/ligands/download/SFA.cif",
+    "pdb_sha256": "7bf5051983a4fb2583443bb51df5c9b36bad6a7a87ddf7f7bb2d8cb941d3e2f4",
+    "ccd_sha256": "1a706da594d7d3f6ecadd1286361f7cae05cb7beb8f8a4ebdb485eb0e638cc99",
+    "organism": "HOMO SAPIENS",
+    "doi": "10.1074/jbc.m501623200"
+  },
+  {
+    "pdb": "7MBO",
+    "target": "F11",
+    "ccd": "YXG",
+    "chain": "A",
+    "status": "ready",
+    "resolution_A": 0.92,
+    "ring_sizes": [
+      12,
+      6,
+      6,
+      5,
+      6,
+      5
+    ],
+    "atoms": 43,
+    "formal_charge": 0,
+    "glue_labels": [
+      "CG0",
+      "G0",
+      "CG0",
+      "G0"
+    ],
+    "maps": 2,
+    "pdb_sha256": "f41d5af3befed55175e2d27cbe298d594b6762b1bd51d037b68255a40402ada7",
+    "ccd_sha256": "0a89ecc38de094f62fb2853b6e113719c70bd2c40ae22227caf002b83ce7311d",
+    "nearest_omitted": [
+      26.915439769767836,
+      "C8  NAG A 301"
+    ],
+    "nearest_repaired": 11.086858391807842,
+    "torsdof": 4,
+    "preparation_wall_s": 7.184312615998351,
+    "pdb_url": "https://files.rcsb.org/download/7MBO.pdb",
+    "ccd_url": "https://files.rcsb.org/ligands/download/YXG.cif",
+    "organism": "HOMO SAPIENS",
+    "doi": "10.1021/acs.jmedchem.1c00613",
+    "mate_heavy_pairs_8A": 312,
+    "closest_mate_pair": [
+      3.3077377465573066,
+      "C8",
+      "A",
+      "204",
+      "ASN",
+      "OD1"
+    ],
+    "bound_sdf_url": "https://models.rcsb.org/v1/7mbo/ligand?auth_asym_id=A&auth_seq_id=302&encoding=sdf&copy_all_categories=false",
+    "bound_sdf_sha256": "f373f2c99bc64e74475e02582ccaeb28938fc3361af9fa7a62ad80be893656fd",
+    "ligand_pdbqt_sha256": "238c9154eab6f14ddb1dead55ca5d02454b3f874a5f7eedf8578d403fdfead2f",
+    "receptor_pdbqt_sha256": "559df6f4ebb833ce931afac45babd6272341018466d62a41a614a595eafd5110"
+  },
+  {
+    "pdb": "5QQP",
+    "target": "F11",
+    "ccd": "NR7",
+    "chain": "A",
+    "status": "Meeko receptor preparation failed; see prep.log",
+    "resolution_A": 2.08,
+    "ring_sizes": [
+      6,
+      13,
+      6,
+      6,
+      5
+    ],
+    "atoms": 39,
+    "formal_charge": 0,
+    "glue_labels": [
+      "CG0",
+      "G0",
+      "CG0",
+      "G0"
+    ],
+    "maps": 1,
+    "pdb_sha256": "e1726011018767bc88fb801d256765612caf891cba238fdb8fc383747088dd29",
+    "ccd_sha256": "c9e1cba9cf7e14a4a366cc00ffb1b738e9750357e2b63a890a28ba7a231be1f6",
+    "nearest_omitted": [
+      10.951519803205398,
+      "O1  EDO A 306"
+    ],
+    "nearest_repaired": null,
+    "torsdof": 4,
+    "preparation_wall_s": 6.80112716199983,
+    "pdb_url": "https://files.rcsb.org/download/5QQP.pdb",
+    "ccd_url": "https://files.rcsb.org/ligands/download/NR7.cif",
+    "organism": "HOMO SAPIENS",
+    "doi": "10.1016/j.bmcl.2019.08.008"
+  },
+  {
+    "pdb": "5T9W",
+    "target": "PPIA",
+    "ccd": "78E",
+    "chain": "A",
+    "status": "ready",
+    "resolution_A": 2.0,
+    "ring_sizes": [
+      22,
+      6,
+      6
+    ],
+    "atoms": 40,
+    "formal_charge": 0,
+    "glue_labels": [
+      "CG0",
+      "G0",
+      "CG0",
+      "G0"
+    ],
+    "maps": 2,
+    "pdb_sha256": "8e7a76d673467f9429c4a5bb5793ee2d91cb6056c491c8e8256f1939b29dd59f",
+    "ccd_sha256": "3871989f91a598979905abd55aee7b7a3c809ef7fbe4d720e737d0cdc886fbb6",
+    "nearest_omitted": null,
+    "nearest_repaired": null,
+    "torsdof": 4,
+    "preparation_wall_s": 6.464664424998773,
+    "pdb_url": "https://files.rcsb.org/download/5T9W.pdb",
+    "ccd_url": "https://files.rcsb.org/ligands/download/78E.cif",
+    "organism": "HOMO SAPIENS",
+    "doi": "10.1021/acs.jmedchem.6b01329",
+    "mate_heavy_pairs_8A": 714,
+    "closest_mate_pair": [
+      3.3175825536073758,
+      "C20",
+      "A",
+      "163",
+      "GLN",
+      "OE1"
+    ],
+    "bound_sdf_url": "https://models.rcsb.org/v1/5t9w/ligand?auth_asym_id=A&auth_seq_id=300&encoding=sdf&copy_all_categories=false",
+    "bound_sdf_sha256": "a00cebae61b011ab507f6406eb3ea85cbd503d901186efa28e43d64b5dcc02fa",
+    "ligand_pdbqt_sha256": "3c1e7d57908cad73b1f5500d7b2a44e6f0cfada09e909cd4f41a3e2a823067c7",
+    "receptor_pdbqt_sha256": "a2b7a2a36f232264ce1e7d24fec3c9889307500fdbe35dfa26899ab78e62ba7e"
+  },
+  {
+    "pdb": "1NMK",
+    "target": "PPIA",
+    "ccd": "SFM",
+    "chain": "A",
+    "status": "omitted nonwater atom within 8 A",
+    "resolution_A": 2.1,
+    "ring_sizes": [
+      22,
+      6,
+      6
+    ],
+    "atoms": 53,
+    "formal_charge": 0,
+    "glue_labels": [
+      "CG0",
+      "G0",
+      "CG0",
+      "G0"
+    ],
+    "maps": 2,
+    "pdb_sha256": "27b684a85618df5db6c58af373a06dbb8f11e4cd6bb69eb4d6070c2047e8b5d8",
+    "ccd_sha256": "b07306b9114969d45525f81314df2b394eeb1d50739db2b03522f3a5124e27f8",
+    "nearest_omitted": [
+      3.4271251800889946,
+      "C62 SFM B 201"
+    ],
+    "nearest_repaired": null,
+    "torsdof": 12,
+    "preparation_wall_s": 4.683876598999632,
+    "pdb_url": "https://files.rcsb.org/download/1NMK.pdb",
+    "ccd_url": "https://files.rcsb.org/ligands/download/SFM.cif",
+    "organism": "HOMO SAPIENS",
+    "doi": "10.1021/ja021327y"
+  },
+  {
+    "pdb": "8K79",
+    "target": "SRC",
+    "ccd": "IYC",
+    "chain": "A",
+    "status": "Meeko receptor preparation failed; see prep.log; deposited chicken SRC",
+    "resolution_A": 2.8,
+    "ring_sizes": [
+      13,
+      6,
+      5,
+      6
+    ],
+    "atoms": 30,
+    "formal_charge": 0,
+    "glue_labels": [
+      "CG0",
+      "G0",
+      "CG0",
+      "G0"
+    ],
+    "maps": 1,
+    "pdb_sha256": "ea61ad9fd69bc78129eb9cadf07542079212786d4a2e7191de949fcb2bc03bad",
+    "ccd_sha256": "c98b60990120c31e905a7d644e1c7590a079e54338c017872858ce82ed695da3",
+    "nearest_omitted": [
+      24.939441272811226,
+      "NH2 ARG B 460"
+    ],
+    "nearest_repaired": null,
+    "torsdof": 2,
+    "preparation_wall_s": 3.0168730420009524,
+    "pdb_url": "https://files.rcsb.org/download/8K79.pdb",
+    "ccd_url": "https://files.rcsb.org/ligands/download/IYC.cif",
+    "organism": "GALLUS GALLUS",
+    "doi": "10.1016/j.csbj.2023.11.028"
+  },
+  {
+    "pdb": "6FS0",
+    "target": "MCL1",
+    "ccd": "E4W",
+    "chain": "A",
+    "status": "excluded: AZD5991 atropisomer not constrained by the CCD SMILES",
+    "resolution_A": 2.25,
+    "ring_sizes": [
+      5,
+      21,
+      5,
+      6,
+      6,
+      5,
+      6
+    ],
+    "atoms": 46,
+    "formal_charge": 0,
+    "glue_labels": [
+      "CG0",
+      "G0",
+      "CG0",
+      "G0"
+    ],
+    "maps": 1,
+    "pdb_sha256": "042441e1c634ff6b72958144fac23a2f2d87d828f4894e0c4aa8d31c116db8a7",
+    "ccd_sha256": "504bb0ca92f1faf4a9755f51a667046d94b29d91e4316504427466f325244078",
+    "nearest_omitted": [
+      17.41208712360469,
+      "O   ALA H 102"
+    ],
+    "nearest_repaired": null,
+    "torsdof": 2,
+    "preparation_wall_s": 7.0890991640008,
+    "pdb_url": "https://files.rcsb.org/download/6FS0.pdb",
+    "ccd_url": "https://files.rcsb.org/ligands/download/E4W.cif",
+    "organism": "HOMO SAPIENS",
+    "doi": "10.1038/s41467-018-07551-w"
+  }
+]

@@ -1,0 +1,127 @@
+{
+  "5K0X": {
+    "pdb": "5K0X",
+    "target": "MERTK",
+    "ccd": "K0X",
+    "chain": "A",
+    "status": "omitted nonwater atom within 8 A",
+    "resolution_A": 2.23,
+    "ring_sizes": [
+      6,
+      6,
+      18
+    ],
+    "atoms": 34,
+    "formal_charge": 0,
+    "glue_labels": [
+      "CG0",
+      "G0",
+      "CG0",
+      "G0"
+    ],
+    "maps": 2,
+    "pdb_sha256": "0e2c8052715e1bb31d582299d38e5f0809565c271977fc735d5a1bd8c58e5429",
+    "ccd_sha256": "902c753220ba728f9532d5239ce41c87eeb1a8e04bba7b6ece636aaebd645e41",
+    "nearest_omitted": [
+      7.3396256716538355,
+      "NE2 GLN B 805"
+    ],
+    "nearest_repaired": null,
+    "torsdof": 4,
+    "preparation_wall_s": 4.713990255000681,
+    "pdb_url": "https://files.rcsb.org/download/5K0X.pdb",
+    "ccd_url": "https://files.rcsb.org/ligands/download/K0X.cif",
+    "two_chain_validation": {
+      "chains": {
+        "A": {
+          "trimmed_remote_terminal_stubs": [],
+          "missing_atoms": {},
+          "closest_repaired_ligand_distance": null,
+          "metals": []
+        },
+        "B": {
+          "trimmed_remote_terminal_stubs": [],
+          "missing_atoms": {},
+          "closest_repaired_ligand_distance": null,
+          "metals": []
+        }
+      },
+      "nearest_omitted_nonwater": [
+        15.469122696520316,
+        "CL    CL B 901 "
+      ],
+      "extra_preparation_s": 7.355283913999301
+    },
+    "bound_sdf_url": "https://models.rcsb.org/v1/5k0x/ligand?auth_asym_id=A&auth_seq_id=904&encoding=sdf&copy_all_categories=false"
+  },
+  "3OWN": {
+    "pdb": "3OWN",
+    "target": "REN",
+    "ccd": "3OX",
+    "chain": "A",
+    "status": "omitted nonwater atom within 8 A",
+    "resolution_A": 2.0,
+    "ring_sizes": [
+      6,
+      6,
+      6,
+      15
+    ],
+    "atoms": 49,
+    "formal_charge": 0,
+    "glue_labels": [
+      "CG0",
+      "G0",
+      "CG0",
+      "G0"
+    ],
+    "maps": 16,
+    "pdb_sha256": "2ddf5d7051702ccc3b24049e0228ffe0269eff8d9632b3e9d1d1889f870336f8",
+    "ccd_sha256": "66e30cdea58e6ec3bd1825aec5096b751045619144c857d2c60fadebece79ad1",
+    "nearest_omitted": [
+      3.8212512348705894,
+      "O   ACT A 800"
+    ],
+    "nearest_repaired": null,
+    "torsdof": 11,
+    "preparation_wall_s": 4.562387882999246,
+    "pdb_url": "https://files.rcsb.org/download/3OWN.pdb",
+    "ccd_url": "https://files.rcsb.org/ligands/download/3OX.cif"
+  },
+  "5N1Z": {
+    "pdb": "5N1Z",
+    "target": "BCL6",
+    "ccd": "8GQ",
+    "chain": "A",
+    "status": "omitted nonwater atom within 8 A",
+    "resolution_A": 1.81,
+    "ring_sizes": [
+      5,
+      5,
+      6,
+      6,
+      6,
+      16
+    ],
+    "atoms": 36,
+    "formal_charge": 0,
+    "glue_labels": [
+      "CG0",
+      "G0",
+      "CG0",
+      "G0"
+    ],
+    "maps": 1,
+    "pdb_sha256": "f36dd310d8e2092dc946016a022f3bbd9142036ed03e64ef1ef11df6bca4c9ca",
+    "ccd_sha256": "ec0b8ebf4060faf16dfb26ae1107a34b8924ca1bd0fc883892794925a999b54b",
+    "nearest_omitted": [
+      3.688317909291442,
+      "CL    CL A 201"
+    ],
+    "nearest_repaired": null,
+    "torsdof": 2,
+    "preparation_wall_s": 3.6669324849990517,
+    "pdb_url": "https://files.rcsb.org/download/5N1Z.pdb",
+    "ccd_url": "https://files.rcsb.org/ligands/download/8GQ.cif"
+  }
+}

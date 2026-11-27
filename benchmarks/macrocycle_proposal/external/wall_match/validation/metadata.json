@@ -1,0 +1,16 @@
+{
+  "cpu": 2,
+  "binaries": {
+    "lock": "2cc16e69b50431033d86bba46efc45d7880f49f04a55a95cabfe55d09876d122",
+    "parent": "34079315093aaa6ecda3b3ccd1dbb3fa6707c9ae690960e86c56264621a4cc18"
+  },
+  "protocol_sha256": "e83b3fd12f91f23c693e3041ea7fa06318528f25445a9030c6a95d787e06633e",
+  "inputs": {
+    "5T9W/ligand.pdbqt": "3c1e7d57908cad73b1f5500d7b2a44e6f0cfada09e909cd4f41a3e2a823067c7",
+    "5T9W/receptor.pdbqt": "a2b7a2a36f232264ce1e7d24fec3c9889307500fdbe35dfa26899ab78e62ba7e",
+    "5T9W/preparation.json": "ea960a226ac068cc69e8c5dc0f4f5c305f62debb03c904a013a01a59ccc39821",
+    "7MBO/ligand.pdbqt": "238c9154eab6f14ddb1dead55ca5d02454b3f874a5f7eedf8578d403fdfead2f",
+    "7MBO/receptor.pdbqt": "559df6f4ebb833ce931afac45babd6272341018466d62a41a614a595eafd5110",
+    "7MBO/preparation.json": "ac45644b2657aaa13f6825cd51c301e17e307e18e00b3e73a746bc173df5175d"
+  }
+}

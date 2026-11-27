@@ -1,0 +1,3 @@
+target,species,ligand,ccd,pdb_query,endpoint,relation,mean_nM,reported_error_nM,replicates,temperature_C,pH,phosphate_mM,NaCl_mM,design,DOI,table
+FKBP12,Homo sapiens,tacrolimus,FK5,1FKJ,Kd,=,2.7,0.5,3,25,7.0,50,50,protein titrated into ligand,10.1128/mbio.03000-21,2
+FKBP12,Homo sapiens,APX879,R27,6VCU,Kd,=,119.4,15.8,3,25,7.0,50,50,ligand titrated into protein,10.1128/mbio.03000-21,2

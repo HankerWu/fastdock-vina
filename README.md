@@ -6,6 +6,8 @@ AutoDock Vina 的 CPU 优化和对接研发分支。
 
 FastDock Vina 基于 [AutoDock Vina](https://github.com/ccsb-scripps/AutoDock-Vina/tree/3c65c0b3e6c2c1d183f6a175ecb65e3c5ba91645) 做 CPU 优化。Pro 研发分支继承这些优化，并提供可选的搜索、精修和姿势重排方法。
 
+[大环提议与持续约束的等成本实验](benchmarks/macrocycle_proposal/README.md)比较了上游、当前 Pro 和三个 C++ 研究版本。持续约束消除了本面板中的严重断环，唯一新增的 2 Å 命中来自近晶体教程输入。新靶点与同系列实测 Kd 均不足以支持替换默认搜索。
+
 [小环键距、大环闭合与同测定 Kd 的验证](benchmarks/bond_distance/README.md)复现了四元环原子编号改变能量和梯度的错误，默认实现已修正。同一组盲对接中出现了姿势退化。另一个研究变体在较少求值下消除了雷帕霉素的两次严重断环，尚未提高整分子姿势命中率。
 
 [大环闭环编号修复](benchmarks/macrocycle_labels/README.md)消除了同一分子重编号导致的评分与对接差异，并修复了多配体之间的虚构闭环。[首步搜索与候选覆盖实验](benchmarks/hunt_overlap/README.md)测量了严重排斥区的网格梯度、盒外起点和同测定 Kd 排序。两项搜索方案均保留为研究记录。
