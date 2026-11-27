@@ -6,6 +6,8 @@ AutoDock Vina 的 CPU 优化和对接研发分支。
 
 FastDock Vina 基于 [AutoDock Vina](https://github.com/ccsb-scripps/AutoDock-Vina/tree/3c65c0b3e6c2c1d183f6a175ecb65e3c5ba91645) 做 CPU 优化。Pro 研发分支继承这些优化，并提供可选的搜索、精修和姿势重排方法。
 
+默认算法已按实际使用的力场判断哪些原子必须位于受体网格内。闭环标记单独越界的真实大环姿势可以正常打分，AD4 会拒绝极性氢落在其有效图外的姿势。另在固定预算下检验了只移动氢的扭转提议：将其重新分配给其他扭转，在 RXRα 和 PTP1B 个例找回了正确盆地，按上一次局优目标启用的策略没有保住这些命中。两种搜索变体仅保留为可复现实验。[力场边界修复](benchmarks/macrocycle_domain/README.md) · [扭转搜索和逐步反事实](benchmarks/silent_torsion/README.md) · [游离态参考抽样与实测排序](benchmarks/frozen_core/solution_strain/reference_sampling/README.md)
+
 一个新姿势可能同时与多个已保存代表重叠。默认实现现在按能量处理所有冲突，并在显式精修后重新检查输出间距。在独立结构面板中，一个原已生成的 FABP4 正确候选由此进入了精修名额。两项改善都来自同一复合物，首姿命中没有提高。[候选保存、实测 Kd 与固定状态复算](benchmarks/archive_overlap/README.md)
 
 此前在三个新的人源靶点检验了刚体主轴翻转，在三个独立大环复合物检验了协同扭转。ESR1 的交叉对接与 HSP90α–3VHA 有较低实耗下的局部收益；Galectin-3 的 47 配体 Kd 排序出现退化。生产版本继续沿用当前搜索。逐病例结果与复现入口见[刚体提议](benchmarks/shape_flip/README.md)、[独立结构](benchmarks/rigid_flip/README.md)、[大环协同转动](benchmarks/concerted_ring/README.md)和[游离态参照实验](benchmarks/frozen_core/solution_strain/README.md)。

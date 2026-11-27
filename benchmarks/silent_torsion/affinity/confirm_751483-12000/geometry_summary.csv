@@ -1,0 +1,4 @@
+arm,poses,clashing_poses,clash_pairs,score_vs_heavy_spearman,kd_vs_heavy_spearman,max_intra_unbound_delta
+adaptive,94,0,0,0.4682660054166126,-0.19086677822774206,0.0
+always,94,0,0,0.5027273928677541,-0.19086677822774206,0.0
+parent,94,0,0,0.37691412410545105,-0.19086677822774206,0.0

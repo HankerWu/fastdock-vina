@@ -1,0 +1,136 @@
+diff --git a/src/lib/model.cpp b/src/lib/model.cpp
+index 4949ea7..28c05f6 100755
+--- a/src/lib/model.cpp
++++ b/src/lib/model.cpp
+@@ -590,6 +590,9 @@ void model::initialize(const distance_type_matrix& mobility, atomv rigid_atoms)
+ 		ligands[i].set_range();
+ 	assign_bonds(mobility, grid);
+ 	assign_types(grid);
++    for (auto& lig : ligands)
++        for (auto& child : lig.children)
++            lig.has_hydrogen_leaves |= child.mark_hydrogen_leaves(atoms);
+ 	initialize_pairs(mobility);
+ }
+ 
+diff --git a/src/lib/model.h b/src/lib/model.h
+index f7adc74..e357329 100755
+--- a/src/lib/model.h
++++ b/src/lib/model.h
+@@ -49,6 +49,7 @@ typedef std::pair<std::string, boost::optional<sz> > parsed_line;
+ typedef std::vector<parsed_line> context;
+ 
+ struct ligand : public flexible_body, atom_range {
++	bool has_hydrogen_leaves = false;
+ 	unsigned degrees_of_freedom; // can be different from the apparent number of rotatable bonds, because of the disabled torsions
+ 	interacting_pairs pairs;
+ 	context cont;
+@@ -140,6 +141,13 @@ public:
+ 	}
+ 
+ 	void set (const conf& c);
++    bool has_ignorable_hydrogen_leaves() const {
++        return atom_typing_used() == atom_type::XS && ligands.size() == 1 && flex.empty()
++            && ligands.front().has_hydrogen_leaves;
++    }
++    void set_without_hydrogen_leaves(const conf& c) {
++        ligands.front().set_conf<true>(atoms, coords, c.ligands.front());
++    }
+ 
+ 	void set_balanced_torsion(ligand_conf& c, sz ligand_number, sz torsion, fl angle);
+ 	fl gyration_radius(sz ligand_number) const; // uses coords
+diff --git a/src/lib/quasi_newton.cpp b/src/lib/quasi_newton.cpp
+index c1023bd..c745cce 100644
+--- a/src/lib/quasi_newton.cpp
++++ b/src/lib/quasi_newton.cpp
+@@ -23,6 +23,8 @@
+ // Modified for FastDock Vina: reuse coordinates from the final BFGS evaluation.
+ 
+ #include "quasi_newton.h"
++#include "cache.h"
++#include "non_cache.h"
+ 
+ namespace {
+ boost::optional<bfgs_rigid_metric> centroid_metric(model& m, const conf& base) {
+@@ -45,8 +47,13 @@ boost::optional<bfgs_rigid_metric> centroid_metric(model& m, const conf& base) {
+ void quasi_newton::operator()(model& m, const precalculate_byatom& p, const igrid& ig,
+                               output_type& out, const vec& v, int& evalcount, pose_template* reference, int max_evals) {
+     const auto rigid = rigid_metric ? centroid_metric(m, out.c) : boost::none;
++    // These two concrete evaluators ignore hydrogen positions. Other grids
++    // and template objectives retain complete coordinates throughout.
++    const bool skip_h = !reference && m.has_ignorable_hydrogen_leaves()
++        && (typeid(ig) == typeid(cache) || typeid(ig) == typeid(non_cache));
+     auto evaluate = [&](const conf& c, flv& gradient) {
+-        m.set(c);
++        if (skip_h) m.set_without_hydrogen_leaves(c);
++        else m.set(c);
+         const fl energy = m.eval_deriv(p, ig, v, gradient, reference);
+         if (rigid)
+             rigid->to_centroid_gradient(gradient);
+@@ -58,7 +65,7 @@ void quasi_newton::operator()(model& m, const precalculate_byatom& p, const igri
+         ? workspace.minimize<true>(evaluate, out.c, max_steps, evalcount,
+                                    geometry_metric ? &inverse : nullptr, max_evals, rigid ? &*rigid : nullptr)
+         : workspace.minimize(evaluate, out.c, max_steps, evalcount);
+-    if (result.restore_coordinates)
++    if (result.restore_coordinates || skip_h)
+         m.set(out.c);
+     out.e = result.energy;
+ }
+diff --git a/src/lib/tree.h b/src/lib/tree.h
+index 35558ba..be48e81 100755
+--- a/src/lib/tree.h
++++ b/src/lib/tree.h
+@@ -150,10 +150,10 @@ struct first_segment : public axis_frame {
+ 	}
+ };
+ 
+-template<typename T> // T == branch
++template<bool OmitHydrogenLeaves = false, typename T> // T == branch
+ void branches_set_conf(std::vector<T>& b, const frame& parent, const atomv& atoms, vecv& coords, flv::const_iterator& c) {
+ 	VINA_FOR_IN(i, b)
+-		b[i].set_conf(parent, atoms, coords, c);
++		b[i].template set_conf<OmitHydrogenLeaves>(parent, atoms, coords, c);
+ }
+ 
+ template<typename T> // T == branch
+@@ -181,10 +181,25 @@ template<typename T> // T == segment
+ struct tree {
+ 	T node;
+ 	std::vector< tree<T> > children;
+-	tree(const T& node_) : node(node_) {}
++	bool hydrogen_leaf = false;
++    tree(const T& node_) : node(node_) {}
++    bool mark_hydrogen_leaves(const atomv& atoms) {
++        hydrogen_leaf = children.empty() && node.begin != node.end;
++        for (sz i = node.begin; hydrogen_leaf && i < node.end; ++i)
++            hydrogen_leaf = atoms[i].is_hydrogen() && atoms[i].xs >= XS_TYPE_SIZE;
++        bool found = hydrogen_leaf;
++        for (auto& child : children)
++            found |= child.mark_hydrogen_leaves(atoms);
++        return found;
++    }
++    template<bool OmitHydrogenLeaves = false>
+ 	void set_conf(const frame& parent, const atomv& atoms, vecv& coords, flv::const_iterator& c) {
+-		node.set_conf(parent, atoms, coords, c);
+-		branches_set_conf(children, node, atoms, coords, c);
++		if (OmitHydrogenLeaves && hydrogen_leaf) {
++            ++c;
++            return;
++        }
++        node.set_conf(parent, atoms, coords, c);
++        branches_set_conf<OmitHydrogenLeaves>(children, node, atoms, coords, c);
+ 	}
+ 	vecp derivative(const vecv& coords, const vecv& forces, flv::iterator& p) const {
+ 		return tree_derivative(node, children, coords, forces, p);
+@@ -199,10 +214,11 @@ struct heterotree {
+ 	Node node;
+ 	branches children;
+ 	heterotree(const Node& node_) : node(node_) {}
++	template<bool OmitHydrogenLeaves = false>
+ 	void set_conf(const atomv& atoms, vecv& coords, const ligand_conf& c) {
+ 		node.set_conf(atoms, coords, c.rigid);
+ 		flv::const_iterator p = c.torsions.begin();
+-		branches_set_conf(children, node, atoms, coords, p);
++		branches_set_conf<OmitHydrogenLeaves>(children, node, atoms, coords, p);
+ 		assert(p == c.torsions.end());
+ 	}
+ 	void set_conf(const atomv& atoms, vecv& coords, const residue_conf& c) {

@@ -6,6 +6,7 @@ on:
       - 'src/**'
       - 'tools/build.py'
       - 'benchmarks/check_map_lattice.cpp'
+      - 'benchmarks/check_late_pose_geometry.cpp'
       - 'benchmarks/check_online_pose_archive.cpp'
       - 'benchmarks/archive_overlap/output_spacing/check.cpp'
       - 'benchmarks/check_macrocycle_labels.cpp'
@@ -37,6 +38,10 @@ jobs:
           tar -xf benchmarks/pair_gradient/galectin_external/raw.tar.xz -C "${RUNNER_TEMP}" prepared/3T1L.pdbqt prepared/10.pdbqt
           c++ -O2 -DNDEBUG -std=c++14 -pthread -Isrc/lib benchmarks/archive_overlap/output_spacing/check.cpp $(find build/core/obj -name '*.o' ! -name main.o) -lboost_system -lboost_thread -lboost_serialization -lboost_filesystem -lboost_program_options -o build/core/check-output-spacing
           build/core/check-output-spacing "${RUNNER_TEMP}/prepared/3T1L.pdbqt" "${RUNNER_TEMP}/prepared/10.pdbqt"
+      - name: Test force-field-specific grid membership and chemical pose geometry
+        run: |
+          c++ -O2 -DNDEBUG -std=c++14 -pthread -Isrc/lib benchmarks/check_late_pose_geometry.cpp $(find build/core/obj -name '*.o' ! -name main.o) -lboost_system -lboost_thread -lboost_serialization -lboost_filesystem -lboost_program_options -o build/core/check-grid-domain
+          build/core/check-grid-domain
       - name: Test imported map lattices
         run: |
           c++ -O2 -DNDEBUG -std=c++14 -pthread -Isrc/lib benchmarks/check_map_lattice.cpp $(find build/core/obj -name '*.o' ! -name main.o) -lboost_system -lboost_thread -lboost_serialization -lboost_filesystem -lboost_program_options -o build/core/check-map-lattice

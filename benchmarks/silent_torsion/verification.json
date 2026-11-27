@@ -1,0 +1,32 @@
+{
+  "parent": "3d9dfb966a9b0ceaa57825428532e5eaab01ecc6",
+  "upstream": "3c65c0b3e6c2c1d183f6a175ecb65e3c5ba91645",
+  "compiler": "c++ (Debian 14.2.0-19) 14.2.0",
+  "boost": "1.83.0",
+  "cpu": "AMD EPYC 9V74 80-Core Processor",
+  "binary_sha256": {
+    "parent": "28d2a88d1e5b189964d3c6b76cf3cd514c2b0748fc573ceda6a798ec57496163",
+    "upstream": "1f037763e46350d6c3e71470803caf7bb0598eaa06976a5363922ac553e6214d",
+    "always": "d330e1efbf38b2f97869eb61b2569e6fe2e87cfb14933a9e594e5233355b040a",
+    "adaptive": "1d38b772da58a612d36430347512e8ac1707b87eac93b477cfda4c8184a4981c",
+    "always_observer": "48ab6fb1deeb6616d7bd87c7c6d1756d1151705968547561e6a470c102306474",
+    "adaptive_observer": "6858d59ba73161ff714250751b22c3c509eaeafb737d32c39e752116e82e6be3",
+    "kinematics": "20aa2a792cd8fe348567e28911320114c6dd3ff88c81edad4d1992e02effa7ff",
+    "default_after_domain_fix": "e8caf530d86eb9e378a8bc205b8e36d81e3a67aa637939d2515efd48d0e42e3d",
+    "upstream_counts": "62875fa8d1abc9e1af09f848f6d9cf052828359dd5246a6ef00d0300ca4672b2"
+  },
+  "local_tests": [
+    "Test online pose separation and tie ordering",
+    "Test final pose spacing across energy windows and output APIs",
+    "Test force-field-specific grid membership and chemical pose geometry",
+    "Test imported map lattices",
+    "Test strict Armijo and geometry preconditioner",
+    "Test cyclic ligand bond-distance exclusions and gradients",
+    "Test macrocycle label invariance",
+    "Reproduce archived pose and affinity aggregation",
+    "Verify macrocycle research records",
+    "Explicit/grid/map-only local optimization and AD4 domain CLI",
+    "Independent pose RMSD and frozen-coordinate comparisons",
+    "Exact rank credits and trajectory counts from 1410 Gal3 outputs"
+  ]
+}

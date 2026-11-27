@@ -1,0 +1,5 @@
+arm,pairs,credit,delta,paired_fraction_low,paired_fraction_high,min_delete_one,max_delete_one,without_bivalent_pairs,without_bivalent_credit
+parent,403,127.0,0.0,0.0,0.0,0.0,0.0,375,107.0
+always,403,209.0,82.0,-0.03729975971165398,0.4178704847292743,59.0,105.0,375,188.0
+adaptive,403,127.0,0.0,0.0,0.0,0.0,0.0,375,107.0
+size,403,259.5,132.5,0.04249324324324325,0.5763822234343452,94.5,144.5,375,253.5

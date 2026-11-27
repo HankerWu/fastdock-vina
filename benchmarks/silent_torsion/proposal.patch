@@ -1,0 +1,135 @@
+diff --git a/src/lib/monte_carlo.cpp b/src/lib/monte_carlo.cpp
+index 69b9384..6e25aaf 100755
+--- a/src/lib/monte_carlo.cpp
++++ b/src/lib/monte_carlo.cpp
+@@ -23,11 +23,48 @@
+ // FastDock: reuse the trial conformation across Monte Carlo steps.
+ 
+ #include "monte_carlo.h"
++#include "cache.h"
++#include <iomanip>
+ #include "coords.h"
+ #include "mutate.h"
+ #include "quasi_newton.h"
+ #include "trajectory_archive.h"
+ 
++namespace {
++// PDBQT parsing stores the immobile axis endpoint in the parent frame.
++struct torsion_partition {
++    szv silent, other;
++
++    void visit(const branches& nodes, const model& m, sz& index) {
++        for (const auto& b : nodes) {
++            bool only_hydrogens = b.children.empty();
++            for (sz i = b.node.begin; only_hydrogens && i < b.node.end; ++i)
++                only_hydrogens = m.get_atom(i).is_hydrogen();
++            (only_hydrogens ? silent : other).push_back(index++);
++            visit(b.children, m, index);
++        }
++    }
++
++    bool redistribute(const conf& source, conf& proposal, bool enabled, sz& offered) const {
++        const auto& original = source.ligands.front().torsions;
++        auto& angles = proposal.ligands.front().torsions;
++        for (sz index : silent) {
++            if (angles[index] == original[index]) continue;
++            ++offered;
++            if (!enabled || other.empty()) return false;
++            // Decode the original uniform draw into a rotor and a uniform angle.
++            // The upper-end clamp also handles floating point rounding near pi.
++            const fl scaled = (angles[index] + pi) * (fl(other.size()) / (2*pi));
++            const sz k = (std::min)(sz(scaled), other.size() - 1);
++            angles[other[k]] = (2*pi) * (scaled - fl(k)) - pi;
++            angles[index] = original[index];
++            return true;
++        }
++        return false;
++    }
++};
++} // namespace
++
+ output_type monte_carlo::operator()(model& m, const precalculate_byatom& p, const igrid& ig, const vec& corner1, const vec& corner2, incrementable* increment_me, rng& generator) const {
+ 	output_container tmp;
+ 	this->operator()(m, tmp, p, ig, corner1, corner2, increment_me, generator); // call the version that produces the whole container
+@@ -71,6 +108,13 @@ void monte_carlo::operator()(model& m, output_container& out, const precalculate
+ 	fl best_e = max_fl;
+ 	bool reference_from_save = false;
+ 	quasi_newton quasi_newton_par(s, local_steps);
++    VINA_CHECK(m.num_ligands() == 1 && m.num_flex() == 0 &&
++               m.atom_typing_used() == atom_type::XS && typeid(ig) == typeid(cache));
++    torsion_partition partition;
++    sz index = 0, offered = 0, replaced = 0;
++    partition.visit(m.get_ligand(0).children, m, index);
++    VINA_CHECK(index == s.ligands.front());
++
+ 	VINA_U_FOR(step, global_steps) {
+ 		if(increment_me)
+ 			++(*increment_me);
+@@ -79,6 +123,54 @@ void monte_carlo::operator()(model& m, output_container& out, const precalculate
+ 		candidate.c = tmp.c;
+ 		const bool reoriented = mutate_conf(candidate.c, m, mutation_amplitude, generator,
+ 		                                    mixed_reorientation, separate_hunt_chain, centered_rotation, balanced_torsion);
++        const bool eligible = SILENT_TORSION_ALWAYS || (step > 0 && !reference_from_save);
++#ifdef SILENT_TORSION_OBSERVER
++        const conf native_proposal = candidate.c;
++#endif
++        const bool redirected = partition.redistribute(tmp.c, candidate.c, eligible, offered);
++        replaced += redirected;
++#ifdef SILENT_TORSION_OBSERVER
++        if (redirected && replaced == 1) {
++            model replay(m);
++            output_type alternative(s, 0);
++            alternative.c = native_proposal;
++            replay.set(tmp.c);
++            const auto original = replay.get_chemical_heavy_atom_movable_coords();
++            auto observe = [&](const conf& c, const char* stage) {
++                replay.set(c);
++                const auto coords = replay.get_chemical_heavy_atom_movable_coords();
++                fl sum = 0, largest = 0;
++                for (sz i = 0; i < coords.size(); ++i) {
++                    const fl d2 = vec_distance_sqr(original[i], coords[i]);
++                    sum += d2;
++                    largest = (std::max)(largest, d2);
++                }
++                std::cout << std::setprecision(17) << "Silent replay step=" << step
++                          << " stage=" << stage << " source_rms=" << std::sqrt(sum/coords.size())
++                          << " max_displacement=" << std::sqrt(largest) << std::endl;
++                replay.write_model(std::cout, 1, std::string("REMARK STAGE ") + stage + "\n");
++            };
++            observe(tmp.c, "source");
++            observe(native_proposal, "native_proposal");
++            observe(candidate.c, "redirected_proposal");
++            // The production optimizer starts a fresh BFGS approximation each call.
++            // Each counterfactual starts from the same accepted state and drawn angle.
++            for (int arm = 0; arm < 2; ++arm) {
++                alternative.c = arm ? candidate.c : native_proposal;
++                int cost = 0;
++                flv gradient(s.num_degrees_of_freedom());
++                replay.set(alternative.c);
++                const fl initial = replay.eval_deriv(p, ig, hunt_cap, gradient);
++                quasi_newton optimizer(s, local_steps);
++                optimizer(replay, p, ig, alternative, hunt_cap, cost);
++                observe(alternative.c, arm ? "redirected_hunt" : "native_hunt");
++                rng frozen = generator;
++                const bool accepted = step == 0 || metropolis_accept(tmp.e, alternative.e, temperature, frozen);
++                std::cout << "Silent branch arm=" << arm << " initial=" << initial << " final=" << alternative.e
++                          << " reference=" << tmp.e << " accepted=" << accepted << " evals=" << cost << std::endl;
++            }
++        }
++#endif
+ 		const int before_hunt = evalcount;
+ 		quasi_newton_par(m, p, ig, candidate, hunt_cap, evalcount);
+ 		if (counters) {
+@@ -122,6 +214,12 @@ void monte_carlo::operator()(model& m, output_container& out, const precalculate
+ 			}
+ 		}
+ 	}
++    if (counters) {
++        std::ostringstream row;
++        row << "Silent torsions: axes=" << partition.silent.size() << " other=" << partition.other.size()
++            << " offered=" << offered << " redirected=" << replaced << '\n';
++        std::cout << row.str();
++    }
+ 	if (archive)
+ 		archive->native_evaluations = evalcount;
+ 	VINA_CHECK(!out.empty());
