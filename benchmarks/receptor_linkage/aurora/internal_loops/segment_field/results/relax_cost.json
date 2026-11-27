@@ -1,0 +1,7 @@
+{
+  "n_starts": 18,
+  "n_relaxations": 36,
+  "binary_sha256": "6a56ec3db8c23b2e8bea4f65eb94fe3a4ccc2b272b4ae27c0da8113c078b4304",
+  "wall_s": 6.839596611003799,
+  "cli_cpu_s": 6.068621
+}

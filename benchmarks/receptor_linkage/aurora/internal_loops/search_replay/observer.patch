@@ -1,0 +1,92 @@
+--- a/src/lib/monte_carlo.cpp
++++ b/src/lib/monte_carlo.cpp
+@@ -23,6 +23,7 @@
+ // FastDock: reuse the trial conformation across Monte Carlo steps.
+ 
+ #include "monte_carlo.h"
++#include "observer.h"
+ #include "coords.h"
+ #include "mutate.h"
+ #include "quasi_newton.h"
+@@ -44,6 +45,9 @@
+ // out is sorted
+ void monte_carlo::operator()(model& m, output_container& out, const precalculate_byatom& p, const igrid& ig, const vec& corner1, const vec& corner2, incrementable* increment_me, rng& generator, trajectory_archive* archive, search_trajectory_counters* counters,
+                              const boost::optional<vec>& pocket_start, bool prepared_torsions) const {
++    auto& trace = replay_trace::current();
++    ++trace.trajectory;
++    trace.step = 0;
+     int evalcount = 0;
+ 	vec authentic_v(1000, 1000, 1000); // FIXME? this is here to avoid max_fl/max_fl
+ 	const conf_size s = m.get_size();
+@@ -67,6 +71,7 @@
+ 			counters->pocket_anchored = bool(pocket_start);
+ 		}
+ 	}
++	trace.position("start", tmp.c);
+ 	output_type candidate(s, 0);
+ 	fl best_e = max_fl;
+ 	bool reference_from_save = false;
+@@ -79,15 +84,22 @@
+ 		candidate.c = tmp.c;
+ 		const bool reoriented = mutate_conf(candidate.c, m, mutation_amplitude, generator,
+ 		                                    mixed_reorientation, separate_hunt_chain, centered_rotation, balanced_torsion);
++		trace.step = step + 1;
++		trace.position("proposal", candidate.c);
++		trace.begin("hunt");
+ 		const int before_hunt = evalcount;
+ 		quasi_newton_par(m, p, ig, candidate, hunt_cap, evalcount);
++		trace.local("hunt", candidate, evalcount - before_hunt, m);
+ 		if (counters) {
+ 			++counters->hunt_calls;
+ 			counters->hunt_evals += evalcount - before_hunt;
+ 			counters->rigid_reorientations += reoriented;
+ 			counters->mixed_accept_checks += reference_from_save;
+ 		}
+-		if(step == 0 || metropolis_accept(tmp.e, candidate.e, temperature, generator)) {
++		const bool accept = step == 0 || metropolis_accept(tmp.e, candidate.e, temperature, generator);
++		trace.prefix("accept");
++		trace.out << ' ' << accept << '\n';
++		if(accept) {
+ 			std::swap(tmp.c, candidate.c);
+ 			tmp.e = candidate.e;
+ 			reference_from_save = false;
+@@ -109,13 +121,21 @@
+ 				output_type& saved = separate_hunt_chain ? candidate : tmp;
+ 				if (separate_hunt_chain)
+ 					saved.c = tmp.c;
++				trace.begin("second");
+ 				quasi_newton_par(m, p, ig, saved, authentic_v, evalcount);
+ 				if (counters) {
+ 					++counters->second_calls;
+ 					counters->second_evals += evalcount - before_second;
+ 				}
++				trace.local("second", saved, evalcount - before_second, m);
+ 				saved.coords = m.get_heavy_atom_movable_coords();
+ 				add_to_output_container(out, saved, min_rmsd, num_saved_mins); // 20 - max size
++				bool present = false;
++				for (const auto& resident : out)
++					if (resident.e == saved.e && rmsd_upper_bound(resident.coords, saved.coords) == 0)
++							present = true;
++				trace.prefix("saved");
++				trace.out << ' ' << present << ' ' << out.size() << '\n';
+ 				reference_from_save = !separate_hunt_chain;
+ 				if(tmp.e < best_e)
+ 					best_e = tmp.e;
+--- a/src/lib/quasi_newton.cpp
++++ b/src/lib/quasi_newton.cpp
+@@ -23,6 +23,7 @@
+ // Modified for FastDock Vina: reuse coordinates from the final BFGS evaluation.
+ 
+ #include "quasi_newton.h"
++#include "observer.h"
+ 
+ namespace {
+ boost::optional<bfgs_rigid_metric> centroid_metric(model& m, const conf& base) {
+@@ -50,6 +51,7 @@
+         const fl energy = m.eval_deriv(p, ig, v, gradient, reference);
+         if (rigid)
+             rigid->to_centroid_gradient(gradient);
++        replay_trace::current().value(c, energy, gradient, m);
+         return energy;
+     };
+     VINA_CHECK(!geometry_metric || strict_armijo);

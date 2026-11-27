@@ -1,0 +1,81 @@
+cohort,drug,seed,comparison,same_pool_bytes,same_evals
+historical,at9283,60913,short_only vs far,1,1
+historical,at9283,60913,long_only vs both,1,1
+historical,at9283,60913,far_both graph vs inferred,0,0
+historical,at9283,60913,both graph vs inferred,0,0
+historical,at9283,60913,far_both vs archived,1,1
+historical,at9283,60913,both vs archived,1,1
+historical,at9283,60943,short_only vs far,1,1
+historical,at9283,60943,long_only vs both,1,1
+historical,at9283,60943,far_both graph vs inferred,0,0
+historical,at9283,60943,both graph vs inferred,0,0
+historical,at9283,60943,far_both vs archived,1,1
+historical,at9283,60943,both vs archived,1,1
+historical,at9283,61211,short_only vs far,1,1
+historical,at9283,61211,long_only vs both,1,1
+historical,at9283,61211,far_both graph vs inferred,0,0
+historical,at9283,61211,both graph vs inferred,0,0
+historical,at9283,61211,far_both vs archived,1,1
+historical,at9283,61211,both vs archived,1,1
+historical,at9283,61231,short_only vs far,1,1
+historical,at9283,61231,long_only vs both,1,1
+historical,at9283,61231,far_both graph vs inferred,0,0
+historical,at9283,61231,both graph vs inferred,0,0
+historical,at9283,61231,far_both vs archived,1,1
+historical,at9283,61231,both vs archived,1,1
+historical,danusertib,60913,short_only vs far,1,1
+historical,danusertib,60913,long_only vs both,1,1
+historical,danusertib,60913,far_both graph vs inferred,1,1
+historical,danusertib,60913,both graph vs inferred,1,1
+historical,danusertib,60913,far_both vs archived,1,1
+historical,danusertib,60913,both vs archived,1,1
+historical,danusertib,60943,short_only vs far,1,1
+historical,danusertib,60943,long_only vs both,1,1
+historical,danusertib,60943,far_both graph vs inferred,1,1
+historical,danusertib,60943,both graph vs inferred,1,1
+historical,danusertib,60943,far_both vs archived,1,1
+historical,danusertib,60943,both vs archived,1,1
+historical,danusertib,61211,short_only vs far,1,1
+historical,danusertib,61211,long_only vs both,1,1
+historical,danusertib,61211,far_both graph vs inferred,1,1
+historical,danusertib,61211,both graph vs inferred,1,1
+historical,danusertib,61211,far_both vs archived,1,1
+historical,danusertib,61211,both vs archived,1,1
+historical,danusertib,61231,short_only vs far,1,1
+historical,danusertib,61231,long_only vs both,1,1
+historical,danusertib,61231,far_both graph vs inferred,1,1
+historical,danusertib,61231,both graph vs inferred,1,1
+historical,danusertib,61231,far_both vs archived,1,1
+historical,danusertib,61231,both vs archived,1,1
+fresh,at9283,45101,short_only vs far,1,1
+fresh,at9283,45101,long_only vs both,1,1
+fresh,at9283,45101,far_both graph vs inferred,0,0
+fresh,at9283,45101,both graph vs inferred,0,0
+fresh,at9283,45102,short_only vs far,1,1
+fresh,at9283,45102,long_only vs both,1,1
+fresh,at9283,45102,far_both graph vs inferred,0,0
+fresh,at9283,45102,both graph vs inferred,0,0
+fresh,at9283,45103,short_only vs far,1,1
+fresh,at9283,45103,long_only vs both,1,1
+fresh,at9283,45103,far_both graph vs inferred,0,0
+fresh,at9283,45103,both graph vs inferred,0,0
+fresh,at9283,45104,short_only vs far,1,1
+fresh,at9283,45104,long_only vs both,1,1
+fresh,at9283,45104,far_both graph vs inferred,0,0
+fresh,at9283,45104,both graph vs inferred,0,0
+fresh,danusertib,45101,short_only vs far,1,1
+fresh,danusertib,45101,long_only vs both,1,1
+fresh,danusertib,45101,far_both graph vs inferred,1,1
+fresh,danusertib,45101,both graph vs inferred,1,1
+fresh,danusertib,45102,short_only vs far,1,1
+fresh,danusertib,45102,long_only vs both,1,1
+fresh,danusertib,45102,far_both graph vs inferred,1,1
+fresh,danusertib,45102,both graph vs inferred,1,1
+fresh,danusertib,45103,short_only vs far,1,1
+fresh,danusertib,45103,long_only vs both,1,1
+fresh,danusertib,45103,far_both graph vs inferred,1,1
+fresh,danusertib,45103,both graph vs inferred,1,1
+fresh,danusertib,45104,short_only vs far,1,1
+fresh,danusertib,45104,long_only vs both,1,1
+fresh,danusertib,45104,far_both graph vs inferred,1,1
+fresh,danusertib,45104,both graph vs inferred,1,1

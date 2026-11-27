@@ -11,7 +11,6 @@ from pathlib import Path
 
 import gemmi
 import numpy as np
-from openmm.app import PDBFile, forcefield
 from rdkit.Chem import rdMolAlign
 from scipy.spatial import cKDTree
 
@@ -59,6 +58,8 @@ def centres(coords):
 
 
 def geometry(path, raw):
+    from openmm.app import PDBFile
+
     xyz = atoms(path)
     hand = centres(xyz)
     observed = centres(raw)
@@ -135,6 +136,8 @@ def geometry(path, raw):
 
 
 def template_check(work, folder, raw):
+    from openmm.app import PDBFile, forcefield
+
     pdb = folder / "repaired.pdb"
     report = geometry(pdb, raw)
     modeled = atoms(pdb)

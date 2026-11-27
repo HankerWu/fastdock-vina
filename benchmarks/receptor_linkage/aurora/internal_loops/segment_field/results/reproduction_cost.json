@@ -1,0 +1,40 @@
+{
+  "sampling_units": {
+    "receptor": "2X6E",
+    "ligands": 2,
+    "historical_plus_fresh_seeds": 8,
+    "per_run_trajectories": 2
+  },
+  "primary_docking": {
+    "calls": 112,
+    "output_modes": 1002,
+    "pro_evals": 5628628,
+    "calls_without_reported_evals": 8,
+    "cli_wall_sum_s": 48.141546430990275,
+    "cli_cpu_sum_s": 47.83150199999998
+  },
+  "clean_full_rerun": {
+    "identical_pool_sha_and_reported_metrics": 112,
+    "wall_s": 56.423,
+    "user_s": 48.402,
+    "sys_s": 7.838,
+    "cli_wall_sum_s": 51.07123249502183,
+    "cli_cpu_sum_s": 50.784420000000026
+  },
+  "posthoc_native_only_pilot": {
+    "n_local_starts": 18,
+    "wall_s": 4.339637541997945,
+    "cli_cpu_s": 3.578023
+  },
+  "additional_phases": {
+    "fixed_scores": "fixed_cost.json",
+    "local_optimizers": "relax_cost.json",
+    "matched_trajectory_replay": "../../search_replay/results/runs.csv",
+    "kinase_and_galectin_certificates": "../../../../../affinity_exchange/joint_reference/local_integral/magnitude/cost.json"
+  },
+  "independent_coordinate_geometry_cpu_s": [
+    0.389,
+    1.111
+  ],
+  "accounting": "Wall and CPU totals for production docking are sums across child processes. Reused original binaries, objects, prepared receptors and historical integrals. Compiling the diagnostic probes, development/debug reruns, compression and transfers were not exhaustively timed; no all-inclusive runtime or GPU-hour estimate is claimed. Peak RSS was not recorded for the historical production runs."
+}

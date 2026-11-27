@@ -5,13 +5,16 @@
 #include <string>
 
 int main(int argc, char **argv) {
-    if (argc != 6) {
-        std::cerr << "score_pool RECEPTOR LIGAND CX CY CZ < paths.txt\n";
+    if (argc != 6 && argc != 7) {
+        std::cerr << "score_pool RECEPTOR LIGAND CX CY CZ [BONDS] < paths.txt\n";
         return 2;
     }
     Vina engine("vina", 1, 1, 0, false);
     engine.set_receptor(argv[1]);
-    engine.set_ligand_from_file(argv[2]);
+    if (argc == 7)
+        engine.set_ligand_from_file_with_bonds(argv[2], argv[6]);
+    else
+        engine.set_ligand_from_file(argv[2]);
     engine.compute_vina_maps(std::stod(argv[3]), std::stod(argv[4]), std::stod(argv[5]),
                              26., 26., 26., 0.375, false, true);
     std::cout << std::setprecision(17);

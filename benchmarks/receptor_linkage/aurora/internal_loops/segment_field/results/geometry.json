@@ -1,0 +1,205 @@
+{
+  "cutoff_A": 8.0,
+  "spacing_A": 0.375,
+  "lo_A": [
+    -16.278861111111112,
+    18.70775,
+    -16.97113888888889
+  ],
+  "hi_A": [
+    9.971138888888888,
+    44.957750000000004,
+    9.278861111111109
+  ],
+  "vertices": 357911,
+  "cells": 343000,
+  "analysis": "Reach is geometric support before any map rounding, independent of ligand type; it bounds regions of possible differences, not their magnitude.",
+  "ordered_reachable_XS_field_equalities": {
+    "dry = far_both = short_only": 1295,
+    "1OL7_released = both = long_only": 1309
+  },
+  "receptors": {
+    "1OL5_restrained": {
+      "sha256": "c4a46f5597245db166f9c080cb0eb76bb39fca0afccea1919fb88f6998de0bd7",
+      "unchanged_historical_XS_types": 2421,
+      "segments": {
+        "281-291": {
+          "n_XS_atoms": 78,
+          "min_to_box_A": 4.962138888888887,
+          "closest_atom": "GLY A 291 CA",
+          "min_to_grid_vertex_A": 4.965358249464451,
+          "n_atoms_reaching_box": 9,
+          "n_atoms_reaching_vertices": 9,
+          "reachable_vertices": 4458,
+          "possibly_affected_trilinear_cells": 4722
+        },
+        "303-305": {
+          "n_XS_atoms": 23,
+          "min_to_box_A": 14.268138888888888,
+          "closest_atom": "MET A 305 CE",
+          "min_to_grid_vertex_A": 14.268414242303493,
+          "n_atoms_reaching_box": 0,
+          "n_atoms_reaching_vertices": 0,
+          "reachable_vertices": 0,
+          "possibly_affected_trilinear_cells": 0
+        }
+      }
+    },
+    "1OL7_restrained": {
+      "sha256": "1892b86670727a85fbd11c2aefedcb948ddae30f579f440453f00780f20b0ead",
+      "unchanged_historical_XS_types": 2421,
+      "segments": {
+        "281-291": {
+          "n_XS_atoms": 78,
+          "min_to_box_A": 4.113138888888887,
+          "closest_atom": "CYS A 290 O",
+          "min_to_grid_vertex_A": 4.113749991184335,
+          "n_atoms_reaching_box": 14,
+          "n_atoms_reaching_vertices": 14,
+          "reachable_vertices": 5826,
+          "possibly_affected_trilinear_cells": 6061
+        },
+        "303-305": {
+          "n_XS_atoms": 23,
+          "min_to_box_A": 16.740138888888886,
+          "closest_atom": "MET A 305 C",
+          "min_to_grid_vertex_A": 16.741162154036584,
+          "n_atoms_reaching_box": 0,
+          "n_atoms_reaching_vertices": 0,
+          "reachable_vertices": 0,
+          "possibly_affected_trilinear_cells": 0
+        }
+      }
+    },
+    "1OL7_released": {
+      "sha256": "614daf795f09fa31759011508a36e596068df237bc18861a247273f34349c2ea",
+      "unchanged_historical_XS_types": 2421,
+      "segments": {
+        "281-291": {
+          "n_XS_atoms": 78,
+          "min_to_box_A": 4.073138888888888,
+          "closest_atom": "CYS A 290 O",
+          "min_to_grid_vertex_A": 4.074654776238679,
+          "n_atoms_reaching_box": 14,
+          "n_atoms_reaching_vertices": 14,
+          "reachable_vertices": 5861,
+          "possibly_affected_trilinear_cells": 6098
+        },
+        "303-305": {
+          "n_XS_atoms": 23,
+          "min_to_box_A": 16.728138888888886,
+          "closest_atom": "MET A 305 C",
+          "min_to_grid_vertex_A": 16.729246356504998,
+          "n_atoms_reaching_box": 0,
+          "n_atoms_reaching_vertices": 0,
+          "reachable_vertices": 0,
+          "possibly_affected_trilinear_cells": 0
+        }
+      }
+    },
+    "far_both": {
+      "sha256": "276899d0386400eafab3ddc5eb63e7f4e546be164e66ee11190829196b45441f",
+      "unchanged_historical_XS_types": 2421,
+      "segments": {
+        "281-291": {
+          "n_XS_atoms": 78,
+          "min_to_box_A": 58.40686111111111,
+          "closest_atom": "PRO A 282 CG",
+          "min_to_grid_vertex_A": 58.40719777410403,
+          "n_atoms_reaching_box": 0,
+          "n_atoms_reaching_vertices": 0,
+          "reachable_vertices": 0,
+          "possibly_affected_trilinear_cells": 0
+        },
+        "303-305": {
+          "n_XS_atoms": 23,
+          "min_to_box_A": 51.667861111111115,
+          "closest_atom": "MET A 305 CE",
+          "min_to_grid_vertex_A": 51.66787202509003,
+          "n_atoms_reaching_box": 0,
+          "n_atoms_reaching_vertices": 0,
+          "reachable_vertices": 0,
+          "possibly_affected_trilinear_cells": 0
+        }
+      }
+    },
+    "short_only": {
+      "sha256": "5addac0eba16c624accb81c5e35a3a94c7cd527e1f907b9f21667cfc8a0eeff8",
+      "unchanged_historical_XS_types": 2421,
+      "segments": {
+        "281-291": {
+          "n_XS_atoms": 78,
+          "min_to_box_A": 58.40686111111111,
+          "closest_atom": "PRO A 282 CG",
+          "min_to_grid_vertex_A": 58.40719777410403,
+          "n_atoms_reaching_box": 0,
+          "n_atoms_reaching_vertices": 0,
+          "reachable_vertices": 0,
+          "possibly_affected_trilinear_cells": 0
+        },
+        "303-305": {
+          "n_XS_atoms": 23,
+          "min_to_box_A": 16.728138888888886,
+          "closest_atom": "MET A 305 C",
+          "min_to_grid_vertex_A": 16.729246356504998,
+          "n_atoms_reaching_box": 0,
+          "n_atoms_reaching_vertices": 0,
+          "reachable_vertices": 0,
+          "possibly_affected_trilinear_cells": 0
+        }
+      }
+    },
+    "long_only": {
+      "sha256": "3ab7709e1430b4776e5a7be3cd3db2087b516beed3d13854b11b76bea8d42656",
+      "unchanged_historical_XS_types": 2421,
+      "segments": {
+        "281-291": {
+          "n_XS_atoms": 78,
+          "min_to_box_A": 4.073138888888888,
+          "closest_atom": "CYS A 290 O",
+          "min_to_grid_vertex_A": 4.074654776238679,
+          "n_atoms_reaching_box": 14,
+          "n_atoms_reaching_vertices": 14,
+          "reachable_vertices": 5861,
+          "possibly_affected_trilinear_cells": 6098
+        },
+        "303-305": {
+          "n_XS_atoms": 23,
+          "min_to_box_A": 51.667861111111115,
+          "closest_atom": "MET A 305 CE",
+          "min_to_grid_vertex_A": 51.66787202509003,
+          "n_atoms_reaching_box": 0,
+          "n_atoms_reaching_vertices": 0,
+          "reachable_vertices": 0,
+          "possibly_affected_trilinear_cells": 0
+        }
+      }
+    },
+    "both": {
+      "sha256": "614daf795f09fa31759011508a36e596068df237bc18861a247273f34349c2ea",
+      "unchanged_historical_XS_types": 2421,
+      "segments": {
+        "281-291": {
+          "n_XS_atoms": 78,
+          "min_to_box_A": 4.073138888888888,
+          "closest_atom": "CYS A 290 O",
+          "min_to_grid_vertex_A": 4.074654776238679,
+          "n_atoms_reaching_box": 14,
+          "n_atoms_reaching_vertices": 14,
+          "reachable_vertices": 5861,
+          "possibly_affected_trilinear_cells": 6098
+        },
+        "303-305": {
+          "n_XS_atoms": 23,
+          "min_to_box_A": 16.728138888888886,
+          "closest_atom": "MET A 305 C",
+          "min_to_grid_vertex_A": 16.729246356504998,
+          "n_atoms_reaching_box": 0,
+          "n_atoms_reaching_vertices": 0,
+          "reachable_vertices": 0,
+          "possibly_affected_trilinear_cells": 0
+        }
+      }
+    }
+  }
+}

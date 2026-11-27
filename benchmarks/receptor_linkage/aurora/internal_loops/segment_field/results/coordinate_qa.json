@@ -1,0 +1,50 @@
+{
+  "protein_frame_RMSD": {
+    "historical": {
+      "cells": 48,
+      "modes": 427,
+      "max_mode_rmsd_difference_A": 2.842170943040401e-14,
+      "max_score_difference": 0.0,
+      "max_cell_metric_difference_A": 2.6645352591003757e-14
+    },
+    "fresh": {
+      "cells": 64,
+      "modes": 575,
+      "max_mode_rmsd_difference_A": 3.108624468950438e-14,
+      "max_score_difference": 0.0,
+      "max_cell_metric_difference_A": 3.375077994860476e-14
+    }
+  },
+  "coordinate_chemistry": {
+    "at9283": {
+      "finite_modes": 502,
+      "sdf_heavy_bonds_per_mode": 32,
+      "max_bond_length_change_vs_SDF_A": 0.001642624141654947,
+      "specified_stereocentres_per_mode": 0,
+      "inverted_centres": 0,
+      "three_membered_rings_per_mode": 1,
+      "ring_edge_range_A": [
+        1.4997629812740447,
+        1.5050607961142293
+      ],
+      "max_triangle_edge_change_vs_SDF_A": 0.0014683571286535635
+    },
+    "danusertib": {
+      "finite_modes": 500,
+      "sdf_heavy_bonds_per_mode": 39,
+      "max_bond_length_change_vs_SDF_A": 0.0019131598552812878,
+      "specified_stereocentres_per_mode": 1,
+      "inverted_centres": 0,
+      "three_membered_rings_per_mode": 0,
+      "ring_edge_range_A": null,
+      "max_triangle_edge_change_vs_SDF_A": null
+    }
+  },
+  "CLI_counter_checks": 104,
+  "identical_pool_and_counter_pairs": {
+    "short vs neither": 16,
+    "historical source": 16,
+    "both vs long": 16,
+    "danusertib native vs explicit": 16
+  }
+}

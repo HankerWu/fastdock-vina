@@ -141,7 +141,11 @@ def fixed(work, pro, out, arms):
     geom.write_csv(out, "fixed.csv", rows)
 
 
-def blind(work, pro, official, out, arms):
+def blind(
+    work, pro, official, out, arms, *, proteins=None, seeds=geom.SEEDS, bond_arms=()
+):
+    if proteins is None:
+        proteins = PROTEINS
     if (
         digest(official)
         != "f31f774f723bba7bbe6e9d1c47577020eea9a8da16424284c043d22593570644"
@@ -157,10 +161,11 @@ def blind(work, pro, official, out, arms):
         for arg in (f"--center_{dim}", x, f"--size_{dim}", 26)
     ]
     for drug in geom.REFERENCES:
-        ligand, _, serials, refs = parameters(work, drug)
-        for i, seed in enumerate(geom.SEEDS):
+        ligand, bonds, serials, refs = parameters(work, drug)
+        for i, seed in enumerate(seeds):
             for arm in arms[i % len(arms) :] + arms[: i % len(arms)]:
-                receptor = work / PROTEINS.get(arm, PROTEINS["dry"])
+                receptor_key = "dry" if arm in ("official", "double") else arm
+                receptor = work / proteins[receptor_key]
                 binary = official if arm == "official" else pro
                 output = raw / f"{arm}_{drug}_{seed}.pdbqt"
                 cmd = [
@@ -185,6 +190,8 @@ def blind(work, pro, official, out, arms):
                     "--out",
                     output,
                 ]
+                if arm in bond_arms:
+                    cmd += ["--ligand_bonds", bonds]
                 if arm != "official":
                     cmd += ["--pose_selection", "late", "--search_counters"]
                 log = output.with_suffix(".log")

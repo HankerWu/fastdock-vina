@@ -1,0 +1,14 @@
+{
+  "counts": {
+    "far_equals_dry": 8,
+    "hunt_path": 15,
+    "identical_first_local_return_geometry": 15,
+    "no_changed_return_geometry": 3,
+    "runs_match_archived_producer": 40,
+    "second_path": 1
+  },
+  "search_and_explicit_evaluations": {
+    "focus": 804430,
+    "stages": 1206633
+  }
+}
