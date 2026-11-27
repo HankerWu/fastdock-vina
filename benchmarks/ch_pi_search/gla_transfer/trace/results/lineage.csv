@@ -1,0 +1,13 @@
+receptor,seed,search,near_hunt_rejected,near_accepted_without_second,near_accepted_second_moved_far,near_accepted_second_stayed_near,far_accepted_second_became_near,near_second_coord_absent_from_same_trajectory_return,near_selected_refined_far,far_selected_refined_near
+3GXT,43103,native,0,0,0,0,0,0,0,0
+3GXT,43103,field,0,8,0,0,0,0,0,0
+3GXT,43117,field,0,0,0,0,0,0,0,0
+3GXT,43117,native,0,0,0,0,0,0,0,0
+3GXT,43133,native,0,0,0,0,0,0,0,0
+3GXT,43133,field,0,0,0,0,0,0,0,0
+3S5Y,43103,field,2,0,0,59,0,58,0,0
+3S5Y,43103,native,0,0,0,0,0,0,0,0
+3S5Y,43117,native,0,0,0,0,0,0,0,0
+3S5Y,43117,field,0,0,0,0,0,0,0,0
+3S5Y,43133,field,2,32,0,0,0,0,0,0
+3S5Y,43133,native,0,0,0,0,0,0,0,0

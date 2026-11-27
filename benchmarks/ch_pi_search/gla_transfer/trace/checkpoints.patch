@@ -1,0 +1,104 @@
+--- a/src/lib/monte_carlo.cpp
++++ b/src/lib/monte_carlo.cpp
+@@ -22,6 +22,7 @@
+ 
+ // FastDock: reuse the trial conformation across Monte Carlo steps.
+ 
++#include "checkpoints.h"
+ #include "monte_carlo.h"
+ #include "coords.h"
+ #include "mutate.h"
+@@ -81,6 +82,7 @@
+ 		                                    mixed_reorientation, separate_hunt_chain, centered_rotation, balanced_torsion);
+ 		const int before_hunt = evalcount;
+ 		quasi_newton_par(m, p, ig, candidate, hunt_cap, evalcount);
++		checkpoint("hunt", traced_trajectory(), step, candidate.e, m.get_chemical_heavy_atom_movable_coords());
+ 		if (counters) {
+ 			++counters->hunt_calls;
+ 			counters->hunt_evals += evalcount - before_hunt;
+@@ -88,6 +90,7 @@
+ 			counters->mixed_accept_checks += reference_from_save;
+ 		}
+ 		if(step == 0 || metropolis_accept(tmp.e, candidate.e, temperature, generator)) {
++			checkpoint("accepted", traced_trajectory(), step, candidate.e, m.get_chemical_heavy_atom_movable_coords());
+ 			std::swap(tmp.c, candidate.c);
+ 			tmp.e = candidate.e;
+ 			reference_from_save = false;
+@@ -115,6 +118,7 @@
+ 					counters->second_evals += evalcount - before_second;
+ 				}
+ 				saved.coords = m.get_heavy_atom_movable_coords();
++				checkpoint("second", traced_trajectory(), step, saved.e, saved.coords);
+ 				add_to_output_container(out, saved, min_rmsd, num_saved_mins); // 20 - max size
+ 				reference_from_save = !separate_hunt_chain;
+ 				if(tmp.e < best_e)
+--- a/src/lib/parallel_mc.cpp
++++ b/src/lib/parallel_mc.cpp
+@@ -22,6 +22,7 @@
+ 
+ // FastDock: reuse one model per search worker and merge by trajectory index.
+ 
++#include "checkpoints.h"
+ #include <atomic>
+ #include <future>
+ 
+@@ -59,6 +60,7 @@
+ 		model working(m);
+ 		for(;;) {
+ 			rng task_generator(seeds[task]);
++			traced_trajectory() = task + 1;
+ 			boost::optional<vec> pocket_start;
+ 			// Even 1-based trajectories use a separate placement stream.
+ 			if (pocket_start_radius > 0 && task % 2 == 1) {
+@@ -71,6 +73,8 @@
+ 			mc(working, poses[task], pairs, grid, corner1, corner2, progress, task_generator,
+ 			   archives ? &(*archives)[task] : nullptr, counters ? &(*counters)[task] : nullptr,
+ 			   pocket_start, prepared_torsion_starts && task % 2 == 1);
++			VINA_FOR_IN(i, poses[task])
++				checkpoint("trajectory", task+1, i+1, poses[task][i].e, poses[task][i].coords);
+ 			// Map-only docking has no subsequent explicit refinement that can
+ 			// bring an out-of-domain minimum back. Filter before the global
+ 			// diversity/capacity merge so all remaining eligible minima compete.
+--- a/src/lib/vina.cpp
++++ b/src/lib/vina.cpp
+@@ -24,6 +24,7 @@
+    to avoid deep copies and build deferred affinity maps at use.
+    See docs/PROVENANCE.md for upstream and experimental source identities. */
+ 
++#include "checkpoints.h"
+ #include "rigid_window.h"
+ #include "printable_box.h"
+ #include <fstream>
+@@ -1765,6 +1766,8 @@
+ 	done(m_verbosity, 1);
+ 
+ 	// Docking post-processing and rescoring
++	trace_atom_order(m_model);
++	VINA_FOR_IN(i, poses) checkpoint("merged", 0, i+1, poses[i].e, poses[i].coords);
+ 	const sz saved_minima = poses.size();
+ 	const sz accepted_minima = archive_enabled ? append_accepted_minima(poses, archives) : 0;
+ 	const sz prescore_inputs = poses.size();
+@@ -1794,6 +1797,7 @@
+ 		if (m_sf_choice == SF_VINA || m_sf_choice == SF_VINARDO) {
+ 			// Refine poses if no_refine is false and got receptor
+ 			if (m_use_explicit_receptor) {
++				VINA_FOR_IN(i, poses) checkpoint("selected", 0, i+1, poses[i].e, poses[i].coords);
+ 				const sz refinement_inputs = poses.size();
+ 				const sz accepted_refinement_inputs = archive_enabled
+ 					? std::count_if(poses.begin(), poses.end(), [](const output_type& pose) {
+@@ -1846,6 +1850,7 @@
+ 						++template_rank_evals;
+ 					}
+ 				}
++				VINA_FOR_IN(i, poses) checkpoint("refined", 0, i+1, poses[i].e, poses[i].coords);
+ 				explicit_inputs = refinement_inputs;
+ 				explicit_calls = refinement_calls;
+ 				explicit_evals = evalcount;
+@@ -1853,6 +1858,7 @@
+ 					template_refinement_evals = evalcount;
+ 				if (late_selection) {
+ 					poses = select_distinct_poses(poses, min_rmsd, n_poses);
++					VINA_FOR_IN(i, poses) checkpoint("retained", 0, i+1, poses[i].e, poses[i].coords);
+ 					if (m_verbosity > 0)
+ 						std::cout << "Late pose selection: saved=" << saved_minima
+ 						          << " refine=" << refinement_inputs << " refinement_calls=" << refinement_calls

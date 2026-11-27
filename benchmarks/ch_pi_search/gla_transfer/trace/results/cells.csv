@@ -1,0 +1,13 @@
+receptor,seed,search,first_observed_hit,last_observed_hit,transitions_to_zero,retained_print_max_delta_A
+3GXT,43103,native,none,none,none,0.0001934356242614399
+3GXT,43103,field,hunt,accepted,accepted->second,0.00019179178620776227
+3GXT,43117,field,none,none,none,0.00013848997261867169
+3GXT,43117,native,none,none,none,0.0002877534796659198
+3GXT,43133,native,none,none,none,0.00010298905295336169
+3GXT,43133,field,none,none,none,0.00022626676851622562
+3S5Y,43103,field,hunt,refined,refined->retained,0.00012885256988326432
+3S5Y,43103,native,none,none,none,0.00012206065657816012
+3S5Y,43117,native,none,none,none,0.00013168513075800803
+3S5Y,43117,field,none,none,none,0.0002174584225560494
+3S5Y,43133,field,hunt,accepted,accepted->second,0.0001497705464874599
+3S5Y,43133,native,none,none,none,0.0001505138652149185
