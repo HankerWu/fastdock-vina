@@ -94,7 +94,7 @@ inline void bfgs_update(flmat& h, const flv& direction, const flv& y, fl alpha, 
 template<bool StrictArmijo = false, typename F>
 fl line_search(F& f, const conf& x, fl f0, const flv& p, fl pg, conf& x_new, flv& g_new, fl& f1, int& evalcount,
                int max_evals = 0) {
-	if (StrictArmijo && (!std::isfinite(pg) || pg >= 0))
+	if (!std::isfinite(pg) || pg >= 0)
 		return 0;
 	const fl c0 = 0.0001;
 	const unsigned max_trials = 10;
@@ -112,11 +112,11 @@ fl line_search(F& f, const conf& x, fl f0, const flv& p, fl pg, conf& x_new, flv
 			    std::all_of(g_new.begin(), g_new.end(), [](fl x) { return std::isfinite(x); }))
 				return alpha;
 		} else if (f1 - f0 < c0 * alpha * pg) {
-			break;
+			return alpha;
 		}
 		alpha *= multiplier;
 	}
-	return StrictArmijo ? 0 : alpha;
+	return 0; // No trial passed the acceptance test.
 }
 
 inline void set_diagonal(flmat& m, fl x) {
@@ -186,6 +186,7 @@ public:
 		    std::sqrt(scalar_product(gradient, gradient)) < 1e-5))
 			return {energy, false};
 
+		bool restore_coordinates = false;
 		VINA_U_FOR(step, max_steps) {
 			minus_mat_vec_product(h, gradient, direction);
 			const flv* conformation_step = &direction;
@@ -197,8 +198,10 @@ public:
 			fl trial_energy = 0;
 			const fl alpha = line_search<StrictArmijo>(f, x, energy, *conformation_step, scalar_product(direction, gradient),
 			                                           trial, trial_gradient, trial_energy, evalcount, max_evals);
-			if (StrictArmijo && alpha == 0)
-				return {energy, true}; // The model may reflect the last rejected trial.
+			if (alpha == 0) {
+				restore_coordinates = true; // The model may reflect the last rejected trial.
+				break;
+			}
 			energy = trial_energy;
 			std::swap(x, trial);
 			// The inverse Hessian is only used by subsequent steps.
@@ -248,7 +251,7 @@ public:
 			std::swap(x, original);
 			return {initial_energy, true};
 		}
-		return {energy, false};
+		return {energy, restore_coordinates};
 	}
 };
 

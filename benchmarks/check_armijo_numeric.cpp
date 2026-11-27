@@ -1,4 +1,4 @@
-// Numerical regression for strict Armijo acceptance and the accepted BFGS state.
+// Numerical regressions for native and strict Armijo line-search state.
 #include "bfgs.h"
 
 #include <iostream>
@@ -39,14 +39,15 @@ int main() {
 		g.front() = 1;
 		return fl(1);
 	};
-	const fl legacy_alpha = line_search(uphill, origin, 0, down, -1, trial, trial_g, trial_f, evaluations);
-	require(evaluations == 10 && coordinate(trial) == -1.0 / 512 && legacy_alpha == 1.0 / 1024,
-	        "Legacy line search did not reproduce the untested half-step");
+	const fl native_alpha = line_search(uphill, origin, 0, down, -1, trial, trial_g, trial_f, evaluations);
+	require(evaluations == 10 && coordinate(trial) == -1.0 / 512 && native_alpha == 0,
+	        "Native line search must report failure after ten rejected trials");
 	evaluations = 0;
 	require(line_search<true>(uphill, origin, 0, down, -1, trial, trial_g, trial_f, evaluations) == 0
 	        && evaluations == 10, "Ten Armijo failures must return no accepted step");
 	evaluations = 0;
-	require(line_search<true>(uphill, origin, 0, up, 1, trial, trial_g, trial_f, evaluations) == 0
+	require(line_search(uphill, origin, 0, up, 1, trial, trial_g, trial_f, evaluations) == 0
+	        && line_search<true>(uphill, origin, 0, up, 1, trial, trial_g, trial_f, evaluations) == 0
 	        && evaluations == 0, "An ascent direction must not be evaluated");
 
 	auto step_then_uphill = [](const conf& p, flv& g) {
@@ -56,13 +57,31 @@ int main() {
 	conf current = origin;
 	bfgs_workspace workspace(size);
 	evaluations = 0;
-	const fl legacy_f = workspace.minimize(step_then_uphill, current, 2, evaluations).energy;
-	require(legacy_f == -0.5 && coordinate(current) < -1, "Legacy BFGS did not reproduce an uphill commit");
+	const auto native = workspace.minimize(step_then_uphill, current, 2, evaluations);
+	require(native.energy == -1 && coordinate(current) == -1 && evaluations == 12 &&
+	        native.restore_coordinates, "Native BFGS must restore its last accepted point after exhaustion");
 	current = origin;
 	evaluations = 0;
 	require(workspace.minimize<true>(step_then_uphill, current, 2, evaluations).energy == -1
 	        && coordinate(current) == -1 && evaluations == 12,
 	        "After Armijo failure BFGS must retain the last accepted point");
+
+	// An indefinite native inverse Hessian can give an ascent direction. Its
+	// previous acceptance threshold would have allowed the small uphill step.
+	auto above_initial = [](const conf& p, flv& g) {
+		const fl x = coordinate(p);
+		g.front() = x == 0 ? 1 : 2;
+		if (x == 0) return fl(0);
+		if (x == -1) return fl(-0.0002);
+		if (x == 1) return fl(0.0001);
+		return fl(1);
+	};
+	current = origin;
+	evaluations = 0;
+	const auto fallback = workspace.minimize(above_initial, current, 3, evaluations);
+	require(fallback.energy == -0.0002 && coordinate(current) == -1 &&
+	        evaluations == 2 && fallback.restore_coordinates,
+	        "Native BFGS must stop at the accepted point before testing an ascent direction");
 
 	auto steep_quadratic = [](const conf& p, flv& g) {
 		g.front() = 3 * coordinate(p);
