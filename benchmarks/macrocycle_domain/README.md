@@ -18,7 +18,7 @@
 
 ### AD4 的显式氢也受盒面约束
 
-第一次修正仍以重原子定义 AD4 域，会漏掉有真实原子图的 HD，还误将 XS 不打分的 W 计入盒面。用官方人 BACE1 大环教程中的原始配体和 AutoGrid 图，刚体变换一份输入，让第 37 号 HD 单独越界 0.257 Å；其他位点（包括 G 标记）仍在盒内。026b01b 的 AD4 报告 354,114.303 kcal/mol，将这个氢夹到盒面后为 20,528.303。两者相差 333,586.000 kcal/mol。HD 的部分电荷为 +0.149，三个格点通道各自的壁罚乘上原子、静电、去溶剂化系数，相加给出 1,000,000 × 0.257 × (1 + 0.149 + |0.149|)，与实测差值相符。初修版本地优化入口也以成功返回相同的高罚分。最终版的固定打分和本地优化都拒绝这个越界姿势。XS Vina 对上述氢的两个位置均给出 186.719，因为该氢没有 XS 图。这个高碰撞姿势是故意靠墙的数值诊断。原始未移动配体的 AD4 和 Vina 分数在修改前后完全相同，分别为 −12.351 和 −7.628。C++ 和 CLI 回归另外覆盖 H、HD、W 在 AD4 与 XS 中相反的资格，以及闭环标记和真实碳。[冻结坐标实验和脚本](mapped_hydrogens.py) · [原始分数](mapped_hydrogens.csv) · [壁罚复算](wall.json)
+第一次修正仍以重原子定义 AD4 域，会漏掉有真实原子图的 HD，还误将 XS 不打分的 W 计入盒面。用官方人 BACE1 大环教程中的原始配体和 AutoGrid 图，刚体变换一份输入，让第 37 号 HD 单独越界 0.257 Å；其他位点（包括 G 标记）仍在盒内。c7e64eb 的 AD4 报告 354,114.303 kcal/mol，将这个氢夹到盒面后为 20,528.303。两者相差 333,586.000 kcal/mol。HD 的部分电荷为 +0.149，三个格点通道各自的壁罚乘上原子、静电、去溶剂化系数，相加给出 1,000,000 × 0.257 × (1 + 0.149 + |0.149|)，与实测差值相符。初修版本地优化入口也以成功返回相同的高罚分。最终版的固定打分和本地优化都拒绝这个越界姿势。XS Vina 对上述氢的两个位置均给出 186.719，因为该氢没有 XS 图。这个高碰撞姿势是故意靠墙的数值诊断。原始未移动配体的 AD4 和 Vina 分数在修改前后完全相同，分别为 −12.351 和 −7.628。C++ 和 CLI 回归另外覆盖 H、HD、W 在 AD4 与 XS 中相反的资格，以及闭环标记和真实碳。[冻结坐标实验和脚本](mapped_hydrogens.py) · [原始分数](mapped_hydrogens.csv) · [壁罚复算](wall.json)
 
 ## 同预算对接与实测 Ki
 
@@ -58,6 +58,6 @@ python benchmarks/check_local_only.py "$f" "$u"
 
 [原始标准和压力对接坐标、日志、实际计数与运行配置](raw.tar.xz) · [运行所用二进制 SHA256](binaries.json)
 
-复现显式氢的补充实验时，使用官方 AutoDock-Vina 提交 3c65c0b 的 `example/docking_with_macrocycles/solution`，以及本分支 026b01b 与最终版本的二进制。`python benchmarks/macrocycle_domain/mapped_hydrogens.py "$solution" "$W/mapped-H" "$before" "$after"` 会重建刚体变换、核对只有 HD 越界、比较两种力场并独立计算实际分数中的边界罚。
+复现显式氢的补充实验时，使用官方 AutoDock-Vina 提交 3c65c0b 的 `example/docking_with_macrocycles/solution`，以及本分支 c7e64eb 与最终版本的二进制。`python benchmarks/macrocycle_domain/mapped_hydrogens.py "$solution" "$W/mapped-H" "$before" "$after"` 会重建刚体变换、核对只有 HD 越界、比较两种力场并独立计算实际分数中的边界罚。
 
 最终按力场类型判断后，重新运行了全部 20 个 Pro 结构配置，坐标与计数逐条复现。FKBP12 的 48 个固定配体首姿也重新计算，两个受体下的配对评分逐项相同。[最终版本逐次对接和计时](typed_domain_replay.csv)
