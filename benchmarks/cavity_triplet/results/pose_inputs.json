@@ -1,0 +1,43 @@
+{
+  "systems": {
+    "at9283": {
+      "ligand": "6c3a027a25d4030ee4d89228e712c064e8fb9148afdd731c4460c05dddaf58e4",
+      "receptor": "614daf795f09fa31759011508a36e596068df237bc18861a247273f34349c2ea",
+      "bonds": "451492d5653fc434ab0228280fb56f87cc0dce63abe0a35bf025ba4df7c1563f",
+      "center": [
+        -3.1538611111111106,
+        31.83275,
+        -3.84613888888889
+      ],
+      "size": 26
+    },
+    "danusertib": {
+      "ligand": "eea2c398f719ec3f04cf69d34024e350bc46a2416b3441cd24828dd59b122e91",
+      "receptor": "614daf795f09fa31759011508a36e596068df237bc18861a247273f34349c2ea",
+      "bonds": "20864c8691c05247dfe205f9faaa3c637a2d7275d7ca8a5e534fbd63115a6de5",
+      "center": [
+        -3.1538611111111106,
+        31.83275,
+        -3.84613888888889
+      ],
+      "size": 26
+    },
+    "82I": {
+      "ligand": "7d59ab23813167ad956e549cef91cc532c70e9d72c3dd6796506d32fc789ce88",
+      "receptor": "741874605fa2e1ea15374a13b4e50a1eb4c2f715f461c568da362ec6bbe48e62",
+      "bonds": "38f6964e99b979b8365f7b407ed2c72eb88345cfb8c250da93b44644d640c431",
+      "center": [
+        128.0266,
+        -2.8662399999999995,
+        35.45272000000001
+      ],
+      "size": 24
+    }
+  },
+  "binaries": {
+    "official": "f31f774f723bba7bbe6e9d1c47577020eea9a8da16424284c043d22593570644",
+    "counter": "62875fa8d1abc9e1af09f848f6d9cf052828359dd5246a6ef00d0300ca4672b2",
+    "pro": "1807da648da1f441d344c0a0a03004d7559b03adb185e00485ec10f0623b5339",
+    "observer": "caa75c7f0089e37078e9ef01d8ec3f757462f862c02c41af1ed3f1a2502b873d"
+  }
+}

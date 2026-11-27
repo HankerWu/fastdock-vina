@@ -1,0 +1,4 @@
+query,target,receiver,scaffold,n_heavy,max_prepared_heavy_move_A
+2NNQ,FABP4,3FR2,c1ccc(-c2ccccc2-n2cc(-c3ccccc3)c(-c3ccccc3)n2)cc1,36,0.0
+3FR2,FABP4,2NNQ,c1ccc(Cn2c3c(c4ccccc42)CCCC3)cc1,23,0.0
+3FMZ,RBP4,1RBP,O=C(Nc1ccccc1)N1CCC(c2ccccc2)CC1,28,0.0

@@ -1,0 +1,8 @@
+{
+  "benchmarks/cubic_grid/human_panel/affinity-pools.tar.xz": "b5c855bc4113307df131fe067ecb8b572b251a05cb33a2d4a8b8414c1c55b14d",
+  "benchmarks/cubic_grid/fkbp_ad4/maps-1FKG.tar.xz": "9c9bd5af0273f5a4929b2cb723d5fe3e3642be0f8a2b73c0d3635168b4c33f0c",
+  "benchmarks/cubic_grid/fkbp_ad4/maps-1FKH.tar.xz": "c03dae000e6dcd32a4d5f706207ca14278ac93bf0040b7e8c402e40c4d975060",
+  "benchmarks/cubic_grid/human_panel/prepared.tar.xz": "64279b6b69390635a72ed213413587e571630dbf279c7c19d49b7ff3d20fcf67",
+  "benchmarks/receptor_linkage/aurora/internal_loops/rigid_fkbp/pools.tar.xz": "c5b2d6d0874430306433df7a2a3a57531c58cb90dcd4d4c59c0ce600e04dcff8",
+  "benchmarks/cubic_grid/fkbp_ad4/results/metadata.json": "bf6384123a399bc3aa697744440611c0776a11df79a78ae8a2ffc7f2bea24b77"
+}

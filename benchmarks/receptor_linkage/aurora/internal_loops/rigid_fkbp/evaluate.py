@@ -49,7 +49,7 @@ def crystal_positions(source, receiver, query):
     return points[np.asarray(mappings)]
 
 
-def inspect(work, out):
+def inspect(work, out, arms=ARMS, comparison="pivot"):
     out.mkdir(parents=True, exist_ok=True)
     hashes = prepare(work)
     dep = BENCH / "human_panel/depositions.tar.xz"
@@ -89,7 +89,7 @@ def inspect(work, out):
         }
         for r in RECEIVERS
     }
-    runs = [row for arm in ARMS for row in read(work / f"runs-{arm}.csv")]
+    runs = [row for arm in arms for row in read(work / f"runs-{arm}.csv")]
     replay = read(work / "counter_replay.csv")
     by_cell = {(r["receiver"], r["compound"]): r for r in replay}
     assert len(by_cell) == 16
@@ -119,7 +119,7 @@ def inspect(work, out):
             assert len(terms) == 3 and sum(terms) == int(counterpart[field])
             row[field] = sum(terms)
     assert (
-        len({(r["arm"], r["receiver"], r["compound"]) for r in runs}) == len(runs) == 80
+        len({(r["arm"], r["receiver"], r["compound"]) for r in runs}) == len(runs) == len(arms) * 16
     )
     modes, poses, desc, scores, costs = [], [], {}, {}, []
     rescored = {}
@@ -211,7 +211,7 @@ def inspect(work, out):
     table(out / "modes.csv", modes)
     table(out / "pose_cells.csv", poses)
     assays, pairs, individual, distributions = [], [], [], []
-    for arm in ARMS:
+    for arm in arms:
         picked = [r for r in poses if r["arm"] == arm]
         values = [r["top1"] for r in picked]
         qs = np.quantile(values, [0.25, 0.5, 0.75, 0.9, 0.95])
@@ -308,9 +308,10 @@ def inspect(work, out):
                     cliff9_11=subset[11] - subset[9],
                 )
             )
+    contrast = f"score_change_{comparison}_minus_base"
     for n in labels:
-        desc[n]["score_change_pivot_minus_base"] = (
-            scores["pivot", "mean", n] - scores["base", "mean", n]
+        desc[n][contrast] = (
+            scores[comparison, "mean", n] - scores["base", "mean", n]
         )
     for name, data in (
         ("assay", assays),
@@ -324,7 +325,7 @@ def inspect(work, out):
     bias = {
         k: spearmanr(
             [d[k] for d in desc.values()],
-            [d["score_change_pivot_minus_base"] for d in desc.values()],
+            [d[contrast] for d in desc.values()],
         ).statistic
         for k in ("heavy_atoms", "torsdof")
     }

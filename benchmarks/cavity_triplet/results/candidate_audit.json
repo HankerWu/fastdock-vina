@@ -1,0 +1,11 @@
+{
+  "max_errors": {
+    "crystal_A": 3.552713678800501e-14,
+    "frame_A": 8.79296635503124e-14,
+    "frame_score": 1.8758328224066645e-12,
+    "direct_score": 2.842170943040401e-14
+  },
+  "source_events": 24,
+  "candidates": 49152,
+  "held_parent_frame_fixed_pose_parity": true
+}

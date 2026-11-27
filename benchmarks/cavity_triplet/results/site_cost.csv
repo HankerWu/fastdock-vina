@@ -1,0 +1,3 @@
+receptor_index,receptor,wall_s,cpu_s,nearest_queries,burial_queries,retained_sites,triangles
+0,receptor.pdbqt,0.023414784998749383,0.023414400999999974,4913,1026,32,29754
+1,receptor.pdbqt,0.019610926996392664,0.01961087199999989,4913,1027,32,29760

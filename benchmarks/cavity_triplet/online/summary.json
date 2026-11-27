@@ -1,0 +1,37 @@
+{
+  "pro": {
+    "wall_s": 1.7969098199973814,
+    "cpu_s": 1.7648079999999973,
+    "atom_queries": 0.0,
+    "site_nearest": 0.0,
+    "site_count": 0.0,
+    "hunt_evals": 291965.0,
+    "second_evals": 8323.0,
+    "explicit_evals": 1450.0
+  },
+  "matched": {
+    "wall_s": 3.882494871992094,
+    "cpu_s": 3.8780940000000026,
+    "atom_queries": 151552.0,
+    "site_nearest": 29478.0,
+    "site_count": 6158.0,
+    "hunt_evals": 289452.0,
+    "second_evals": 10794.0,
+    "explicit_evals": 1324.0
+  },
+  "sham": {
+    "wall_s": 4.001198251993628,
+    "cpu_s": 3.9784679999999994,
+    "atom_queries": 151552.0,
+    "site_nearest": 29478.0,
+    "site_count": 6158.0,
+    "hunt_evals": 290852.0,
+    "second_evals": 9384.0,
+    "explicit_evals": 1371.0
+  },
+  "engine_sha256": "fdcbc4b3da39508356d45193f546177bddfe561ffc29990530aa999dd6765769",
+  "pools_and_counters_equal": 18,
+  "missing_event_test": "nonzero exit, existing output preserved (trajectory 20, exhaustiveness 2, 82I)",
+  "source_serials_checked": 46,
+  "build_recovery": "incremental compile initially exhausted /tmp; rebuilt with workspace TMPDIR and used the serial-sorted executable"
+}

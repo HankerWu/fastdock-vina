@@ -1,0 +1,74 @@
+{
+  "archives": {
+    "benchmarks/cubic_grid/acid_states/acid-pools.tar.xz": "b14488106a1285720835084e7ce910f08f67cacc2c6ec346b22ec314f6959865",
+    "benchmarks/cubic_grid/human_panel/prepared.tar.xz": "64279b6b69390635a72ed213413587e571630dbf279c7c19d49b7ff3d20fcf67"
+  },
+  "cells": {
+    "2NNQ-HA": {
+      "ligand": "648a9e73483a1b129251641004c82296059528536c7046c94d914299fd279414",
+      "receptor": "ebd6f737a60fa26ac36e7e999601205f938826f3e91f8217e1a877c4632e2efa",
+      "bonds": "bd6c35d5e1e7f0e0578cb8e53f1e34a59d464aeb23df712b7d326889b8559d04",
+      "center": [
+        20.749521739130433,
+        4.619826086956523,
+        1.2891739130434785
+      ],
+      "size": 24
+    },
+    "2NNQ-A": {
+      "ligand": "83a807088dda8792a4a12dc3bb06ff4de070df62bf9333ac242e2c9f3d8384e3",
+      "receptor": "ebd6f737a60fa26ac36e7e999601205f938826f3e91f8217e1a877c4632e2efa",
+      "bonds": "1e44480276202a1f863b7896368f296b09dc04937b90d2eecf1e8039e3f0356b",
+      "center": [
+        20.749521739130433,
+        4.619826086956523,
+        1.2891739130434785
+      ],
+      "size": 24
+    },
+    "3FR2-HA": {
+      "ligand": "407cef9292ce492a7d49edaea66170d2f4da906cd5fda03cdfa83a38d4123f43",
+      "receptor": "16965a9e18e9ae25c0a163dd9b5a1181292a63d912d5b2e6a1fdbde75aebf2bb",
+      "bonds": "ca96bd79f5845b796a904139b3cd6959a5b69e2a7e0669a057e445a6f4d27fcd",
+      "center": [
+        4.56938888888889,
+        7.666916666666667,
+        17.542805555555557
+      ],
+      "size": 24
+    },
+    "3FR2-A": {
+      "ligand": "952244db30f2df43ef50c72580fadef3b9e26be946a3fa19f7f53565cd0598fb",
+      "receptor": "16965a9e18e9ae25c0a163dd9b5a1181292a63d912d5b2e6a1fdbde75aebf2bb",
+      "bonds": "da5cf446e75b1ca5363aec5036cbff0a015e0bd3d90624ab925c48032a35296c",
+      "center": [
+        4.56938888888889,
+        7.666916666666667,
+        17.542805555555557
+      ],
+      "size": 24
+    },
+    "3FMZ-HA": {
+      "ligand": "c774fbcb3a6a1ed5c42042d2e876d4bd35c49c71e7038dc8b9c8b704262f22a9",
+      "receptor": "d487ea4d9a20a6fd137a5ed3e8d34214d728c38ee02f10d6152fea23fc81288c",
+      "bonds": "a1e8f150d08151a28e0b37de001da1ed2dfdb0781711e7139c7e0db057a6f9ea",
+      "center": [
+        32.20157142857143,
+        19.508619047619046,
+        48.55028571428572
+      ],
+      "size": 24
+    },
+    "3FMZ-A": {
+      "ligand": "02aa42bd137af7e1fd5e2f006fbc1c72e763945cc05cb11c34647ac7fbb6878a",
+      "receptor": "d487ea4d9a20a6fd137a5ed3e8d34214d728c38ee02f10d6152fea23fc81288c",
+      "bonds": "9239c079dbd1105aeb95cd809ba2cabbe8c5c48d27a1ddcfd463a9b573a7dd04",
+      "center": [
+        32.20157142857143,
+        19.508619047619046,
+        48.55028571428572
+      ],
+      "size": 24
+    }
+  }
+}

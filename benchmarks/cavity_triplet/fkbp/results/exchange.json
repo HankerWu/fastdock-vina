@@ -1,0 +1,34 @@
+{
+  "source": {
+    "url": "https://static-content.springer.com/esm/art%3A10.1038%2Fnbt.1990/MediaObjects/41587_2011_BFnbt1990_MOESM5_ESM.xls",
+    "sha256": "e47821b2e959ff22aa6d1613b236a63fb530f0da19cfa8d45408598cf27498d7"
+  },
+  "checks": "12 primal witnesses and 267 covering boxes verified.",
+  "terms": [
+    {
+      "target": "AURKA",
+      "a": "VX-680/MK-0457",
+      "b": "Sunitinib",
+      "kd_a_nM": "3.9",
+      "kd_b_nM": "1700",
+      "log_ratio_kcal_mol": "-3.600772167103830328696670188420618150731"
+    },
+    {
+      "target": "CHEK1",
+      "a": "CEP-701",
+      "b": "VX-680/MK-0457",
+      "kd_a_nM": "2.8",
+      "kd_b_nM": "8700",
+      "log_ratio_kcal_mol": "-4.764443364562933103524198031808830419255"
+    },
+    {
+      "target": "S6K1",
+      "a": "Sunitinib",
+      "b": "CEP-701",
+      "kd_a_nM": "48",
+      "kd_b_nM": "69",
+      "log_ratio_kcal_mol": "-0.2150160431793939722613792615260908278159"
+    }
+  ],
+  "cycle_kcal_mol": "-8.580231574846157404482247481755539397802"
+}

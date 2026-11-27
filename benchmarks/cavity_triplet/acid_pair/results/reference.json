@@ -1,0 +1,10 @@
+{
+  "depositions_archive_sha256": "6c2a690d7f7594fa895d1c8e871fc1fbc86d7ed2d9abcc06df136dde6fe728c4",
+  "donor_ids": {
+    "2NNQ": "T4B",
+    "3FR2": "8CA",
+    "1RBP": "RTL",
+    "3FMZ": "2T1"
+  },
+  "source": "CCD atom, charge and bond records; deposited chain A ligand coordinates; 14-A common-pocket C-alpha Kabsch fit"
+}

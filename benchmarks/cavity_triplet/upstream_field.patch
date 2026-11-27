@@ -1,0 +1,28 @@
+--- a/src/lib/grid.cpp
++++ b/src/lib/grid.cpp
+@@ -1,3 +1,4 @@
++#include <cstdio>
+ /*
+ 
+    Copyright (c) 2006-2010, The Scripps Research Institute
+@@ -38,7 +39,19 @@
+ 	}
+ }
+ 
+-fl grid::evaluate_aux(const vec& location, fl slope, fl v, vec* deriv) const { // sets *deriv if not NULL
++// A single worker samples one grid per call in the upstream implementation.
++namespace {
++struct counts {
++    unsigned long long samples[2] = {};
++    ~counts() {
++        for (unsigned d=0; d<2; ++d)
++            std::fprintf(stderr, "GRID_CHANNEL derivative=%u n=%llu\n", d, samples[d]);
++    }
++};
++counts calls;
++}
++fl grid::evaluate_aux(const vec& location, fl slope, fl v, vec* deriv) const {
++	++calls.samples[deriv != nullptr]; // sets *deriv if not NULL
+ 	vec s  = elementwise_product(location - m_init, m_factor); 
+ 
+ 	vec miss(0, 0, 0);

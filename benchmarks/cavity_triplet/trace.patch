@@ -1,0 +1,49 @@
+--- a/src/lib/monte_carlo.cpp
++++ b/src/lib/monte_carlo.cpp
+@@ -29,6 +29,7 @@
+ #include "trajectory_archive.h"
+ #include "cross_hunt.h"
+ #include "inject.h"
++#include "source_snapshot.h"
+ 
+ output_type monte_carlo::operator()(model& m, const precalculate_byatom& p, const igrid& ig, const vec& corner1, const vec& corner2, incrementable* increment_me, rng& generator) const {
+ 	output_container tmp;
+@@ -75,6 +76,7 @@
+ 	quasi_newton quasi_newton_par(s, local_steps);
+ 	static cross_hunt::Recorder crossover;
+ 	static rigid_injection injection;
++	static source_snapshot snapshot;
+ 	if (++crossover.trajectory == 1 && crossover.outputs.is_open())
+ 		crossover.quench(m, p, ig, hunt_cap, local_steps);
+ 	VINA_U_FOR(step, global_steps) {
+@@ -86,8 +88,14 @@
+ 		const bool reoriented = mutate_conf(candidate.c, m, mutation_amplitude, generator,
+ 		                                    mixed_reorientation, separate_hunt_chain, centered_rotation, balanced_torsion);
+ 		crossover.record(step + 1, candidate.c);
++		snapshot.capture(crossover.trajectory, step + 1, m, candidate.c);
+ 		const bool injected = injection.apply(crossover.trajectory, step + 1, candidate.c);
+-		const int before_hunt = evalcount;
++		if (injected) {
++            model view(m);
++            view.set(candidate.c);
++            rigid_stage_xyz("selected", crossover.trajectory, step + 1, view);
++        }
++        const int before_hunt = evalcount;
+ 		quasi_newton_par(m, p, ig, candidate, hunt_cap, evalcount);
+ 		if (counters) {
+ 			++counters->hunt_calls;
+@@ -95,7 +103,13 @@
+ 			counters->rigid_reorientations += reoriented;
+ 			counters->mixed_accept_checks += reference_from_save;
+ 		}
+-		if (injected) injection.log << "hunt " << candidate.e << " previous " << tmp.e << '\n';
++		if (injected) {
++            model view(m);
++            view.set(candidate.c);
++            rigid_stage_xyz("hunt", crossover.trajectory, step + 1, view);
++            injection.log << "hunt_evals " << (evalcount - before_hunt) << '\n';
++        }
++        if (injected) injection.log << "hunt " << candidate.e << " previous " << tmp.e << '\n';
+ 		if(step == 0 || metropolis_accept(tmp.e, candidate.e, temperature, generator)) {
+ 			if (injected) injection.log << "accepted\n";
+ 			std::swap(tmp.c, candidate.c);

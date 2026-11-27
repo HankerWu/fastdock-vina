@@ -1,0 +1,27 @@
+--- a/src/lib/monte_carlo.cpp
++++ b/src/lib/monte_carlo.cpp
+@@ -27,6 +27,7 @@
+ #include "mutate.h"
+ #include "quasi_newton.h"
+ #include "trajectory_archive.h"
++#include "live_match.h"
+ 
+ output_type monte_carlo::operator()(model& m, const precalculate_byatom& p, const igrid& ig, const vec& corner1, const vec& corner2, incrementable* increment_me, rng& generator) const {
+ 	output_container tmp;
+@@ -71,6 +72,8 @@
+ 	fl best_e = max_fl;
+ 	bool reference_from_save = false;
+ 	quasi_newton quasi_newton_par(s, local_steps);
++	static thread_local live_match live;
++	live.begin();
+ 	VINA_U_FOR(step, global_steps) {
+ 		if(increment_me)
+ 			++(*increment_me);
+@@ -79,6 +82,7 @@
+ 		candidate.c = tmp.c;
+ 		const bool reoriented = mutate_conf(candidate.c, m, mutation_amplitude, generator,
+ 		                                    mixed_reorientation, separate_hunt_chain, centered_rotation, balanced_torsion);
++		live.apply(step + 1, m, candidate.c);
+ 		const int before_hunt = evalcount;
+ 		quasi_newton_par(m, p, ig, candidate, hunt_cap, evalcount);
+ 		if (counters) {

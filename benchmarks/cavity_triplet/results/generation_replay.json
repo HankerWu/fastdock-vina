@@ -1,0 +1,8 @@
+{
+  "wall_s": 1.5474987000052352,
+  "cpu_s": 1.5202959999999999,
+  "arrays_compared": 264,
+  "numpy": "2.3.5",
+  "same_selection_csv_bytes": true,
+  "scope": "fresh Python process, imports, all ordinary inputs, shared receptor setup and both arms for 24 sources, file compression/writes; excludes MC and offline evaluation"
+}

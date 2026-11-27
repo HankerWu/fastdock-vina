@@ -1,0 +1,16 @@
+{
+  "wall_s": 56.20272738800122,
+  "cpu_s": 56.021946,
+  "returncode": 0,
+  "fresh_binary_sha256": "8b34f205c1f50d018a4f434b1b36c67ae6ef40c3b3f4f0fb5fc6dce490881cce",
+  "rechecked": {
+    "*.pdbqt": 52,
+    "*.history": 52,
+    "*.inject": 52,
+    "*.stages": 52,
+    "*.input": 52
+  },
+  "replay_wall_s": 14.693897983008355,
+  "replay_cpu_s": 14.591401999999999,
+  "replay_evals": 2614300
+}

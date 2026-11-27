@@ -1,0 +1,17 @@
+{
+  "pools": 72,
+  "published": 632,
+  "stage_states": 6285,
+  "candidate_states": 49152,
+  "chemically_equivalent_mappings": {
+    "82I": 1,
+    "at9283": 4,
+    "danusertib": 8
+  },
+  "maximum_absolute_difference": {
+    "published_A": 2.842170943040401e-14,
+    "stage_A": 2.930988785010413e-14,
+    "candidates_A": 3.552713678800501e-14,
+    "pool_endpoints_A": 3.108624468950438e-14
+  }
+}
