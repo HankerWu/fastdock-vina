@@ -1,0 +1,228 @@
+[
+  {
+    "name": "parent",
+    "cpu": 1,
+    "runs": 1,
+    "n": 1,
+    "radius": 1.0,
+    "common_merge": false,
+    "counters": [
+      "Native merge: rmsd=2 candidates=1",
+      "Search trajectory: index=1 steps=303 hunt_calls=303 hunt_evals=11430 second_calls=16 second_evals=657 rigid_reorientations=0",
+      "Hunt chain: index=1 separate=0 accepted=258 mixed_accept_checks=19",
+      "Search counters: rigid_reorientation=native explicit_inputs=1"
+    ],
+    "skip": {},
+    "pool_sha256": "eecea1631b74c4c7bbfad2059627da620d38670e59bd51a67e45241e724588fe"
+  },
+  {
+    "name": "candidate",
+    "cpu": 1,
+    "runs": 1,
+    "n": 1,
+    "radius": 1.0,
+    "common_merge": false,
+    "counters": [
+      "Native merge: rmsd=2 candidates=1",
+      "Search trajectory: index=1 steps=303 hunt_calls=303 hunt_evals=11430 second_calls=16 second_evals=657 rigid_reorientations=0",
+      "Hunt chain: index=1 separate=0 accepted=258 mixed_accept_checks=19",
+      "Search counters: rigid_reorientation=native explicit_inputs=1"
+    ],
+    "skip": {
+      "skipped": "242",
+      "checks": "31",
+      "records": "12",
+      "eligible": "0",
+      "replaced": "0",
+      "slots": "1",
+      "slot": "0",
+      "pending_energy": "0",
+      "previous_energy": "-7.3237366302277502"
+    },
+    "pool_sha256": "eecea1631b74c4c7bbfad2059627da620d38670e59bd51a67e45241e724588fe"
+  },
+  {
+    "name": "parent",
+    "cpu": 1,
+    "runs": 1,
+    "n": 9,
+    "radius": 3.5,
+    "common_merge": false,
+    "counters": [
+      "Native merge: rmsd=2 candidates=5",
+      "Search trajectory: index=1 steps=156 hunt_calls=156 hunt_evals=6019 second_calls=135 second_evals=6061 rigid_reorientations=0",
+      "Hunt chain: index=1 separate=0 accepted=135 mixed_accept_checks=155",
+      "Search counters: rigid_reorientation=native explicit_inputs=5"
+    ],
+    "skip": {},
+    "pool_sha256": "dd297e21261d4725fdbc8c11b1628d83d8587a868ba68756b21e8bb824e0ee8d"
+  },
+  {
+    "name": "candidate",
+    "cpu": 1,
+    "runs": 1,
+    "n": 9,
+    "radius": 3.5,
+    "common_merge": false,
+    "counters": [
+      "Native merge: rmsd=2 candidates=5",
+      "Search trajectory: index=1 steps=156 hunt_calls=156 hunt_evals=6019 second_calls=135 second_evals=6061 rigid_reorientations=0",
+      "Hunt chain: index=1 separate=0 accepted=135 mixed_accept_checks=155",
+      "Search counters: rigid_reorientation=native explicit_inputs=5"
+    ],
+    "skip": {
+      "skipped": "0",
+      "checks": "0",
+      "records": "0",
+      "eligible": "0",
+      "replaced": "0",
+      "slots": "5",
+      "slot": "0",
+      "pending_energy": "0",
+      "previous_energy": "-4.9425863774242353"
+    },
+    "pool_sha256": "dd297e21261d4725fdbc8c11b1628d83d8587a868ba68756b21e8bb824e0ee8d"
+  },
+  {
+    "name": "parent",
+    "cpu": 1,
+    "runs": 1,
+    "n": 9,
+    "radius": 0.0,
+    "common_merge": true,
+    "counters": [
+      "Native merge: rmsd=0 candidates=9",
+      "Search trajectory: index=1 steps=288 hunt_calls=288 hunt_evals=10936 second_calls=22 second_evals=1089 rigid_reorientations=0",
+      "Hunt chain: index=1 separate=0 accepted=261 mixed_accept_checks=26",
+      "Search counters: rigid_reorientation=native explicit_inputs=9"
+    ],
+    "skip": {},
+    "pool_sha256": "ca2f8ea89eefc005717c230fa0880dd5585be947e4de2b4c0e87751f91b1ff0b"
+  },
+  {
+    "name": "candidate",
+    "cpu": 1,
+    "runs": 1,
+    "n": 9,
+    "radius": 0.0,
+    "common_merge": true,
+    "counters": [
+      "Native merge: rmsd=0 candidates=9",
+      "Search trajectory: index=1 steps=288 hunt_calls=288 hunt_evals=10936 second_calls=22 second_evals=1089 rigid_reorientations=0",
+      "Hunt chain: index=1 separate=0 accepted=261 mixed_accept_checks=26",
+      "Search counters: rigid_reorientation=native explicit_inputs=9"
+    ],
+    "skip": {
+      "skipped": "239",
+      "checks": "26",
+      "records": "26",
+      "eligible": "1",
+      "replaced": "1",
+      "slots": "9",
+      "slot": "7",
+      "pending_energy": "-7.2035782008420384",
+      "previous_energy": "-6.5346202470088439"
+    },
+    "pool_sha256": "c5d496743e25be7d8791983c6f75d120572827dab9c0d6e885530bdff602007e"
+  },
+  {
+    "name": "parent",
+    "cpu": 1,
+    "runs": 3,
+    "n": 9,
+    "radius": 1.0,
+    "common_merge": false,
+    "counters": [
+      "Native merge: rmsd=2 candidates=9",
+      "Search trajectory: index=1 steps=309 hunt_calls=309 hunt_evals=11246 second_calls=19 second_evals=772 rigid_reorientations=0",
+      "Hunt chain: index=1 separate=0 accepted=279 mixed_accept_checks=21",
+      "Search trajectory: index=2 steps=201 hunt_calls=201 hunt_evals=10092 second_calls=39 second_evals=1922 rigid_reorientations=0",
+      "Hunt chain: index=2 separate=0 accepted=123 mixed_accept_checks=77",
+      "Search trajectory: index=3 steps=204 hunt_calls=204 hunt_evals=10440 second_calls=35 second_evals=1587 rigid_reorientations=0",
+      "Hunt chain: index=3 separate=0 accepted=131 mixed_accept_checks=40",
+      "Search counters: rigid_reorientation=native explicit_inputs=9"
+    ],
+    "skip": {},
+    "pool_sha256": "4784d2d5ac5fe0ff6457e35d5cff9fb3864b07dd808b9210a24243ec92e01b7d"
+  },
+  {
+    "name": "candidate",
+    "cpu": 1,
+    "runs": 3,
+    "n": 9,
+    "radius": 1.0,
+    "common_merge": false,
+    "counters": [
+      "Native merge: rmsd=2 candidates=9",
+      "Search trajectory: index=1 steps=309 hunt_calls=309 hunt_evals=11246 second_calls=19 second_evals=772 rigid_reorientations=0",
+      "Hunt chain: index=1 separate=0 accepted=279 mixed_accept_checks=21",
+      "Search trajectory: index=2 steps=201 hunt_calls=201 hunt_evals=10092 second_calls=39 second_evals=1922 rigid_reorientations=0",
+      "Hunt chain: index=2 separate=0 accepted=123 mixed_accept_checks=77",
+      "Search trajectory: index=3 steps=204 hunt_calls=204 hunt_evals=10440 second_calls=35 second_evals=1587 rigid_reorientations=0",
+      "Hunt chain: index=3 separate=0 accepted=131 mixed_accept_checks=40",
+      "Search counters: rigid_reorientation=native explicit_inputs=9"
+    ],
+    "skip": {
+      "skipped": "440",
+      "checks": "134",
+      "records": "31",
+      "eligible": "1",
+      "replaced": "1",
+      "slots": "9",
+      "slot": "9",
+      "pending_energy": "-7.2629027867663112",
+      "previous_energy": "-5.9895809620663831"
+    },
+    "pool_sha256": "d84016ff2fef939f127211b122d0a1b1fe21f5e55acfd9adc709ec89c6683742"
+  },
+  {
+    "name": "parent",
+    "cpu": 2,
+    "runs": 3,
+    "n": 9,
+    "radius": 1.0,
+    "common_merge": false,
+    "counters": [
+      "Native merge: rmsd=2 candidates=9",
+      "Search trajectory: index=1 steps=309 hunt_calls=309 hunt_evals=11246 second_calls=19 second_evals=772 rigid_reorientations=0",
+      "Hunt chain: index=1 separate=0 accepted=279 mixed_accept_checks=21",
+      "Search trajectory: index=2 steps=201 hunt_calls=201 hunt_evals=10092 second_calls=39 second_evals=1922 rigid_reorientations=0",
+      "Hunt chain: index=2 separate=0 accepted=123 mixed_accept_checks=77",
+      "Search trajectory: index=3 steps=204 hunt_calls=204 hunt_evals=10440 second_calls=35 second_evals=1587 rigid_reorientations=0",
+      "Hunt chain: index=3 separate=0 accepted=131 mixed_accept_checks=40",
+      "Search counters: rigid_reorientation=native explicit_inputs=9"
+    ],
+    "skip": {},
+    "pool_sha256": "4784d2d5ac5fe0ff6457e35d5cff9fb3864b07dd808b9210a24243ec92e01b7d"
+  },
+  {
+    "name": "candidate",
+    "cpu": 2,
+    "runs": 3,
+    "n": 9,
+    "radius": 1.0,
+    "common_merge": false,
+    "counters": [
+      "Native merge: rmsd=2 candidates=9",
+      "Search trajectory: index=1 steps=309 hunt_calls=309 hunt_evals=11246 second_calls=19 second_evals=772 rigid_reorientations=0",
+      "Hunt chain: index=1 separate=0 accepted=279 mixed_accept_checks=21",
+      "Search trajectory: index=2 steps=201 hunt_calls=201 hunt_evals=10092 second_calls=39 second_evals=1922 rigid_reorientations=0",
+      "Hunt chain: index=2 separate=0 accepted=123 mixed_accept_checks=77",
+      "Search trajectory: index=3 steps=204 hunt_calls=204 hunt_evals=10440 second_calls=35 second_evals=1587 rigid_reorientations=0",
+      "Hunt chain: index=3 separate=0 accepted=131 mixed_accept_checks=40",
+      "Search counters: rigid_reorientation=native explicit_inputs=9"
+    ],
+    "skip": {
+      "skipped": "440",
+      "checks": "134",
+      "records": "31",
+      "eligible": "1",
+      "replaced": "1",
+      "slots": "9",
+      "slot": "9",
+      "pending_energy": "-7.2629027867663112",
+      "previous_energy": "-5.9895809620663831"
+    },
+    "pool_sha256": "d84016ff2fef939f127211b122d0a1b1fe21f5e55acfd9adc709ec89c6683742"
+  }
+]

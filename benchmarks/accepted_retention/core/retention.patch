@@ -1,0 +1,148 @@
+diff --git a/src/lib/conf.h b/src/lib/conf.h
+index 8778659..0e1a9ad 100755
+--- a/src/lib/conf.h
++++ b/src/lib/conf.h
+@@ -308,6 +308,7 @@ struct output_type {
+     fl unbound;
+     fl total;
+ 	fl native_energy = 0;
++	fl originating_hunt_energy = max_fl;
+ 	sz native_rank = 0;
+ 	fl amide_penalty = -1;
+ 	fl amide_rank_score() const { return e + amide_penalty; }
+diff --git a/src/lib/monte_carlo.cpp b/src/lib/monte_carlo.cpp
+index 69b9384..597a142 100755
+--- a/src/lib/monte_carlo.cpp
++++ b/src/lib/monte_carlo.cpp
+@@ -96,7 +96,7 @@ void monte_carlo::operator()(model& m, output_container& out, const precalculate
+ 
+ 			// Hunt minimization left m at the accepted conformation. The shadow
+ 			// archive must observe it before the historical second minimization.
+-			if (archive)
++			if (archive && archive->deferred_radius < 0)
+ 				archive->capture(m, tmp, min_rmsd, num_saved_mins);
+ 
+ 			// FIXME only for very promising ones
+@@ -109,6 +109,7 @@ void monte_carlo::operator()(model& m, output_container& out, const precalculate
+ 				output_type& saved = separate_hunt_chain ? candidate : tmp;
+ 				if (separate_hunt_chain)
+ 					saved.c = tmp.c;
++				if (archive && archive->deferred_radius >= 0) saved.originating_hunt_energy = tmp.e;
+ 				quasi_newton_par(m, p, ig, saved, authentic_v, evalcount);
+ 				if (counters) {
+ 					++counters->second_calls;
+@@ -119,6 +120,8 @@ void monte_carlo::operator()(model& m, output_container& out, const precalculate
+ 				reference_from_save = !separate_hunt_chain;
+ 				if(tmp.e < best_e)
+ 					best_e = tmp.e;
++			} else if (archive && archive->deferred_radius >= 0) {
++				archive->observe_skipped(m, tmp, out);
+ 			}
+ 		}
+ 	}
+diff --git a/src/lib/trajectory_archive.h b/src/lib/trajectory_archive.h
+index b875230..92a9fcd 100644
+--- a/src/lib/trajectory_archive.h
++++ b/src/lib/trajectory_archive.h
+@@ -7,7 +7,23 @@
+ // This object owns only recorded evidence. It never mutates the search model,
+ // writes to the historical output container, evaluates energy or advances RNG.
+ struct trajectory_archive {
+-	output_container accepted;
++    fl deferred_radius = -1;
++    boost::optional<output_type> deferred;
++    sz skipped = 0, geometry_checks = 0, records = 0;
++
++    void observe_skipped(const model& m, const output_type& pose, const output_container& saved) {
++        ++skipped;
++        if (!std::isfinite(pose.e) || (deferred && pose.e >= deferred->e)) return;
++        auto coords = m.get_heavy_atom_movable_coords();
++        ++geometry_checks;
++        const fl distance = find_closest(coords, saved).second;
++        if (distance == 0 || distance < deferred_radius) return;
++        deferred.emplace(pose.c, pose.e);
++        deferred->coords.swap(coords);
++        ++records;
++    }
++
++    output_container accepted;
+ 	std::vector<vecv> samples;
+ 	sz native_evaluations = 0;
+ 	sz native_refinements = 0;
+diff --git a/src/lib/vina.cpp b/src/lib/vina.cpp
+index b817ec9..2e8a947 100644
+--- a/src/lib/vina.cpp
++++ b/src/lib/vina.cpp
+@@ -1722,7 +1722,15 @@ void Vina::global_search(const int exhaustiveness, const int n_poses, const doub
+ 	const vec authentic_v(1000, 1000, 1000);
+ 	model best_model;
+ 	output_container poses;
+-	std::vector<trajectory_archive> archives;
++    std::vector<trajectory_archive> archives;
++    // Research build, single-ligand native Vina refinement only; no mixed landscapes.
++    const bool defer_hunt = !late_selection && supports_polar_burial() && m_use_explicit_receptor
++                         && !m_separate_hunt_chain && !m_mixed_cutoff_search && !m_soft_receptor_search;
++    if (defer_hunt) {
++        archives.resize(exhaustiveness);
++        for (auto& archive : archives)
++            archive.deferred_radius = m_use_min_rmsd_for_merge ? min_rmsd : 2.0;
++    }
+ 	std::vector<search_trajectory_counters> trajectory_counters;
+ 	auto* counters = m_search_counters ? &trajectory_counters : nullptr;
+ 	sz explicit_inputs = 0;
+@@ -1789,7 +1797,7 @@ void Vina::global_search(const int exhaustiveness, const int n_poses, const doub
+ 		}
+ 		const igrid& search_grid = guide_even_only ? unanchored_grid : guided_grid;
+ 		parallelmc(m_model, poses, m_precalculated_byatom, search_grid, m_grid.corner1(), m_grid.corner2(), generator,
+-		           m_progress_callback, archive_enabled ? &archives : nullptr, archive_support, counters,
++		           m_progress_callback, (defer_hunt || archive_enabled) ? &archives : nullptr, archive_support, counters,
+ 		           alternate.get_ptr());
+ 	} else {
+ 		parallelmc(m_model, poses, m_precalculated_byatom, m_ad4grid, m_ad4grid.corner1(), m_ad4grid.corner2(), generator, m_progress_callback, nullptr, false, counters);
+@@ -1820,6 +1828,46 @@ void Vina::global_search(const int exhaustiveness, const int n_poses, const doub
+ 		poses = remove_redundant(poses, min_rmsd);
+ 	}
+ 
++    if (defer_hunt) {
++        const output_type* pending = nullptr;
++        sz skipped = 0, checks = 0, records = 0;
++        for (const auto& archive : archives) {
++            skipped += archive.skipped;
++            checks += archive.geometry_checks;
++            records += archive.records;
++            if (!archive.deferred || poses.size() < 2) continue;
++            const auto& proposal = *archive.deferred;
++            const fl distance = find_closest(proposal.coords, poses).second;
++            if (distance > 0 && distance >= std::max(archive.deferred_radius, min_rmsd) &&
++                (!pending || proposal.e < pending->e))
++                pending = &proposal;
++        }
++        sz slot = 0;
++        for (sz i = 1; i < poses.size(); ++i)
++            if (poses[i].originating_hunt_energy > poses[slot].originating_hunt_energy)
++                slot = i;
++        const fl previous = poses.empty() ? max_fl : poses[slot].originating_hunt_energy;
++        bool replace = pending && pending->e < previous;
++#ifdef FASTDOCK_UNGATED_DEFERRED
++        replace = pending != nullptr;
++#endif
++        if (replace) {
++            auto& target = poses[slot];
++            target.c = pending->c;
++            target.e = pending->e;
++            target.coords = pending->coords;
++            target.originating_hunt_energy = pending->e;
++        }
++        if (m_search_counters) {
++            std::ostringstream line;
++            line << std::setprecision(17) << "Deferred hunt: skipped=" << skipped << " checks=" << checks
++                 << " records=" << records << " eligible=" << bool(pending) << " replaced=" << replace
++                 << " slots=" << poses.size() << " slot=" << (pending ? slot+1 : 0)
++                 << " pending_energy=" << (pending ? pending->e : 0) << " previous_energy=" << previous;
++            std::cout << line.str() << '\n';
++        }
++    }
++
+ 	if (!poses.empty()) {
+ 		// For the Vina scoring function, we take the intramolecular energy from the best pose
+ 		// the order must not change because of non-decreasing g (see paper), but we'll re-sort in case g is non strictly increasing

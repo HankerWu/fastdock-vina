@@ -1,0 +1,91 @@
+diff --git a/src/lib/monte_carlo.cpp b/src/lib/monte_carlo.cpp
+index 597a142..37cbc49 100755
+--- a/src/lib/monte_carlo.cpp
++++ b/src/lib/monte_carlo.cpp
+@@ -109,7 +109,10 @@ void monte_carlo::operator()(model& m, output_container& out, const precalculate
+ 				output_type& saved = separate_hunt_chain ? candidate : tmp;
+ 				if (separate_hunt_chain)
+ 					saved.c = tmp.c;
+-				if (archive && archive->deferred_radius >= 0) saved.originating_hunt_energy = tmp.e;
++				if (archive && archive->deferred_radius >= 0) {
++                    saved.originating_hunt_energy = tmp.e;
++                    archive->run_length = 0;
++                }
+ 				quasi_newton_par(m, p, ig, saved, authentic_v, evalcount);
+ 				if (counters) {
+ 					++counters->second_calls;
+diff --git a/src/lib/trajectory_archive.h b/src/lib/trajectory_archive.h
+index 92a9fcd..f932dfa 100644
+--- a/src/lib/trajectory_archive.h
++++ b/src/lib/trajectory_archive.h
+@@ -11,16 +11,31 @@ struct trajectory_archive {
+     boost::optional<output_type> deferred;
+     sz skipped = 0, geometry_checks = 0, records = 0;
+ 
++    vecv run_anchor;
++    boost::optional<output_type> run_best;
++    sz run_length = 0, best_length = 0;
++
+     void observe_skipped(const model& m, const output_type& pose, const output_container& saved) {
+         ++skipped;
+-        if (!std::isfinite(pose.e) || (deferred && pose.e >= deferred->e)) return;
++        if (!std::isfinite(pose.e)) { run_length = 0; return; }
+         auto coords = m.get_heavy_atom_movable_coords();
+         ++geometry_checks;
+         const fl distance = find_closest(coords, saved).second;
+-        if (distance == 0 || distance < deferred_radius) return;
+-        deferred.emplace(pose.c, pose.e);
+-        deferred->coords.swap(coords);
+-        ++records;
++        if (distance == 0 || distance < deferred_radius) { run_length = 0; return; }
++        if (run_length == 0 || rmsd_upper_bound(coords, run_anchor) >= deferred_radius) {
++            run_anchor = coords;
++            run_length = 0;
++        }
++        if (run_length == 0 || pose.e < run_best->e) {
++            run_best.emplace(pose.c, pose.e);
++            run_best->coords.swap(coords);
++        }
++        ++run_length;
++        if (run_length > best_length || (run_length == best_length && run_best->e < deferred->e)) {
++            deferred = *run_best;
++            best_length = run_length;
++            ++records;
++        }
+     }
+ 
+     output_container accepted;
+diff --git a/src/lib/vina.cpp b/src/lib/vina.cpp
+index 2e8a947..d065a8f 100644
+--- a/src/lib/vina.cpp
++++ b/src/lib/vina.cpp
+@@ -1830,6 +1830,7 @@ void Vina::global_search(const int exhaustiveness, const int n_poses, const doub
+ 
+     if (defer_hunt) {
+         const output_type* pending = nullptr;
++        sz pending_length = 0;
+         sz skipped = 0, checks = 0, records = 0;
+         for (const auto& archive : archives) {
+             skipped += archive.skipped;
+@@ -1839,8 +1840,11 @@ void Vina::global_search(const int exhaustiveness, const int n_poses, const doub
+             const auto& proposal = *archive.deferred;
+             const fl distance = find_closest(proposal.coords, poses).second;
+             if (distance > 0 && distance >= std::max(archive.deferred_radius, min_rmsd) &&
+-                (!pending || proposal.e < pending->e))
++                (!pending || archive.best_length > pending_length ||
++                 (archive.best_length == pending_length && proposal.e < pending->e))) {
+                 pending = &proposal;
++                pending_length = archive.best_length;
++            }
+         }
+         sz slot = 0;
+         for (sz i = 1; i < poses.size(); ++i)
+@@ -1861,7 +1865,7 @@ void Vina::global_search(const int exhaustiveness, const int n_poses, const doub
+         if (m_search_counters) {
+             std::ostringstream line;
+             line << std::setprecision(17) << "Deferred hunt: skipped=" << skipped << " checks=" << checks
+-                 << " records=" << records << " eligible=" << bool(pending) << " replaced=" << replace
++                 << " run_length=" << pending_length << " records=" << records << " eligible=" << bool(pending) << " replaced=" << replace
+                  << " slots=" << poses.size() << " slot=" << (pending ? slot+1 : 0)
+                  << " pending_energy=" << (pending ? pending->e : 0) << " previous_energy=" << previous;
+             std::cout << line.str() << '\n';
