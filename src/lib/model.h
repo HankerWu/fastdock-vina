@@ -227,9 +227,7 @@ private:
 	atom_index sz_to_atom_index(sz i) const; // grid_atoms, atoms
 	bool bonded_to_HD(const atom& a) const;
 	bool bonded_to_heteroatom(const atom& a) const;
-	void bonded_to(sz a, sz n, szv& out) const;
 	szv bonded_to(sz a, sz n) const;
-    bool is_closure_clash(sz i, sz j) const;
     bool is_unmatched_closure_dummy(sz i, sz j) const;
 	bool is_glue_pair(sz i, sz j) const;
 

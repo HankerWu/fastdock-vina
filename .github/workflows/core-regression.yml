@@ -7,6 +7,7 @@ on:
       - 'tools/build.py'
       - 'benchmarks/check_map_lattice.cpp'
       - 'benchmarks/check_macrocycle_labels.cpp'
+      - 'benchmarks/bond_distance/**'
       - 'benchmarks/fixtures/cyclododecane.pdbqt'
       - 'benchmarks/check_geometry_metric.cpp'
       - 'benchmarks/check_armijo_numeric.cpp'
@@ -34,6 +35,10 @@ jobs:
           build/core/check-armijo
           c++ -O2 -DNDEBUG -std=c++14 -pthread -Isrc/lib benchmarks/check_geometry_metric.cpp $(find build/core/obj -name '*.o' ! -name main.o) -lboost_system -lboost_thread -lboost_serialization -lboost_filesystem -lboost_program_options -o build/core/check-geometry
           build/core/check-geometry examples/basic/1iep_ligand.pdbqt benchmarks/fixtures/cyclododecane.pdbqt
+      - name: Test cyclic ligand bond-distance exclusions and gradients
+        run: |
+          c++ -O2 -DNDEBUG -std=c++14 -pthread -Isrc/lib benchmarks/bond_distance/audit.cpp $(find build/core/obj -name '*.o' ! -name main.o) -lboost_system -lboost_thread -lboost_serialization -lboost_filesystem -lboost_program_options -o build/core/bond-distance
+          python3 benchmarks/bond_distance/root_order.py build/core/bond-distance --require-valid
       - name: Test macrocycle label invariance
         run: |
           c++ -O2 -DNDEBUG -std=c++14 -pthread -Isrc/lib benchmarks/check_macrocycle_labels.cpp $(find build/core/obj -name '*.o' ! -name main.o) -lboost_system -lboost_thread -lboost_serialization -lboost_filesystem -lboost_program_options -o build/core/check-labels

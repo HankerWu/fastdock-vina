@@ -478,55 +478,39 @@ void model::assign_types(atomv& rigid_atoms) {
 	}
 }
 
-void model::bonded_to(sz a, sz n, szv& out) const {
-	if(!has(out, a)) { // not found
-		out.push_back(a);
-		if(n > 0) 
-			VINA_FOR_IN(i, atoms[a].bonds) {
-				const bond& b = atoms[a].bonds[i];
-				if(!b.connected_atom_index.in_grid)
-					bonded_to(b.connected_atom_index.i, n-1, out);
+szv model::bonded_to(sz a, sz n) const {
+	// Visit each bond-distance shell before expanding the next. On a ring,
+	// the first route found by a depth-first search need not be the shortest.
+	szv result(1, a);
+	sz first = 0;
+	for (sz depth = 0; depth < n && first < result.size(); ++depth) {
+		const sz end = result.size();
+		for (; first < end; ++first)
+			for (const bond& b : atoms[result[first]].bonds) {
+				const atom_index other = b.connected_atom_index;
+				if (!other.in_grid && !has(result, other.i))
+					result.push_back(other.i);
 			}
 	}
+	return result;
 }
 
-szv model::bonded_to(sz a, sz n) const {
-	szv tmp;
-	bonded_to(a, n, tmp);
-	return tmp;
-}
-
-// remove 1-2, 1-3 and 1-4 interactions around CG-CG bond
-bool model::is_closure_clash(sz i, sz j) const {
-	sz t1 = atoms[i].get(atom_type::AD);
-	sz t2 = atoms[j].get(atom_type::AD);
-    if ((t1==AD_TYPE_CG0 && t2==AD_TYPE_G0) || (t2==AD_TYPE_CG0 && t1==AD_TYPE_G0) ||
-        (t1==AD_TYPE_CG1 && t2==AD_TYPE_G1) || (t2==AD_TYPE_CG1 && t1==AD_TYPE_G1) ||
-        (t1==AD_TYPE_CG2 && t2==AD_TYPE_G2) || (t2==AD_TYPE_CG2 && t1==AD_TYPE_G2) ||
-        (t1==AD_TYPE_CG3 && t2==AD_TYPE_G3) || (t2==AD_TYPE_CG3 && t1==AD_TYPE_G3))
-            return false; // it's a G-CG pair, not a clash
-	szv neighbors_of_i = bonded_to(i, 1); // up to 1-2 interactions
-	szv neighbors_of_j = bonded_to(j, 1); // up to 1-2 interactions
-	bool i_has_CG0 = false;
-	bool i_has_CG1 = false;
-	bool i_has_CG2 = false;
-	bool i_has_CG3 = false;
-	VINA_FOR_IN(index, neighbors_of_i) {
-		sz type_i = atoms[neighbors_of_i[index]].get(atom_type::AD);
-			if      (type_i==AD_TYPE_CG0) i_has_CG0=true;
-			else if (type_i==AD_TYPE_CG1) i_has_CG1=true;
-			else if (type_i==AD_TYPE_CG2) i_has_CG2=true;
-			else if (type_i==AD_TYPE_CG3) i_has_CG3=true;
+// A closure tag is present on the endpoint itself and its directly
+// bonded, non-grid neighbors. Independent PDBQT inputs are indexed before
+// append(), so the four bits refer only to tags of the current input.
+static std::vector<unsigned char> neighboring_closure_tags(const atomv& atoms) {
+	std::vector<unsigned char> tags;
+	VINA_FOR_IN(i, atoms) {
+		const sz ad = atoms[i].ad;
+		if (ad < AD_TYPE_CG0 || ad > AD_TYPE_CG3) continue;
+		if (tags.empty()) tags.resize(atoms.size(), 0);
+		const unsigned char bit = static_cast<unsigned char>(1u << (ad - AD_TYPE_CG0));
+		tags[i] |= bit;
+		for (const bond& b : atoms[i].bonds)
+			if (!b.connected_atom_index.in_grid)
+				tags[b.connected_atom_index.i] |= bit;
 	}
-	VINA_FOR_IN(index, neighbors_of_j) {
-		sz type_j = atoms[neighbors_of_j[index]].get(atom_type::AD);
-		if ((type_j==AD_TYPE_CG0 && i_has_CG0) ||
-			(type_j==AD_TYPE_CG1 && i_has_CG1) ||
-			(type_j==AD_TYPE_CG2 && i_has_CG2) ||
-			(type_j==AD_TYPE_CG3 && i_has_CG3))
-			return true;
-	}
-	return false;
+	return tags;
 }
 
 bool model::is_glue_pair(sz i, sz j) const {
@@ -562,13 +546,16 @@ void model::initialize_pairs(const distance_type_matrix& mobility) {
 	- flex_i   - flex_j   : YES (other_pairs)
 	- intra macrocycle closure interactions: NO (1-2, 1-3, 1-4)
 	*/
+	const auto closure_tags = neighboring_closure_tags(atoms);
 	VINA_FOR_IN(i, atoms) {
 		sz i_lig = find_ligand(i);
 		szv bonded_atoms = bonded_to(i, 3);   // up to 1-4
 
 		VINA_RANGE(j, i + 1, atoms.size()) {
 			if (mobility(i, j) == DISTANCE_VARIABLE && !has(bonded_atoms, j)) {
-				if (is_closure_clash(i, j) || is_unmatched_closure_dummy(i, j)) continue;
+				if (is_unmatched_closure_dummy(i, j)) continue;
+				const bool glue = is_glue_pair(i, j);
+				if (!glue && !closure_tags.empty() && (closure_tags[i] & closure_tags[j])) continue;
 				
 				sz t1 = atoms[i].get(atom_typing_used());
 				sz t2 = atoms[j].get(atom_typing_used());
@@ -577,7 +564,7 @@ void model::initialize_pairs(const distance_type_matrix& mobility) {
 				if (t1 < n && t2 < n) { // exclude, say, Hydrogens
 					interacting_pair ip(pair_table_index(atom_typing_used(), atoms[i], atoms[j], i, j, atoms.size()), i, j);
 					
-					if (is_glue_pair(i, j)) {
+					if (glue) {
 						// Add glue_i - glue_i interaction pair
 						glue_pairs.push_back(ip);
 					} else if (i_lig < ligands.size() && find_ligand(j) == i_lig) {
