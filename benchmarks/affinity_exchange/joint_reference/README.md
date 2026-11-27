@@ -52,6 +52,6 @@ Gal1/3 全图最大平均环下界 0.01525；激酶全图 0.27875。移除全部
     python benchmarks/affinity_exchange/joint_reference/analyze.py --output /tmp/joint-reference.json
     python benchmarks/affinity_exchange/joint_reference/analyze.py --frozen benchmarks/affinity_exchange/joint_reference/medians.csv --output /tmp/joint-reference-frozen.json
 
-可用 JSON 解析后比较两个输出和 result.json。当前会话冻结表复算、独立 LP 校验已执行；历史原始文本通过 GitHub 读取并另行计算中位数，当前容器未整体 checkout，未执行第一条完整仓库命令。
+2026-11-27 在完整仓库实际运行上述两条命令。两份 JSON 解析后均与此目录的 result.json 完全相同。后续的[联合局部运动积分扩展](local_integral/README.md)从 500 条冻结首姿独立复核全部原生状态分数，并给出原生 Galectin 剩余 56 条约束的显式可行解。该扩展还检验了局部运动积分后的条件评分。
 
 理论参考：Gilson & Zhou, 2007, DOI 10.1146/annurev.biophys.36.040306.132550；Mobley, Chodera & Dill, 2007, DOI 10.1021/ct700032n；Davis et al., 2011, DOI 10.1038/nbt.1990。

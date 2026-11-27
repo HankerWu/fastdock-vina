@@ -1,0 +1,20 @@
+{
+  "analysis": {
+    "wall_s": 0.9861,
+    "user_s": 0.8022,
+    "system_s": 0.2149,
+    "peak_rss_KiB": 82072
+  },
+  "verification": {
+    "wall_s": 0.3592,
+    "user_s": 0.303,
+    "system_s": 0.0525,
+    "peak_rss_KiB": 17256
+  },
+  "python": "3.12.14",
+  "scipy": "1.17.0",
+  "numpy": "2.3.5",
+  "openblas_threads": 1,
+  "additional_docking_runs": 0,
+  "additional_potential_evaluations": 0
+}

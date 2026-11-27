@@ -1,0 +1,8 @@
+{
+  "coordinates": 288,
+  "neighbor_distance_checks": 576,
+  "neighbor_count_checks": 576,
+  "max_distance_difference_A": 3.907985046680551e-14,
+  "original_blind_rmsd_checks": 91,
+  "max_blind_rmsd_difference_A": 0.0
+}

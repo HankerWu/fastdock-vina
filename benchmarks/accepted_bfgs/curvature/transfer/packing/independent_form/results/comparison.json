@@ -1,0 +1,21 @@
+{
+  "ccd": "3JF",
+  "inchikey": "GFVIEZBZIUKYOG-SVFBPWRDSA-N",
+  "heavy_atoms": 33,
+  "symmetry_maps": 12,
+  "space_group": "C 1 2 1",
+  "resolution_A": 1.486,
+  "closest_adduct_atom_A": 12.006782333331444,
+  "cif_sha256": "4693f5e5968aed789801ca5ae3d3b031d88d4a1989614ae03787382f059aab16",
+  "ca_count": 55,
+  "pocket_rmsd_A": 0.3045667697608635,
+  "direct_9GIO_to_4W9H_C_A": 0.18892949534747577,
+  "copies_to_9GIO_A": {
+    "C": 0.1888901150680533,
+    "F": 0.15344920717947771,
+    "I": 0.19467456036251604,
+    "L": 0.1833897077520295
+  },
+  "n_blind": 43,
+  "max_blind_reference_change_A": 0.06682845551388716
+}
