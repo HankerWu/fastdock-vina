@@ -1,0 +1,122 @@
+[
+  {
+    "pdb": "3P6D",
+    "target": "FABP4",
+    "component": "ZGB",
+    "chain": "A",
+    "status": "ready",
+    "preparation_wall_s": 2.0115333720004855,
+    "source": "https://www.rcsb.org/structure/3P6D",
+    "ccd": "https://files.rcsb.org/ligands/download/ZGB.cif",
+    "sha256": {
+      "3P6D.pdb": "ecda248576cfaed1d36bf7789cef8968a0343269583ffabfb89665610df10c35",
+      "ZGB.cif": "8dbb132511a6893c40d5d1080587514adb8671a87e839e34177d26c73235880a"
+    },
+    "deposited_organism": "HOMO SAPIENS"
+  },
+  {
+    "pdb": "3P6E",
+    "target": "FABP4",
+    "component": "ZGC",
+    "chain": "A",
+    "status": "ready",
+    "preparation_wall_s": 2.1963447100006306,
+    "source": "https://www.rcsb.org/structure/3P6E",
+    "ccd": "https://files.rcsb.org/ligands/download/ZGC.cif",
+    "sha256": {
+      "3P6E.pdb": "f4e1e027f372e42c60858d6e698eb99ef11299be55dde6fd46dc5a8561f46199",
+      "ZGC.cif": "1ff211acc113b408cbf59b966c3fae78356d7d0548cea2e0cec748e9bcd52c53"
+    },
+    "deposited_organism": "HOMO SAPIENS"
+  },
+  {
+    "pdb": "4GQ3",
+    "target": "MEN1",
+    "component": "0RO",
+    "chain": "A",
+    "status": "omitted nonwater atom within 8 A",
+    "preparation_wall_s": 0.10107351999977254,
+    "source": "https://www.rcsb.org/structure/4GQ3",
+    "ccd": "https://files.rcsb.org/ligands/download/0RO.cif",
+    "sha256": {
+      "4GQ3.pdb": "82780accf66cf7b3959800c293d5c74764a2eb4001a44e789547ac8af8cbb5b5",
+      "0RO.cif": "b011b0f229d9c7a8c54670fbf5abb1bf864e1ae01cde4994493350333eaacb78"
+    },
+    "deposited_organism": "HOMO SAPIENS"
+  },
+  {
+    "pdb": "4GQ4",
+    "target": "MEN1",
+    "component": "0RT",
+    "chain": "A",
+    "status": "omitted nonwater atom within 8 A",
+    "preparation_wall_s": 0.08405471300102363,
+    "source": "https://www.rcsb.org/structure/4GQ4",
+    "ccd": "https://files.rcsb.org/ligands/download/0RT.cif",
+    "sha256": {
+      "4GQ4.pdb": "522298fb556c76ccf11d9c92da6aad6f0ef0b9e993bb79422ec358a87f2bb985",
+      "0RT.cif": "88143931d141a8cd9efc0974a7d3c2c08b177afdf201f037f6c8937e2385155d"
+    },
+    "deposited_organism": "HOMO SAPIENS"
+  },
+  {
+    "pdb": "4HG7",
+    "target": "MDM2",
+    "component": "NUT",
+    "chain": "A",
+    "status": "omitted nonwater atom within 8 A",
+    "preparation_wall_s": 0.17685722699934558,
+    "source": "https://www.rcsb.org/structure/4HG7",
+    "ccd": "https://files.rcsb.org/ligands/download/NUT.cif",
+    "sha256": {
+      "4HG7.pdb": "25cb0e210b718f82623cc4b33658269a4ef43664d3f0913e7d9e66a2091be321",
+      "NUT.cif": "a15ba008e43498d7557ee60122e12ffd3b0c699218f1deca84a03a99ae25c3c1"
+    },
+    "deposited_organism": "HOMO SAPIENS"
+  },
+  {
+    "pdb": "1UY6",
+    "target": "HSP90",
+    "component": "PU3",
+    "chain": "A",
+    "status": "Meeko receptor preparation failed; see prep.log",
+    "preparation_wall_s": 2.661547032999806,
+    "source": "https://www.rcsb.org/structure/1UY6",
+    "ccd": "https://files.rcsb.org/ligands/download/PU3.cif",
+    "sha256": {
+      "1UY6.pdb": "46b1b0a9ff0f42ca58d21c9a8aa1fb006793784feab6990197d3b9a1931fe983",
+      "PU3.cif": "205e8133e56daff1ea0c9a2eda6b0beec7608fb3b57a3ff17c86a886e203b091"
+    },
+    "deposited_organism": "HOMO SAPIENS"
+  },
+  {
+    "pdb": "3H82",
+    "target": "EPAS1",
+    "component": "020",
+    "chain": "A",
+    "status": "ready",
+    "preparation_wall_s": 1.6884083400000236,
+    "source": "https://www.rcsb.org/structure/3H82",
+    "ccd": "https://files.rcsb.org/ligands/download/020.cif",
+    "sha256": {
+      "3H82.pdb": "d48eb5a1b5f7c3a8c6229a3477a98d2ee031eb91bb5069f1d84c9a3f0949e754",
+      "020.cif": "d2805f2c97b2345c4f7bf0cda7beb56b3a34f2cf52ef6955712d6412d7daa07a"
+    },
+    "deposited_organism": "HOMO SAPIENS"
+  },
+  {
+    "pdb": "3F1O",
+    "target": "EPAS1",
+    "component": "2XY",
+    "chain": "A",
+    "status": "ready",
+    "preparation_wall_s": 1.9011490299999423,
+    "source": "https://www.rcsb.org/structure/3F1O",
+    "ccd": "https://files.rcsb.org/ligands/download/2XY.cif",
+    "sha256": {
+      "3F1O.pdb": "c07ad64a2a981fa804dcda3f864bd34f12953043e171b586d47dbed15374bcec",
+      "2XY.cif": "661fc5d12e473820dd827102145953a1b32b13f3dd2bcccf3dad12842b28ae6f"
+    },
+    "deposited_organism": "HOMO SAPIENS"
+  }
+]

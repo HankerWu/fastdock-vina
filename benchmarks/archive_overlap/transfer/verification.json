@@ -1,0 +1,89 @@
+{
+  "cells": 48,
+  "independent_modes": 423,
+  "max_difference_A": 5.329070518200751e-15,
+  "six_work_counters_and_input_counts_verified": true,
+  "inputs": {
+    "3P6D": {
+      "source": "https://models.rcsb.org/v1/3p6d/ligand?auth_asym_id=A&auth_seq_id=133&encoding=sdf&copy_all_categories=false",
+      "sha256": "bef133453d8dbb344278657b485db765743fa1b16e44b2bf8fe137876feb7018",
+      "altloc": [
+        "A",
+        "B"
+      ],
+      "occupancies": [
+        0.7,
+        0.3
+      ],
+      "resolution_A": 1.06,
+      "heavy_atoms": 14,
+      "stereochemical_matches": 1,
+      "chain": "A",
+      "formal_charge": 0,
+      "mate_heavy_pairs_8A": 0,
+      "closest_mate_pair": null
+    },
+    "3P6E": {
+      "source": "https://models.rcsb.org/v1/3p6e/ligand?auth_asym_id=A&auth_seq_id=133&encoding=sdf&copy_all_categories=false",
+      "sha256": "674e3baa3f746eba6c5f9d946b631f51e580de326d4adfdf8dbc29afae9c773d",
+      "altloc": [
+        "A",
+        "B"
+      ],
+      "occupancies": [
+        0.5,
+        0.5
+      ],
+      "resolution_A": 1.08,
+      "heavy_atoms": 13,
+      "stereochemical_matches": 2,
+      "chain": "A",
+      "formal_charge": 0,
+      "mate_heavy_pairs_8A": 0,
+      "closest_mate_pair": null
+    },
+    "3H82": {
+      "source": "https://models.rcsb.org/v1/3h82/ligand?auth_asym_id=A&auth_seq_id=351&encoding=sdf&copy_all_categories=false",
+      "sha256": "082c0d85249909d455ba8c5828f591f55f01defb2c8e45862ccf55f655b48781",
+      "altloc": [
+        " "
+      ],
+      "occupancies": [
+        1.0
+      ],
+      "resolution_A": 1.5,
+      "heavy_atoms": 20,
+      "stereochemical_matches": 6,
+      "chain": "A",
+      "formal_charge": 0,
+      "mate_heavy_pairs_8A": 0,
+      "closest_mate_pair": null
+    },
+    "3F1O": {
+      "source": "https://models.rcsb.org/v1/3f1o/ligand?auth_asym_id=A&auth_seq_id=1&encoding=sdf&copy_all_categories=false",
+      "sha256": "62b3662c00dc2d5f001374a27bf99dacea84fd689149c7bf0be9436103d75d09",
+      "altloc": [
+        " "
+      ],
+      "occupancies": [
+        1.0
+      ],
+      "resolution_A": 1.6,
+      "heavy_atoms": 20,
+      "stereochemical_matches": 12,
+      "chain": "A",
+      "formal_charge": 0,
+      "mate_heavy_pairs_8A": 0,
+      "closest_mate_pair": null
+    }
+  },
+  "software": {
+    "rdkit": "2025.9.3",
+    "meeko": "0.7.1",
+    "gemmi": "0.7.4",
+    "numpy": "2.3.5",
+    "scipy": "1.17.0",
+    "openmm": "8.6.1",
+    "pdbfixer": "1.12.0"
+  }
+}

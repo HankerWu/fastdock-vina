@@ -1,0 +1,58 @@
+{
+  "cells": 16,
+  "independent_modes": 112,
+  "max_difference_A": 1.7763568394002505e-15,
+  "six_work_counters_and_input_counts_verified": true,
+  "inputs": {
+    "2YXJ": {
+      "source": "https://models.rcsb.org/v1/2yxj/ligand?auth_asym_id=A&auth_seq_id=1001&encoding=sdf&copy_all_categories=false",
+      "sha256": "40c0ad1807537ba01fe66b15639316ed35a7e33a7436291b2040299c7cab19d8",
+      "altloc": [
+        " "
+      ],
+      "occupancies": [
+        1.0
+      ],
+      "resolution_A": 2.2,
+      "heavy_atoms": 56,
+      "stereochemical_matches": 64,
+      "chain": "A",
+      "formal_charge": 0,
+      "mate_heavy_pairs_8A": 256,
+      "closest_mate_pair": [
+        3.2315281601743844,
+        "C9",
+        "B",
+        "102",
+        "ARG",
+        "NH1"
+      ]
+    },
+    "1T7T": {
+      "source": "https://models.rcsb.org/v1/1t7t/ligand?auth_asym_id=A&auth_seq_id=300&encoding=sdf&copy_all_categories=false",
+      "sha256": "79478b923268357dce072c38d38a7cc0083df279ff97d487845695472a512c33",
+      "altloc": [
+        " "
+      ],
+      "occupancies": [
+        1.0
+      ],
+      "resolution_A": 1.7,
+      "heavy_atoms": 21,
+      "stereochemical_matches": 1,
+      "chain": "A",
+      "formal_charge": 0,
+      "mate_heavy_pairs_8A": 0,
+      "closest_mate_pair": null
+    }
+  },
+  "software": {
+    "rdkit": "2025.9.3",
+    "meeko": "0.7.1",
+    "gemmi": "0.7.4",
+    "numpy": "2.3.5",
+    "scipy": "1.17.0",
+    "openmm": "8.6.1",
+    "pdbfixer": "1.12.0"
+  }
+}

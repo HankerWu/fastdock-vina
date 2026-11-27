@@ -1,0 +1,47 @@
+[
+  {
+    "pdb": "1PMV",
+    "target": "JNK3",
+    "component": "537",
+    "chain": "A",
+    "status": "Meeko receptor preparation failed; see prep.log",
+    "preparation_wall_s": 5.834561649000534,
+    "source": "https://www.rcsb.org/structure/1PMV",
+    "ccd": "https://files.rcsb.org/ligands/download/537.cif",
+    "sha256": {
+      "1PMV.pdb": "9a7d97d139311cea8e897073342aeed3634a6f82dfc6a7394b7ae7e7c76b084e",
+      "537.cif": "8c8d7699405934b59e7135e528635ab24d90efc243dd85262eb45174da95dffe"
+    },
+    "deposited_organism": "HOMO SAPIENS"
+  },
+  {
+    "pdb": "2YXJ",
+    "target": "BCL-XL",
+    "component": "N3C",
+    "chain": "A",
+    "status": "ready",
+    "preparation_wall_s": 2.2754762949989527,
+    "source": "https://www.rcsb.org/structure/2YXJ",
+    "ccd": "https://files.rcsb.org/ligands/download/N3C.cif",
+    "sha256": {
+      "2YXJ.pdb": "1c5a0a54e9b8176dfa2a3b3a7ff183bd7b773eeb37b700753b8f63a10b15da08",
+      "N3C.cif": "185d5494d86e2c221657d426a92fb4106f0420789e524f4b03e315489250965f"
+    },
+    "deposited_organism": "HOMO SAPIENS"
+  },
+  {
+    "pdb": "1T7T",
+    "target": "AR",
+    "component": "DHT",
+    "chain": "A",
+    "status": "ready",
+    "preparation_wall_s": 2.8129411610025272,
+    "source": "https://www.rcsb.org/structure/1T7T",
+    "ccd": "https://files.rcsb.org/ligands/download/DHT.cif",
+    "sha256": {
+      "1T7T.pdb": "8278aac52184b5c00c170e049f5c5fc9388cad0f0326ab57343f1d3416e8c89e",
+      "DHT.cif": "d840a6799b40acb5b4dbf1c49c3b093ddfbff71832510ccd441c1f21fb2ab172"
+    },
+    "deposited_organism": "PAN TROGLODYTES"
+  }
+]
