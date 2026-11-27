@@ -1,0 +1,4 @@
+residue,complete_heavy_atoms,polar_H,canonical_smiles,observed_3d_smiles,stereo_matches_CCD,deposited_occupancies,alternate_locations,shortest_protein_lipid_A,GLC_nearest,BGC_nearest
+501,25,2,CCCCCCCC/C=C\CCCCCCCC(=O)OC[C@H](O)CO,CCCCCCCC/C=C\CCCCCCCC(=O)OC[C@H](O)CO,True,[1.0],[' '],2.179375598652056,"['O19', 'O4', 4.686949861050362]","['O19', 'O4', 4.59095480265271]"
+502,25,2,CCCCCCCC/C=C\CCCCCCCC(=O)OC[C@H](O)CO,CCCCCCCC/C=C\CCCCCCCC(=O)OC[C@H](O)CO,True,[1.0],[' '],2.3963701717389156,"['O25', 'O2', 2.460042479308032]","['O25', 'O2', 2.487533316359804]"
+503,25,2,CCCCCCCC/C=C\CCCCCCCC(=O)OC[C@H](O)CO,CCCCCCCC/C=C/CCCCCCCC(=O)OC[C@H](O)CO,False,[1.0],[' '],2.962389069653072,"['O19', 'O1', 12.291198843074666]","['O19', 'O6', 12.270007579459756]"

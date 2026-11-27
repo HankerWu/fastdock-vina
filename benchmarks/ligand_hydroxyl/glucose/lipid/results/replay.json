@@ -1,0 +1,29 @@
+{
+  "byte_identical": [
+    "4ZW9-OLC.pdbqt",
+    "cells.csv",
+    "components.csv",
+    "distant_control.csv",
+    "lipids.pdbqt",
+    "near_only/4ZW9-OLC.pdbqt",
+    "near_only/runs/4ZW9-BGC_12000_43103_olc.pdbqt",
+    "near_only/runs/4ZW9-BGC_12000_43117_olc.pdbqt",
+    "near_only/runs/4ZW9-BGC_3000_43103_olc.pdbqt",
+    "near_only/runs/4ZW9-BGC_3000_43117_olc.pdbqt",
+    "near_only/runs/4ZW9-GLC_12000_43103_olc.pdbqt",
+    "near_only/runs/4ZW9-GLC_12000_43117_olc.pdbqt",
+    "near_only/runs/4ZW9-GLC_3000_43103_olc.pdbqt",
+    "near_only/runs/4ZW9-GLC_3000_43117_olc.pdbqt",
+    "poses.csv",
+    "preparation.csv",
+    "runs/4ZW9-BGC_12000_43103_olc.pdbqt",
+    "runs/4ZW9-BGC_12000_43117_olc.pdbqt",
+    "runs/4ZW9-BGC_3000_43103_olc.pdbqt",
+    "runs/4ZW9-BGC_3000_43117_olc.pdbqt",
+    "runs/4ZW9-GLC_12000_43103_olc.pdbqt",
+    "runs/4ZW9-GLC_12000_43117_olc.pdbqt",
+    "runs/4ZW9-GLC_3000_43103_olc.pdbqt",
+    "runs/4ZW9-GLC_3000_43117_olc.pdbqt",
+    "weight_controls.csv"
+  ]
+}
