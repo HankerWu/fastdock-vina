@@ -1,0 +1,26 @@
+--- a/src/lib/monte_carlo.cpp
++++ b/src/lib/monte_carlo.cpp
+@@ -71,6 +71,7 @@
+ 	fl best_e = max_fl;
+ 	bool reference_from_save = false;
+ 	bool archive_has_filled = false;
++	sz skipped_refills = 0;
+ 	quasi_newton quasi_newton_par(s, local_steps);
+ 	VINA_U_FOR(step, global_steps) {
+ 		if(increment_me)
+@@ -101,6 +102,7 @@
+ 				archive->capture(m, tmp, min_rmsd, num_saved_mins);
+ 
+ 			// FIXME only for very promising ones
++			if (archive_has_filled && out.size() < num_saved_mins && !(tmp.e < best_e)) ++skipped_refills;
+ 			if(tmp.e < best_e || !archive_has_filled) {
+ 				if (archive)
+ 					++archive->native_refinements;
+@@ -124,6 +126,7 @@
+ 			}
+ 		}
+ 	}
++	std::cout << "Skipped refills: " << skipped_refills << "\n";
+ 	if (archive)
+ 		archive->native_evaluations = evalcount;
+ 	VINA_CHECK(!out.empty());

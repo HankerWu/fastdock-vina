@@ -1,0 +1,27 @@
+--- a/src/lib/monte_carlo.cpp
++++ b/src/lib/monte_carlo.cpp
+@@ -70,6 +70,7 @@
+ 	output_type candidate(s, 0);
+ 	fl best_e = max_fl;
+ 	bool reference_from_save = false;
++	bool archive_has_filled = false;
+ 	quasi_newton quasi_newton_par(s, local_steps);
+ 	VINA_U_FOR(step, global_steps) {
+ 		if(increment_me)
+@@ -100,7 +101,7 @@
+ 				archive->capture(m, tmp, min_rmsd, num_saved_mins);
+ 
+ 			// FIXME only for very promising ones
+-			if(tmp.e < best_e || out.size() < num_saved_mins) {
++			if(tmp.e < best_e || !archive_has_filled) {
+ 				if (archive)
+ 					++archive->native_refinements;
+ 				const int before_second = evalcount;
+@@ -116,6 +117,7 @@
+ 				}
+ 				saved.coords = m.get_heavy_atom_movable_coords();
+ 				add_to_output_container(out, saved, min_rmsd, num_saved_mins); // 20 - max size
++				archive_has_filled = archive_has_filled || out.size() == num_saved_mins;
+ 				reference_from_save = !separate_hunt_chain;
+ 				if(tmp.e < best_e)
+ 					best_e = tmp.e;
