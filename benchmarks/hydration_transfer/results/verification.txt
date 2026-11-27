@@ -1,0 +1,1 @@
+Verified 560 poses. Maximum RMSD discrepancy 3.02e-14 Å, maximum receptor fit discrepancy 4.93e-15 Å.

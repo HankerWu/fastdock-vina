@@ -1,0 +1,10 @@
+{
+  "https://models.rcsb.org/v1/5c7n/ligand?auth_asym_id=A&auth_seq_id=801&encoding=sdf": "e5c30ed7b669ad16cb220f6a94f4e712f1f27c88f349be36349519a2f1af928b",
+  "https://models.rcsb.org/v1/5epr/ligand?auth_asym_id=A&auth_seq_id=801&encoding=sdf": "a8c776818d3172105ddca081efbcf8c35835acf409460228be9c82e1c2a63a73",
+  "https://models.rcsb.org/v1/5eps/ligand?auth_asym_id=A&auth_seq_id=801&encoding=sdf": "9923e0ed9261a2432049d3ca90aaa8335128a6d007183776b817aa4fb23a9fae",
+  "https://models.rcsb.org/v1/5fg5/ligand?auth_asym_id=A&auth_seq_id=801&encoding=sdf": "e165e9a56d321f8935be3e590d1e549823dfb4a7bc2c0667212ec2d951bc8342",
+  "https://models.rcsb.org/v1/4od0/ligand?auth_asym_id=A&auth_seq_id=603&encoding=sdf": "e400127fdfb476a8a0f2f43f44a76506d06d64df9f7139be58c1cc3bd24b057a",
+  "https://models.rcsb.org/v1/3wke/ligand?auth_asym_id=A&auth_seq_id=603&encoding=sdf": "46539f6bf7e3740a4436e5fe2ad837b87af3500411de396193dc0e24b0182d28",
+  "https://models.rcsb.org/v1/4x6y/ligand?auth_asym_id=A&auth_seq_id=601&encoding=sdf": "5120cfacf6895587334ec987843495617814775b298fe770699c7be359ff2643",
+  "https://models.rcsb.org/v1/3ant/ligand?auth_asym_id=A&auth_seq_id=601&encoding=sdf": "49f608fd9bd0705f346bd5128c5df93d5d877515bc83a10a98614272e6800a73"
+}

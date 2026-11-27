@@ -1,0 +1,9 @@
+{
+  "source_revision": "f0e6dbf8104ed13d925813d28bb7757096616da6",
+  "development": "All thrombin_water/results.zip dry native pools, 12 compounds, three receivers and two seeds. Only 3D49 chain H water 2006 is transferred with the established pocket C-alpha alignment.",
+  "held_out_for_this_mechanism": "All paired_crossdocking native cross-docking pools for ESR1, PPARG and PDE4D, both archived budgets, no query-deposit waters. These are previously published benchmarks. Redocking is excluded.",
+  "held_out_site_rule": "Inside the original 24 A receiver docking box, occupancy >= 0.5, positive isotropic B, chain A, accepted altloc blank or A, >=2 protein N/O atoms at 2.4-3.5 A, no protein heavy atom closer than 2.3 A or metal closer than 3 A. One observation gives the historical p=0.75 for each site.",
+  "primary": "Dry vs point steric exclusion vs Gaussian translation with protein steric exclusion and per-site normalization. Same historical exclusion ramp 2.0-2.6 A for protein and ligand. Temperature 298.15 K. One-axis variance B/(8*pi*pi). Independent site factors. No refit by target, seed or case.",
+  "quadrature": "Cartesian product Gauss-Hermite order 11 per dimension; order 17 sensitivity.",
+  "endpoints": "Top-1, top-5, pool oracle at 2 A and conditional top-1. Unique median-gap threefold-separated thrombin ITC pairs, Spearman and Kendall at each receiver/seed. Report all cells, including zero-site receivers."
+}

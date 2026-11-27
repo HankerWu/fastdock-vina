@@ -1,0 +1,18 @@
+poses 1164 cells 240 peak_resident_kib 99812
+ESR1 dry 10 6 8 8
+ESR1 point 10 6 8 8
+ESR1 mobile 10 6 8 8
+ESR1 order17 10 6 8 8
+PDE4D dry 10 3 3 3
+PDE4D point 10 3 3 3
+PDE4D mobile 10 3 3 3
+PDE4D order17 10 3 3 3
+PPARG dry 10 1 2 2
+PPARG point 10 1 2 2
+PPARG mobile 10 1 2 2
+PPARG order17 10 1 2 2
+thrombin dry 30 14 19 19
+thrombin point 30 12 18 19
+thrombin mobile 30 12 18 19
+thrombin order17 30 12 18 19
+ITC eligible pair credits [('dry', 11.0), ('point', 10.0), ('mobile', 10.0), ('order17', 10.0)]
