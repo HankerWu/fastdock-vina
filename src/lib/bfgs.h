@@ -216,7 +216,9 @@ public:
 
 			const fl yp = scalar_product(y, direction);
 			const fl sy = alpha * yp;
-			if (StrictArmijo && (!std::isfinite(sy) || sy < epsilon_fl))
+			// Armijo decrease alone does not guarantee positive secant curvature.
+			// Keep the current positive metric when the pair cannot update it.
+			if (!std::isfinite(sy) || sy < epsilon_fl)
 				continue;
 			if (step == 0) {
 				fl yy = scalar_product(y, y);
@@ -224,24 +226,20 @@ public:
 					yy = 0;
 					VINA_FOR_IN(i, y) yy += y[i] * y[i] * (*inverse_metric)[i];
 				}
-				if (StrictArmijo) {
-					if (std::isfinite(yy) && yy > epsilon_fl) {
-						const fl scale = sy / yy;
-						if (std::isfinite(scale) && scale > 0) {
-							if (inverse_metric) {
-								// Preserve the relative geometric scales during the first
-								// secant rescaling, rather than replacing D by identity.
-								bool valid = true;
-								VINA_FOR(i, h.dim()) {
-									const fl value = scale * (*inverse_metric)[i];
-									valid = valid && std::isfinite(value) && value > 0;
-								}
-								if (valid) VINA_FOR(i, h.dim()) h(i, i) = scale * (*inverse_metric)[i];
-							} else set_diagonal(h, scale);
-						}
+				if (std::isfinite(yy) && yy > epsilon_fl) {
+					const fl scale = sy / yy;
+					if (std::isfinite(scale) && scale > 0) {
+						if (inverse_metric) {
+							// Preserve the relative geometric scales during the first
+							// secant rescaling, rather than replacing D by identity.
+							bool valid = true;
+							VINA_FOR(i, h.dim()) {
+								const fl value = scale * (*inverse_metric)[i];
+								valid = valid && std::isfinite(value) && value > 0;
+							}
+							if (valid) VINA_FOR(i, h.dim()) h(i, i) = scale * (*inverse_metric)[i];
+						} else set_diagonal(h, scale);
 					}
-				} else if (std::abs(yy) > epsilon_fl) {
-					set_diagonal(h, sy / yy);
 				}
 			}
 			bfgs_update(h, direction, y, alpha, yp, minus_hy);

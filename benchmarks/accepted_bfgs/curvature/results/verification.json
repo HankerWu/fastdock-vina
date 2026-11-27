@@ -1,0 +1,10 @@
+{
+  "cells": 48,
+  "matched_cells": 16,
+  "poses": 424,
+  "max_mapping_discrepancy_A": 0.0,
+  "total_affected_minimizations": {
+    "parent": 144,
+    "fixed": 124
+  }
+}

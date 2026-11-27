@@ -66,10 +66,12 @@ int main() {
 	        && coordinate(current) == -1 && evaluations == 12,
 	        "After Armijo failure BFGS must retain the last accepted point");
 
-	// An indefinite native inverse Hessian can give an ascent direction. Its
-	// previous acceptance threshold would have allowed the small uphill step.
-	auto small_uphill_step = [](const conf& p, flv& g) {
+	// A negative first secant must leave the identity in place. No trial should
+	// move uphill in x, even if an inconsistent test oracle rewards it.
+	bool tried_ascent = false;
+	auto small_uphill_step = [&](const conf& p, flv& g) {
 		const fl x = coordinate(p);
+		tried_ascent |= x > 0;
 		g.front() = x == 0 ? 1 : 2;
 		if (x == 0) return fl(0);
 		if (x == -1) return fl(-0.0002);
@@ -80,8 +82,8 @@ int main() {
 	evaluations = 0;
 	const auto no_ascent = workspace.minimize(small_uphill_step, current, 3, evaluations);
 	require(no_ascent.energy == -0.0002 && coordinate(current) == -1 &&
-	        evaluations == 2 && no_ascent.restore_coordinates,
-	        "Native BFGS must stop at the accepted point before testing an ascent direction");
+	        !tried_ascent && evaluations == 12 && no_ascent.restore_coordinates,
+	        "Native BFGS must try a descent direction and retain the last accepted point if all trials fail");
 
 	auto steep_quadratic = [](const conf& p, flv& g) {
 		g.front() = 3 * coordinate(p);
@@ -121,6 +123,11 @@ int main() {
 		g.front() = 1 - coordinate(p);
 		return coordinate(p) - 0.5 * coordinate(p) * coordinate(p);
 	};
+	current = origin;
+	evaluations = 0;
+	require(workspace.minimize(negative_curvature, current, 2, evaluations).energy == -7.5
+	        && coordinate(current) == -3 && evaluations == 3,
+	        "Native BFGS must preserve descent after a negative first secant");
 	current = origin;
 	evaluations = 0;
 	require(workspace.minimize<true>(negative_curvature, current, 2, evaluations).energy == -7.5
