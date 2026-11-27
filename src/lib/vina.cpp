@@ -102,6 +102,7 @@ void Vina::set_receptor(const std::string& rigid_name, const std::string& flex_n
 	m_receptor = parse_receptor_pdbqt(rigid_name, flex_name, m_scoring_function->get_atom_typing());
 
 	m_model = m_receptor;
+	invalidate_poses();
 	m_receptor_initialized = true;
 	// If we are reading another receptor we should not consider the ligand and the map as initialized anymore
 	m_ligand_initialized = false;
@@ -134,7 +135,7 @@ void Vina::finish_ligand_setup(atom_type::t atom_typing) {
 	if (m_map_initialized && m_use_explicit_receptor)
 		m_non_cache.prepare_for_model(m_model);
 
-	m_poses.clear();
+	invalidate_poses();
 	m_precalculated_byatom = std::move(precalculated_byatom);
 	m_ligand_initialized = true;
 }
@@ -475,6 +476,7 @@ void Vina::build_vina_maps(const vec& center, const vec& span, fl granularity,
 	}
 
 	m_use_explicit_receptor = !m_no_refine;
+	invalidate_poses();
 	m_map_initialized = true;
 }
 
@@ -524,6 +526,7 @@ void Vina::load_maps(std::string maps) {
 		m_non_cache = non_cache();
 	m_deferred_map_population = false;
 	m_use_explicit_receptor = false;
+	invalidate_poses();
 	m_map_initialized = true;
 }
 
@@ -789,11 +792,12 @@ void Vina::write_pose_models(std::ostream& out, int how_many, double energy_rang
 }
 
 void Vina::write_poses(const std::string& output_name, int how_many, double energy_range) {
-	if (m_poses.empty()) {
+	if (!m_search_completed && m_poses.empty()) {
 		std::cerr << "WARNING: Could not find any poses. No poses were written.\n";
 		return;
 	}
-
+	// A completed search can legitimately have no in-domain output. Replace
+	// a previous run's file with an empty result rather than leaving stale poses.
 	ofile out(make_path(output_name));
 	write_pose_models(out, how_many, energy_range);
 }
@@ -1700,6 +1704,8 @@ void Vina::global_search(const int exhaustiveness, const int n_poses, const doub
 	parallelmc.num_threads = m_cpu;
 	parallelmc.display_progress = (m_verbosity > 0);
 	parallelmc.keep_trajectory_minima = late_selection;
+	if (m_sf_choice == SF_AD42 || !m_use_explicit_receptor)
+		parallelmc.final_map_domain = m_sf_choice == SF_AD42 ? m_ad4grid.gd() : m_grid.gd();
 	parallelmc.use_min_rmsd_for_merge = m_use_min_rmsd_for_merge;
 	parallelmc.pocket_start_radius = m_pocket_start_radius;
 
@@ -2027,8 +2033,10 @@ void Vina::global_search(const int exhaustiveness, const int n_poses, const doub
 		// Clean up by putting back the best pose in model
 		m_model.set(poses[0].c);
 	} else {
-		std::cerr << "WARNING: Zero poses in output container after global search. This should not be happening and is likely a bug.\n";
-		std::cerr << "WARNING: If possible, please file a bug report with your input files and random seed on GitHub.\n";
+		if (parallelmc.final_map_domain)
+			std::cerr << "WARNING: No saved poses lie inside the affinity map domain.\n";
+		else
+			std::cerr << "WARNING: Zero poses in output container after global search.\n";
 	}
 
 	if (m_search_counters) {
@@ -2062,6 +2070,7 @@ void Vina::global_search(const int exhaustiveness, const int n_poses, const doub
 
 	// Store results in Vina object
 	m_poses.swap(poses);
+	m_search_completed = true;
 	m_output_min_rmsd = output_radius;
 }
 

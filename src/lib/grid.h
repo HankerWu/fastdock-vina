@@ -52,7 +52,14 @@ public:
 	fl evaluate_cubic(const vec& location, fl slope, fl cap, vec* gradient) const {
 		return evaluate_aux<true>(location, slope, cap, gradient);
 	}
+	// All three AD4 maps share one verified lattice. The cap and the box wall
+	// apply to the atom's signed interaction energy and position, respectively.
+	fl evaluate_ad4(const vec& location, fl slope, fl cap, fl charge,
+	                const grid& electrostatic, const grid& desolvation, vec* gradient) const;
 private:
+	template<bool Cubic, bool Combined>
+	fl evaluate_fields(const vec& location, fl slope, fl cap, vec* gradient,
+	                   fl charge, const grid* electrostatic, const grid* desolvation) const;
     vec m_factor;
     vec m_dim_fl_minus_1;
 

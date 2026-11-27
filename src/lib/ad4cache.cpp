@@ -54,127 +54,41 @@ std::string get_adtype_str(sz& t) {
 	}
 }
 
-fl ad4cache::eval(const model& m, fl v) const {
-	fl e = 0;
-	sz nat = num_atom_types(atom_type::AD);
-
-	VINA_FOR(i, m.num_movable_atoms()) {
-		if(!m.is_atom_in_ligand(i)) continue; // we only want ligand interaction
-		const atom& a = m.atoms[i];
-		sz t = a.get(atom_type::AD);
-
-		switch (t)
-		{
-			case AD_TYPE_G0:
-			case AD_TYPE_G1:
-			case AD_TYPE_G2:
-			case AD_TYPE_G3:
-				continue;
-			case AD_TYPE_CG0:
-			case AD_TYPE_CG1:
-			case AD_TYPE_CG2:
-			case AD_TYPE_CG3:
-				t = AD_TYPE_C;
-				break;
-		}
-
-		// HB + vdW
-		const grid& g = m_grids[t];
-		e += g.evaluate(m.coords[i], m_slope, v);
-
-		// elec
-		const grid& ge = m_grids[AD_TYPE_SIZE];
-		e += ge.evaluate(m.coords[i], m_slope, v) * a.charge;
-
-		// desolv
-		const grid& gd = m_grids[AD_TYPE_SIZE + 1];
-		e += gd.evaluate(m.coords[i], m_slope, v) * std::abs(a.charge);
+fl ad4cache::eval_atom(const atom& a, const vec& location, fl cap, vec* gradient) const {
+	sz type = a.get(atom_type::AD);
+	switch (type) {
+		case AD_TYPE_G0: case AD_TYPE_G1: case AD_TYPE_G2: case AD_TYPE_G3:
+			if (gradient) gradient->assign(0);
+			return 0;
+		case AD_TYPE_CG0: case AD_TYPE_CG1: case AD_TYPE_CG2: case AD_TYPE_CG3:
+			type = AD_TYPE_C;
+			break;
 	}
-	return e;
+	return m_grids[type].evaluate_ad4(location, m_slope, cap, a.charge,
+	                                  m_grids[AD_TYPE_SIZE], m_grids[AD_TYPE_SIZE + 1], gradient);
 }
 
-fl ad4cache::eval_intra(model& m, fl v) const {
-	fl e = 0;
-	sz nat = num_atom_types(atom_type::AD);
-
-	VINA_FOR(i, m.num_movable_atoms()) {
-		if(m.is_atom_in_ligand(i)) continue; // we only want flex-rigid interaction
-		const atom& a = m.atoms[i];
-		sz t = a.get(atom_type::AD);
-
-		switch (t)
-		{
-			case AD_TYPE_G0:
-			case AD_TYPE_G1:
-			case AD_TYPE_G2:
-			case AD_TYPE_G3:
-				continue;
-			case AD_TYPE_CG0:
-			case AD_TYPE_CG1:
-			case AD_TYPE_CG2:
-			case AD_TYPE_CG3:
-				t = AD_TYPE_C;
-				break;
-		}
-
-		// HB + vdW
-		const grid& g = m_grids[t];
-		e += g.evaluate(m.coords[i], m_slope, v);
-
-		// elec
-		const grid& ge = m_grids[AD_TYPE_SIZE];
-		e += ge.evaluate(m.coords[i], m_slope, v) * a.charge;
-
-		// desolv
-		const grid& gd = m_grids[AD_TYPE_SIZE + 1];
-		e += gd.evaluate(m.coords[i], m_slope, v) * std::abs(a.charge);
-	}
-	return e;
+fl ad4cache::eval(const model& m, fl cap) const {
+	fl energy = 0;
+	VINA_FOR(i, m.num_movable_atoms())
+		if (m.is_atom_in_ligand(i))
+			energy += eval_atom(m.atoms[i], m.coords[i], cap, nullptr);
+	return energy;
 }
 
-fl ad4cache::eval_deriv(model& m, fl v) const { // sets m.minus_forces
-	fl e = 0;
-	sz nat = num_atom_types(atom_type::AD);
+fl ad4cache::eval_intra(model& m, fl cap) const {
+	fl energy = 0;
+	VINA_FOR(i, m.num_movable_atoms())
+		if (!m.is_atom_in_ligand(i))
+			energy += eval_atom(m.atoms[i], m.coords[i], cap, nullptr);
+	return energy;
+}
 
-	VINA_FOR(i, m.num_movable_atoms()) {
-		const atom& a = m.atoms[i];
-		sz t = a.get(atom_type::AD);
-
-		switch (t)
-		{
-			case AD_TYPE_G0:
-			case AD_TYPE_G1:
-			case AD_TYPE_G2:
-			case AD_TYPE_G3:
-				m.minus_forces[i].assign(0);
-				continue;
-			case AD_TYPE_CG0:
-			case AD_TYPE_CG1:
-			case AD_TYPE_CG2:
-			case AD_TYPE_CG3:
-				t = AD_TYPE_C;
-				break;
-		}
-
-		// HB + vdW
-		vec deriv;
-		const grid& g = m_grids[t];
-		e += g.evaluate(m.coords[i], m_slope, v, deriv);
-		m.minus_forces[i] = deriv;
-
-		// elec
-		const grid& ge = m_grids[AD_TYPE_SIZE];
-		e += ge.evaluate(m.coords[i], m_slope, v, deriv) * a.charge;
-		deriv *= a.charge;
-		m.minus_forces[i] += deriv;
-
-		// desolv
-		const grid& gd = m_grids[AD_TYPE_SIZE + 1];
-		e += gd.evaluate(m.coords[i], m_slope, v, deriv) * std::abs(a.charge);
-		deriv *= std::abs(a.charge);
-		m.minus_forces[i] += deriv;
-	}
-	return e;
+fl ad4cache::eval_deriv(model& m, fl cap) const {
+	fl energy = 0;
+	VINA_FOR(i, m.num_movable_atoms())
+		energy += eval_atom(m.atoms[i], m.coords[i], cap, &m.minus_forces[i]);
+	return energy;
 }
 
 bool ad4cache::is_in_grid(const model& m, fl margin) const {

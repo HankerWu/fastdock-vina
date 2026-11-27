@@ -71,6 +71,15 @@ void parallel_mc::operator()(const model& m, output_container& out, const precal
 			mc(working, poses[task], pairs, grid, corner1, corner2, progress, task_generator,
 			   archives ? &(*archives)[task] : nullptr, counters ? &(*counters)[task] : nullptr,
 			   pocket_start, prepared_torsion_starts && task % 2 == 1);
+			// Map-only docking has no subsequent explicit refinement that can
+			// bring an out-of-domain minimum back. Filter before the global
+			// diversity/capacity merge so all remaining eligible minima compete.
+			if (final_map_domain) {
+				poses[task].erase_if([&](const output_type& pose) {
+					working.set(pose.c);
+					return !working.within_grid(*final_map_domain, 0.0001);
+				});
+			}
 			task = next_task.fetch_add(1, std::memory_order_relaxed);
 			if(task >= num_tasks)
 				break;

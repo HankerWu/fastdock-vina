@@ -207,6 +207,8 @@ private:
 	model m_receptor;
 	model m_model;
 	output_container m_poses;
+	bool m_search_completed = false;
+	void invalidate_poses() { m_poses.clear(); m_search_completed = false; }
 	fl m_output_min_rmsd = 0; // Deferred only when eligibility depends on a reranked native energy window.
 	//OpenBabel::OBMol m_mol;
 	bool m_receptor_initialized;

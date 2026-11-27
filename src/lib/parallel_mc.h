@@ -36,6 +36,7 @@ struct parallel_mc {
 	sz num_threads;
 	bool display_progress;
 	bool keep_trajectory_minima = false;
+	boost::optional<grid_dims> final_map_domain;
 	bool use_min_rmsd_for_merge = false;
 	bool prepared_torsion_starts = false;
 	fl pocket_start_radius = 0;

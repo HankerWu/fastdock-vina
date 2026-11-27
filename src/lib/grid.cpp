@@ -177,7 +177,18 @@ fl cubic_sample(const array3d<fl>& data, const boost::array<sz,3>& cell, const v
 } // namespace
 
 template<bool Cubic>
-fl grid::evaluate_aux(const vec& location, fl slope, fl v, vec* deriv) const { // sets *deriv if not NULL
+fl grid::evaluate_aux(const vec& location, fl slope, fl v, vec* deriv) const {
+	return evaluate_fields<Cubic, false>(location, slope, v, deriv, 0, nullptr, nullptr);
+}
+
+fl grid::evaluate_ad4(const vec& location, fl slope, fl cap, fl charge, const grid& electrostatic,
+                      const grid& desolvation, vec* gradient) const {
+	return evaluate_fields<false, true>(location, slope, cap, gradient, charge, &electrostatic, &desolvation);
+}
+
+template<bool Cubic, bool Combined>
+fl grid::evaluate_fields(const vec& location, fl slope, fl v, vec* deriv, fl charge,
+                         const grid* electrostatic, const grid* desolvation) const {
 	vec s  = elementwise_product(location - m_init, m_factor); 
 
 	vec miss(0, 0, 0);
@@ -229,15 +240,17 @@ fl grid::evaluate_aux(const vec& location, fl slope, fl v, vec* deriv) const { /
 	// use the row and plane strides for its seven neighbors.
 	const sz row = m_data.dim0();
 	const fl* lower = &m_data(a[0], a[1], a[2]);
-	const fl* upper = lower + row * m_data.dim1();
-	const fl f000 = lower[0];
-	const fl f100 = lower[1];
-	const fl f010 = lower[row];
-	const fl f110 = lower[row + 1];
-	const fl f001 = upper[0];
-	const fl f101 = upper[1];
-	const fl f011 = upper[row];
-	const fl f111 = upper[row + 1];
+	const sz plane = row * m_data.dim1();
+	const fl* electric = Combined ? &electrostatic->m_data(a[0], a[1], a[2]) : nullptr;
+	const fl* desolv = Combined ? &desolvation->m_data(a[0], a[1], a[2]) : nullptr;
+	const auto sample = [&](sz offset) {
+		return Combined ? lower[offset] + charge * electric[offset] + std::abs(charge) * desolv[offset]
+		                : lower[offset];
+	};
+	const fl f000 = sample(0),           f100 = sample(1);
+	const fl f010 = sample(row),         f110 = sample(row + 1);
+	const fl f001 = sample(plane),       f101 = sample(plane + 1);
+	const fl f011 = sample(plane + row), f111 = sample(plane + row + 1);
 
 	const fl x = s[0];
 	const fl y = s[1];
