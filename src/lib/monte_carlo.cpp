@@ -27,6 +27,9 @@
 #include "mutate.h"
 #include "quasi_newton.h"
 #include "trajectory_archive.h"
+#include <cstdlib>
+#include <sstream>
+#include <stdexcept>
 
 output_type monte_carlo::operator()(model& m, const precalculate_byatom& p, const igrid& ig, const vec& corner1, const vec& corner2, incrementable* increment_me, rng& generator) const {
 	output_container tmp;
@@ -45,6 +48,14 @@ bool metropolis_accept(fl old_f, fl new_f, fl temperature, rng& generator) {
 void monte_carlo::operator()(model& m, output_container& out, const precalculate_byatom& p, const igrid& ig, const vec& corner1, const vec& corner2, incrementable* increment_me, rng& generator, trajectory_archive* archive, search_trajectory_counters* counters,
                              const boost::optional<vec>& pocket_start, bool prepared_torsions) const {
     int evalcount = 0;
+	const char* arm = std::getenv("FASTDOCK_RESEARCH_BACKTRACK");
+	backtracking_mode mode = backtracking_mode::native;
+	if (arm && std::strcmp(arm, "native") != 0) {
+		if (std::strcmp(arm, "halving") == 0) mode = backtracking_mode::halving;
+		else if (std::strcmp(arm, "quadratic") == 0) mode = backtracking_mode::quadratic;
+		else throw std::invalid_argument("unknown FASTDOCK_RESEARCH_BACKTRACK");
+	}
+	search_backtracking hunt{mode}, save{mode};
 	vec authentic_v(1000, 1000, 1000); // FIXME? this is here to avoid max_fl/max_fl
 	const conf_size s = m.get_size();
 	output_type tmp(s, 0);
@@ -80,7 +91,7 @@ void monte_carlo::operator()(model& m, output_container& out, const precalculate
 		const bool reoriented = mutate_conf(candidate.c, m, mutation_amplitude, generator,
 		                                    mixed_reorientation, separate_hunt_chain, centered_rotation, balanced_torsion);
 		const int before_hunt = evalcount;
-		quasi_newton_par(m, p, ig, candidate, hunt_cap, evalcount);
+		quasi_newton_par(m, p, ig, candidate, hunt_cap, evalcount, nullptr, 0, &hunt);
 		if (counters) {
 			++counters->hunt_calls;
 			counters->hunt_evals += evalcount - before_hunt;
@@ -109,7 +120,7 @@ void monte_carlo::operator()(model& m, output_container& out, const precalculate
 				output_type& saved = separate_hunt_chain ? candidate : tmp;
 				if (separate_hunt_chain)
 					saved.c = tmp.c;
-				quasi_newton_par(m, p, ig, saved, authentic_v, evalcount);
+				quasi_newton_par(m, p, ig, saved, authentic_v, evalcount, nullptr, 0, &save);
 				if (counters) {
 					++counters->second_calls;
 					counters->second_evals += evalcount - before_second;
@@ -121,6 +132,16 @@ void monte_carlo::operator()(model& m, output_container& out, const precalculate
 					best_e = tmp.e;
 			}
 		}
+	}
+	if (counters) {
+		std::ostringstream log;
+		const auto emit = [&](const char* stage, const search_backtracking& counts) {
+			log << "Backtracking: stage=" << stage << " searches=" << counts.searches
+			    << " rejected=" << counts.rejected << " exhausted=" << counts.exhausted << '\n';
+		};
+		emit("hunt", hunt);
+		emit("save", save);
+		std::cout << log.str();
 	}
 	if (archive)
 		archive->native_evaluations = evalcount;

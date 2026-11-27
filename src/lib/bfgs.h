@@ -91,9 +91,27 @@ inline void bfgs_update(flmat& h, const flv& direction, const flv& y, fl alpha, 
 		}
 }
 
+// Per-trajectory diagnostic, optional in the explicit-refinement path.
+enum class backtracking_mode { native, halving, quadratic };
+struct search_backtracking {
+	backtracking_mode mode;
+	unsigned searches = 0, rejected = 0, exhausted = 0;
+};
+
+inline fl quadratic_contraction(fl alpha, fl pg, fl delta) {
+	// Fit q(a) = f(0) + a * pg + b * a^2 through the rejected trial.
+	// The ratio of its minimizer to alpha is dimensionless.
+	const fl linear = alpha * pg;
+	const fl residual = delta - linear;
+	if (!(linear < 0 && std::isfinite(linear) && residual > 0 && std::isfinite(residual)))
+		return 0.5;
+	return std::max(fl(0.1), std::min(fl(0.5), (-0.5 * linear) / residual));
+}
+
 template<bool StrictArmijo = false, typename F>
 fl line_search(F& f, const conf& x, fl f0, const flv& p, fl pg, conf& x_new, flv& g_new, fl& f1, int& evalcount,
-               int max_evals = 0) {
+               int max_evals = 0, search_backtracking* monitor = nullptr) {
+	if (monitor) ++monitor->searches;
 	if (StrictArmijo && (!std::isfinite(pg) || pg >= 0))
 		return 0;
 	const fl c0 = 0.0001;
@@ -112,11 +130,14 @@ fl line_search(F& f, const conf& x, fl f0, const flv& p, fl pg, conf& x_new, flv
 			    std::all_of(g_new.begin(), g_new.end(), [](fl x) { return std::isfinite(x); }))
 				return alpha;
 		} else if (f1 - f0 < c0 * alpha * pg) {
-			break;
+			return alpha;
 		}
-		alpha *= multiplier;
+		if (monitor) ++monitor->rejected;
+		alpha *= monitor && monitor->mode == backtracking_mode::quadratic
+		       ? quadratic_contraction(alpha, pg, f1 - f0) : multiplier;
 	}
-	return StrictArmijo ? 0 : alpha;
+	if (monitor) ++monitor->exhausted;
+	return StrictArmijo || (monitor && monitor->mode != backtracking_mode::native) ? 0 : alpha;
 }
 
 inline void set_diagonal(flmat& m, fl x) {
@@ -168,7 +189,7 @@ public:
 	template<bool StrictArmijo = false, typename F>
 	bfgs_result minimize(F& f, conf& x, unsigned max_steps, int& evalcount,
 	                     const flv* inverse_metric = nullptr, int max_evals = 0,
-	                     const bfgs_rigid_metric* rigid_metric = nullptr) {
+	                     const bfgs_rigid_metric* rigid_metric = nullptr, search_backtracking* monitor = nullptr) {
 		h.clear();
 		if (inverse_metric) {
 			VINA_CHECK(StrictArmijo && inverse_metric->size() == h.dim());
@@ -196,8 +217,8 @@ public:
 			}
 			fl trial_energy = 0;
 			const fl alpha = line_search<StrictArmijo>(f, x, energy, *conformation_step, scalar_product(direction, gradient),
-			                                           trial, trial_gradient, trial_energy, evalcount, max_evals);
-			if (StrictArmijo && alpha == 0)
+			                                           trial, trial_gradient, trial_energy, evalcount, max_evals, monitor);
+			if (alpha == 0)
 				return {energy, true}; // The model may reflect the last rejected trial.
 			energy = trial_energy;
 			std::swap(x, trial);
