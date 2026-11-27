@@ -1,0 +1,16 @@
+[
+  {
+    "pdb": "1QKM",
+    "heavy": 20,
+    "stereo_mappings": 2,
+    "poses": 33,
+    "max_rmsd_diff_A": 1.7763568394002505e-15
+  },
+  {
+    "pdb": "5TOA",
+    "heavy": 20,
+    "stereo_mappings": 1,
+    "poses": 35,
+    "max_rmsd_diff_A": 3.552713678800501e-15
+  }
+]

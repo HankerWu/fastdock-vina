@@ -1,0 +1,8 @@
+{
+  "vina_sha256": "8030f0b2e85c5a1931be37d3cc5e1c20f3618b1641ae318f11ccd07b405bb17a",
+  "local_refinements": 47,
+  "rows": 64,
+  "total_local_wall_s": 28.749339530015277,
+  "max_rounding_pair_distance_change": 0.0012827191478113065,
+  "largest_local_vs_fixedtopo_output_energy_abs": 0.02200000000000024
+}

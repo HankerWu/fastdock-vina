@@ -42,7 +42,7 @@ $$
 
 本目录 136 个池、1,213 个姿势中，458 个含活动受体羟基；总计 2,489 个 N/O 氢键重原子对、734 个活动供体–配体重原子接触。单线程受体环境预计算耗时合计 0.409 秒，所有姿势打分 0.437 秒，打分同时计算全部对照；测量不包括搜索。公用的两个新受体和配体制备耗时 2.88、6.16 秒。ESR2 的四个低预算搜索实测分别耗费 Pro 0.82 秒、上游 4.55 秒，四个高预算搜索耗费 2.25、5.00 秒。两套程序在本机每格运行一次，构建方式也有区别，时间仅说明此次实验成本。ESR2 原始 PDB、CCD、制备元数据、命令、日志和 Pro 坐标在 esr2.tar.xz，上游原始输出在 esr2_controls.tar.xz。[分阶段计时](results/cost.csv)
 
-历史 1,073 个姿势的原生径向项与固定 HD 角惩罚复现已有独立 C++ 结果，最大误差均低于 $5\times10^{-12}$。所有 1,213 个姿势的主积分从 72 加密至 144 点，最大原始分差 $5.56\times10^{-5}$；相位移半格最大分差 $1.12\times10^{-4}$。在两个关键体系中，另一个脚本用 SO(3) 旋转矩阵和供体–受体矢量的标量积独立做了 4,096 点积分。在相同二进制上重新运行的八个 ESR2 Pro 输出可逐字节复现。对所有 68 个新姿势独立求 RMSD 与主评估程序相差小于 $4\times10^{-15}$ Å。[积分检查](results/audit.json) · [结构与剂量逐池核对](results/esr2_controls.csv)
+历史 1,073 个姿势的原生径向项与固定 HD 角惩罚复现已有独立 C++ 结果，最大误差均低于 $5\times10^{-12}$。所有 1,213 个姿势的主积分从 72 加密至 144 点，最大原始分差 $5.56\times10^{-5}$；相位移半格最大分差 $1.12\times10^{-4}$。在两个关键体系中，另一个脚本用 SO(3) 旋转矩阵和供体–受体矢量的标量积独立做了 4,096 点积分。在相同二进制上重新运行的八个 ESR2 Pro 输出可逐字节复现。直接从原始 PDB 的配体坐标按距离重建邻接图，使用查询 SMILES 指派键级，再独立枚举保留立体化学的图映射，得到 genistein 两种映射、estradiol 一种。对所有 68 个新姿势独立求 RMSD 与主评估程序相差小于 $4\times10^{-15}$ Å。[积分检查](results/audit.json) · [原始晶体坐标复验](results/crystal_audit.json) · [预算与姿势逐池核对](results/esr2_controls.csv)
 
 从仓库根目录执行以下命令，前两项只需 Python 3.12、NumPy 2.3.5、SciPy 1.17.0。全量 ESR2 从头制备另用 RDKit 2025.9.3、Meeko 0.7.1、Gemmi 0.7.4、OpenMM 8.6.1、PDBFixer 1.12.0。制备食谱与数据质量门槛沿用 pair_gradient/pose。复算已保存姿势不需要网络。UPSTREAM 与 PRO 指向分别从上游 3c65c0b 与本分支 dec913f 编译的可执行文件。
 
@@ -52,6 +52,7 @@ W=$(mktemp -d)
 export OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 OPENMM_CPU_THREADS=1
 python "$D/evaluate.py" "$W/results"
 python "$D/check.py" "$W/results"
+python "$D/crystal_audit.py" "$W/results/crystal_audit.json"
 python "$D/verify_esr2.py" "$W/verify" "$UPSTREAM" "$PRO"
 python "$D/esr2.py" "$W/fresh"
 python "$D/esr2.py" "$W/fresh" --binary "$PRO"
