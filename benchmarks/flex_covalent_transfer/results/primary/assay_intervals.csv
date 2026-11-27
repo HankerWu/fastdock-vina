@@ -1,0 +1,4 @@
+receiver,quantity,draws,all_draws,percentile_025,percentile_975
+2NNQ,delta_spearman,3120,3125,-0.8888888888888888,0.0
+3FR2,delta_spearman,3120,3125,-1.1249999999999998,1.8749999999999996
+equal_mean,delta_spearman,3120,3125,-0.8888888888888888,1.7499999999999996

@@ -1,0 +1,7 @@
+receiver,arm,n,planned,spearman,kendall_b,concordant,pairs,all_pairs
+2NNQ,baseline,5,5,0.8999999999999998,0.7999999999999999,9.0,10,10
+2NNQ,fixed,5,5,0.7999999999999999,0.6,8.0,10,10
+3FR2,baseline,5,5,0.6,0.39999999999999997,7.0,10,10
+3FR2,fixed,5,5,0.7,0.6,8.0,10,10
+equal_mean,baseline,5,5,0.7,0.6,8.0,10,10
+equal_mean,fixed,5,5,0.7999999999999999,0.6,8.0,10,10

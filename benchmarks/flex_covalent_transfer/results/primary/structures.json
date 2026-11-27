@@ -1,0 +1,60 @@
+[
+  {
+    "pdb": "5DS3",
+    "kind": "pose",
+    "target": "PARP1",
+    "ligand": "09L",
+    "status": "excluded",
+    "reason": "omitted nonwater atom within 8 A: 5.093"
+  },
+  {
+    "pdb": "1F5K",
+    "kind": "pose",
+    "target": "PLAU",
+    "ligand": "BEN",
+    "status": "excluded",
+    "reason": "omitted nonwater atom within 8 A: 3.902"
+  },
+  {
+    "pdb": "1F5L",
+    "kind": "pose",
+    "target": "PLAU",
+    "ligand": "AMR",
+    "status": "excluded",
+    "reason": "omitted nonwater atom within 8 A: 2.679"
+  },
+  {
+    "pdb": "3P5O",
+    "kind": "pose",
+    "target": "BRD4",
+    "ligand": "EAM",
+    "status": "excluded",
+    "reason": "omitted nonwater atom within 8 A: 3.742"
+  },
+  {
+    "pdb": "5EHR",
+    "kind": "pose",
+    "target": "PTPN11",
+    "ligand": "5OD",
+    "status": "excluded",
+    "reason": "omitted nonwater atom within 8 A: 7.459"
+  },
+  {
+    "pdb": "6CMS",
+    "kind": "pose",
+    "target": "PTPN11",
+    "ligand": "5OD",
+    "status": "ready",
+    "site": "GLU249",
+    "site_distance": 3.1830419412882374,
+    "maps": 2
+  },
+  {
+    "pdb": "3OCS",
+    "kind": "pose",
+    "target": "BTK",
+    "ligand": "746",
+    "status": "excluded",
+    "reason": "omitted nonwater atom within 8 A: 6.251"
+  }
+]

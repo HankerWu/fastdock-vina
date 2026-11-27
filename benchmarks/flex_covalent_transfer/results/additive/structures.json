@@ -1,0 +1,117 @@
+[
+  {
+    "pdb": "5DS3",
+    "kind": "pose",
+    "target": "PARP1",
+    "ligand": "09L",
+    "status": "ready",
+    "site": "SER904",
+    "site_distance": 2.77405731736026,
+    "maps": 4,
+    "solutes": [
+      {
+        "residue": "1PE A1101 ",
+        "distance": 5.092949440157447,
+        "charge": 0,
+        "sha256": "d11e31798035f2068b59e60cdf349d666d11f2dd2b5a0aee787599453e732ef4"
+      },
+      {
+        "residue": "SO4 A1103 ",
+        "distance": 6.840261033030831,
+        "charge": -2,
+        "sha256": "89409c769690c31746c8c43e5f02fb212ecf65542ea5b26f58d18532677fa893"
+      }
+    ],
+    "deposited_pdb_sha256": "92493a3a4e981f51b99fcadcee60ee0954e798f0cd1b60899824a08e88cf6725"
+  },
+  {
+    "pdb": "1F5K",
+    "kind": "pose",
+    "target": "PLAU",
+    "ligand": "BEN",
+    "status": "ready",
+    "site": "ASP189",
+    "site_distance": 2.791385498278591,
+    "maps": 2,
+    "solutes": [
+      {
+        "residue": "SO4 U 403 ",
+        "distance": 3.9016860458012266,
+        "charge": -2,
+        "sha256": "89409c769690c31746c8c43e5f02fb212ecf65542ea5b26f58d18532677fa893"
+      }
+    ],
+    "deposited_pdb_sha256": "d49b97cd542682ead0f7064b14cc3d96e54af1ae3c3bf376d63acd3fea02b717"
+  },
+  {
+    "pdb": "1F5L",
+    "kind": "pose",
+    "target": "PLAU",
+    "ligand": "AMR",
+    "status": "ready",
+    "site": "ASP189",
+    "site_distance": 2.561589155192534,
+    "maps": 1,
+    "solutes": [
+      {
+        "residue": "SO4 A 501 ",
+        "distance": 2.678503500091051,
+        "charge": -2,
+        "sha256": "89409c769690c31746c8c43e5f02fb212ecf65542ea5b26f58d18532677fa893"
+      }
+    ],
+    "deposited_pdb_sha256": "397d796a1d6460fc2b42cc95e68e15cdc0c4ecbf65aeb92bc23994bc92e75914"
+  },
+  {
+    "pdb": "3P5O",
+    "kind": "pose",
+    "target": "BRD4",
+    "ligand": "EAM",
+    "status": "ready",
+    "site": "ASN140",
+    "site_distance": 3.079785219784001,
+    "maps": 2,
+    "solutes": [
+      {
+        "residue": "EDO A 169 ",
+        "distance": 3.7423516670671146,
+        "charge": 0,
+        "sha256": "3831cc674f6ae6afc23bd0d0281bea38af84fbe2ee8d684260a0c49f3cb11e48"
+      },
+      {
+        "residue": "EDO A   3 ",
+        "distance": 5.615971242803865,
+        "charge": 0,
+        "sha256": "3831cc674f6ae6afc23bd0d0281bea38af84fbe2ee8d684260a0c49f3cb11e48"
+      }
+    ],
+    "deposited_pdb_sha256": "bdb7896d73822aba8aaeceec90f2834e6f368f43c0f658556392586393d0996a"
+  },
+  {
+    "pdb": "5EHR",
+    "kind": "pose",
+    "target": "PTPN11",
+    "ligand": "5OD",
+    "status": "ready",
+    "site": "ARG111",
+    "site_distance": 3.135054863953738,
+    "maps": 2,
+    "solutes": [
+      {
+        "residue": "PO4 A 602 ",
+        "distance": 7.459391731233858,
+        "charge": -3,
+        "sha256": "57d988e2ed80b9b6d9fb0b7384c3e0874ea186dfeb8a89c781d2c78ee05686e5"
+      }
+    ],
+    "deposited_pdb_sha256": "6b9f1f8ef26ae77b9f44fd686dea22f4042b4b0f8a910f64f54951fcea0cd24f"
+  },
+  {
+    "pdb": "3OCS",
+    "kind": "pose",
+    "target": "BTK",
+    "ligand": "746",
+    "status": "excluded",
+    "reason": "deposited covalent LINK to BME A 998 "
+  }
+]
