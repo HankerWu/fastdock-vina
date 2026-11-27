@@ -1,0 +1,8 @@
+{
+  "benchmarks/cubic_grid/human_panel/affinity-pools.tar.xz": "b5c855bc4113307df131fe067ecb8b572b251a05cb33a2d4a8b8414c1c55b14d",
+  "benchmarks/cubic_grid/fkbp_ad4/maps-1FKG.tar.xz": "9c9bd5af0273f5a4929b2cb723d5fe3e3642be0f8a2b73c0d3635168b4c33f0c",
+  "benchmarks/cubic_grid/fkbp_ad4/maps-1FKH.tar.xz": "c03dae000e6dcd32a4d5f706207ca14278ac93bf0040b7e8c402e40c4d975060",
+  "benchmarks/cubic_grid/human_panel/depositions.tar.xz": "6c2a690d7f7594fa895d1c8e871fc1fbc86d7ed2d9abcc06df136dde6fe728c4",
+  "benchmarks/cubic_grid/human_panel/affinity/ligands.csv": "62cc38720a79cd3238d80281594f128aedc5f4e1bc8b53542582184f4f645d89",
+  "benchmarks/cubic_grid/fkbp_ad4/results/metadata.json": "bf6384123a399bc3aa697744440611c0776a11df79a78ae8a2ffc7f2bea24b77"
+}

@@ -1,0 +1,72 @@
+{
+  "source": "8eafd0c6fe651f4011c0a0b66ca743e87798b0ff",
+  "preregistered": "18a7187",
+  "build_clean": {
+    "wall_s": 57.587459747999674,
+    "cpu_s": 57.422813999999995,
+    "exit": 0
+  },
+  "clean_replay_and_CSV": {
+    "wall_s": 10.093758624003385,
+    "cpu_s": 10.049748000000001
+  },
+  "independent_Gemmi_RDKit": {
+    "wall_s": 4.512822103002691,
+    "cpu_s": 4.475377
+  },
+  "byte_identical_raw_files": 92,
+  "byte_identical_tables": [
+    "quench.csv",
+    "branches.csv",
+    "modes.csv",
+    "stages.csv"
+  ],
+  "equal_arrays": [
+    "start_xyz",
+    "return_xyz",
+    "serials",
+    "generalized",
+    "entry_score",
+    "return_score",
+    "hunt_evals"
+  ],
+  "clean_binary_sha256": "0ee9eb02441e863e9f6301c2ae2594a7b68502cfb5ad3fdc4f8a938635ca6f17",
+  "primary_binary_sha256": "56542a5498b5bfbc5c8f42900b39737d554aa70e593d2e7d79e2b53f253ce528",
+  "sum_of_primary_search_process_times": "results/costs.csv",
+  "earlier_diagnostic_build": {
+    "wall_s": 34.06523442600155,
+    "cpu_s": 55.102213,
+    "exit": 0
+  },
+  "incremental_stage_build": {
+    "wall_s": 17.470494995999616,
+    "cpu_s": 17.354143
+  },
+  "earlier_diagnostic_19_processes": {
+    "wall_s": 6.170618,
+    "cpu_s": 6.152669,
+    "main_evals": 955364,
+    "extra_hunt_evals": 15101,
+    "entry_observer_evals": 418,
+    "outcome": "All 18 fork publication PDBQTs are byte-identical after adding the stage-coordinate telemetry."
+  },
+  "failed_builds": [
+    {
+      "reason": "Temporary filesystem /tmp full: compiler could not write assembly; reran with TMPDIR on working volume.",
+      "wall_s": 10.131413708004402,
+      "cpu_s": 19.312966,
+      "exit": 1
+    },
+    {
+      "reason": "A compiler subprocess was killed in the parallel rebuild. Incremental build succeeded, followed by single-job fresh build and replay.",
+      "wall_s": 6.249086322997755,
+      "cpu_s": 11.406767,
+      "exit": 1
+    }
+  ],
+  "earlier_shell_preflight": "/usr/bin/time unavailable. No calculation started; timings obtained from Python perf_counter and getrusage.",
+  "post_hoc_eviction_monitor_incremental_build": {
+    "wall_s": 3.7632753439975204,
+    "cpu_s": 3.7360059999999997
+  }
+}

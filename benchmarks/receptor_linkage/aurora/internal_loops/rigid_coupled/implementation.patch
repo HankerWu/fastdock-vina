@@ -1,0 +1,60 @@
+--- a/src/lib/mutate.cpp
++++ b/src/lib/mutate.cpp
+@@ -40,6 +40,48 @@
+ 	rigid.position += center - m.ligand_heavy_centroid(ligand);
+ }
+ 
++// Research arm: keep one uniformly chosen chemical heavy atom at its current
++// position. Exactly match the original translation's finite heavy-atom RMS
++// displacement whenever that displacement is reachable about the chosen axis.
++static void pivot_move(conf& c, model& m, sz ligand_index, fl amplitude, rng& generator) {
++	const vec translation = amplitude * random_inside_sphere(generator);
++	auto& rigid = c.ligands[ligand_index].rigid;
++	szv atoms;
++	for (sz j = 0; j < m.num_movable_atoms(); ++j) {
++		const auto element = m.movable_atom(j).el;
++		if (m.find_ligand(j) == ligand_index && element != EL_TYPE_H && element != EL_TYPE_Dummy)
++			atoms.push_back(j);
++	}
++	if (atoms.empty()) {
++		rigid.position += translation;
++		return;
++	}
++	const sz choice = random_int(0, int(atoms.size()) - 1, generator);
++#ifdef FD_PIVOT_SHAM
++	// Match the random pivot draw while applying the historical translation.
++	rigid.position += translation;
++#else
++	const fl distance = translation.norm();
++	if (distance == 0) return;
++	const vec axis = (1 / distance) * translation;
++	m.set(c); // Last optimizer coordinates need not equal the accepted state.
++	const vec pivot = m.movable_coords(atoms[choice]);
++	fl sum = 0;
++	for (sz j : atoms)
++		sum += cross_product(axis, m.movable_coords(j) - pivot).norm_sqr();
++	const fl radius = std::sqrt(sum / atoms.size());
++	if (radius <= epsilon_fl) {
++		rigid.position += translation;
++		return;
++	}
++	const fl angle = 2 * std::asin((std::min)(fl(1), distance / (2 * radius)));
++	const qt rotation = angle_to_quaternion(axis, angle);
++	rigid.position = pivot + quaternion_to_r3(rotation) * (rigid.position - pivot);
++	rigid.orientation = rotation * rigid.orientation;
++	quaternion_normalize_approx(rigid.orientation);
++#endif
++}
++
+ bool mutate_conf(conf& c, model& m, fl amplitude, rng& generator, bool mixed_reorientation,
+                  bool use_proposal_geometry, bool centered_rotation, bool balanced_torsion) { // ONE OF: 2A for position, similar amp for orientation, randomize torsion
+ 	sz mutable_entities_num = count_mutable_entities(c);
+@@ -50,7 +92,7 @@
+ 	VINA_CHECK(which < mutable_entities_num);
+ 
+ 	VINA_FOR_IN(i, c.ligands) {
+-		if(which == 0) { c.ligands[i].rigid.position += amplitude * random_inside_sphere(generator); return false; }
++		if(which == 0) { pivot_move(c, m, i, amplitude, generator); return false; }
+ 		--which;
+ 		if(which == 0) {
+ 			if (mixed_reorientation && random_int(0, 3, generator) == 0) {

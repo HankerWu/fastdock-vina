@@ -1,0 +1,34 @@
+--- a/src/lib/monte_carlo.cpp
++++ b/src/lib/monte_carlo.cpp
+@@ -125,7 +125,30 @@
+ 					counters->second_evals += evalcount - before_second;
+ 				}
+ 				saved.coords = m.get_heavy_atom_movable_coords();
+-				add_to_output_container(out, saved, min_rmsd, num_saved_mins); // 20 - max size
++				const char* history = std::getenv("FD_RIGID_HISTORY");
++                const bool observe = history && injection.trajectory == crossover.trajectory;
++                if (observe) {
++                    rigid_stage_xyz("offered", crossover.trajectory, step + 1, m);
++                }
++                add_to_output_container(out, saved, min_rmsd, num_saved_mins); // 20 - max size
++                if (observe) {
++                    // Log the ordered container after each real offer. An ID is
++                    // the first offer with an exactly equal configuration.
++                    static std::ofstream events(history);
++                    static std::vector<std::pair<unsigned, conf>> seen;
++                    VINA_CHECK(events.good());
++                    seen.emplace_back(step + 1, saved.c);
++                    events << std::setprecision(17) << (step + 1) << ' ' << saved.e
++                           << ' ' << num_saved_mins << ' ' << min_rmsd;
++                    for (const auto& resident : out) {
++                        const auto it = std::find_if(seen.begin(), seen.end(), [&](const std::pair<unsigned, conf>& item) {
++                            return identical_archive_conformation(item.second, resident.c);
++                        });
++                        VINA_CHECK(it != seen.end());
++                        events << ' ' << it->first;
++                    }
++                    events << '\n';
++                }
+ 				if (injected) {
+                     rigid_stage_xyz("second", crossover.trajectory, step + 1, m);
+                     const bool kept = std::any_of(out.begin(), out.end(), [&](const output_type& state) {

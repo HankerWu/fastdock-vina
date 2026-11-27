@@ -1,0 +1,13 @@
+{
+  "receptor_CA_anchors": 67,
+  "receptor_heavy_atoms": 2099,
+  "graph_edges": 32,
+  "modes_checked": 161,
+  "branches": 18,
+  "stages_checked": 980,
+  "quench_checks": 836,
+  "common_shapes": 418,
+  "max_shape_pair_distance_drift_A": 3.339550858072471e-13,
+  "max_abs_metric_error_A": 3.730349362740526e-14,
+  "max_published_bond_length_change_from_prepared_A": 0.0012230039671023984
+}

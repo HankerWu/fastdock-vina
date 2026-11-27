@@ -1,0 +1,131 @@
+--- a/src/lib/monte_carlo.cpp
++++ b/src/lib/monte_carlo.cpp
+@@ -28,6 +28,7 @@
+ #include "quasi_newton.h"
+ #include "trajectory_archive.h"
+ #include "cross_hunt.h"
++#include "inject.h"
+ 
+ output_type monte_carlo::operator()(model& m, const precalculate_byatom& p, const igrid& ig, const vec& corner1, const vec& corner2, incrementable* increment_me, rng& generator) const {
+ 	output_container tmp;
+@@ -73,6 +74,7 @@
+ 	bool reference_from_save = false;
+ 	quasi_newton quasi_newton_par(s, local_steps);
+ 	static cross_hunt::Recorder crossover;
++	static rigid_injection injection;
+ 	if (++crossover.trajectory == 1 && crossover.outputs.is_open())
+ 		crossover.quench(m, p, ig, hunt_cap, local_steps);
+ 	VINA_U_FOR(step, global_steps) {
+@@ -84,6 +86,7 @@
+ 		const bool reoriented = mutate_conf(candidate.c, m, mutation_amplitude, generator,
+ 		                                    mixed_reorientation, separate_hunt_chain, centered_rotation, balanced_torsion);
+ 		crossover.record(step + 1, candidate.c);
++		const bool injected = injection.apply(crossover.trajectory, step + 1, candidate.c);
+ 		const int before_hunt = evalcount;
+ 		quasi_newton_par(m, p, ig, candidate, hunt_cap, evalcount);
+ 		if (counters) {
+@@ -92,7 +95,9 @@
+ 			counters->rigid_reorientations += reoriented;
+ 			counters->mixed_accept_checks += reference_from_save;
+ 		}
++		if (injected) injection.log << "hunt " << candidate.e << " previous " << tmp.e << '\n';
+ 		if(step == 0 || metropolis_accept(tmp.e, candidate.e, temperature, generator)) {
++			if (injected) injection.log << "accepted\n";
+ 			std::swap(tmp.c, candidate.c);
+ 			tmp.e = candidate.e;
+ 			reference_from_save = false;
+@@ -121,14 +126,29 @@
+ 				}
+ 				saved.coords = m.get_heavy_atom_movable_coords();
+ 				add_to_output_container(out, saved, min_rmsd, num_saved_mins); // 20 - max size
+-				reference_from_save = !separate_hunt_chain;
++				if (injected) {
++                    rigid_stage_xyz("second", crossover.trajectory, step + 1, m);
++                    const bool kept = std::any_of(out.begin(), out.end(), [&](const output_type& state) {
++                        return identical_archive_conformation(state.c, saved.c);
++                    });
++                    injection.log << "second " << saved.e << " inserted " << kept << '\n';
++                }
++                reference_from_save = !separate_hunt_chain;
+ 				if(tmp.e < best_e)
+ 					best_e = tmp.e;
+ 			}
+ 		}
+ 	}
+-	if (archive)
+-		archive->native_evaluations = evalcount;
++	if (std::getenv("FD_RIGID_COORDS")) {
++        model copy(m);
++        unsigned index = 0;
++        for (const auto& pose : out) {
++            copy.set(pose.c);
++            rigid_stage_xyz("end_trajectory", crossover.trajectory, ++index, copy);
++        }
++    }
++    if (archive)
++        archive->native_evaluations = evalcount;
+ 	VINA_CHECK(!out.empty());
+ 	VINA_CHECK(out.front().e <= out.back().e); // make sure the sorting worked in the correct order
+ }
+--- a/src/lib/cross_hunt.h
++++ b/src/lib/cross_hunt.h
+@@ -64,9 +64,15 @@
+             ligand.rigid.orientation = qt(a, b, c, d);
+             for (auto& angle : ligand.torsions) in >> angle;
+             VINA_CHECK(in.good() && quaternion_is_normalized(ligand.rigid.orientation));
++            m.set(candidate.c);
++            flv gradient(s.num_degrees_of_freedom());
++            const fl start_energy = m.eval_deriv(p, ig, cap, gradient);
++            outputs << tr << ' ' << step << ' ' << start_energy;
++            for (sz i : order)
++                for (sz j = 0; j < 3; ++j) outputs << ' ' << m.movable_coords(i)[j];
+             int evals = 0;
+             hunt(m, p, ig, candidate, cap, evals);
+-            outputs << tr << ' ' << step << ' ' << evals << ' ' << candidate.e;
++            outputs << ' ' << evals << ' ' << candidate.e;
+             for (sz i : order)
+                 for (sz j = 0; j < 3; ++j) outputs << ' ' << m.movable_coords(i)[j];
+             outputs << '\n';
+--- a/src/lib/vina.cpp
++++ b/src/lib/vina.cpp
+@@ -32,6 +32,7 @@
+ #include <limits>
+ 
+ #include "vina.h"
++#include "inject.h"
+ #include "contact_rotors.h"
+ #include "scoring_function.h"
+ #include "precalculate.h"
+@@ -1767,8 +1768,10 @@
+ 		// Use the saved conformation with chemical atoms only for selection geometry.
+ 		// Score with native weights and the same box penalty used for final refinement ranking.
+ 		m_non_cache.slope = 1e6;
++		unsigned pool_index = 0;
+ 		for (auto& pose : poses) {
+ 			m_model.set(pose.c);
++			rigid_stage_xyz("pooled", 0, ++pool_index, m_model);
+ 			pose.coords = m_model.get_chemical_heavy_atom_movable_coords();
+ 			pose.e = m_non_cache.eval(m_model, authentic_v[1])
+ 			       + m_model.evali(m_precalculated_byatom, authentic_v);
+@@ -1805,7 +1808,12 @@
+ 				m_non_cache.slope = slope;
+ 
+ 				VINA_FOR_IN(i, poses){
+-					VINA_FOR(p, 5){
++                    if (std::getenv("FD_RIGID_COORDS")) {
++                        model copy(m_model);
++                        copy.set(poses[i].c);
++                        rigid_stage_xyz("fin_input", 0, i + 1, copy);
++                    }
++                    VINA_FOR(p, 5){
+ 						m_non_cache.slope = 100 * std::pow(10.0, 2.0*p);
+ 						quasi_newton_par(m_model, m_precalculated_byatom, m_non_cache, poses[i], authentic_v, evalcount,
+ 						                 template_refinement ? template_reference.get() : nullptr);
+@@ -1833,6 +1841,7 @@
+ 					double intra_pairs = m_model.evalo(m_precalculated_byatom, authentic_v); // flex_i -- flex_i and flex_i -- flex_j
+ 					double lig_intra = m_model.evali(m_precalculated_byatom, authentic_v); // ligand_i -- ligand_i
+ 					poses[i].e = all_grids + inter_pairs + intra_pairs + lig_intra;
++                    rigid_stage_xyz("fin_output", 0, i + 1, m_model);
+ 					if (template_refinement) {
+ 						output_type& pose = poses[i];
+ 						pose.native_energy = pose.e;

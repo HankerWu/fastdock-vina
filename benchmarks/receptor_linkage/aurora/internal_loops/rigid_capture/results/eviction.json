@@ -1,0 +1,59 @@
+{
+  "offers_verified": 34,
+  "source_states": 34,
+  "loss_transitions": [
+    {
+      "step": 137,
+      "previous": [
+        33,
+        22,
+        9,
+        44,
+        35,
+        43,
+        4,
+        7,
+        3
+      ],
+      "previous_near_ids": [
+        3
+      ],
+      "current": [
+        137,
+        33,
+        22,
+        9,
+        44,
+        35,
+        43,
+        4,
+        7
+      ],
+      "capacity": 9,
+      "exclusion_A": 1.0,
+      "arrival_A": 10.503153678824775,
+      "arrival_score": -5.600567385134789,
+      "lost": [
+        {
+          "step": 3,
+          "rmsd_A": 1.5663501497675854,
+          "score": -3.5791647987088044,
+          "distance_to_arrival_no_sym_A": 10.312201020409907
+        }
+      ],
+      "smallest_remaining_rmsd_A": 10.001074022149687
+    }
+  ],
+  "near_container_first_last_offer_step": [
+    1,
+    44
+  ],
+  "final_min_A": 9.098280104128833,
+  "normal_evals": 50172,
+  "additional_objective_evals": 0,
+  "binary_sha256": "9940dfffd4315031ed82d899567ea36ecc9124bd40cb7ed7f8e80e7022ee3be3",
+  "search": {
+    "wall_s": 0.386155359003169,
+    "cpu_s": 0.38350999999999996
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "source_commit": "8eafd0c6fe651f4011c0a0b66ca743e87798b0ff",
+  "protocol_commit": "8cf4326286099dca93571b7338c48f01c794eeca",
+  "compiler": "c++ (Debian 14.2.0-19) 14.2.0",
+  "python": "3.12.14",
+  "numpy": "2.3.5",
+  "rdkit": "2026.09.2",
+  "gemmi": "0.7.5",
+  "scipy": "1.17.0",
+  "base_clean_build_wall_cpu_s": [
+    26.5,
+    53.863
+  ],
+  "pivot_and_sham_incremental_wall_cpu_s": [
+    4.044,
+    4.015000000000001
+  ],
+  "observer_incremental_wall_cpu_s": [
+    2.977,
+    2.9509999999999996
+  ],
+  "observer_base": "8eafd0c source identical in all non-instrumented translation units with the independent historic basin_trace clean build, whose observer objects are reused.",
+  "prior_failure": "Initial compiler pass could not write assembler temporaries on full /tmp; set TMPDIR to an empty workspace directory and rebuilt everything. Failed pass was not timed.",
+  "observer_sha256": {
+    "pivot": "bc2ce6547d2f0fd0403cbd17a8a5571b662e1c181d6175e23c26fd5237dfbede",
+    "sham": "dbe9bb2d50f68a338a0d0c155aa8b5df50e7b08fa9876b010feb688be0ee8d46"
+  },
+  "git_src_tree": "6c6f65b0b7445cb364415f2079906e0d67e015bb",
+  "novel_trajectory_replays": 2,
+  "stage_and_split_csv_and_all_278_archive_arrays_equal_between_replays": true
+}

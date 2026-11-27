@@ -1,0 +1,25 @@
+{
+  "at9283": {
+    "inferred": 35,
+    "explicit": 36,
+    "missing": [
+      [
+        30,
+        31
+      ]
+    ],
+    "extra": []
+  },
+  "danusertib": {
+    "inferred": 41,
+    "explicit": 41,
+    "missing": [],
+    "extra": []
+  },
+  "82I": {
+    "inferred": 12,
+    "explicit": 12,
+    "missing": [],
+    "extra": []
+  }
+}

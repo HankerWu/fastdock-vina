@@ -1,0 +1,82 @@
+{
+  "inputs": {
+    "at9283": {
+      "ligand": "6c3a027a25d4030ee4d89228e712c064e8fb9148afdd731c4460c05dddaf58e4",
+      "bonds": "451492d5653fc434ab0228280fb56f87cc0dce63abe0a35bf025ba4df7c1563f",
+      "receptor": "614daf795f09fa31759011508a36e596068df237bc18861a247273f34349c2ea",
+      "center": [
+        -3.1538611111111106,
+        31.83275,
+        -3.84613888888889
+      ],
+      "size": 26,
+      "reference": "2W1G:A"
+    },
+    "danusertib": {
+      "ligand": "eea2c398f719ec3f04cf69d34024e350bc46a2416b3441cd24828dd59b122e91",
+      "bonds": "20864c8691c05247dfe205f9faaa3c637a2d7275d7ca8a5e534fbd63115a6de5",
+      "receptor": "614daf795f09fa31759011508a36e596068df237bc18861a247273f34349c2ea",
+      "center": [
+        -3.1538611111111106,
+        31.83275,
+        -3.84613888888889
+      ],
+      "size": 26,
+      "reference": "2J50:A"
+    },
+    "82I": {
+      "ligand": "7d59ab23813167ad956e549cef91cc532c70e9d72c3dd6796506d32fc789ce88",
+      "bonds": "38f6964e99b979b8365f7b407ed2c72eb88345cfb8c250da93b44644d640c431",
+      "receptor": "741874605fa2e1ea15374a13b4e50a1eb4c2f715f461c568da362ec6bbe48e62",
+      "center": [
+        128.0266,
+        -2.8662399999999995,
+        35.45272000000001
+      ],
+      "size": 24,
+      "reference": "6YQW:A"
+    }
+  },
+  "reference_rmsd": "Receptor frame, graph symmetry",
+  "binary_sha256": {
+    "base": "1807da648da1f441d344c0a0a03004d7559b03adb185e00485ec10f0623b5339",
+    "sham": "007ef841dadcc55dd1be79d894ad21a401e6186fa18a4a62a2db8b55f743e173",
+    "pivot": "7dded2a6896144060d3eca430baec7770b02a6ed160cd32dcdc59bd52188dd80",
+    "official": "f31f774f723bba7bbe6e9d1c47577020eea9a8da16424284c043d22593570644",
+    "official_counter": "62875fa8d1abc9e1af09f848f6d9cf052828359dd5246a6ef00d0300ca4672b2"
+  },
+  "seeds": [
+    81371,
+    81373
+  ],
+  "arms": {
+    "official": [
+      "official",
+      25000
+    ],
+    "official_double": [
+      "official",
+      50000
+    ],
+    "pro": [
+      "base",
+      25000
+    ],
+    "pro_double": [
+      "base",
+      50000
+    ],
+    "sham": [
+      "sham",
+      25000
+    ],
+    "pivot": [
+      "pivot",
+      25000
+    ]
+  },
+  "threads": 1,
+  "trajectories": 2,
+  "modes": 9,
+  "energy_range": 100
+}

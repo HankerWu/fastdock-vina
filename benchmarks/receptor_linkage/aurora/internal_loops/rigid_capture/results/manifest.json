@@ -1,0 +1,20 @@
+{
+  "sha256": {
+    "binary": "56542a5498b5bfbc5c8f42900b39737d554aa70e593d2e7d79e2b53f253ce528",
+    "receptor": "614daf795f09fa31759011508a36e596068df237bc18861a247273f34349c2ea",
+    "ligand": "6c3a027a25d4030ee4d89228e712c064e8fb9148afdd731c4460c05dddaf58e4",
+    "bonds": "451492d5653fc434ab0228280fb56f87cc0dce63abe0a35bf025ba4df7c1563f",
+    "box": "43f865e95bd645712253da7c16a621558b80c292b4240503d22ccd425a3de84e",
+    "ligand_sdf": "a385f30434842c61699340653412644c35a4157fcc03134d42f2aab4d63dbbbe",
+    "queries": "35d220504a433ab3d71668f3abd42413b2e18154d64811438c0261c385fafbce",
+    "receiver": "71ac7be885e5ed374291d7a3ec76e4fa14084cc5cfac0b5a3636ef1bde8bef56",
+    "ccd": "0a0fcedbe3377b7a783fcc26d9916109b6c7fc14cbee67eeebdf209948688a25",
+    "receiver_archive": "72c45e52eda2b79d5241b00b4efe79b2e2c19dc100f01a3ad52356d9c50cf56e",
+    "complete_on_complete.npz": "77bfa3833d90dfce7f95619cee0d727080450888dbff25643ee87d765bfa211f",
+    "inferred_on_complete.npz": "0d0fc1be49caaaa205664aca32bc6c4a6a0cd6ebd47bd9ac8d33f9b4e1540bab"
+  },
+  "quench_rows": 418,
+  "entry_observer_evals": 418,
+  "extra_hunt_evals": 15101,
+  "max_start_cartesian_error_A": 2.0294876890147862e-13
+}
