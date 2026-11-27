@@ -236,37 +236,19 @@ void model::append(const model& m) {
 	}
 	t.coords_append(atoms, m.atoms);
 
-	// Add interaction pairs between previously added atoms and (very likely) ligand atoms
-	/* Interactions:
-	- flex     - ligand   : YES (inter_pairs)
-	- flex_i   - flex_j   : YES (other_pairs) but append is used mostly for adding ligand
-	- ligand_i - ligand_j : YES (inter_pairs)
-	- macrocycle closure interactions: NO (1-2, 1-3, 1-4)
-	*/
+	// Ring closure IDs are local to each input molecule. Its internal glue
+	// pairs and exclusions have already been constructed before append().
+	// Across inputs, real closure carbons interact normally and the attached
+	// construction dummies have no intermolecular interactions.
+	const sz n = num_atom_types(atom_typing_used());
 	VINA_FOR(i, m_num_movable_atoms) {
+		const atom& a = atoms[i];
+		if (a.get(atom_typing_used()) >= n || ad_is_closure_dummy(a.ad)) continue;
 		VINA_RANGE(j, m_num_movable_atoms, m_num_movable_atoms + m.m_num_movable_atoms) {
-			if (is_closure_clash(i, j) || is_unmatched_closure_dummy(i, j)) continue;
-
-			const atom& a = atoms[i];
 			const atom& b = atoms[j];
-
-			sz t1 = a.get(atom_typing_used());
-			sz t2 = b.get(atom_typing_used());
-			sz n = num_atom_types(atom_typing_used());
-
-			if (t1 < n && t2 < n) {
-				interacting_pair pair(pair_table_index(atom_typing_used(), a, b, i, j, atoms.size()), i, j);
-				
-				if (is_glue_pair(i, j)) {
-					glue_pairs.push_back(pair); // glue_i - glue_j
-				} else if (is_atom_in_ligand(i) && is_atom_in_ligand(j)) {
-					inter_pairs.push_back(pair); // INTER: ligand_i - ligand_j
-				} else if (is_atom_in_ligand(i) || is_atom_in_ligand(j)) {
-					inter_pairs.push_back(pair); // INTER: flex - ligand
-				} else {
-					other_pairs.push_back(pair); // INTRA: flex_i - flex_j
-				}
-			}
+			if (b.get(atom_typing_used()) >= n || ad_is_closure_dummy(b.ad)) continue;
+			auto& pairs = (is_atom_in_ligand(i) || is_atom_in_ligand(j)) ? inter_pairs : other_pairs;
+			pairs.emplace_back(pair_table_index(atom_typing_used(), a, b, i, j, atoms.size()), i, j);
 		}
 	}
 
@@ -278,11 +260,10 @@ void model::append(const model& m) {
 		const sz first_anchor = m_num_movable_atoms + m.m_num_movable_atoms;
 		VINA_RANGE(i, m_num_movable_atoms, first_anchor) {
 			const atom& ligand_atom = atoms[i];
-			if (!is_atom_in_ligand(i) || ligand_atom.xs >= XS_TYPE_SIZE) continue;
+			if (!is_atom_in_ligand(i) || ligand_atom.xs >= XS_TYPE_SIZE || ad_is_closure_dummy(ligand_atom.ad)) continue;
 			VINA_RANGE(j, first_anchor, first_anchor + existing_inflex) {
 				const atom& anchor = atoms[j];
-				if (anchor.xs >= XS_TYPE_SIZE || is_closure_clash(i, j) ||
-				    is_unmatched_closure_dummy(i, j)) continue;
+				if (anchor.xs >= XS_TYPE_SIZE || ad_is_closure_dummy(anchor.ad)) continue;
 				inter_pairs.emplace_back(pair_table_index(atom_type::XS, ligand_atom, anchor,
 				                                          i, j, atoms.size()), i, j);
 			}

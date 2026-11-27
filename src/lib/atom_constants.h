@@ -215,6 +215,10 @@ inline bool ad_is_hydrogen(sz ad) {
 	return ad == AD_TYPE_H || ad == AD_TYPE_HD;
 }
 
+inline bool ad_is_closure_dummy(sz ad) {
+	return ad >= AD_TYPE_G0 && ad <= AD_TYPE_G3;
+}
+
 inline bool ad_is_heteroatom(sz ad) { // returns false for ad >= AD_TYPE_SIZE
 	return ad != AD_TYPE_A && ad != AD_TYPE_C  && 
 		   ad != AD_TYPE_H && ad != AD_TYPE_HD && 
@@ -282,15 +286,15 @@ const fl xs_vdw_radii[] = {
 	1.2, // Met_D
     1.9, // C_H_CG0
     1.9, // C_P_CG0
+    0.0, // G0
     1.9, // C_H_CG1
     1.9, // C_P_CG1
+    0.0, // G1
     1.9, // C_H_CG2
     1.9, // C_P_CG2
+    0.0, // G2
     1.9, // C_H_CG3
     1.9, // C_P_CG3
-    0.0, // G0
-    0.0, // G1
-    0.0, // G2
     0.0, // G3
     0.0  // W
 };
@@ -316,17 +320,17 @@ const fl xs_vinardo_vdw_radii[] = {
 	2.3, // At
 	1.2, // Met_D
 	2.0, // C_H_CG0
-	2.0, // C_P_CG0
-	2.0, // C_H_CG1
-	2.0, // C_P_CG1
-	2.0, // C_H_CG2
-	2.0, // C_P_CG2
-	2.0, // C_H_CG3
-	2.0, // C_P_CG3
-	0.0, // G0
-	0.0, // G1
-	0.0, // G2
-	0.0, // G3
+    2.0, // C_P_CG0
+    0.0, // G0
+    2.0, // C_H_CG1
+    2.0, // C_P_CG1
+    0.0, // G1
+    2.0, // C_H_CG2
+    2.0, // C_P_CG2
+    0.0, // G2
+    2.0, // C_H_CG3
+    2.0, // C_P_CG3
+    0.0, // G3
 	0.0	 // W
 };
 

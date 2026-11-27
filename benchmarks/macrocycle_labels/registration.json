@@ -1,0 +1,10 @@
+{
+  "pdb": "5QCT",
+  "chain": "A",
+  "ligand": "E4Y",
+  "common_receptor_CAs": 379,
+  "CA_fit_rmsd": 0.0004917528599932996,
+  "input_rmsd": 0.0005056728207995776,
+  "chemical_heavy_atoms": 38,
+  "graph_automorphisms": 1
+}

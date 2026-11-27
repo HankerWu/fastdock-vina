@@ -26,7 +26,6 @@
 
 #include "rigid_window.h"
 #include "printable_box.h"
-#include <cstdlib>
 #include <fstream>
 #include <sstream>
 #include <utility>
@@ -1734,16 +1733,6 @@ void Vina::global_search(const int exhaustiveness, const int n_poses, const doub
 
 	// Setup Monte-Carlo search
 	parallel_mc parallelmc;
-	if (const char* mode = std::getenv("FASTDOCK_FIRST_PLACEMENT")) {
-		if (m_sf_choice != SF_VINA || m_model.num_ligands() != 1 || m_model.num_flex() != 0 ||
-		    m_pocket_start_radius > 0 || m_prepared_torsion_starts || m_mixed_reorientation ||
-		    m_balanced_torsion || m_centered_rotation)
-			throw vina_runtime_error("placement experiment requires the native single-ligand rigid Vina initialization");
-		const std::string arm(mode);
-		if (arm == "fit") parallelmc.mc.placement = initial_placement::fit;
-		else if (arm == "invalid") parallelmc.mc.placement = initial_placement::invalid_only;
-		else throw vina_runtime_error("FASTDOCK_FIRST_PLACEMENT must be fit or invalid");
-	}
 	sz heuristic = m_model.num_movable_atoms() + 10 * m_model.get_size().num_degrees_of_freedom();
 	parallelmc.mc.global_steps = unsigned(70 * 3 * (50 + heuristic) / 2); // 2 * 70 -> 8 * 20 // FIXME
 	parallelmc.mc.local_steps = unsigned((25 + m_model.num_movable_atoms()) / 3);

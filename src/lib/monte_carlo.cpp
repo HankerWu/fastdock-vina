@@ -41,38 +41,6 @@ bool metropolis_accept(fl old_f, fl new_f, fl temperature, rng& generator) {
 	return random_fl(0, 1, generator) < acceptance_probability;
 }
 
-// Map the original (wrapped) random root position into translations for which
-// all chemical heavy atoms fit. The orientation and torsions stay fixed.
-static void fit_first_proposal(model& m, conf& c, const vec& lower, const vec& upper,
-                               initial_placement mode) {
-	m.set(c);
-	vec lo(max_fl, max_fl, max_fl), hi(-max_fl, -max_fl, -max_fl);
-	bool have_atom = false;
-	VINA_FOR(i, m.num_movable_atoms()) {
-		const auto& atom = m.movable_atom(i);
-		if (atom.el == EL_TYPE_H || atom.el == EL_TYPE_Dummy) continue;
-		have_atom = true;
-		VINA_FOR(k, 3) {
-			lo[k] = std::min(lo[k], m.movable_coords(i)[k]);
-			hi[k] = std::max(hi[k], m.movable_coords(i)[k]);
-		}
-	}
-	if (!have_atom) return;
-	const vec root = c.ligands.front().rigid.position;
-	vec projected;
-	bool outside = false;
-	VINA_FOR(k, 3) {
-		const fl width = upper[k] - lower[k];
-		const fl free_span = width - (hi[k] - lo[k]);
-		if (free_span < 0 || width <= 0) return;
-		const fl fraction = (root[k] - lower[k]) / width;
-		projected[k] = root[k] + (lower[k] - lo[k]) + (fraction - std::floor(fraction)) * free_span;
-		outside = outside || lo[k] < lower[k] || hi[k] > upper[k];
-	}
-	if (mode == initial_placement::fit || outside)
-		c.ligands.front().rigid.position = projected;
-}
-
 // out is sorted
 void monte_carlo::operator()(model& m, output_container& out, const precalculate_byatom& p, const igrid& ig, const vec& corner1, const vec& corner2, incrementable* increment_me, rng& generator, trajectory_archive* archive, search_trajectory_counters* counters,
                              const boost::optional<vec>& pocket_start, bool prepared_torsions) const {
@@ -111,8 +79,6 @@ void monte_carlo::operator()(model& m, output_container& out, const precalculate
 		candidate.c = tmp.c;
 		const bool reoriented = mutate_conf(candidate.c, m, mutation_amplitude, generator,
 		                                    mixed_reorientation, separate_hunt_chain, centered_rotation, balanced_torsion);
-		if (step == 0 && placement != initial_placement::native)
-			fit_first_proposal(m, candidate.c, corner1, corner2, placement);
 		const int before_hunt = evalcount;
 		quasi_newton_par(m, p, ig, candidate, hunt_cap, evalcount);
 		if (counters) {

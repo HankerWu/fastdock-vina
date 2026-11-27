@@ -40,10 +40,7 @@ struct search_trajectory_counters {
 	boost::optional<vec> initial_centroid;
 };
 
-enum class initial_placement { native, fit, invalid_only };
-
 struct monte_carlo {
-	initial_placement placement = initial_placement::native;
     unsigned max_evals;
 	unsigned global_steps;
 	fl temperature;

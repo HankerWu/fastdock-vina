@@ -1,0 +1,30 @@
+{
+  "hsp/raw/1YET.pdb": {
+    "sha256": "ff8f8229de9890ba788615e8019d62c6d498deda41db4fdc6f656bcb36779c56",
+    "url": "https://files.rcsb.org/download/1YET.pdb"
+  },
+  "hsp/raw/GDM.cif": {
+    "sha256": "fa8d1dfe30860cc5126f971f0ad036777304beea23656f1df7dc7bbe8c7c9ea1",
+    "url": "https://files.rcsb.org/ligands/download/GDM.cif"
+  },
+  "bace/5QCT.pdb": {
+    "sha256": "54cc5fa673747783989a9173843735caf08b9ab567c49b5f6a426b5b565df2e3",
+    "url": "https://files.rcsb.org/download/5QCT.pdb"
+  },
+  "tutorial/data/BACE_1_ligand.mol2": {
+    "sha256": "67e9b1a2e02018599ddaaa357d78201c34f68bf1e496e2ec0ae0e98b0d2e49a3",
+    "url": "https://raw.githubusercontent.com/forlilab/AutoDock-Vina/3c65c0b3e6c2c1d183f6a175ecb65e3c5ba91645/example/docking_with_macrocycles/data/BACE_1_ligand.mol2"
+  },
+  "tutorial/solution/BACE_1_ligand.pdbqt": {
+    "sha256": "913c14d4f2c1fca35c7b44305e6ecb07d7dc9ee225c532460e92ad3b09bd41b3",
+    "url": "https://raw.githubusercontent.com/forlilab/AutoDock-Vina/3c65c0b3e6c2c1d183f6a175ecb65e3c5ba91645/example/docking_with_macrocycles/solution/BACE_1_ligand.pdbqt"
+  },
+  "tutorial/solution/BACE_1_receptor.pdbqt": {
+    "sha256": "b19ca5de1ad1b912e18aa25ec14407b79bedc38224baf4ff2a6b1657be6e09a7",
+    "url": "https://raw.githubusercontent.com/forlilab/AutoDock-Vina/3c65c0b3e6c2c1d183f6a175ecb65e3c5ba91645/example/docking_with_macrocycles/solution/BACE_1_receptor.pdbqt"
+  },
+  "tutorial/solution/BACE_1_receptor_vina_box.txt": {
+    "sha256": "1516a37e0f1979d36914ffa3a0fb91a4add25f034febaf653df8396da51eaba7",
+    "url": "https://raw.githubusercontent.com/forlilab/AutoDock-Vina/3c65c0b3e6c2c1d183f6a175ecb65e3c5ba91645/example/docking_with_macrocycles/solution/BACE_1_receptor_vina_box.txt"
+  }
+}
