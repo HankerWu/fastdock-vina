@@ -242,13 +242,13 @@ def check_totals(summary):
 
 def main(out):
     modes = read(SOURCE / "modes.csv.xz")
+    modes = [r for r in modes if r["compound"] != "CHEMBL369480"]
+    modes.extend(read(SOURCE / "corrected_modes.csv"))
     scales = {}
     for r in modes:
         c, scale = r["compound"], float(r["scale"])
         if scales.setdefault(c, scale) != scale:
             raise ValueError("Reference offset does not commute with pose aggregation")
-    modes = [r for r in modes if r["compound"] != "CHEMBL369480"]
-    modes.extend(read(SOURCE / "corrected_modes.csv"))
     extra = {
         r["compound"]: r for r in read(SOURCE.parent / "strain/free_references.csv")
     }

@@ -1,10 +1,10 @@
 receptor,subset,pairs,native,full,gb_fixed,gb_reselected
-1FJS,all,295,219.5,221,204,221
-1FJS,incident,21,6,7,6,8
+1FJS,all,295,219.5,222,206,223
+1FJS,incident,21,6,8,8,10
 1FJS,remaining,274,213.5,214,198,213
-2P16,all,295,187,219,214,233
-2P16,incident,21,10,14,13,15
+2P16,all,295,187,221,214,232
+2P16,incident,21,10,16,13,14
 2P16,remaining,274,177,205,201,218
-both,all,295,216,215,208,229
-both,incident,21,10,12,9,11
+both,all,295,216,217,212,232
+both,incident,21,10,14,13,14
 both,remaining,274,206,203,199,218

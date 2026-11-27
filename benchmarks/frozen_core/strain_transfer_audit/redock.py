@@ -90,7 +90,7 @@ def main(binary, out):
         for r in read(replay.HERE.parent / "strain_components/scores.csv")
         if r["compound"] == LIGAND
     )
-    scale, free = float(meta["scale"]), float(meta["free"])
+    free = float(meta["free"])
     all_preps, cells = [], []
     with TemporaryDirectory() as tmp:
         work = Path(tmp)
@@ -120,13 +120,14 @@ def main(binary, out):
                     (raw / (arm + ".pdbqt")).write_text(text)
         for receptor, seed in product(("1FJS", "2P16"), (271828, 314159)):
             folder = work / ("fdv-fxa" if receptor == "2P16" else "fdv-fxa1")
+            receptor_file = work / receptor / (receptor + ".pdbqt")
             for arm in ARMS if seed == 271828 else reversed(ARMS):
                 name = f"{arm}_{receptor}_{seed}"
                 path = raw / (name + ".pdbqt")
                 cmd = [
                     binary,
                     "--receptor",
-                    work / receptor / (receptor + ".pdbqt"),
+                    receptor_file,
                     "--ligand",
                     raw / (arm + ".pdbqt"),
                     "--config",
@@ -163,6 +164,15 @@ def main(binary, out):
                 ):
                     raise ValueError(f"Original exported pool differs: {name}")
                 pose = read_first(path)
+                # Distorted input geometry changes the historical engine's inferred covalent graph.
+                scale = physical.evaluate_coordinates(
+                    binary, raw / (arm + ".pdbqt"), receptor_file, None, 60
+                )["scale"]
+                inter = next(float(line.split()[-1]) for line in path.read_text().splitlines()
+                             if line.startswith("REMARK INTER:"))
+                # Each saved PDBQT term is rounded independently to three decimals.
+                if abs(scale * (inter + pose.native_intra - pose.native_unbound) - pose.native_score) > 0.002:
+                    raise ValueError(f"Normalization disagrees with saved native score: {name}")
                 mol, _ = physical.decode_ligand(pose)
                 bound, _, _ = replay.fixed_geometry(pose)
                 costs = {}
@@ -184,6 +194,7 @@ def main(binary, out):
                         receptor=receptor,
                         seed=seed,
                         native=pose.native_score,
+                        scale=scale,
                         full=physical.mmff_affinity_score(pose, scale, bound, free),
                         bound=bound,
                         free=free,

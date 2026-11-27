@@ -25,9 +25,7 @@ def main(out, platform):
         cases = []
         for r in (r for r in ledger if r["arm"] == "random_coords"):
             p = work / f"random_coords_{r['receptor']}_{r['seed']}.pdbqt"
-            cases.append(
-                (decompose.read_first(p), {**r, "scale": meta[ident]["scale"]})
-            )
+            cases.append((decompose.read_first(p), r))
         assert len(cases) == 4
         replacements, _ = score(
             {"compound": ident, "assay": assay}, cases[0][0], cases, platform

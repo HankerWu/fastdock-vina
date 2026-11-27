@@ -1,0 +1,18 @@
+{
+  "repeated_pools": 96,
+  "repeated_logs": 96,
+  "repeated_derived_tables": [
+    "cells.csv",
+    "changed_winner_sites.csv",
+    "contrasts.csv",
+    "counters.csv",
+    "distributions.csv",
+    "pairs.csv",
+    "poses.csv",
+    "target_bootstrap.csv"
+  ],
+  "historical_rmsd_crosschecked": 599,
+  "historical_hydrated_scores_crosschecked": 300,
+  "src_git_tree": "dcc8671c00d3bdd86e4cbb1a4055f38f5a5c7e82",
+  "transfer_output_archive_sha256": "7b4f9d1a5f88c2bccd2bf4324cdfaea1b190d0e16281ad44d6f764fd041d6c44"
+}
