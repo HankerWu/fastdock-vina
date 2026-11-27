@@ -1,0 +1,13 @@
+pdb,arm,heavy_bonds,missing,extra,scored_pairs,wrongly_scored
+1XMU,parent,27,21-22,,215,19-22
+1XMU,triangle,28,,,214,
+3WZD,parent,32,32-34,,281,27-34
+3WZD,triangle,33,,,280,
+7AAD,parent,35,18-19,,313,15-19 17-19
+7AAD,triangle,36,,,311,
+7XRR,parent,32,1-3,,305,1-22 1-23 3-5 3-15 3-16
+7XRR,triangle,33,,,300,
+6WTO,parent,29,,,202,
+6WTO,triangle,29,,,202,
+4LMN,parent,33,,,284,
+4LMN,triangle,33,,,284,

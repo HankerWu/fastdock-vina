@@ -1,0 +1,9 @@
+{
+  "base_source": "dec913f584a2bf188ce9704b0602f11c56069627",
+  "upstream_source": "3c65c0b3e6c2c1d183f6a175ecb65e3c5ba91645",
+  "compiler": "c++ (Debian 14.2.0-19) 14.2.0",
+  "upstream_binary_sha256": "3b6492ecf51789c71195438b3bda5784455b5e7ab2bceb7a59a25c5c8d182ae8",
+  "pro_binary_sha256": "8030f0b2e85c5a1931be37d3cc5e1c20f3618b1641ae318f11ccd07b405bb17a",
+  "triangle_binary_sha256": "fada90c795e202c2bab4fc1e4fdd03cc1d6c94f66ed201f810e8202c3e5c84df",
+  "declared_bond_binary_sha256": "09d7e66645822cded73e7303799442b5c7816b743c75588e67dbf4ba9896612a"
+}

@@ -1,0 +1,53 @@
+--- a/src/lib/model.cpp
++++ b/src/lib/model.cpp
+@@ -318,6 +318,11 @@
+ };
+ 
+ 
++// The blocker heuristic removes the longest edge of an ordinary cyclopropane.
++// Limit the exception to three aliphatic carbons from the same rigid ligand
++// fragment, with all three edges in the same covalent shell.
++static const fl bond_length_allowance_factor = 1.1;
++
+ bool model::atom_exists_between(const distance_type_matrix& mobility, const atom_index& a, const atom_index& b, const szv& relevant_atoms) const { // there is an atom closer to both a and b then they are to each other and immobile relative to them
+ 	fl r2 = distance_sqr_between(a, b);
+ 	VINA_FOR_IN(relevant_atoms_i, relevant_atoms) {
+@@ -326,11 +331,25 @@
+ 		if(a == c || b == c) continue;
+ 		distance_type ac = distance_type_between(mobility, a, c);
+ 		distance_type bc = distance_type_between(mobility, b, c);
+-		if(ac != DISTANCE_VARIABLE &&
+-		   bc != DISTANCE_VARIABLE &&
+-		   distance_sqr_between(a, c) < r2 &&
+-		   distance_sqr_between(b, c) < r2)
+-			return true;
++		if (ac == DISTANCE_VARIABLE || bc == DISTANCE_VARIABLE) continue;
++		const fl ac2 = distance_sqr_between(a, c);
++		const fl bc2 = distance_sqr_between(b, c);
++		if (ac2 >= r2 || bc2 >= r2) continue;
++
++		if (!a.in_grid && !b.in_grid && !c.in_grid &&
++		    ac == DISTANCE_FIXED && bc == DISTANCE_FIXED &&
++		    distance_type_between(mobility, a, b) == DISTANCE_FIXED &&
++		    atoms[a.i].ad == AD_TYPE_C && atoms[b.i].ad == AD_TYPE_C &&
++		    atoms[c.i].ad == AD_TYPE_C) {
++			const sz ligand = find_ligand(a.i);
++			if (ligand < ligands.size() && find_ligand(b.i) == ligand && find_ligand(c.i) == ligand) {
++				const fl shortest = atoms[a.i].optimal_covalent_bond_length(atoms[b.i]) /
++				                    bond_length_allowance_factor;
++				// Both other distances are shorter than the already accepted AB.
++				if (std::min(ac2, bc2) >= sqr(shortest)) continue;
++			}
++		}
++		return true;
+ 	}
+ 	return false;
+ }
+@@ -355,7 +374,6 @@
+ };
+ 
+ void model::assign_bonds(const distance_type_matrix& mobility, atomv& rigid_atoms) {
+-	const fl bond_length_allowance_factor = 1.1;
+ 	sz n = rigid_atoms.size() + atoms.size();
+ 
+ 	// construct beads
