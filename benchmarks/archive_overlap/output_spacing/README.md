@@ -42,3 +42,5 @@ diff "$D/full_precision.csv" "$W/distances.csv"
 ```
 
 C++ 回归命令见仓库 `core-regression.yml` 的 “Test final pose spacing across energy windows and output APIs” 步骤。它包含自定义排名的能窗优先、等分、精确距离边界、零名额、超过九个名额，以及同一真实 3T1L 对接在 20 个数量和能窗组合下的三类输出一致性检查。`filter_cost.cpp` 可以和同版 `coords.o` 一起编译，输入为解包后的 94 个 `*_candidate_3000.pdbqt`。
+
+BFGS 回溯修复改变了 Gal3 3T1L 与化合物 10 的搜索轨迹。同一种子和 3,000 次上限在父版返回八个姿势，最近间距 2.4508 Å；修复版返回九个，最近间距 2.6302 Å。两种输出都满足 1 Å 的最小间距要求。回归现从全精度坐标独立计算实际发布的每一对重原子间距，并在 25 组能窗与数量组合中核对三种接口的能量、次序、序列化坐标和候选上限。固定的小坐标池继续覆盖分数相同、恰在半径边界和能窗先于几何筛选等情况。[共享 BFGS 的真实回放](../../accepted_bfgs/README.md) · [接口回归](check.cpp)
