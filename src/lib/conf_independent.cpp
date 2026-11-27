@@ -85,13 +85,13 @@ conf_independent_inputs::conf_independent_inputs(const model& m) {
         const ligand& lig = m.get_ligand(i);
         ligand_lengths_sum += m.ligand_length(i);
         torsdof += lig.degrees_of_freedom;
+        num_tors += lig.active_heavy_torsions;
 
         VINA_RANGE(j, lig.begin, lig.end) {
             const atom& a = m.get_atom(j);
 
             if (a.el != EL_TYPE_H) {
                 unsigned ar = atom_rotors(m, atom_index(j, false));
-                num_tors += 0.5 * ar;
                 if (ar > 2) num_rotors += 0.5;
                 else num_rotors += 0.5 * ar;
 

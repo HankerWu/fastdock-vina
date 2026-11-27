@@ -440,10 +440,42 @@ void postprocess_branch(non_rigid_parsed& nr, parsing_struct& p, context& c, B& 
     VINA_CHECK(nr.atoms_inflex_bonds.dim_2() == nr.inflex.size());
 }
 
+namespace {
+bool rotor_reference_site(const atom& a) {
+    // Closure markers represent the missing partner across a broken ring bond.
+    return !a.is_hydrogen() && a.ad != AD_TYPE_W;
+}
+
+bool chemical_axis_end(const atom& a) {
+    return rotor_reference_site(a) && !ad_is_closure_dummy(a.ad);
+}
+
+// Count each declared bond once from its two cut components. Each component
+// includes its own axis endpoint, so it needs at least two reference sites.
+sz count_subtree_sites(const parsing_struct& tree, sz total, unsigned& torsions) {
+    sz sites = 0;
+    for (const auto& node : tree.atoms) {
+        if (rotor_reference_site(node.a)) ++sites;
+        for (const auto& child : node.ps) {
+            const sz child_sites = count_subtree_sites(child, total, torsions);
+            sites += child_sites;
+            if (child_sites >= 2 && total - child_sites >= 2 &&
+                chemical_axis_end(node.a) && chemical_axis_end(child.atoms[*child.immobile_atom].a))
+                ++torsions;
+        }
+    }
+    return sites;
+}
+} // namespace
+
 void postprocess_ligand(non_rigid_parsed& nr, parsing_struct& p, context& c, unsigned torsdof) {
     VINA_CHECK(!p.atoms.empty());
     nr.ligands.push_back(ligand(flexible_body(rigid_body(p.atoms[0].a.coords, 0, 0)), torsdof)); // postprocess_branch will assign begin and end
-    postprocess_branch(nr, p, c, nr.ligands.back());
+    const sz first = nr.atoms.size();
+    ligand& lig = nr.ligands.back();
+    postprocess_branch(nr, p, c, lig);
+    const sz sites = std::count_if(nr.atoms.begin() + first, nr.atoms.end(), rotor_reference_site);
+    count_subtree_sites(p, sites, lig.active_heavy_torsions);
     nr_update_matrixes(nr); // FIXME ?
 }
 

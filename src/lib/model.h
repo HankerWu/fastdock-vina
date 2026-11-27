@@ -49,6 +49,7 @@ typedef std::pair<std::string, boost::optional<sz> > parsed_line;
 typedef std::vector<parsed_line> context;
 
 struct ligand : public flexible_body, atom_range {
+	unsigned active_heavy_torsions = 0; // Two-sided PDBQT axes used in the XS score divisor.
 	unsigned degrees_of_freedom; // can be different from the apparent number of rotatable bonds, because of the disabled torsions
 	interacting_pairs pairs;
 	context cont;
