@@ -1,7 +1,6 @@
 """End-to-end S6K1 transfer under the archived two- and four-trajectory budgets."""
 import argparse
 from concurrent.futures import ThreadPoolExecutor
-import csv
 import hashlib
 import json
 from pathlib import Path
