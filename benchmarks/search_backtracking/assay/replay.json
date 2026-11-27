@@ -1,0 +1,11 @@
+{
+  "research_commit": "b26101b9028b24e488718024c8ba01e3c680d813",
+  "matched_end_to_end_pools": 108,
+  "identical_counters_and_score_except_wall_time": true,
+  "prepared_panel_bytes_equal": true,
+  "receptors_identical": 2,
+  "primary_research_binary": "03f7d836c6eadc72238500a65062c403ccb61525c07aba27a6471a8718f784af",
+  "rebuilt_research_binary": "1e5ae08a5a86efc12f9b664d760357bd38a603d5cfc82751fa0fbcc7bbfbbe0b",
+  "upstream_binary": "3b6492ecf51789c71195438b3bda5784455b5e7ab2bceb7a59a25c5c8d182ae8",
+  "upstream_count_binary": "62875fa8d1abc9e1af09f848f6d9cf052828359dd5246a6ef00d0300ca4672b2"
+}

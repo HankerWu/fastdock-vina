@@ -1,0 +1,82 @@
+{
+  "1M17": {
+    "times": {
+      "receptor_s": 3.051108827000462
+    },
+    "pocket": {
+      "rebuilt_within_8A": [],
+      "omitted_nonwater_within_8A": [
+        [
+          "CA BCYS A 751",
+          7.977
+        ],
+        [
+          "O  BCYS A 751",
+          7.874
+        ],
+        [
+          "CB BCYS A 751",
+          6.711
+        ],
+        [
+          "SG BCYS A 751",
+          5.267
+        ],
+        [
+          "N  BASP A 831",
+          4.15
+        ],
+        [
+          "CA BASP A 831",
+          4.326
+        ],
+        [
+          "C  BASP A 831",
+          5.703
+        ],
+        [
+          "O  BASP A 831",
+          6.69
+        ],
+        [
+          "CB BASP A 831",
+          4.622
+        ],
+        [
+          "CG BASP A 831",
+          5.139
+        ],
+        [
+          "OD1BASP A 831",
+          4.611
+        ],
+        [
+          "OD2BASP A 831",
+          6.344
+        ]
+      ]
+    },
+    "receptor_sha256": "b74641e15677cfaad97ffa2883817baeaa654f691cc9755748e349d06179c179",
+    "box_sha256": "c7dc9d370b830be20fe0459080bd5dc6045c4f42e232753393fabe4260df508a"
+  },
+  "1A9U": {
+    "times": {
+      "receptor_s": 3.5853782690001026,
+      "11409972_ligand_s": 1.106080569000369,
+      "10184653_ligand_s": 0.7291771889995289,
+      "156422_ligand_s": 1.5542748810003104,
+      "42642645_ligand_s": 1.7961105260001204,
+      "644241_ligand_s": 0.9323198870006308,
+      "447077_ligand_s": 0.3499278179997418,
+      "176155_ligand_s": 0.2977201769999738,
+      "3038525_ligand_s": 0.2442451599999913
+    },
+    "pocket": {
+      "rebuilt_within_8A": [],
+      "omitted_nonwater_within_8A": []
+    },
+    "receptor_sha256": "c7697e270551ec1ad3623d691906f97cfab32be1256e53e931d1c9b1e7463173",
+    "box_sha256": "8b3dd5efeef7ac8183783bdc687b6a2ea14fe693fdccb942d771ed4e1110b8b4"
+  },
+  "shared_prepare_s_excluding_download": 13.929869779
+}

@@ -1,0 +1,54 @@
+{
+  "1A9U.pdb": {
+    "url": "https://files.rcsb.org/download/1A9U.pdb",
+    "sha256": "c6fa08f3c26c99b8b8ee78862129103d2ee5ea937160d32e5148777093c05074"
+  },
+  "1M17.pdb": {
+    "url": "https://files.rcsb.org/download/1M17.pdb",
+    "sha256": "5b020cd186307d657de80611793554b074f6936a3443d33f81d9b1a58004962e"
+  },
+  "AST-487.json": {
+    "url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/AST-487/property/InChIKey,SMILES,Title/JSON",
+    "sha256": "b968a5666ecee45e13e5fa006ed776e73765132abb5ae0f9cf21fcc5f38d7381"
+  },
+  "BIBW-2992.json": {
+    "url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/BIBW-2992/property/InChIKey,SMILES,Title/JSON",
+    "sha256": "ddf84aa024d57decbb7c079f041003f99c2cfc50d92b2bdb7e788a7170067f25"
+  },
+  "BIRB-796.json": {
+    "url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/BIRB-796/property/InChIKey,SMILES,Title/JSON",
+    "sha256": "5d21841f27943a0bc142872071e65246114fc7ba8220046a54c6e673bcffbbe6"
+  },
+  "GSK-1363089.json": {
+    "url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/GSK-1363089/property/InChIKey,SMILES,Title/JSON",
+    "sha256": "99d6cee668dc18bde6aab326511d2ebbc89ec4d57109620937fe890d2f7dbc29"
+  },
+  "Nilotinib.json": {
+    "url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/Nilotinib/property/InChIKey,SMILES,Title/JSON",
+    "sha256": "3d63a71a141f3c0b8d6b576fb90523f156873ed06dd02a5275d5a74886c6ef09"
+  },
+  "PD-173955.json": {
+    "url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/PD-173955/property/InChIKey,SMILES,Title/JSON",
+    "sha256": "a1e8a2b960141162911684174145f0bffd572877545bfcb55a91c3d6a9d9ee45"
+  },
+  "SB-203580.json": {
+    "url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/SB-203580/property/InChIKey,SMILES,Title/JSON",
+    "sha256": "543cccdfcb0b5a624b3f06726704bfc1f46b20553434b76fdd4986670c4bad41"
+  },
+  "VX-745.json": {
+    "url": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/VX-745/property/InChIKey,SMILES,Title/JSON",
+    "sha256": "f6e781eecf45c304777df0358cb2840853b62819371e673d1f5a09b58dbc0cff"
+  },
+  "ligands_iso.txt": {
+    "url": "https://raw.githubusercontent.com/hkmztrk/DeepDTA/c7f9e7b48cb547b98bf9963388af8ef8126c1847/data/davis/ligands_iso.txt",
+    "sha256": "58b3cd168ed12962eb856e4e4e5dab1abbd42d6c0912eed2b9987bf578c7fafd"
+  },
+  "table1.xls": {
+    "url": "https://static-content.springer.com/esm/art%3A10.1038%2Fnbt.1990/MediaObjects/41587_2011_BFnbt1990_MOESM3_ESM.xls",
+    "sha256": "69c2957c1fa1b5ba032721031af2fffe1eb896acd0723829e4500da8f75779c9"
+  },
+  "table4.xls": {
+    "url": "https://static-content.springer.com/esm/art%3A10.1038%2Fnbt.1990/MediaObjects/41587_2011_BFnbt1990_MOESM5_ESM.xls",
+    "sha256": "e47821b2e959ff22aa6d1613b236a63fb530f0da19cfa8d45408598cf27498d7"
+  }
+}

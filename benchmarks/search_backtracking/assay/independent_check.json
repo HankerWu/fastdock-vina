@@ -1,0 +1,76 @@
+{
+  "target_ligand_rows": 18,
+  "distinct_compounds": 17,
+  "seeds": {
+    "458921": {
+      "runs": 144,
+      "all_credits": {
+        "EGFR_12000": {
+          "halving": 9,
+          "parent": 8,
+          "quadratic": 2,
+          "upstream": 8
+        },
+        "EGFR_3000": {
+          "halving": 7,
+          "parent": 6,
+          "quadratic": 9,
+          "upstream": 5
+        },
+        "p38-alpha_12000": {
+          "halving": 29,
+          "parent": 16,
+          "quadratic": 24,
+          "upstream": 16
+        },
+        "p38-alpha_3000": {
+          "halving": 24,
+          "parent": 14,
+          "quadratic": 26,
+          "upstream": 26
+        }
+      },
+      "matched_pairs": {
+        "EGFR": 1,
+        "p38-alpha": 1
+      },
+      "maximum_first_score_key": "p38-alpha_1A9U_644241_458921_quadratic_3000",
+      "maximum_first_score": 166.128,
+      "nearest_heavy_A": 1.0173,
+      "ligand_heavy_atoms_within_2A": 18
+    },
+    "703109": {
+      "runs": 108,
+      "all_credits": {
+        "EGFR_10800": {
+          "halving": 7,
+          "parent": 3,
+          "quadratic": 3
+        },
+        "EGFR_12000": {
+          "halving": 7,
+          "parent": 3,
+          "quadratic": 3
+        },
+        "p38-alpha_10800": {
+          "halving": 24,
+          "parent": 24,
+          "quadratic": 9
+        },
+        "p38-alpha_12000": {
+          "halving": 24,
+          "parent": 24,
+          "quadratic": 9
+        }
+      },
+      "matched_pairs": {
+        "EGFR": 1,
+        "p38-alpha": 1
+      },
+      "maximum_first_score_key": "EGFR_1M17_176870_703109_halving_12000",
+      "maximum_first_score": 47.302,
+      "nearest_heavy_A": 1.34019,
+      "ligand_heavy_atoms_within_2A": 5
+    }
+  }
+}
