@@ -1,0 +1,76 @@
+diff --git a/src/lib/precalculate.h b/src/lib/precalculate.h
+index 2c45814..f15f9e7 100755
+--- a/src/lib/precalculate.h
++++ b/src/lib/precalculate.h
+@@ -52,10 +52,20 @@ public:
+         : smooth(distances.size()) {
+         VINA_FOR_IN(i, distances)
+             smooth[i][0] = (std::min)(cap, evaluate(distances[i]));
+-        // The centered radial derivative is zero at both ends of the table.
++        // Slopes are dE/dq on the uniform q = factor*r^2 lattice. Flat or
++        // turning intervals have zero tangent; other knots use the harmonic
++        // mean, bounded by twice the smaller secant in magnitude.
++        smooth.front()[1] = smooth.back()[1] = 0;
+         for (sz i = 1; i + 1 < distances.size(); ++i) {
+-            const fl delta = distances[i + 1] - distances[i - 1];
+-            smooth[i][1] = (smooth[i + 1][0] - smooth[i - 1][0]) / (delta * distances[i]);
++            const fl left = smooth[i][0] - smooth[i-1][0];
++            const fl right = smooth[i+1][0] - smooth[i][0];
++            fl slope = 0;
++            if ((left > 0 && right > 0) || (left < 0 && right < 0)) {
++                const fl small = std::abs(left) <= std::abs(right) ? left : right;
++                const fl large = small == left ? right : left;
++                slope = small / (0.5 + 0.5 * (small / large));
++            }
++            smooth[i][1] = slope;
+         }
+     }
+ 
+@@ -64,7 +74,7 @@ public:
+         assert(i + 1 < smooth.size());
+         return (smooth[i + 1][0] + smooth[i][0]) / 2;
+     }
+-    pr eval_deriv(fl r2_factored) const {
++    pr eval_deriv(fl r2_factored, fl factor = 32) const {
+         assert(r2_factored + 1 < smooth.size());
+         // Valid sample offsets fit the signed difference type of the vector.
+         const auto i = static_cast<std::ptrdiff_t>(r2_factored);
+@@ -72,12 +82,17 @@ public:
+         assert(rem >= -epsilon_fl);
+         assert(rem < 1 + epsilon_fl);
+         const sample lower = smooth[i];
+-        const sample result = lower + rem * (smooth[i + 1] - lower);
+-        return pr(result[0], result[1]);
++        const sample upper = smooth[i + 1];
++        const fl difference = upper[0] - lower[0];
++        const fl quadratic = 3 * difference - 2 * lower[1] - upper[1];
++        const fl cubic = lower[1] + upper[1] - 2 * difference;
++        const fl energy = lower[0] + rem * (lower[1] + rem * (quadratic + rem * cubic));
++        const fl slope = lower[1] + rem * (2 * quadratic + rem * 3 * cubic);
++        return pr(energy, 2 * factor * slope);
+     };
+ private:
+     typedef fl sample __attribute__((vector_size(16)));
+-    std::vector<sample> smooth; // energy and radial derivative interpolate independently
++    std::vector<sample> smooth; // nodal energy and its slope in table-index coordinates
+ };
+ 
+ struct precalculate {
+@@ -122,7 +137,7 @@ struct precalculate {
+     }
+     pr eval_deriv(sz type_pair_index, fl r2) const {
+         assert(r2 <= m_cutoff_sqr);
+-        return element(type_pair_index).eval_deriv(m_factor * r2);
++        return element(type_pair_index).eval_deriv(m_factor * r2, m_factor);
+     }
+     fl cutoff_sqr() const { return m_cutoff_sqr; }
+ 
+@@ -166,7 +181,7 @@ struct precalculate_byatom {
+         return element(pair).fast_sample(sz(m_factor * r2));
+     }
+     pr eval_deriv(const interacting_pair& pair, fl r2) const {
+-        return element(pair).eval_deriv(m_factor * r2);
++        return element(pair).eval_deriv(m_factor * r2, m_factor);
+     }
+     fl cutoff_sqr() const { return m_cutoff_sqr; }
+     fl max_cutoff_sqr() const { return m_max_cutoff_sqr; }

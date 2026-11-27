@@ -1,0 +1,88 @@
+diff --git a/src/lib/precalculate.h b/src/lib/precalculate.h
+--- a/src/lib/precalculate.h
++++ b/src/lib/precalculate.h
+@@ -96,8 +96,11 @@
+     void populate(const ScoringFunction& sf, const std::bitset<XS_TYPE_SIZE>& receptor_types,
+                   const std::bitset<XS_TYPE_SIZE>& ligand_types) {
+         if (receptor_types.none() || ligand_types.none()) return;
+-        if (m_data.dim() == 0)
++        if (m_data.dim() == 0) {
+             m_data = triangular_matrix<precalculate_element>(XS_TYPE_SIZE, precalculate_element());
++            if (sf.has_native_vina_cutoff())
++                m_cutoff_values = triangular_matrix<fl>(XS_TYPE_SIZE, 0);
++        }
+         flv distances;
+         VINA_FOR(t2, XS_TYPE_SIZE) {
+             VINA_RANGE(t1, 0, t2 + 1) {
+@@ -107,6 +110,8 @@
+                 if (distances.empty()) distances = sample_distances(m_factor, m_cutoff_sqr);
+                 m_data(t1, t2) = precalculate_element(distances, max_fl,
+                     [&](fl r) { return sf.eval(t1, t2, r); });
++                if (m_cutoff_values.dim())
++                    m_cutoff_values(t1, t2) = sf.eval(t1, t2, std::nextafter(sf.get_cutoff(), 0.0));
+             }
+         }
+     }
+@@ -130,7 +135,24 @@
+     }
+     pr eval_deriv(sz type_pair_index, fl r2) const {
+         assert(r2 <= m_cutoff_sqr);
+-        return element(type_pair_index).eval_deriv(m_factor * r2, m_factor);
++        const fl q = m_factor * r2;
++        pr result = element(type_pair_index).eval_deriv(q, m_factor);
++        if (m_cutoff_values.dim()) {
++            // Explicit rigid-receptor objective only. Keep all map and score
++            // samples unchanged. The native 8 A cutoff lies at q=2048.
++            const fl remaining = m_factor * m_cutoff_sqr - q;
++            const fl left_limit = m_cutoff_values(type_pair_index);
++            if (remaining <= 0) return pr(0, 0);
++            if (remaining <= 1) {
++                // The native right endpoint was forced to zero. Replace its
++                // pre-truncation value, then subtract the same pair constant.
++                result.first -= remaining * left_limit;
++                result.second += 2 * m_factor * left_limit;
++            } else {
++                result.first -= left_limit;
++            }
++        }
++        return result;
+     }
+     fl cutoff_sqr() const { return m_cutoff_sqr; }
+ 
+@@ -138,6 +160,7 @@
+     fl m_cutoff_sqr = 0;
+     static constexpr fl m_factor = 32;
+     triangular_matrix<precalculate_element> m_data;
++    triangular_matrix<fl> m_cutoff_values;
+ };
+ 
+ struct precalculate_byatom {
+diff --git a/src/lib/scoring_function.h b/src/lib/scoring_function.h
+--- a/src/lib/scoring_function.h
++++ b/src/lib/scoring_function.h
+@@ -51,7 +51,8 @@
+     }
+     ScoringFunction(const scoring_function_choice sf_choice, const flv& weights,
+                     fl xs_cutoff = default_xs_interaction_cutoff, bool smooth_cutoff = false)
+-        : m_smooth_cutoff(smooth_cutoff) {
++        : m_smooth_cutoff(smooth_cutoff),
++          m_native_vina_cutoff(sf_choice == SF_VINA && !smooth_cutoff && xs_cutoff == default_xs_interaction_cutoff) {
+         if (smooth_cutoff && (sf_choice != SF_VINA || xs_cutoff <= 1))
+             throw std::invalid_argument("smooth_cutoff requires Vina and an interaction_cutoff greater than 1 Angstrom");
+         if (sf_choice != SF_AD42 && (!std::isfinite(xs_cutoff) || xs_cutoff <= 0 || xs_cutoff > macrocycle_glue_cutoff))
+@@ -156,6 +157,7 @@
+         assert(it == m_weights.end());
+         return e;
+     };
++    bool has_native_vina_cutoff() const { return m_native_vina_cutoff; }
+     fl get_cutoff() const { return m_cutoff; }
+     fl get_max_cutoff() const { return m_max_cutoff; }
+     atom_type::t get_atom_typing() const { return m_atom_typing; }
+@@ -194,6 +196,7 @@
+     }
+ 
+     bool m_smooth_cutoff = false;
++    bool m_native_vina_cutoff = false;
+     std::vector<Potential*> m_potentials;
+     std::vector<ConfIndependent*> m_conf_independents;
+     sz m_vina_hbond_index = 0;

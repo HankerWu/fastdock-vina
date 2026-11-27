@@ -64,7 +64,7 @@ public:
         assert(i + 1 < smooth.size());
         return (smooth[i + 1][0] + smooth[i][0]) / 2;
     }
-    pr eval_deriv(fl r2_factored) const {
+    pr eval_deriv(fl r2_factored, fl factor = 32) const {
         assert(r2_factored + 1 < smooth.size());
         // Valid sample offsets fit the signed difference type of the vector.
         const auto i = static_cast<std::ptrdiff_t>(r2_factored);
@@ -72,8 +72,16 @@ public:
         assert(rem >= -epsilon_fl);
         assert(rem < 1 + epsilon_fl);
         const sample lower = smooth[i];
+#ifdef FASTDOCK_EXACT_PAIR_GRADIENT
+        // E(x) is linear in factor*|x|^2 inside this bin. At a knot use
+        // the right derivative, in the same cell as the energy lookup.
+        const fl delta = smooth[i + 1][0] - lower[0];
+        return pr(lower[0] + rem * delta, 2 * factor * delta);
+#else
+        (void)factor;
         const sample result = lower + rem * (smooth[i + 1] - lower);
         return pr(result[0], result[1]);
+#endif
     };
 private:
     typedef fl sample __attribute__((vector_size(16)));
@@ -122,7 +130,7 @@ struct precalculate {
     }
     pr eval_deriv(sz type_pair_index, fl r2) const {
         assert(r2 <= m_cutoff_sqr);
-        return element(type_pair_index).eval_deriv(m_factor * r2);
+        return element(type_pair_index).eval_deriv(m_factor * r2, m_factor);
     }
     fl cutoff_sqr() const { return m_cutoff_sqr; }
 
@@ -166,7 +174,7 @@ struct precalculate_byatom {
         return element(pair).fast_sample(sz(m_factor * r2));
     }
     pr eval_deriv(const interacting_pair& pair, fl r2) const {
-        return element(pair).eval_deriv(m_factor * r2);
+        return element(pair).eval_deriv(m_factor * r2, m_factor);
     }
     fl cutoff_sqr() const { return m_cutoff_sqr; }
     fl max_cutoff_sqr() const { return m_max_cutoff_sqr; }

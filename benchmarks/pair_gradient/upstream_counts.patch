@@ -1,0 +1,71 @@
+diff --git a/src/lib/monte_carlo.cpp b/src/lib/monte_carlo.cpp
+index 6b2b0fa..5ad323d 100755
+--- a/src/lib/monte_carlo.cpp
++++ b/src/lib/monte_carlo.cpp
+@@ -40,7 +40,7 @@ bool metropolis_accept(fl old_f, fl new_f, fl temperature, rng& generator) {
+ 
+ // out is sorted
+ void monte_carlo::operator()(model& m, output_container& out, const precalculate_byatom& p, const igrid& ig, const vec& corner1, const vec& corner2, incrementable* increment_me, rng& generator) const {
+-    int evalcount = 0;
++    int evalcount = 0, hunt_calls = 0, hunt_evals = 0, second_calls = 0;
+ 	vec authentic_v(1000, 1000, 1000); // FIXME? this is here to avoid max_fl/max_fl
+ 	conf_size s = m.get_size();
+ 	change g(s);
+@@ -56,12 +56,16 @@ void monte_carlo::operator()(model& m, output_container& out, const precalculate
+ 			break;
+ 		output_type candidate = tmp;
+ 		mutate_conf(candidate.c, m, mutation_amplitude, generator);
++		const int before_hunt = evalcount;
+ 		quasi_newton_par(m, p, ig, candidate, g, hunt_cap, evalcount);
++		++hunt_calls;
++		hunt_evals += evalcount - before_hunt;
+ 		if(step == 0 || metropolis_accept(tmp.e, candidate.e, temperature, generator)) {
+ 			tmp = candidate;
+ 
+ 			// FIXME only for very promising ones
+ 			if(tmp.e < best_e || out.size() < num_saved_mins) {
++				++second_calls;
+ 				quasi_newton_par(m, p, ig, tmp, g, authentic_v, evalcount);
+ 				tmp.coords = m.get_heavy_atom_movable_coords();
+ 				add_to_output_container(out, tmp, min_rmsd, num_saved_mins); // 20 - max size
+@@ -70,6 +74,8 @@ void monte_carlo::operator()(model& m, output_container& out, const precalculate
+ 			}
+ 		}
+ 	}
++	std::cout << "Search trajectory: hunt_calls=" << hunt_calls << " hunt_evals=" << hunt_evals
++	          << " second_calls=" << second_calls << " second_evals=" << evalcount - hunt_evals << '\n';
+ 	VINA_CHECK(!out.empty());
+ 	VINA_CHECK(out.front().e <= out.back().e); // make sure the sorting worked in the correct order
+ }
+diff --git a/src/lib/vina.cpp b/src/lib/vina.cpp
+index 150f47f..0f5fe6d 100644
+--- a/src/lib/vina.cpp
++++ b/src/lib/vina.cpp
+@@ -922,7 +922,7 @@ void Vina::global_search(const int exhaustiveness, const int n_poses, const doub
+ 				quasi_newton quasi_newton_par;
+ 				//std::vector<double> energies_before_opt;
+ 				//std::vector<double> energies_after_opt;
+-				int evalcount = 0;
++				int evalcount = 0, explicit_calls = 0;
+ 				const fl slope = 1e6;
+ 				m_non_cache.slope = slope;
+ 				quasi_newton_par.max_steps = unsigned((25 + m_model.num_movable_atoms()) / 3);
+@@ -930,6 +930,7 @@ void Vina::global_search(const int exhaustiveness, const int n_poses, const doub
+ 				VINA_FOR_IN(i, poses){
+ 					VINA_FOR(p, 5){
+ 						m_non_cache.slope = 100 * std::pow(10.0, 2.0*p);
++						++explicit_calls;
+ 						quasi_newton_par(m_model, m_precalculated_byatom, m_non_cache, poses[i], g, authentic_v, evalcount);
+ 						if(m_non_cache.within(m_model))
+ 							break;
+@@ -945,7 +946,9 @@ void Vina::global_search(const int exhaustiveness, const int n_poses, const doub
+ 					double intra_pairs = m_model.evalo(m_precalculated_byatom, authentic_v); // flex_i -- flex_i and flex_i -- flex_j
+ 					double lig_intra = m_model.evali(m_precalculated_byatom, authentic_v); // ligand_i -- ligand_i
+ 					poses[i].e = all_grids + inter_pairs + intra_pairs + lig_intra;
+-				}
++                }
++                std::cout << "Search counters: explicit_inputs=" << poses.size() << " explicit_calls=" << explicit_calls
++                          << " explicit_evals=" << evalcount << " late_prescore=0\n";
+ 			}
+ 
+ 			poses.sort(); // order often changes after non_cache refinement
