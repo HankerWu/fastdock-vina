@@ -26,7 +26,7 @@ def main():
         temp = Path(temporary)
         ligand, flex = temp / "ligand.pdbqt", temp / "flex.pdbqt"
         ligand.write_text(LIGAND)
-        rows = csv.writer(out)
+        rows = csv.writer(out, lineterminator="\n")
         rows.writerow(("arm", "field", "angle_rad", "flex_both", "flex_four_bonds_only",
                        "flex_difference", "ligand_difference"))
         for angle in (0, .71, -1.29):

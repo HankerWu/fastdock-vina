@@ -5,12 +5,13 @@
 #include "parse_pdbqt.h"
 #include "vina.h"
 
+#include <cmath>
 #include <iomanip>
 #include <iostream>
 #include <stdexcept>
 
 static void near(fl measured, fl expected) {
-    if (std::abs(measured - expected) > 1e-10)
+    if (!std::isfinite(measured) || !std::isfinite(expected) || std::abs(measured - expected) > 1e-10)
         throw std::runtime_error("energy or gradient differs: " + std::to_string(measured)
                                  + " vs " + std::to_string(expected));
 }
@@ -64,9 +65,9 @@ int main(int argc,char** argv) {
                 const auto& b=*field2[k];
                 const fl intra=a.eval_intra(all.m,cap);
                 near(intra,b.eval_intra(remaining.m,cap));
-                if (std::abs(intra)<1e-6) throw std::runtime_error("lost four-bond neighbor");
+                if (!std::isfinite(intra) || std::abs(intra)<1e-6) throw std::runtime_error("lost four-bond neighbor");
                 const fl full_delta=a.eval(all.m,cap)-b.eval(remaining.m,cap);
-                if (std::abs(full_delta)<1e-6) throw std::runtime_error("lost ordinary ligand contact");
+                if (!std::isfinite(full_delta) || std::abs(full_delta)<1e-6) throw std::runtime_error("lost ordinary ligand contact");
                 flv gradient(all.m.get_size().num_degrees_of_freedom()), reference(gradient.size());
                 const vec caps(cap,cap,cap);
                 all.m.eval_deriv(all.pairs,a,caps,gradient);
@@ -114,7 +115,7 @@ int main(int argc,char** argv) {
         imported.set_ligand_from_string(std::vector<std::string>{carbon,oxygen});
         const auto recovered=imported.score();
         for (sz i=0;i<expected.size();++i)
-            if (std::abs(expected[i]-recovered[i])>0.001)
+            if (!std::isfinite(recovered[i]) || std::abs(expected[i]-recovered[i])>0.001)
                 throw std::runtime_error("map round-trip changed score beyond map text precision");
         bool mismatch_rejected=false;
         try {
