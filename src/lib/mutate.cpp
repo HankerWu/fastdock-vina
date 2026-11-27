@@ -21,6 +21,7 @@
 */
 
 #include "mutate.h"
+#include <algorithm>
 
 sz count_mutable_entities(const conf& c) {
 	sz counter = 0;
@@ -42,13 +43,13 @@ static void orient_about_centroid(conf& c, model& m, sz ligand, const qt& orient
 
 bool mutate_conf(conf& c, model& m, fl amplitude, rng& generator, bool mixed_reorientation,
                  bool use_proposal_geometry, bool centered_rotation, bool balanced_torsion, const szv* allowed_moves) { // ONE OF: 2A for position, similar amp for orientation, randomize torsion
-	sz mutable_entities_num = allowed_moves ? allowed_moves->size() : count_mutable_entities(c);
+	const sz mutable_entities_num = count_mutable_entities(c);
 	if(mutable_entities_num == 0) return false;
 	int which_int = random_int(0, int(mutable_entities_num - 1), generator);
 	VINA_CHECK(which_int >= 0);
 	sz which = sz(which_int);
 	VINA_CHECK(which < mutable_entities_num);
-	if (allowed_moves) which = (*allowed_moves)[which];
+	const sz selected_entity = which;
 
 	VINA_FOR_IN(i, c.ligands) {
 		if(which == 0) { c.ligands[i].rigid.position += amplitude * random_inside_sphere(generator); return false; }
@@ -76,6 +77,9 @@ bool mutate_conf(conf& c, model& m, fl amplitude, rng& generator, bool mixed_reo
 		--which;
 		if (which < c.ligands[i].torsions.size()) {
 			const fl angle = random_fl(-pi, pi, generator);
+			// For a locked ring move consume the native angular draw and keep the state.
+			if (allowed_moves && !std::binary_search(allowed_moves->begin(), allowed_moves->end(), selected_entity))
+				return false;
 			if (balanced_torsion) m.set_balanced_torsion(c.ligands[i], i, which, angle);
 			else c.ligands[i].torsions[which] = angle;
 			return false;
