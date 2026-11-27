@@ -158,7 +158,7 @@ def evaluate(w, out, cap=None):
 
     sums, pairs, ecdf, boot = [], [], [], []
     for state, subset in itertools.product(
-        sorted({c["state"] for c in cells}), ("all", "redock", "cross", *CASES)
+        dict.fromkeys(c["state"] for c in cells), ("all", "redock", "cross", *CASES)
     ):
         selected = [
             c

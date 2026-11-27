@@ -1,0 +1,5 @@
+receptor,arm,source_n,expected_prepared_n,paired_n,complete_n,rho,tau_b,all_pairs,experimental_ties,non_ties_n,non_ties_credit,non_ties_prediction_ties,fold3_n,fold3_credit,fold3_prediction_ties,matched_fold3_n,matched_fold3_credit,matched_fold3_prediction_ties
+1FJS,baseline,34,28,28,28,0.3463855941118282,0.25532276092925166,378,4,374,235,0,295,197,0,17,9,0
+1FJS,fixed,34,28,28,28,0.3567908530653851,0.2393650883711734,378,4,374,232,0,295,186,0,17,11,0
+2P16,baseline,34,28,28,28,0.40963861564529247,0.3244726753475906,378,4,374,248,0,295,201,0,17,8,0
+2P16,fixed,34,28,28,28,0.2212486640651045,0.14893827720873012,378,4,374,215,0,295,179,0,17,11,0
