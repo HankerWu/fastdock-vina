@@ -78,6 +78,12 @@ def main():
         old_ad4 = optimize(baseline, "ad4", ligand, "ad4-old", args_ad4)
         fixed_ad4 = optimize(binary, "ad4", ligand, "ad4-fixed", args_ad4)
         require(old_ad4[:2] == fixed_ad4[:2], "AD4 map optimization or scoring changed")
+        ligand.write_text(ligand.read_text().replace("   1.000", " 100.000"))
+        for op in ("--score_only", "--local_only"):
+            result = subprocess.run([binary, "--scoring", "ad4", "--ligand", ligand, *args_ad4,
+                                     op, "--out", directory / "outside.pdbqt"], capture_output=True, text=True)
+            require(result.returncode != 0 and "outside the grid box" in result.stderr + result.stdout,
+                    "AD4 fixed-pose and local entry points must check the loaded AD4 lattice")
 
     print("Explicit and grid optimization, exact map-only parity and AD4 parity passed.")
 

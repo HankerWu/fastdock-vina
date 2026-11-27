@@ -947,6 +947,10 @@ std::vector<double> Vina::score(double intramolecular_energy) {
 	return energies;
 }
 
+bool Vina::current_pose_in_grid() const {
+	return m_sf_choice == SF_AD42 ? m_ad4grid.is_in_grid(m_model) : m_grid.is_in_grid(m_model);
+}
+
 std::vector<double> Vina::score() {
 	// Score the current conf in the model
 	// Check if ff and ligand were initialized
@@ -955,7 +959,7 @@ std::vector<double> Vina::score() {
 		throw vina_runtime_error("Cannot score the pose. Ligand(s) was(ere) not initialized.");
 	} else if (!m_map_initialized) {
 		throw vina_runtime_error("Cannot score the pose. Affinity maps were not initialized.");
-	} else if (!m_grid.is_in_grid(m_model)) {
+	} else if (!current_pose_in_grid()) {
 		throw vina_runtime_error("The ligand is outside the grid box. Increase the size of the grid box or center it accordingly around the ligand.");
 	}
 
@@ -999,14 +1003,10 @@ std::vector<double> Vina::optimize(output_type& out, int max_steps, int max_eval
 	for (sz attempt = 0; attempt < 5 && (max_evals == 0 || evalcount < max_evals); ++attempt) {
 		if (m_sf_choice == SF_VINA || m_sf_choice == SF_VINARDO) {
 			quasi_newton_par(m_model, m_precalculated_byatom, vina_receptor_interactions(), out, authentic_v, evalcount, nullptr, max_evals);
-			// Break if we succeed to bring (back) the ligand within the grid
-			if (m_grid.is_in_grid(m_model))
-				break;
 		} else {
 			quasi_newton_par(m_model, m_precalculated_byatom, m_ad4grid, out, authentic_v, evalcount);
-			if (m_ad4grid.is_in_grid(m_model))
-				break;
 		}
+		if (current_pose_in_grid()) break;
 	}
 	done(m_verbosity, 0);
 
@@ -1035,7 +1035,7 @@ std::vector<double> Vina::optimize(int max_steps, int max_evals, bool rigid_metr
 		throw vina_runtime_error("Cannot do the optimization. Ligand(s) was(ere) not initialized.");
 	} else if (!m_map_initialized) {
 		throw vina_runtime_error("Cannot do the optimization. Affinity maps were not initialized.");
-	} else if (!m_grid.is_in_grid(m_model)) {
+	} else if (!current_pose_in_grid()) {
 		throw vina_runtime_error("The ligand is outside the grid box. Increase the size of the grid box or center it accordingly around the ligand.");
 	}
 
@@ -1804,7 +1804,7 @@ void Vina::global_search(const int exhaustiveness, const int n_poses, const doub
 					poses[i].coords = late_selection ? m_model.get_chemical_heavy_atom_movable_coords()
 					                                : m_model.get_heavy_atom_movable_coords();
 					if (late_selection && m_model.num_ligands() == 1 && m_model.num_flex() == 0) {
-						const vec shift = printable_box_shift(m_model.get_heavy_atom_movable_coords(),
+						const vec shift = printable_box_shift(m_model.get_grid_atom_movable_coords(),
 															  m_grid.corner1(), m_grid.corner2());
 						if (sqr(shift) > 0) {
 							poses[i].c.ligands[0].rigid.position += shift;

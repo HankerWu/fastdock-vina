@@ -146,15 +146,7 @@ fl non_cache::eval_impl(const model& m, fl v, const precalculate& scores, bool f
 }
 
 bool non_cache::within(const model& m, fl margin) const {
-	VINA_FOR(i, m.num_movable_atoms()) {
-		if(m.atoms[i].is_hydrogen()) continue;
-		const vec& a_coords = m.coords[i];
-		VINA_FOR_IN(j, gd)
-			if(gd[j].n_voxels > 0)
-				if(a_coords[j] < gd[j].begin - margin || a_coords[j] > gd[j].end + margin) 
-					return false;
-	}
-	return true;
+	return m.within_grid(gd, margin);
 }
 
 fl non_cache::eval_deriv(      model& m, fl v) const { // clean up

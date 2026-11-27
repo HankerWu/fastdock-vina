@@ -108,6 +108,8 @@ public:
 	szv get_movable_atom_types(atom_type::t atom_typing_used_) const;
 	vecv get_ligand_coords() const;
 	std::vector<double> get_ligand_coords();
+	bool within_grid(const grid_dims& gd, fl margin) const;
+	vecv get_grid_atom_movable_coords() const;
 	vecv get_heavy_atom_movable_coords() const;
 	vecv get_chemical_heavy_atom_movable_coords() const;
 	// Set c and return the regularized inverse diagonal of its Cartesian RMS metric.

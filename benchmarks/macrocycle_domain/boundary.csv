@@ -1,0 +1,22 @@
+pdb,source,rank,case,geometry,arm,status,score
+3VHA,transfer/raw/3VHA_458921_3000_parent.pdbqt,1,wide,"axis=z, face=min, marker_extends_beyond_heavy_A=0.616",parent,0,-1.942
+3VHA,transfer/raw/3VHA_458921_3000_parent.pdbqt,1,wide,"axis=z, face=min, marker_extends_beyond_heavy_A=0.616",fixed,0,-1.942
+3VHA,transfer/raw/3VHA_458921_3000_parent.pdbqt,1,marker_outside,"axis=z, face=min, marker_extends_beyond_heavy_A=0.616",parent,1,
+3VHA,transfer/raw/3VHA_458921_3000_parent.pdbqt,1,marker_outside,"axis=z, face=min, marker_extends_beyond_heavy_A=0.616",fixed,0,-1.942
+3VHA,transfer/raw/3VHA_458921_3000_parent.pdbqt,1,real_outside,"axis=z, face=min, marker_extends_beyond_heavy_A=0.616",parent,1,
+3VHA,transfer/raw/3VHA_458921_3000_parent.pdbqt,1,real_outside,"axis=z, face=min, marker_extends_beyond_heavy_A=0.616",fixed,1,
+6QBH,catd/raw/6QBH_740317_12000_parent.pdbqt,1,wide,"axis=z, face=max, marker_extends_beyond_heavy_A=0.818",parent,0,-5.136
+6QBH,catd/raw/6QBH_740317_12000_parent.pdbqt,1,wide,"axis=z, face=max, marker_extends_beyond_heavy_A=0.818",fixed,0,-5.136
+6QBH,catd/raw/6QBH_740317_12000_parent.pdbqt,1,marker_outside,"axis=z, face=max, marker_extends_beyond_heavy_A=0.818",parent,1,
+6QBH,catd/raw/6QBH_740317_12000_parent.pdbqt,1,marker_outside,"axis=z, face=max, marker_extends_beyond_heavy_A=0.818",fixed,0,-5.136
+6QBH,catd/raw/6QBH_740317_12000_parent.pdbqt,1,real_outside,"axis=z, face=max, marker_extends_beyond_heavy_A=0.818",parent,1,
+6QBH,catd/raw/6QBH_740317_12000_parent.pdbqt,1,real_outside,"axis=z, face=max, marker_extends_beyond_heavy_A=0.818",fixed,1,
+8H6P,,,no eligible real pose,,,,
+1FKH,pools/10_1FKH_131071_ad4.pdbqt,1,score_only,x_shift_A=0,parent,0,-7.462
+1FKH,pools/10_1FKH_131071_ad4.pdbqt,1,score_only,x_shift_A=0,fixed,0,-7.462
+1FKH,pools/10_1FKH_131071_ad4.pdbqt,1,local_only,x_shift_A=0,parent,0,-7.462
+1FKH,pools/10_1FKH_131071_ad4.pdbqt,1,local_only,x_shift_A=0,fixed,0,-7.462
+1FKH,pools/10_1FKH_131071_ad4.pdbqt,1,score_only,x_shift_A=100,parent,0,3332132362.57
+1FKH,pools/10_1FKH_131071_ad4.pdbqt,1,score_only,x_shift_A=100,fixed,1,
+1FKH,pools/10_1FKH_131071_ad4.pdbqt,1,local_only,x_shift_A=100,parent,0,1942.258
+1FKH,pools/10_1FKH_131071_ad4.pdbqt,1,local_only,x_shift_A=100,fixed,1,
