@@ -1734,18 +1734,15 @@ void Vina::global_search(const int exhaustiveness, const int n_poses, const doub
 
 	// Setup Monte-Carlo search
 	parallel_mc parallelmc;
-	// This archived research build uses the native path unless an arm is requested.
-	const cache::tangent_view tangent(m_grid);
-	if (const char* mode = std::getenv("FASTDOCK_HUNT_TANGENT")) {
-		if (m_sf_choice != SF_VINA || m_cubic_search_grid || m_mixed_cutoff_search ||
-		    m_soft_receptor_search || split_anchor || amide_grid || anchor_grid ||
-		    m_model.num_ligands() != 1 || m_model.num_flex() != 0)
-			throw vina_runtime_error("hunt tangent experiment requires one rigid-receptor native Vina grid");
+	if (const char* mode = std::getenv("FASTDOCK_FIRST_PLACEMENT")) {
+		if (m_sf_choice != SF_VINA || m_model.num_ligands() != 1 || m_model.num_flex() != 0 ||
+		    m_pocket_start_radius > 0 || m_prepared_torsion_starts || m_mixed_reorientation ||
+		    m_balanced_torsion || m_centered_rotation)
+			throw vina_runtime_error("placement experiment requires the native single-ligand rigid Vina initialization");
 		const std::string arm(mode);
-		if (arm != "all" && arm != "first")
-			throw vina_runtime_error("FASTDOCK_HUNT_TANGENT must be all or first");
-		parallelmc.mc.hunt_grid = &tangent;
-		parallelmc.mc.first_hunt_only = arm == "first";
+		if (arm == "fit") parallelmc.mc.placement = initial_placement::fit;
+		else if (arm == "invalid") parallelmc.mc.placement = initial_placement::invalid_only;
+		else throw vina_runtime_error("FASTDOCK_FIRST_PLACEMENT must be fit or invalid");
 	}
 	sz heuristic = m_model.num_movable_atoms() + 10 * m_model.get_size().num_degrees_of_freedom();
 	parallelmc.mc.global_steps = unsigned(70 * 3 * (50 + heuristic) / 2); // 2 * 70 -> 8 * 20 // FIXME

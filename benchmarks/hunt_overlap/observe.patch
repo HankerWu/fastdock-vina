@@ -1,0 +1,68 @@
+diff --git a/src/lib/cache.cpp b/src/lib/cache.cpp
+index 1f93558..18b26ed 100644
+--- a/src/lib/cache.cpp
++++ b/src/lib/cache.cpp
+@@ -25,12 +25,15 @@
+    See docs/PROVENANCE.md for upstream and experimental source identities. */
+ 
+ #include <bitset>
++#include <iomanip>
+ 
+ #include "cache.h"
+ #include "model.h"
+ #include "precalculate.h"
+ 
+ 
++thread_local const char* hunt_probe_stage = nullptr;
++
+ namespace fs = boost::filesystem;
+ 
+ std::string convert_XS_to_string(sz t) {
+@@ -115,6 +118,12 @@ fl cache::eval_atoms(const model& m, fl cap, vecv* gradient, bool flex_only) con
+ 			continue;
+ 		}
+ 		const grid& field = m_grids[t];
++		if (hunt_probe_stage) {
++			vec raw_deriv;
++			const fl value = field.evaluate(m.coords[i], 0, max_fl, raw_deriv);
++			std::cout << std::setprecision(15) << "GridProbe " << hunt_probe_stage << " " << i
++			          << " " << value << " " << raw_deriv[0] << " " << raw_deriv[1] << " " << raw_deriv[2] << "\n";
++		}
+ 		if (Tangent)
+ 			energy += field.evaluate_hunt_tangent(m.coords[i], m_slope, cap, gradient ? &(*gradient)[i] : nullptr);
+ 		else if (Cubic)
+diff --git a/src/lib/monte_carlo.cpp b/src/lib/monte_carlo.cpp
+index cf84e18..3e17b52 100755
+--- a/src/lib/monte_carlo.cpp
++++ b/src/lib/monte_carlo.cpp
+@@ -24,6 +24,8 @@
+ 
+ #include "monte_carlo.h"
+ #include "coords.h"
++#include <cstdlib>
++extern thread_local const char* hunt_probe_stage;
+ #include "mutate.h"
+ #include "quasi_newton.h"
+ #include "trajectory_archive.h"
+@@ -79,9 +81,21 @@ void monte_carlo::operator()(model& m, output_container& out, const precalculate
+ 		candidate.c = tmp.c;
+ 		const bool reoriented = mutate_conf(candidate.c, m, mutation_amplitude, generator,
+ 		                                    mixed_reorientation, separate_hunt_chain, centered_rotation, balanced_torsion);
++		const char* prefix = std::getenv("FASTDOCK_PROBE_OUT");
++		VINA_CHECK(prefix && step == 0);
++		if (std::getenv("FASTDOCK_PROBE_PREPARED")) candidate.c = m.get_initial_conf();
++		auto probe = [&](const char* stage) {
++			m.set(candidate.c);
++			m.write_structure(path(std::string(prefix) + "." + stage + ".pdbqt"));
++			hunt_probe_stage = stage;
++			ig.eval(m, hunt_cap[1]); // Read-only; diagnostic pass excluded from hunt counts.
++			hunt_probe_stage = nullptr;
++		};
++		probe("start");
+ 		const int before_hunt = evalcount;
+ 		const igrid& hunt = hunt_grid && (!first_hunt_only || step == 0) ? *hunt_grid : ig;
+ 		quasi_newton_par(m, p, hunt, candidate, hunt_cap, evalcount);
++		probe("end");
+ 		if (counters) {
+ 			++counters->hunt_calls;
+ 			counters->hunt_evals += evalcount - before_hunt;

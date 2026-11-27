@@ -176,7 +176,7 @@ fl cubic_sample(const array3d<fl>& data, const boost::array<sz,3>& cell, const v
 }
 } // namespace
 
-template<bool Cubic, bool Tangent>
+template<bool Cubic>
 fl grid::evaluate_aux(const vec& location, fl slope, fl v, vec* deriv) const { // sets *deriv if not NULL
 	vec s  = elementwise_product(location - m_init, m_factor); 
 
@@ -291,11 +291,7 @@ fl grid::evaluate_aux(const vec& location, fl slope, fl v, vec* deriv) const { /
 			f111 *   x *  y *  1  ;
 
 		vec gradient(x_g, y_g, z_g);
-		if (Tangent && f > v) {
-			// Continue v*e/(v+e) at e=v, before adding the box wall.
-			f = 0.25 * f + 0.25 * v;
-			gradient *= 0.25;
-		} else curl(f, gradient, v);
+		curl(f, gradient, v);
 		vec gradient_everywhere;
 
 		VINA_FOR(i, 3) {
@@ -306,13 +302,10 @@ fl grid::evaluate_aux(const vec& location, fl slope, fl v, vec* deriv) const { /
 		return f + penalty;
 	}
 	else {
-		if (Tangent && f > v)
-			f = 0.25 * f + 0.25 * v;
-		else curl(f, v);
+		curl(f, v);
 		return f + penalty;
 	}
 } 
 
-template fl grid::evaluate_aux<false, true>(const vec&, fl, fl, vec*) const;
 template fl grid::evaluate_aux<true>(const vec&, fl, fl, vec*) const;
 template fl grid::evaluate_aux<false>(const vec&, fl, fl, vec*) const;

@@ -52,14 +52,11 @@ public:
 	fl evaluate_cubic(const vec& location, fl slope, fl cap, vec* gradient) const {
 		return evaluate_aux<true>(location, slope, cap, gradient);
 	}
-	fl evaluate_hunt_tangent(const vec& location, fl slope, fl cap, vec* gradient) const {
-		return evaluate_aux<false, true>(location, slope, cap, gradient);
-	}
 private:
     vec m_factor;
     vec m_dim_fl_minus_1;
 
-	template<bool Cubic, bool Tangent = false> fl evaluate_aux(const vec& location, fl slope, fl v, vec* deriv) const; // sets *deriv if not NULL
+	template<bool Cubic> fl evaluate_aux(const vec& location, fl slope, fl v, vec* deriv) const; // sets *deriv if not NULL
 	friend class boost::serialization::access;
 	template<class Archive>
 	void serialize(Archive& ar, const unsigned version) {

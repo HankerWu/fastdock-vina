@@ -67,19 +67,16 @@ public:
 	              const std::bitset<XS_TYPE_SIZE>& map_types_needed);
 	// Read-only search view of these same maps. Explicit refinement continues
 	// through non_cache and does not see the interpolant.
-	template<bool Cubic, bool Tangent = false>
-	struct interpolation_view : public igrid {
-		explicit interpolation_view(const cache& maps) : maps(maps) {}
-		fl eval(const model& m, fl v) const override { return maps.eval_atoms<Cubic, Tangent>(m, v, nullptr, false); }
-		fl eval_intra(model& m, fl v) const override { return maps.eval_atoms<Cubic, Tangent>(m, v, nullptr, true); }
-		fl eval_deriv(model& m, fl v) const override { return maps.eval_atoms<Cubic, Tangent>(m, v, &m.minus_forces, false); }
+	struct cubic_view : public igrid {
+		explicit cubic_view(const cache& maps) : maps(maps) {}
+		fl eval(const model& m, fl v) const override { return maps.eval_atoms<true>(m, v, nullptr, false); }
+		fl eval_intra(model& m, fl v) const override { return maps.eval_atoms<true>(m, v, nullptr, true); }
+		fl eval_deriv(model& m, fl v) const override { return maps.eval_atoms<true>(m, v, &m.minus_forces, false); }
 	private:
 		const cache& maps;
 	};
-	using cubic_view = interpolation_view<true>;
-	using tangent_view = interpolation_view<false, true>;
 private:
-	template<bool Cubic, bool Tangent = false> fl eval_atoms(const model& m, fl v, vecv* gradient, bool flex_only) const;
+	template<bool Cubic> fl eval_atoms(const model& m, fl v, vecv* gradient, bool flex_only) const;
 	grid_dims m_gd;
 	fl m_slope; // does not get (de-)serialized
 	std::vector<grid> m_grids;
