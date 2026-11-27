@@ -1,0 +1,302 @@
+{
+  "states": {
+    "Gal1": [
+      "1GZW",
+      "4Q26"
+    ],
+    "Gal3": [
+      "1KJL",
+      "3T1L"
+    ],
+    "AURKA": [
+      "2X6E",
+      "2J4Z"
+    ],
+    "CHEK1": [
+      "2E9P",
+      "2YWP"
+    ],
+    "S6K1": [
+      "3A60"
+    ]
+  },
+  "pairs": [
+    {
+      "targets": [
+        "Gal1",
+        "Gal3"
+      ],
+      "pairs": 78,
+      "reversals": 4,
+      "impossible": 1,
+      "large_exchange_wrong": 15,
+      "interval_mae_floor": 0.5812240324799035
+    },
+    {
+      "targets": [
+        "AURKA",
+        "CHEK1"
+      ],
+      "pairs": 36,
+      "reversals": 10,
+      "impossible": 0,
+      "large_exchange_wrong": 0,
+      "interval_mae_floor": 0.7751539328135204
+    },
+    {
+      "targets": [
+        "AURKA",
+        "S6K1"
+      ],
+      "pairs": 45,
+      "reversals": 8,
+      "impossible": 3,
+      "large_exchange_wrong": 16,
+      "interval_mae_floor": 1.6089926323083998
+    },
+    {
+      "targets": [
+        "CHEK1",
+        "S6K1"
+      ],
+      "pairs": 45,
+      "reversals": 6,
+      "impossible": 1,
+      "large_exchange_wrong": 13,
+      "interval_mae_floor": 1.44735664782889
+    }
+  ],
+  "impossible_reversals": [
+    {
+      "targets": [
+        "Gal1",
+        "Gal3"
+      ],
+      "ligands": [
+        8,
+        9
+      ],
+      "kd_nM": [
+        140000,
+        530000,
+        31000,
+        8800
+      ],
+      "experimental": -1.5348145273446807,
+      "lower": 0.0305,
+      "upper": 0.6225,
+      "exact_lower": "61/2000",
+      "exact_upper": "249/400"
+    },
+    {
+      "targets": [
+        "AURKA",
+        "S6K1"
+      ],
+      "ligands": [
+        5329102,
+        9829523
+      ],
+      "kd_nM": [
+        1700,
+        120,
+        48,
+        1300
+      ],
+      "experimental": 3.5251730681355027,
+      "lower": -2.343,
+      "upper": -0.5575,
+      "exact_lower": "-2343/1000",
+      "exact_upper": "-223/400"
+    },
+    {
+      "targets": [
+        "AURKA",
+        "S6K1"
+      ],
+      "ligands": [
+        9829523,
+        11427553
+      ],
+      "kd_nM": [
+        120,
+        650,
+        1300,
+        310
+      ],
+      "experimental": -1.850347008187949,
+      "lower": 0.146,
+      "upper": 3.0635,
+      "exact_lower": "73/500",
+      "exact_upper": "6127/2000"
+    },
+    {
+      "targets": [
+        "AURKA",
+        "S6K1"
+      ],
+      "ligands": [
+        11626560,
+        16038120
+      ],
+      "kd_nM": [
+        260,
+        44,
+        640,
+        2700
+      ],
+      "experimental": 1.9054498899108816,
+      "lower": -0.595,
+      "upper": -0.5235,
+      "exact_lower": "-119/200",
+      "exact_upper": "-1047/2000"
+    },
+    {
+      "targets": [
+        "CHEK1",
+        "S6K1"
+      ],
+      "ligands": [
+        10138259,
+        16038120
+      ],
+      "kd_nM": [
+        1200,
+        44,
+        150,
+        2700
+      ],
+      "experimental": 3.671190178183302,
+      "lower": -0.4415,
+      "upper": -0.1405,
+      "exact_lower": "-883/2000",
+      "exact_upper": "-281/2000"
+    }
+  ],
+  "graphs": [
+    {
+      "targets": [
+        "Gal1",
+        "Gal3"
+      ],
+      "graph": "all",
+      "edges": 58,
+      "lower_bound": 0.01525,
+      "exact_lower_bound": "61/4000",
+      "universal_conflict": true,
+      "witness": [
+        {
+          "stronger": 8,
+          "weaker": 9,
+          "target": "Gal1",
+          "lower": 0.168,
+          "exact_lower": "21/125"
+        },
+        {
+          "stronger": 9,
+          "weaker": 8,
+          "target": "Gal3",
+          "lower": -0.1375,
+          "exact_lower": "-11/80"
+        }
+      ]
+    },
+    {
+      "targets": [
+        "Gal1",
+        "Gal3"
+      ],
+      "graph": "without_impossible_reversals",
+      "edges": 56,
+      "lower_bound": -0.09125,
+      "exact_lower_bound": "-73/800",
+      "universal_conflict": false,
+      "witness": [
+        {
+          "stronger": 6,
+          "weaker": 14,
+          "target": "Gal1",
+          "lower": -0.1865,
+          "exact_lower": "-373/2000"
+        },
+        {
+          "stronger": 14,
+          "weaker": 6,
+          "target": "Gal3",
+          "lower": 0.004,
+          "exact_lower": "1/250"
+        }
+      ]
+    },
+    {
+      "targets": [
+        "AURKA",
+        "CHEK1",
+        "S6K1"
+      ],
+      "graph": "all",
+      "edges": 260,
+      "lower_bound": 0.27875,
+      "exact_lower_bound": "223/800",
+      "universal_conflict": true,
+      "witness": [
+        {
+          "stronger": 5329102,
+          "weaker": 9829523,
+          "target": "S6K1",
+          "lower": 4.026,
+          "exact_lower": "2013/500"
+        },
+        {
+          "stronger": 9829523,
+          "weaker": 5329102,
+          "target": "AURKA",
+          "lower": -3.4685,
+          "exact_lower": "-6937/2000"
+        }
+      ]
+    },
+    {
+      "targets": [
+        "AURKA",
+        "CHEK1",
+        "S6K1"
+      ],
+      "graph": "without_impossible_reversals",
+      "edges": 251,
+      "lower_bound": 0.139375,
+      "exact_lower_bound": "223/1600",
+      "universal_conflict": true,
+      "witness": [
+        {
+          "stronger": 153999,
+          "weaker": 9829523,
+          "target": "S6K1",
+          "lower": 7.3195,
+          "exact_lower": "14639/2000"
+        },
+        {
+          "stronger": 9829523,
+          "weaker": 16007391,
+          "target": "AURKA",
+          "lower": -3.3175,
+          "exact_lower": "-1327/400"
+        },
+        {
+          "stronger": 16007391,
+          "weaker": 5329102,
+          "target": "AURKA",
+          "lower": -0.151,
+          "exact_lower": "-151/1000"
+        },
+        {
+          "stronger": 5329102,
+          "weaker": 153999,
+          "target": "S6K1",
+          "lower": -3.2935,
+          "exact_lower": "-6587/2000"
+        }
+      ]
+    }
+  ]
+}
