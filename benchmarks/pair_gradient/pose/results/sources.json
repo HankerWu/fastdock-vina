@@ -1,0 +1,187 @@
+[
+  {
+    "target": "ADORA2A",
+    "pdb": "3EML",
+    "component": "ZMA",
+    "chain": "A",
+    "resolution_A": 2.6,
+    "receptor_status": "ready",
+    "nearest_asu_omitted": [
+      14.875604928876001,
+      "C7  STE A 404"
+    ],
+    "nearest_rebuilt_A": null,
+    "structure": "https://www.rcsb.org/structure/3EML",
+    "ccd": "https://files.rcsb.org/ligands/download/ZMA.cif",
+    "smiles": "Nc1nc(NCCc2ccc(O)cc2)nc2nc(-c3ccco3)nn12",
+    "murcko": "c1ccc(CCNc2ncn3nc(-c4ccco4)nc3n2)cc1",
+    "heavy_atoms": 25,
+    "formal_charge": 0,
+    "mate_heavy_pairs_8A": 0,
+    "closest_mate_pair": null,
+    "sha256": {
+      "3EML/ligand.pdbqt": "b092a68e107b7df4f170bfa3acc7f56a7a42b109579467210564c224035bce9e",
+      "3EML/receptor.pdbqt": "4b060003223c0a79af7658b0cdbaa014d878d09cd7fcd4fe164f699e6e8e5ca5",
+      "raw/3EML.pdb": "1afb276c403b3e9290dacad581c85df826a13ccd0658afde729d747abad58a32",
+      "raw/ZMA.cif": "115fe216cd99b21ce6a642f922dd27e5b20b030e73a6ccc51cf2f67b610e1731"
+    }
+  },
+  {
+    "target": "ADORA2A",
+    "pdb": "3UZA",
+    "component": "T4G",
+    "chain": "A",
+    "resolution_A": 3.27,
+    "receptor_status": "ready",
+    "nearest_asu_omitted": null,
+    "nearest_rebuilt_A": null,
+    "structure": "https://www.rcsb.org/structure/3UZA",
+    "ccd": "https://files.rcsb.org/ligands/download/T4G.cif",
+    "smiles": "Cc1cc(-c2nnc(N)nc2-c2ccccc2)cc(C)n1",
+    "murcko": "c1ccc(-c2ncnnc2-c2ccncc2)cc1",
+    "heavy_atoms": 21,
+    "formal_charge": 0,
+    "mate_heavy_pairs_8A": 2,
+    "closest_mate_pair": [
+      7.387082187846557,
+      "N2",
+      "A",
+      "220",
+      "ARG",
+      "NH2"
+    ],
+    "sha256": {
+      "3UZA/ligand.pdbqt": "dcd83975b6281950d6590dda2b1b738b9173d579e2f50887a7c9edffce9c050b",
+      "3UZA/receptor.pdbqt": "dffd44e84916fd4412b40b6b03e978a9fc924f5eb990a8cb3398c7bc01df892e",
+      "raw/3UZA.pdb": "37d82ed526ef4f7340716c697b13ca2ddb6264475ea54bf4f2bbd149783954d9",
+      "raw/T4G.cif": "d4ac0ae38dc434711faa1f5eb6cb322f2a0700a60edb056281026bc6511df8b1"
+    }
+  },
+  {
+    "target": "REN",
+    "pdb": "1RNE",
+    "component": "C60",
+    "chain": "A",
+    "resolution_A": 2.4,
+    "receptor_status": "Meeko receptor preparation failed; see prep.log",
+    "nearest_asu_omitted": [
+      16.060965381943888,
+      "O6  NAG A 345"
+    ],
+    "nearest_rebuilt_A": null,
+    "structure": "https://www.rcsb.org/structure/1RNE",
+    "ccd": "https://files.rcsb.org/ligands/download/C60.cif",
+    "smiles": "CCCCNC(=O)[C@@H](C[C@H](O)[C@H](CC1CCCCC1)NC(=O)[C@H](Cc1cnc[nH]1)NC(=O)[C@H](Cc1ccccc1)CS(=O)(=O)C(C)(C)C)C(C)C",
+    "murcko": "O=C(CCc1ccccc1)NC(Cc1cnc[nH]1)C(=O)NCCC1CCCCC1",
+    "heavy_atoms": 51,
+    "formal_charge": 0,
+    "mate_heavy_pairs_8A": 129,
+    "closest_mate_pair": [
+      3.8106280322277586,
+      "OS1",
+      "A",
+      "242",
+      "PHE",
+      "CZ"
+    ],
+    "sha256": {
+      "1RNE/ligand.pdbqt": "4025198a5636a7d876866d21256c1e8f4bbbc8d68d5488198cb2ea1ee6cfb37c",
+      "raw/1RNE.pdb": "123f47ce28b5a3db34cd2d3bf3daffe30793a4530fe761d9cb17b25a3035558e",
+      "raw/C60.cif": "6e930afa9448aa5f253370c5e865d032bd506443168434ccd5724f63d4050660"
+    }
+  },
+  {
+    "target": "REN",
+    "pdb": "2V0Z",
+    "component": "C41",
+    "chain": "C",
+    "resolution_A": 2.2,
+    "receptor_status": "Meeko receptor preparation failed; see prep.log",
+    "nearest_asu_omitted": [
+      12.294637245563617,
+      "OE1 GLN O 160C"
+    ],
+    "nearest_rebuilt_A": null,
+    "structure": "https://www.rcsb.org/structure/2V0Z",
+    "ccd": "https://files.rcsb.org/ligands/download/C41.cif",
+    "smiles": "COCCCOc1cc(C[C@@H](C[C@H](N)[C@@H](O)C[C@H](C(=O)NCC(C)(C)C(N)=O)C(C)C)C(C)C)ccc1OC",
+    "murcko": "c1ccccc1",
+    "heavy_atoms": 39,
+    "formal_charge": 0,
+    "mate_heavy_pairs_8A": 4,
+    "closest_mate_pair": [
+      7.340342975638126,
+      "C14",
+      "C",
+      "241",
+      "LEU",
+      "CD2"
+    ],
+    "sha256": {
+      "2V0Z/ligand.pdbqt": "1541071d83931d4c9cd159d9995a4b1b91eafee665f53a28c093b5e0619c6d6a",
+      "raw/2V0Z.pdb": "c99cab49ef204b3e30d7d0a82d3dca782eb59d60db4b80c442446d67161a535a",
+      "raw/C41.cif": "e9a0fe50d801e9d17df53d581e70b0e00b41cb68714c534a6ca12c1557f7302c"
+    }
+  },
+  {
+    "target": "REN",
+    "pdb": "3G6Z",
+    "component": "A7T",
+    "chain": "A",
+    "resolution_A": 2.0,
+    "receptor_status": "ready",
+    "nearest_asu_omitted": [
+      8.995471138300651,
+      "O   THR B  85"
+    ],
+    "nearest_rebuilt_A": null,
+    "structure": "https://www.rcsb.org/structure/3G6Z",
+    "ccd": "https://files.rcsb.org/ligands/download/A7T.cif",
+    "smiles": "Cc1cc(Cl)c(OCCOc2ccc(C3=C(C(=O)N(Cc4cccc(C)c4C)C4CC4)[C@H]4CNC[C@@H](C3)N4)cc2)c(Cl)c1",
+    "murcko": "O=C(C1=C(c2ccc(OCCOc3ccccc3)cc2)CC2CNCC1N2)N(Cc1ccccc1)C1CC1",
+    "heavy_atoms": 43,
+    "formal_charge": 0,
+    "mate_heavy_pairs_8A": 0,
+    "closest_mate_pair": null,
+    "sha256": {
+      "3G6Z/ligand.pdbqt": "25d42b40039e8f0025b99cc0aee6e244e4af716f104723987b1791c8843da789",
+      "3G6Z/receptor.pdbqt": "5254df104855292d25eb9f5ae6a4096d28be32113617faba352845279ae22bc6",
+      "raw/3G6Z.pdb": "f44c232e8330ce80c47ca634bf80f951cb64c541b2851c0e1941c157b081f0e2",
+      "raw/A7T.cif": "4bcada5fa975128aedfc0f7e74707089c4ba2c82b1c1d20b1d8fd6a9c1f1f29c"
+    }
+  },
+  {
+    "target": "REN",
+    "pdb": "3SFC",
+    "component": "S53",
+    "chain": "B",
+    "resolution_A": 2.1,
+    "receptor_status": "ready",
+    "nearest_asu_omitted": [
+      12.208904414401811,
+      "CB  PRO A 253"
+    ],
+    "nearest_rebuilt_A": null,
+    "structure": "https://www.rcsb.org/structure/3SFC",
+    "ccd": "https://files.rcsb.org/ligands/download/S53.cif",
+    "smiles": "Cc1ccc(F)cc1Oc1c(C(=O)N2CCNCC2)c2ccnc(Cc3ccccc3)c2n1-c1ccccc1",
+    "murcko": "O=C(c1c(Oc2ccccc2)n(-c2ccccc2)c2c(Cc3ccccc3)nccc12)N1CCNCC1",
+    "heavy_atoms": 39,
+    "formal_charge": 0,
+    "mate_heavy_pairs_8A": 71,
+    "closest_mate_pair": [
+      4.876889479986181,
+      "C28",
+      "B",
+      "250",
+      "ASN",
+      "ND2"
+    ],
+    "sha256": {
+      "3SFC/ligand.pdbqt": "dd6e2e0128395ff6f3adfce610c037b69460950eac4013b64476cd26395d5d7f",
+      "3SFC/receptor.pdbqt": "b82dbd1bc49b5c37675c2a376140de9ab8a0222ff33ede2645010a189c0ca225",
+      "raw/3SFC.pdb": "2322e79ef48859f17c4767f54e3b9fc303d4fe65450b1e9531fcfb0d19405831",
+      "raw/S53.cif": "f767866ca3bdbc45cf2bd720477c193e41db8de221cab3241569ad7ee41fc175"
+    }
+  }
+]

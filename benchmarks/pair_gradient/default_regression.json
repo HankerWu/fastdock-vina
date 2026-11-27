@@ -1,0 +1,222 @@
+{
+  "map_lattice": "Consistent map sets and transactional reload checks passed\n",
+  "armijo_numeric": "Armijo and geometry-preconditioned numerical regressions passed.\n",
+  "geometry_metric": "examples/basic/1iep_ligand.pdbqt dof=13 max_abs=1.07059e-08 finite_us=11.2625 analytic_us=0.740409\nbenchmarks/fixtures/cyclododecane.pdbqt dof=17 max_abs=1.13115e-08 finite_us=17.8117 analytic_us=0.964527\n",
+  "search_budget": {
+    "pose": [
+      {
+        "file": "benchmarks/cubic_grid/human_panel/modes_native_24000.csv",
+        "unique_directions": 11,
+        "unique_targets": 6,
+        "seed_runs": 33,
+        "one": [
+          14,
+          17
+        ],
+        "two": [
+          14,
+          22
+        ],
+        "three": [
+          5,
+          8
+        ],
+        "extra_runs": 15,
+        "adaptive": [
+          14,
+          24
+        ],
+        "random_expected": [
+          14.454545454545455,
+          22.909090909090907
+        ]
+      },
+      {
+        "file": "benchmarks/torsion_proposals/results/modes-native-12000-bridge.csv",
+        "unique_directions": 8,
+        "unique_targets": 4,
+        "seed_runs": 24,
+        "one": [
+          2,
+          4
+        ],
+        "two": [
+          3,
+          7
+        ],
+        "three": [
+          1,
+          3
+        ],
+        "extra_runs": 12,
+        "adaptive": [
+          3,
+          9
+        ],
+        "random_expected": [
+          3.0,
+          8.0
+        ]
+      }
+    ],
+    "affinity": {
+      "FAK": {
+        "pairs": 47,
+        "compounds": 12,
+        "native": {
+          "min": 9,
+          "mean": 9,
+          "max": 8
+        },
+        "cubic": {
+          "min": 18,
+          "mean": 19,
+          "max": 21
+        },
+        "size_only": 37.5
+      },
+      "SYK": {
+        "pairs": 68,
+        "compounds": 14,
+        "native": {
+          "min": 52,
+          "mean": 43,
+          "max": 38
+        },
+        "cubic": {
+          "min": 52,
+          "mean": 47,
+          "max": 47
+        },
+        "size_only": 39.5
+      }
+    }
+  },
+  "default_pose_parity": [
+    {
+      "pdb": "3EML",
+      "target": "ADORA2A",
+      "binary": "parent",
+      "sha256": "297d30382c6775e3880fea3f150490ad8412a4c5e35d1a2975c42af5058d441e",
+      "modes": 5
+    },
+    {
+      "pdb": "3EML",
+      "target": "ADORA2A",
+      "binary": "default",
+      "sha256": "297d30382c6775e3880fea3f150490ad8412a4c5e35d1a2975c42af5058d441e",
+      "modes": 5
+    },
+    {
+      "pdb": "3G6Z",
+      "target": "REN",
+      "binary": "parent",
+      "sha256": "2127228a48b2cee592ff5290c4b679d6d27fb9e9b64d9505abd34ed02bb53073",
+      "modes": 8
+    },
+    {
+      "pdb": "3G6Z",
+      "target": "REN",
+      "binary": "default",
+      "sha256": "2127228a48b2cee592ff5290c4b679d6d27fb9e9b64d9505abd34ed02bb53073",
+      "modes": 8
+    },
+    {
+      "pdb": "1E3G",
+      "target": "AR",
+      "binary": "parent",
+      "sha256": "9aa54950606cc85694287aa4668ba9d24df7514c529bc900009d414fc86c91b2",
+      "modes": 2
+    },
+    {
+      "pdb": "1E3G",
+      "target": "AR",
+      "binary": "default",
+      "sha256": "9aa54950606cc85694287aa4668ba9d24df7514c529bc900009d414fc86c91b2",
+      "modes": 2
+    }
+  ],
+  "parity_parameters": {
+    "seed": 75467,
+    "exhaustiveness": 1,
+    "max_evals": 3000,
+    "cpu": 1,
+    "num_modes": 9,
+    "energy_range": 100,
+    "box_A": [
+      24,
+      24,
+      24
+    ],
+    "center": "preparation.json center",
+    "search_counters": true
+  },
+  "source": {
+    "parent": "ac0a2f6e40cac8f62748848227f298d44b7b764e",
+    "gated_header": "e325e67b7b593bdea34a6970361d31c3bfafbb38",
+    "compiler": "GCC 14.2.0",
+    "boost": "1.83.0"
+  },
+  "fresh_build_pool_parity": [
+    {
+      "arm": "parent",
+      "pdb": "3EML",
+      "pool_sha256": "297d30382c6775e3880fea3f150490ad8412a4c5e35d1a2975c42af5058d441e"
+    },
+    {
+      "arm": "parent",
+      "pdb": "3G6Z",
+      "pool_sha256": "2127228a48b2cee592ff5290c4b679d6d27fb9e9b64d9505abd34ed02bb53073"
+    },
+    {
+      "arm": "parent",
+      "pdb": "1E3G",
+      "pool_sha256": "9aa54950606cc85694287aa4668ba9d24df7514c529bc900009d414fc86c91b2"
+    },
+    {
+      "arm": "hermite",
+      "pdb": "3EML",
+      "pool_sha256": "08d6d390fc1997a78be7b585ed8105b2e3bcaafe8375f04a8237347e20401a18"
+    },
+    {
+      "arm": "hermite",
+      "pdb": "3G6Z",
+      "pool_sha256": "9ba71fb5899f943a52c6e67604ad4abd721b2aca4d22369cc31acd41f3f2221c"
+    },
+    {
+      "arm": "hermite",
+      "pdb": "1E3G",
+      "pool_sha256": "8a75b50f1c5945f9076d2b74860bf2af45a2425dcecd53468198fc1ecad85ceb"
+    },
+    {
+      "arm": "shifted",
+      "pdb": "3EML",
+      "pool_sha256": "cf28e7d8eb45eda2e138415eb8cce058e551fb8635c2ae4e863b24fd74519066"
+    },
+    {
+      "arm": "shifted",
+      "pdb": "3G6Z",
+      "pool_sha256": "6f0ecd5fd3710ac49ca20e6f6d0d7a86583af8f21c40b996232ec8dd55da3d51"
+    },
+    {
+      "arm": "shifted",
+      "pdb": "1E3G",
+      "pool_sha256": "6349eedd467469e8b763639f32324bebb2062d0fb180ea51dc786aed86355c60"
+    }
+  ],
+  "fresh_compiled_arms": [
+    "default",
+    "hermite",
+    "linear",
+    "parent",
+    "shifted",
+    "upstream",
+    "upstream-counts"
+  ],
+  "fresh_numeric_replay": {
+    "2ywp_torque.csv.gz": "2f16405074fb17f0e82b87eaa104c9eb151b48cd8ebae9650fd211fac4751d74",
+    "model.csv.gz": "9dc3c334aca1d812e89c13c005a5436fdee70214fc0ad47103eec2bde8c11485",
+    "pair.csv": "14105117285fc862450775cb4af0195b8e0cf2b33b168d31b3f253f0f6b7b12f",
+    "shift.csv": "b71951117a81ec2c627e54539572d096467294105adf53d5c63c674d53a6715a"
+  }
+}

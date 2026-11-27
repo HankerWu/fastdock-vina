@@ -1,0 +1,48 @@
+[
+  {
+    "pdb": "3EML",
+    "seconds": 4.809199881000495,
+    "byte_identical": {
+      "ligand.pdbqt": true,
+      "receptor.pdbqt": true
+    }
+  },
+  {
+    "pdb": "3UZA",
+    "seconds": 2.866371307999543,
+    "byte_identical": {
+      "ligand.pdbqt": true,
+      "receptor.pdbqt": true
+    }
+  },
+  {
+    "pdb": "1RNE",
+    "seconds": 8.507493778000025,
+    "byte_identical": {
+      "ligand.pdbqt": true
+    }
+  },
+  {
+    "pdb": "2V0Z",
+    "seconds": 2.1203138219998436,
+    "byte_identical": {
+      "ligand.pdbqt": true
+    }
+  },
+  {
+    "pdb": "3G6Z",
+    "seconds": 3.3567701349993513,
+    "byte_identical": {
+      "ligand.pdbqt": true,
+      "receptor.pdbqt": true
+    }
+  },
+  {
+    "pdb": "3SFC",
+    "seconds": 3.1679435959995317,
+    "byte_identical": {
+      "ligand.pdbqt": true,
+      "receptor.pdbqt": true
+    }
+  }
+]

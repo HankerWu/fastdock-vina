@@ -12,9 +12,9 @@ from rdkit import Chem
 from scipy.spatial.transform import Rotation
 
 
-def reference(work, pdb, component):
+def reference(work, pdb, component, chain_id="A"):
     # Use the mmCIF dictionary bond table and PDB-deposited coordinates.
-    chain = gemmi.read_structure(str(work / "raw" / (pdb + ".pdb")))[0]["A"]
+    chain = gemmi.read_structure(str(work / "raw" / (pdb + ".pdb")))[0][chain_id]
     ligand = next(r for r in chain if r.name == component)
     positions = {
         a.name: list(a.pos)
