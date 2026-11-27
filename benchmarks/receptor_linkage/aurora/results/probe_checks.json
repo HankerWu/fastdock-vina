@@ -1,0 +1,177 @@
+{
+  "danusertib": {
+    "rigid_only_RMSD": 2.1249223305867573,
+    "legal_torsion_fit_RMSD": 0.4559709277481185,
+    "torsion_radians": [
+      -0.09562132772270499,
+      2.4479562380669324,
+      1.6885009713382395,
+      -4.39278428833997,
+      0.650366449264578,
+      0.14376910182405997,
+      -2.725488704371457
+    ],
+    "branch_count": 7,
+    "prepared_atom_serials": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33,
+      34,
+      35,
+      36,
+      37
+    ],
+    "bonds_checked": 41,
+    "one_three_checked": 59,
+    "legal_max_bond_change_A": 6.217248937900877e-15,
+    "legal_max_one_three_change_A": 7.549516567451064e-15,
+    "crystal_max_bond_change_A": 0.0663340207054981,
+    "crystal_max_one_three_change_A": 0.1681195511006166,
+    "missing_edges": [],
+    "extra_edges": [],
+    "placed_native_inference_equal": {
+      "2J4Z_danusertib_native_crystal": true,
+      "2J4Z_danusertib_native_legal": true,
+      "2X6E_danusertib_native_crystal": true,
+      "2X6E_danusertib_native_legal": true
+    }
+  },
+  "at9283": {
+    "rigid_only_RMSD": 1.7462804113760717,
+    "legal_torsion_fit_RMSD": 0.6125883071842434,
+    "torsion_radians": [
+      -1.0118911304499236,
+      0.28220333631157546,
+      3.1344732790483074,
+      -1.0260194282369823,
+      0.29088971611308156
+    ],
+    "branch_count": 5,
+    "prepared_atom_serials": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32
+    ],
+    "bonds_checked": 36,
+    "one_three_checked": 53,
+    "legal_max_bond_change_A": 4.884981308350689e-15,
+    "legal_max_one_three_change_A": 3.552713678800501e-15,
+    "crystal_max_bond_change_A": 0.12395977299535077,
+    "crystal_max_one_three_change_A": 0.13021888330175857,
+    "missing_edges": [
+      [
+        30,
+        31
+      ]
+    ],
+    "extra_edges": [],
+    "placed_native_inference_equal": {
+      "2J4Z_at9283_native_crystal": false,
+      "2J4Z_at9283_native_legal": true,
+      "2X6E_at9283_native_crystal": false,
+      "2X6E_at9283_native_legal": true
+    },
+    "unchanged_native_local": {
+      "2X6E_at9283_sdf_legal": {
+        "initial_objective": -4.5986436475724535,
+        "central_translation": [
+          {
+            "axis": "x",
+            "minus_score": -3.548,
+            "plus_score": -3.586,
+            "central_slope_per_A": -0.9499999999999953,
+            "minus_objective": -4.585158050967476,
+            "plus_objective": -4.634409256249229,
+            "objective_secant_per_A": -1.2312801320438105
+          },
+          {
+            "axis": "y",
+            "minus_score": -3.654,
+            "plus_score": -3.456,
+            "central_slope_per_A": 4.949999999999998,
+            "minus_objective": -4.734036924279203,
+            "plus_objective": -4.468886621265426,
+            "objective_secant_per_A": 6.628757575344424
+          },
+          {
+            "axis": "z",
+            "minus_score": -3.492,
+            "plus_score": -3.641,
+            "central_slope_per_A": -3.7250000000000005,
+            "minus_objective": -4.512382819324037,
+            "plus_objective": -4.705599508056454,
+            "objective_secant_per_A": -4.830417218310434
+          }
+        ],
+        "armijo_rmsd_A": 1.2656386768087657,
+        "armijo_score": -7.426,
+        "winner_minus_armijo": {
+          "60913": -0.7240000000000002,
+          "60943": -1.3179999999999996,
+          "61211": -0.4769999999999994,
+          "61231": -1.1370000000000005
+        }
+      }
+    }
+  },
+  "binary_sha256": "c739422a22f8eb6485cb969f2fd496f0bc6fd5f4e7c29c1ca2358acb754f8000"
+}

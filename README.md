@@ -1,5 +1,7 @@
 # FastDock Vina Pro
 
+本轮从结合态和游离态的配分函数复核了 344 个历史候选池，并在 Aurora A 上冻结输入后完成 72 次对接。固定水位点的边际占据率与排斥模型，即使放宽到任意占据相关性，42 次换首中仍有 15 次错误偏好无法逆转。Aurora A 有共晶参照的 430 个输出姿势均超过 2 Å；用原有扭转自由度构造的近晶体姿势，在两个受体上分别暴露了短接触、局优偏移与干分错排。AD4 同时修复了一处缺参金属误读静电图的核心错误。[统一理论与证据](docs/BINDING_ENSEMBLE_AND_DOCKING.md) · [固定池的共享系数界](benchmarks/mechanism_interactions/shared_weight/README.md) · [水位点的可逆与不可逆案例](benchmarks/mechanism_interactions/water_correlations/README.md) · [Aurora A 动力学与盲对接](benchmarks/receptor_linkage/aurora/README.md) · [近晶体放置与局部精修](benchmarks/receptor_linkage/aurora/PROBE.md) · [AD4 修复](benchmarks/ad4_atom_field/metal_types/README.md)
+
 本分支修复了大环闭环约束在 20 Å 处突然归零的问题。三种人源靶点复测中，超过 20 Å 的闭环标记误差消失，四轨迹首姿均值未变。固定池与同测定配体的复算还给出了两类上界：344 个历史池中有 149 个无法靠原有单项重加权选出池内几何最优；Galectin-3 的 403 对实测配体中，用两个现有受体的任意共同占比最多判对 146 对。新靶点人 α-半乳糖苷酶 A 的搜索场迁移实验分别检验了几何覆盖和最终识别。[结合系综、实验证据与算法设计](docs/BINDING_ENSEMBLE_AND_DOCKING.md) · [大环核心改动](benchmarks/mechanism_interactions/macrocycle_selection/README.md) · [GLA 配对结构](benchmarks/ch_pi_search/gla_transfer/README.md)
 
 此前对三组历史修正分别做了四臂配对实验。在新增的人 GAA 亚氨基糖面板上，CH–π 搜索场和重排把 24000 档的平均首姿误差从 7.168 降至 3.180 Å，单独改变搜索已达到 3.345 Å；在 GBA1 相同预算下，组合使均值从 2.629 升至 3.617 Å。BRD9 出现了同时需要软排斥搜索和水重排的单病例，四靶点总体未复现收益。修正了因子 Xa 配体制备变化后沿用旧转子分母的问题。[组合实验总览与历史复算](benchmarks/mechanism_interactions/README.md)
