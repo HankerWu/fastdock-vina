@@ -1,0 +1,8 @@
+{
+  "compared_mode_reference_rows": 1076,
+  "max_abs_difference_A": 3.8191672047105385e-14,
+  "protein_fit": "gemmi.superpose_positions",
+  "ligand_mapping": "PDB CONECT versus Meeko SMILES IDX",
+  "metric": "RDKit CalcRMS; no ligand fit",
+  "sensitivity": "all common observed ATOM C-alphas"
+}

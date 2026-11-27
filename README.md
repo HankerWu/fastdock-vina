@@ -1,5 +1,7 @@
 # FastDock Vina Pro
 
+默认 BFGS 已修复十次回溯全拒后接受错误坐标、使用未经求值步长更新曲率的问题。在 Aurora A 可恢复原先丢失的近晶体局部解。修复前后，常规预算首姿均值为 9.106 与 9.031 Å，双预算为 8.896 与 9.117 Å。FKBP12 同测定的 15 个分离对判对数由 9 降到 8，七个点值的秩相关却升高。[默认优化器、跨家族与亲和力验证](benchmarks/accepted_bfgs/README.md)
+
 本轮从结合态和游离态的配分函数复核了 344 个历史候选池，并在 Aurora A 上冻结输入后完成 72 次对接。固定水位点的边际占据率与排斥模型，即使放宽到任意占据相关性，42 次换首中仍有 15 次错误偏好无法逆转。Aurora A 有共晶参照的 430 个输出姿势均超过 2 Å；用原有扭转自由度构造的近晶体姿势，在两个受体上分别暴露了短接触、局优偏移与干分错排。AD4 同时修复了一处缺参金属误读静电图的核心错误。[统一理论与证据](docs/BINDING_ENSEMBLE_AND_DOCKING.md) · [固定池的共享系数界](benchmarks/mechanism_interactions/shared_weight/README.md) · [水位点的可逆与不可逆案例](benchmarks/mechanism_interactions/water_correlations/README.md) · [Aurora A 动力学与盲对接](benchmarks/receptor_linkage/aurora/README.md) · [近晶体放置与局部精修](benchmarks/receptor_linkage/aurora/PROBE.md) · [AD4 修复](benchmarks/ad4_atom_field/metal_types/README.md)
 
 本分支修复了大环闭环约束在 20 Å 处突然归零的问题。三种人源靶点复测中，超过 20 Å 的闭环标记误差消失，四轨迹首姿均值未变。固定池与同测定配体的复算还给出了两类上界：344 个历史池中有 149 个无法靠原有单项重加权选出池内几何最优；Galectin-3 的 403 对实测配体中，用两个现有受体的任意共同占比最多判对 146 对。新靶点人 α-半乳糖苷酶 A 的搜索场迁移实验分别检验了几何覆盖和最终识别。[结合系综、实验证据与算法设计](docs/BINDING_ENSEMBLE_AND_DOCKING.md) · [大环核心改动](benchmarks/mechanism_interactions/macrocycle_selection/README.md) · [GLA 配对结构](benchmarks/ch_pi_search/gla_transfer/README.md)
@@ -235,7 +237,7 @@ python3 benchmarks/check_pro_rerank.py build/vina /path/to/pre-pro/vina
 几何预条件的解析实现、对照官方 v1.2.7 的 CPU 预算实验，以及新增人源靶点的姿势和实测 Ki/Kd 结果见[跨靶点配对验证](benchmarks/geometry_comparison/README.md)。
 
 在常规刚性单配体 Vina 对接命令加 `--refinement_optimizer armijo`，可在最终显式受体精修中
-启用严格 Armijo 下降条件。默认值 `native` 沿用原优化器。Armijo 可与 `--pose_selection late`
+启用严格 Armijo 下降条件。默认 `native` 遇到非下降或非有限方向、十次回溯全部失败时，会保留已接受点。两个模式沿用各自的曲率更新与收敛条件。Armijo 可与 `--pose_selection late`
 和 `--rerank_gauss2_scale` 分别组合。`--refinement_optimizer geometry` 使用同一
 Armijo 线搜索，按重原子位移预条件化旋转和扭转。两种选项都沿用原评分函数。
 [度量、开销与实验设计](benchmarks/geometry_metric/README.md)

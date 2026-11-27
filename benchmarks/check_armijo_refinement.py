@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Check Armijo opt-in behavior, default parity and composition on a real Vina case."""
+"""Check optimizer selection, local gradient limits and composition on a real Vina case."""
 
 import argparse
 import math
@@ -27,14 +27,18 @@ def check_local_budget(binary, workdir):
         output = workdir / f"{input_pose.stem}-{mode}-{cap}.pdbqt"
         command = [str(binary), "--receptor", str(fixture / "1iep_receptor.pdbqt"),
                    "--ligand", str(input_pose), "--autobox", "--local_only", "--cpu", "1",
-                   "--seed", "42", "--verbosity", "0", "--refinement_optimizer", mode,
-                   "--max_evals", str(cap), "--out", str(output)]
+                   "--seed", "42", "--verbosity", "0", "--max_evals", str(cap), "--out", str(output)]
+        if mode != "native":
+            command += ["--refinement_optimizer", mode]
         result = subprocess.run(command, text=True, capture_output=True, timeout=90)
         if expected_error:
             require(result.returncode != 0 and expected_error in result.stderr and not output.exists(),
                     f"Unexpected negative budget handling: {result.stderr}")
             return
         require(result.returncode == 0, result.stderr or result.stdout)
+        if mode == "native":
+            require(not LOCAL_REFINEMENT.search(result.stdout), "Unexpected default optimizer diagnostic")
+            return None, None, coordinates(output.read_text())
         (reported_mode, count, objective), = LOCAL_REFINEMENT.findall(result.stdout)
         require(reported_mode == mode, f"Expected {mode}, got {reported_mode}")
         require(math.isfinite(float(objective)), "Local objective must be finite")
@@ -42,6 +46,8 @@ def check_local_budget(binary, workdir):
 
     optimize("geometry", -1, expected_error="non-negative max_evals")
     initial = coordinates(ligand.read_text())
+    # On this archived input the first ten trials all fail, before any accepted step.
+    require(optimize("native", 0)[2] == initial, "Default 1IEP refinement committed rejected coordinates")
     any_descent = False
     for mode in ("armijo", "geometry", "rigid_metric"):
         one = optimize(mode, 1)
@@ -80,15 +86,15 @@ def main():
         _, old = run("old", engine=baseline)
         _, default = run("default")
         _, native = run("native", ("--refinement_optimizer", "native"))
-        require(old == default == native, "Default final refinement differs from the original optimizer")
+        require(default == native, "Default final refinement differs from explicitly selected native refinement")
 
         options = ("--refinement_optimizer", "armijo")
         _, armijo = run("armijo", options)
-        require(len(parse(armijo)) == len(parse(old)), "Armijo changed the preselected refinement count")
-        require(armijo != old, "The fixed fixture did not observe Armijo change the refined output")
+        require(len(parse(armijo)) == len(parse(default)), "Armijo changed the preselected refinement count")
+        require(armijo != old, "The archived control unexpectedly reproduces the current Armijo output")
 
         late = ("--pose_selection", "late")
-        before_log, _ = run("native-late", late, engine=baseline)
+        before_log, _ = run("native-late", late)
         late_log, armijo_late = run("armijo-late", options + late)
         native_late_poses = parse(armijo_late)
         (before_counts,) = COUNTS.findall(before_log)
@@ -124,7 +130,7 @@ def main():
 
         check_local_budget(binary, workdir)
 
-    print("Native byte parity, Armijo/geometry, Late/Gauss2, local gradient caps and invalid modes passed.")
+    print("Native default selection, Armijo/geometry, Late/Gauss2, local gradient caps and invalid modes passed.")
 
 
 if __name__ == "__main__":

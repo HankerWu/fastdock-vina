@@ -27,6 +27,8 @@ SDF 图与枝树表示比较，AT9283 的默认距离推断缺失 PDBQT 序号 3
 
 另用独立的 Gemmi 蛋白拟合、从 PDB CONECT 和 Meeko SMILES IDX 得到的 RDKit 对称 RMSD 重算全部 24 个见证阶段，并从原始日志复核 96 个逐种子分差及共同零参考。最大 RMSD 差 2.1×10⁻¹⁴ Å，分差全部一致。[独立复核](results/probe_independent.json)
 
+确认这条回滚轨迹后，共享优化器已在 `2326430` 中修复。新默认在该例保住第 24 次求值得到的已接受点。48 次同预算和双预算盲对接以及跨家族结果单独列示。[源码、轨迹和验证](../../accepted_bfgs/README.md) · [修复后盲搜](solver_replay/README.md)
+
 ## 复现
 
 在仓库根目录，首先按主研究说明解包 RUN 和 REFERENCES。BUILD 为使用上述冻结引擎版本构建的 FastDock 目录（含 obj），BOOST_PREFIX 为本机 Boost 安装前缀。在下例中可使用 Python 3、NumPy、SciPy、Gemmi、RDKit、C++14 和 Bash。

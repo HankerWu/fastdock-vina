@@ -1,0 +1,29 @@
+{
+  "inputs_sha256": {
+    "pose/inputs.tar.xz": "fc58a62358a1917990396b96705784374aa43f6734194318aa348bb12afcf92b",
+    "basins/starts_and_relaxations.tar.xz": "fafa7d335a89b75d64db78c164398974ecb67ec07f29122263fb5b60eeacb642"
+  },
+  "binary_sha256": {
+    "parent": "c739422a22f8eb6485cb969f2fd496f0bc6fd5f4e7c29c1ca2358acb754f8000",
+    "fixed": "2b2f6afe30cd84cbff46187149939945f16c8ee75c42549a9d9001db4beda2a0",
+    "topology_parser": "121940063bce897d51b45f29bba31b73aaf8b932b3d4d97e50c368a1ae7f5bcb"
+  },
+  "pdb": [
+    "5S8I",
+    "7BLA",
+    "7F5D",
+    "7JGW",
+    "7LT0",
+    "7LZQ",
+    "7MRH",
+    "7MS7"
+  ],
+  "starts": [
+    "projected",
+    "63419",
+    "63421"
+  ],
+  "cpu_affinity": [
+    8
+  ]
+}

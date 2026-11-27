@@ -68,7 +68,7 @@ int main() {
 
 	// An indefinite native inverse Hessian can give an ascent direction. Its
 	// previous acceptance threshold would have allowed the small uphill step.
-	auto above_initial = [](const conf& p, flv& g) {
+	auto small_uphill_step = [](const conf& p, flv& g) {
 		const fl x = coordinate(p);
 		g.front() = x == 0 ? 1 : 2;
 		if (x == 0) return fl(0);
@@ -78,9 +78,9 @@ int main() {
 	};
 	current = origin;
 	evaluations = 0;
-	const auto fallback = workspace.minimize(above_initial, current, 3, evaluations);
-	require(fallback.energy == -0.0002 && coordinate(current) == -1 &&
-	        evaluations == 2 && fallback.restore_coordinates,
+	const auto no_ascent = workspace.minimize(small_uphill_step, current, 3, evaluations);
+	require(no_ascent.energy == -0.0002 && coordinate(current) == -1 &&
+	        evaluations == 2 && no_ascent.restore_coordinates,
 	        "Native BFGS must stop at the accepted point before testing an ascent direction");
 
 	auto steep_quadratic = [](const conf& p, flv& g) {
@@ -147,5 +147,5 @@ int main() {
 	require(workspace.minimize<true>(anisotropic, unscaled, 1, evaluations).energy > 0
 	        && evaluations > 2, "Identity control must not solve scaled quadratic in one step");
 
-	std::cout << "Armijo and geometry-preconditioned numerical regressions passed.\\n";
+	std::cout << "Native, Armijo and geometry-preconditioned numerical regressions passed.\n";
 }

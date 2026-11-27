@@ -1,0 +1,7 @@
+diff --git a/src/lib/vina.cpp b/src/lib/vina.cpp
+--- a/src/lib/vina.cpp
++++ b/src/lib/vina.cpp
+@@ -1022,0 +1023,3 @@
++	std::cerr << "Local objective observation: gradient_evals=" << evalcount
++	          << " accepted_objective=" << std::setprecision(std::numeric_limits<fl>::max_digits10)
++	          << out.e << '\n';
