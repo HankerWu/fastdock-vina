@@ -2,5 +2,6 @@
   "upstream": "3b6492ecf51789c71195438b3bda5784455b5e7ab2bceb7a59a25c5c8d182ae8",
   "parent": "cba3b9fce3e060a3c3c405a1c16ff3070fdf368bd43574ff3028a104d24c1b00",
   "fixed": "25bd1c1b82f00d3a3ad0dc2d20fa2312698fd04fcf084c258c9de0f84ac26c72",
-  "upstream_count": "62875fa8d1abc9e1af09f848f6d9cf052828359dd5246a6ef00d0300ca4672b2"
+  "upstream_count": "62875fa8d1abc9e1af09f848f6d9cf052828359dd5246a6ef00d0300ca4672b2",
+  "final_typed_domain": "50e0e1234ff7fbaa95f14030f4d70673dfea3df89b92410fe18c1d07eeb9f9ca"
 }

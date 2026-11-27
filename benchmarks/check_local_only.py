@@ -85,6 +85,22 @@ def main():
             require(result.returncode != 0 and "outside the grid box" in result.stderr + result.stdout,
                     "AD4 fixed-pose and local entry points must check the loaded AD4 lattice")
 
+        for suffix in ("H", "HD", "W"):
+            maps.with_suffix(f".{suffix}.map").write_text(header + "0\n" * 125)
+            # All three sites have an AD4 map but no receptor map under XS typing.
+            ligand.write_text("ROOT\nATOM      1  X   UNL     1       0.000   0.000   0.000  1.00  0.00     0.000 C\n"
+                              f"ATOM      2  X   UNL     1       3.000   0.000   0.000  1.00  0.00     0.000 {suffix}\n"
+                              "ENDROOT\nTORSDOF 0\n")
+            result = subprocess.run([binary, "--scoring", "ad4", "--ligand", ligand, *args_ad4, "--score_only"],
+                                    capture_output=True, text=True)
+            require(result.returncode != 0 and "outside the grid box" in result.stderr + result.stdout,
+                    "AD4 must check each mapped probe")
+            xs_args = ["--receptor", str(fixture / "1iep_receptor.pdbqt"), "--score_only"]
+            for dim in "xyz":
+                xs_args += ["--center_" + dim, "0", "--size_" + dim, "4"]
+            for sf in ("vina", "vinardo"):
+                call(binary, sf, ligand, xs_args)
+
     print("Explicit and grid optimization, exact map-only parity and AD4 parity passed.")
 
 

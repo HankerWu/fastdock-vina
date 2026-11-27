@@ -1,0 +1,14 @@
+{
+  "serials": [
+    37
+  ],
+  "outward_A": [
+    0.2569999999999979
+  ],
+  "partial_charge": [
+    0.149
+  ],
+  "original_hull_gap_A": 0.5141748928478584,
+  "expected_wall_kcal_mol": 333585.99999999726,
+  "measured_wall_kcal_mol": 333586.0
+}

@@ -654,14 +654,14 @@ std::vector<double> model::get_ligand_coords() {
 }
 
 // A closure marker measures an internal restraint. It has no receptor map or
-// box force. Keep mapped pseudoatoms such as hydrated-docking W in the domain.
-static bool grid_bounded_atom(const atom_base& atom) {
-	return !atom.is_hydrogen() && !ad_is_closure_dummy(atom.ad);
+// box force. H, HD and W have AD4 types but are unassigned in XS.
+static bool grid_bounded_atom(const atom_base& atom, atom_type::t typing) {
+	return atom.get(typing) < num_atom_types(typing) && !ad_is_closure_dummy(atom.ad);
 }
 
 bool model::within_grid(const grid_dims& gd, fl margin) const {
 	VINA_FOR(i, num_movable_atoms()) {
-		if (!grid_bounded_atom(atoms[i])) continue;
+		if (!grid_bounded_atom(atoms[i], atom_typing_used())) continue;
 		VINA_FOR_IN(d, gd) {
 			if (gd[d].enabled() && (coords[i][d] < gd[d].begin - margin ||
 			                        coords[i][d] > gd[d].end + margin))
@@ -674,7 +674,7 @@ bool model::within_grid(const grid_dims& gd, fl margin) const {
 vecv model::get_grid_atom_movable_coords() const {
 	vecv bounded;
 	VINA_FOR(i, num_movable_atoms())
-		if (grid_bounded_atom(atoms[i]))
+		if (grid_bounded_atom(atoms[i], atom_typing_used()))
 			bounded.push_back(coords[i]);
 	return bounded;
 }
