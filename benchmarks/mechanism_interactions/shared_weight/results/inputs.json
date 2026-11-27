@@ -1,0 +1,6 @@
+{
+  "benchmarks/ch_pi_search/results/gaa/modes.csv": "827501163dcd501759115cf682a0ef7adfc18184f2241f01959761c50d15ab64",
+  "benchmarks/ch_pi_search/results/historical/modes.csv": "0ab65331fb8cb034cf69d20b7389f5649662e157a48a8c65ce62a4ac4e0ecaa3",
+  "benchmarks/soft_water_interaction/results/poses.csv": "22dc9e4ae923c90df0793f7ac26618f949c00443132c3265619e0ddfdb68679e",
+  "benchmarks/ch_pi_search/gla_transfer/results/modes.csv": "0fa5d7ce6b9a6f4afb39cb5cfb948ec934ed956efd9e21040a4f65fb9e678797"
+}

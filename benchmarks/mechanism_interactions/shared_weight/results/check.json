@@ -1,0 +1,14 @@
+{
+  "pools": 356,
+  "modes": 3354,
+  "checks": {
+    "nominal": {
+      "checked_rows": 83,
+      "states_checked": 822
+    },
+    "print_interval": {
+      "checked_rows": 83,
+      "states_checked": 818
+    }
+  }
+}

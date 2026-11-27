@@ -1,0 +1,10 @@
+{
+  "input_sha256": {
+    "changed_winner_sites.csv": "99ea514fc6064e694a7969caa46dace9b58660acbcdb49ce53c36647419c987c",
+    "cells.csv": "0c5c6c8986edfb3835ab6aa1adb98bcae9c499500b25b88ef8466b516442f89d"
+  },
+  "pairs": 42,
+  "forced": 30,
+  "reversible": 12,
+  "unresolved": 0
+}

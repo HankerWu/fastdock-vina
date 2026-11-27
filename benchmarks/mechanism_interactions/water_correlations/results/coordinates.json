@@ -1,0 +1,8 @@
+{
+  "pools": 156,
+  "poses": 1557,
+  "changed": 42,
+  "robust_to_dry_rounding": 42,
+  "max_score_component_error": 8.881784197001252e-16,
+  "max_single_site_error": 9.836424209874739e-17
+}

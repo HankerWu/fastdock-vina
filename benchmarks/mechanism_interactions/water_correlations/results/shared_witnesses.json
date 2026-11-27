@@ -1,0 +1,545 @@
+[
+  {
+    "receiver": "1XOM",
+    "correlated_sites": [
+      "A1009",
+      "A1063",
+      "A1049",
+      "A1044",
+      "A1064",
+      "A1018",
+      "A1127",
+      "A1105",
+      "A1051",
+      "A1158",
+      "A1094",
+      "A1013"
+    ],
+    "other_sites": "independent p=0.75",
+    "support": [
+      {
+        "occupied": [
+          "A1009",
+          "A1063",
+          "A1049",
+          "A1044",
+          "A1064",
+          "A1018",
+          "A1127",
+          "A1105",
+          "A1051"
+        ],
+        "probability": 0.010998726993609986
+      },
+      {
+        "occupied": [
+          "A1009",
+          "A1063",
+          "A1049",
+          "A1044",
+          "A1064",
+          "A1018",
+          "A1127",
+          "A1051",
+          "A1158"
+        ],
+        "probability": 0.22800254601278042
+      },
+      {
+        "occupied": [
+          "A1009",
+          "A1063",
+          "A1049",
+          "A1044",
+          "A1064",
+          "A1018",
+          "A1127",
+          "A1105",
+          "A1051",
+          "A1158",
+          "A1094"
+        ],
+        "probability": 0.010998726993609752
+      },
+      {
+        "occupied": [
+          "A1009",
+          "A1049",
+          "A1044",
+          "A1064",
+          "A1018",
+          "A1127",
+          "A1105",
+          "A1051",
+          "A1158",
+          "A1013"
+        ],
+        "probability": 0.010998726993609969
+      },
+      {
+        "occupied": [
+          "A1009",
+          "A1049",
+          "A1044",
+          "A1064",
+          "A1018",
+          "A1127",
+          "A1105",
+          "A1094",
+          "A1013"
+        ],
+        "probability": 0.02199745398721993
+      },
+      {
+        "occupied": [
+          "A1009",
+          "A1063",
+          "A1049",
+          "A1044",
+          "A1064",
+          "A1018",
+          "A1127",
+          "A1105",
+          "A1094",
+          "A1013"
+        ],
+        "probability": 0.1950063650319505
+      },
+      {
+        "occupied": [
+          "A1009",
+          "A1063",
+          "A1049",
+          "A1044",
+          "A1064",
+          "A1018",
+          "A1127",
+          "A1051",
+          "A1094",
+          "A1013"
+        ],
+        "probability": 0.021997453987219806
+      },
+      {
+        "occupied": [
+          "A1063",
+          "A1049",
+          "A1105",
+          "A1158",
+          "A1094",
+          "A1013"
+        ],
+        "probability": 0.03299618098082982
+      },
+      {
+        "occupied": [
+          "A1049",
+          "A1105",
+          "A1051",
+          "A1158",
+          "A1094",
+          "A1013"
+        ],
+        "probability": 0.21700381901917037
+      },
+      {
+        "occupied": [
+          "A1009",
+          "A1063",
+          "A1044",
+          "A1064",
+          "A1018",
+          "A1127",
+          "A1105",
+          "A1051",
+          "A1158",
+          "A1094",
+          "A1013"
+        ],
+        "probability": 0.25
+      }
+    ],
+    "reversible_pairs": 2,
+    "largest_demonstrated_count": 2,
+    "upper_count": 2,
+    "full_set_upper_margin": null
+  },
+  {
+    "receiver": "2B8L",
+    "correlated_sites": [
+      "A 561",
+      "A 458",
+      "A 436",
+      "A 545",
+      "A 430",
+      "A 433",
+      "A 429",
+      "A 421",
+      "A 483",
+      "A 470",
+      "A 394"
+    ],
+    "other_sites": "independent p=0.75",
+    "support": [
+      {
+        "occupied": [
+          "A 561",
+          "A 436",
+          "A 545",
+          "A 430",
+          "A 433",
+          "A 429",
+          "A 421",
+          "A 483",
+          "A 470"
+        ],
+        "probability": 0.25
+      },
+      {
+        "occupied": [
+          "A 458",
+          "A 436",
+          "A 545",
+          "A 430",
+          "A 433",
+          "A 429",
+          "A 421",
+          "A 483",
+          "A 394"
+        ],
+        "probability": 0.25
+      },
+      {
+        "occupied": [
+          "A 561",
+          "A 458",
+          "A 436",
+          "A 470",
+          "A 394"
+        ],
+        "probability": 0.25
+      },
+      {
+        "occupied": [
+          "A 561",
+          "A 458",
+          "A 545",
+          "A 430",
+          "A 433",
+          "A 429",
+          "A 421",
+          "A 483",
+          "A 470",
+          "A 394"
+        ],
+        "probability": 0.25
+      }
+    ],
+    "reversible_pairs": 1,
+    "largest_demonstrated_count": 1,
+    "upper_count": 1,
+    "full_set_upper_margin": null
+  },
+  {
+    "receiver": "2E9P",
+    "correlated_sites": [
+      "A1071",
+      "A1104",
+      "A1118",
+      "A1105",
+      "A1179",
+      "A1060"
+    ],
+    "other_sites": "independent p=0.75",
+    "support": [
+      {
+        "occupied": [
+          "A1071",
+          "A1118"
+        ],
+        "probability": 0.25
+      },
+      {
+        "occupied": [
+          "A1071",
+          "A1104",
+          "A1105",
+          "A1179",
+          "A1060"
+        ],
+        "probability": 0.25
+      },
+      {
+        "occupied": [
+          "A1104",
+          "A1118",
+          "A1105",
+          "A1179",
+          "A1060"
+        ],
+        "probability": 0.25
+      },
+      {
+        "occupied": [
+          "A1071",
+          "A1104",
+          "A1118",
+          "A1105",
+          "A1179",
+          "A1060"
+        ],
+        "probability": 0.25
+      }
+    ],
+    "reversible_pairs": 1,
+    "largest_demonstrated_count": 1,
+    "upper_count": 1,
+    "full_set_upper_margin": null
+  },
+  {
+    "receiver": "2ZJM",
+    "correlated_sites": [
+      "A 624",
+      "A 635",
+      "A 644",
+      "A 583",
+      "A 688",
+      "A 613",
+      "A 607",
+      "A 502",
+      "A 686",
+      "A 524",
+      "A 463",
+      "A 621"
+    ],
+    "other_sites": "independent p=0.75",
+    "support": [
+      {
+        "occupied": [
+          "A 613",
+          "A 607",
+          "A 502",
+          "A 686",
+          "A 524",
+          "A 463"
+        ],
+        "probability": 1.6566660060550767e-13
+      },
+      {
+        "occupied": [
+          "A 624",
+          "A 635",
+          "A 644",
+          "A 583",
+          "A 688",
+          "A 613",
+          "A 607",
+          "A 502",
+          "A 686",
+          "A 524",
+          "A 463"
+        ],
+        "probability": 0.2500000000111545
+      },
+      {
+        "occupied": [
+          "A 624",
+          "A 635",
+          "A 644",
+          "A 583",
+          "A 688",
+          "A 613",
+          "A 502",
+          "A 686",
+          "A 524",
+          "A 621"
+        ],
+        "probability": 0.1580757683132266
+      },
+      {
+        "occupied": [
+          "A 624",
+          "A 635",
+          "A 644",
+          "A 688",
+          "A 613",
+          "A 607",
+          "A 502",
+          "A 686",
+          "A 524",
+          "A 621"
+        ],
+        "probability": 0.09192423169941395
+      },
+      {
+        "occupied": [
+          "A 607",
+          "A 463",
+          "A 621"
+        ],
+        "probability": 0.1580757682750799
+      },
+      {
+        "occupied": [
+          "A 583",
+          "A 502",
+          "A 463",
+          "A 621"
+        ],
+        "probability": 0.09192423172824966
+      },
+      {
+        "occupied": [
+          "A 607",
+          "A 686",
+          "A 524",
+          "A 463",
+          "A 621"
+        ],
+        "probability": 6.8635605557440955e-12
+      },
+      {
+        "occupied": [
+          "A 624",
+          "A 635",
+          "A 644",
+          "A 583",
+          "A 688",
+          "A 613",
+          "A 607",
+          "A 686",
+          "A 524",
+          "A 463",
+          "A 621"
+        ],
+        "probability": 0.09192423178219959
+      },
+      {
+        "occupied": [
+          "A 624",
+          "A 635",
+          "A 644",
+          "A 583",
+          "A 688",
+          "A 613",
+          "A 607",
+          "A 502",
+          "A 686",
+          "A 524",
+          "A 463",
+          "A 621"
+        ],
+        "probability": 0.15807576821234892
+      }
+    ],
+    "reversible_pairs": 5,
+    "largest_demonstrated_count": 4,
+    "upper_count": 4,
+    "full_set_upper_margin": -0.015757352566203895
+  },
+  {
+    "receiver": "6Y7L",
+    "correlated_sites": [
+      "A 406",
+      "A 437",
+      "A 415",
+      "A 429",
+      "A 407",
+      "A 421"
+    ],
+    "other_sites": "independent p=0.75",
+    "support": [
+      {
+        "occupied": [
+          "A 415"
+        ],
+        "probability": 0.25
+      },
+      {
+        "occupied": [
+          "A 406",
+          "A 437",
+          "A 429",
+          "A 407",
+          "A 421"
+        ],
+        "probability": 0.25
+      },
+      {
+        "occupied": [
+          "A 406",
+          "A 437",
+          "A 415",
+          "A 429",
+          "A 407",
+          "A 421"
+        ],
+        "probability": 0.5
+      }
+    ],
+    "reversible_pairs": 1,
+    "largest_demonstrated_count": 1,
+    "upper_count": 1,
+    "full_set_upper_margin": null
+  },
+  {
+    "receiver": "6YQW",
+    "correlated_sites": [
+      "A 377",
+      "A 362",
+      "A 366",
+      "A 415",
+      "A 318",
+      "A 331",
+      "A 401"
+    ],
+    "other_sites": "independent p=0.75",
+    "support": [
+      {
+        "occupied": [
+          "A 415",
+          "A 318"
+        ],
+        "probability": 0.2500000000000142
+      },
+      {
+        "occupied": [
+          "A 377",
+          "A 362",
+          "A 366",
+          "A 415",
+          "A 331",
+          "A 401"
+        ],
+        "probability": 0.25000000000000233
+      },
+      {
+        "occupied": [
+          "A 377",
+          "A 362",
+          "A 366",
+          "A 318",
+          "A 331",
+          "A 401"
+        ],
+        "probability": 0.24999999999998818
+      },
+      {
+        "occupied": [
+          "A 377",
+          "A 362",
+          "A 366",
+          "A 415",
+          "A 318",
+          "A 331",
+          "A 401"
+        ],
+        "probability": 0.25000000000000944
+      }
+    ],
+    "reversible_pairs": 2,
+    "largest_demonstrated_count": 2,
+    "upper_count": 2,
+    "full_set_upper_margin": null
+  }
+]

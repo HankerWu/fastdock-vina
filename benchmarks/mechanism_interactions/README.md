@@ -6,6 +6,8 @@
 
 固定 3,246 个历史候选，逐池求出干分加 CH–π 或水分项所能选到的全部姿势；另从九份同测定面板求两个受体状态在共用占比时的最大排序一致率。新选的 α-半乳糖苷酶 A 单列验证，大环则检验约束失效对输出的影响。[统一模型](../../docs/BINDING_ENSEMBLE_AND_DOCKING.md) · [逐池可达性](attainability/README.md) · [亲和力上界](shared_population/README.md) · [文献中的热力学循环](confine_release/README.md) · [核心约束修复](macrocycle_selection/README.md) · [GLA 新结构](../ch_pi_search/gla_transfer/README.md)
 
+过去逐池求最优系数会高估可迁移的改善。现在分别给出每池、每靶、所有靶点共用一个系数的连续误差界，并从原始坐标检验任意水占据相关性能否翻转两姿选择。156 个历史水池的干分平均 RMSD 为 5.775 Å，共用权重即使可看晶体答案也至少为 5.738 Å。42 次实际换首中，即使每份受体有自己的水占据联合分布，原首与水首之间最多能正确选择 26 次。[共享系数的精确界](shared_weight/README.md) · [水占据、两姿比较与外部 A₂A 自由能对照](water_correlations/README.md)
+
 ## 此前的三组配对实验
 
 | 两个因素 | 两者合用的实测结果 | 原始数据与复现 |
