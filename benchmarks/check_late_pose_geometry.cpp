@@ -1,4 +1,4 @@
-// Exercise the parsed chemical atom types and the actual late selection metric.
+// Exercise both native and chemical-only metrics on the parsed atom types.
 #include "coords.h"
 #include "parse_pdbqt.h"
 
@@ -58,12 +58,30 @@ int main() {
 			        "Printable box and validity checks must select the same atoms");
 		}
 	}
-	const auto legacy = a.get_heavy_atom_movable_coords();
+	const auto native = a.get_heavy_atom_movable_coords();
 	const auto chemical = a.get_chemical_heavy_atom_movable_coords();
-	require(legacy.size() == 7 && chemical.size() == 2 && chemical[0][0] == 0 && chemical[1][0] == 1.5,
+	require(native.size() == 3 && chemical.size() == 2 && chemical[0][0] == 0 && chemical[1][0] == 1.5,
 	        "The fixed chemical index list must retain C and CG0, omit G0-G3/W/H, and preserve order");
-	require(rmsd_upper_bound(legacy, shifted_dummies.get_heavy_atom_movable_coords()) > 1,
-	        "The original metric should still see the displaced dummy positions");
+	require(rmsd_upper_bound(native, shifted_dummies.get_heavy_atom_movable_coords()) > 1,
+	        "Native hydrated ensemble RMSD should see the displaced W");
+
+	for (const auto typing : {atom_type::XS, atom_type::AD}) {
+		const auto placed = [&](fl shift, bool only_markers) {
+			std::string records;
+			if (!only_markers) records += atom_record(1, "CG2", 0) + atom_record(2, "W", 1);
+			for (sz k = 0; k < 4; ++k)
+				records += atom_record(k + 3, ("G" + std::to_string(k)).c_str(), 2 + k + shift);
+			return parse_ligand_pdbqt_from_string("ROOT\n" + records + "ENDROOT\nTORSDOF 0\n", typing);
+		};
+		for (bool only_markers : {false, true}) {
+			const auto anchor = placed(0, only_markers), moved = placed(7, only_markers);
+			require(anchor.get_heavy_atom_movable_coords().size() == (only_markers ? 0u : 2u),
+			        "Native coordinates must exclude all four G labels but retain CG and W");
+			require(rmsd_upper_bound(anchor.get_heavy_atom_movable_coords(), moved.get_heavy_atom_movable_coords()) == 0 &&
+			        anchor.rmsd_upper_bound(moved) == 0 && anchor.rmsd_lower_bound(moved) == 0 &&
+			        anchor.rmsd_ligands_upper_bound(moved) == 0, "Native RMSD counted a closure marker");
+		}
+	}
 
 	output_container candidates;
 	candidates.push_back(pose_for(a, -1));

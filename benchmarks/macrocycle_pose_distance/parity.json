@@ -1,0 +1,20 @@
+{
+  "1iep": {
+    "hash": "e7563fcc69cbf21caf4d85c3bd1b7eca8c4efc8a303b1eac811fa394316d711c",
+    "hunt_calls": 15,
+    "hunt_evals": 1899,
+    "second_calls": 8,
+    "second_evals": 1125,
+    "explicit_calls": 5,
+    "explicit_evals": 273
+  },
+  "flex_fixture": {
+    "hash": "d3561cbb02ed0a9770816414a60b3ade2194fa9b87639766192de8196f87a37d",
+    "hunt_calls": 11,
+    "hunt_evals": 1557,
+    "second_calls": 10,
+    "second_evals": 1457,
+    "explicit_calls": 3,
+    "explicit_evals": 172
+  }
+}

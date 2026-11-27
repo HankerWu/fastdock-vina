@@ -11,8 +11,8 @@ from rdkit import Chem
 from rdkit.Chem import AllChem
 from scipy.spatial.transform import Rotation
 
-from model import (BENCH, Receptor, atoms, hydrogenated_positions, ring, score, topology,
-                   torsional_prior, unit)
+from model import (ACCEPTORS, Receptor, atoms, hydrogenated_positions, magnitude, ring, score,
+                   topology, torsional_prior, unit)
 from evaluate import archive_cases, blocks, write  # archived common input iterator
 
 
@@ -56,7 +56,7 @@ def forcefield_scan(mol,serial,xyz,site):
 
 def verify(binary, out, revision):
     out.mkdir(parents=True,exist_ok=True)
-    rows, scans = [], []
+    rows, scans, contacts = [], [], []
     with TemporaryDirectory() as tmp:
         root = Path(tmp)
         for base,sites,pool,_ in archive_cases(root):
@@ -77,6 +77,18 @@ def verify(binary, out, revision):
                     if err>1.e-8:
                         raise AssertionError((key,rank,site.oxygen,err))
                     scans.append(dict(**base,rank=rank,oxygen=site.oxygen,error_kcal_mol=err))
+                    oxygen, hydrogen = xyz[site.oxygen], xyz[site.hydrogen]
+                    # Retain the two closest prepared protein acceptors even if outside
+                    # the radial support, to identify an absence of contact on competitors.
+                    candidates = sorted((np.linalg.norm(a.xyz-oxygen.xyz), j)
+                                        for j,a in rec.atoms.items() if a.kind in ACCEPTORS)
+                    for d,j in candidates[:2]:
+                        a = rec.atoms[j]
+                        cosine = np.dot(unit(oxygen.xyz-hydrogen.xyz),unit(a.xyz-hydrogen.xyz))
+                        contacts.append(dict(**base,rank=rank,oxygen=site.oxygen,
+                                             protein_serial=j,residue=a.residue,name=a.name,
+                                             distance_A=d,DHA_deg=np.rad2deg(np.arccos(np.clip(cosine,-1,1))),
+                                             radial_magnitude=magnitude(oxygen,a)))
                 native_ref = None
                 for shift in (0,180,37):
                     rotated = rotate(block,oh,shift)
@@ -101,6 +113,7 @@ def verify(binary, out, revision):
         raise AssertionError(len(rows))
     write(out/"hydrogen_replay.csv",rows)
     write(out/"mmff_scans.csv",scans)
+    write(out/"case_contacts.csv",contacts)
     (out/"binary.json").write_text(json.dumps(dict(reported_source_revision=revision,
                                       sha256=hashlib.sha256(binary.read_bytes()).hexdigest()),indent=2)+"\n")
 

@@ -700,12 +700,19 @@ static bool chemical_heavy_atom(const atom_base& atom) {
 	return atom.el != EL_TYPE_H && atom.el != EL_TYPE_Dummy;
 }
 
-template<bool KeepDummy>
+// W represents a hydrated docking site, while G0-G3 only measure the
+// artificial cut in a macrocycle. Native inter-pose RMSD includes the
+// movable receptor and hydrated sites, but never counts the cut twice.
+static bool native_pose_atom(const atom_base& atom) {
+	return atom.el != EL_TYPE_H && !ad_is_closure_dummy(atom.ad);
+}
+
+template<bool IncludeWater>
 static vecv heavy_movable_coords(const model& m) {
 	vecv heavy;
 	VINA_FOR(i, m.num_movable_atoms()) {
 		const auto& atom = m.movable_atom(i);
-		if (KeepDummy ? atom.el != EL_TYPE_H : chemical_heavy_atom(atom))
+		if (IncludeWater ? native_pose_atom(atom) : chemical_heavy_atom(atom))
 			heavy.push_back(m.movable_coords(i));
 	}
 	return heavy;
@@ -1121,11 +1128,11 @@ fl model::rmsd_lower_bound_asymmetric(const model& x, const model& y) const { //
 	unsigned counter = 0;
 	VINA_FOR(i, n) {
 		const atom& a =   x.atoms[i];
-		if(a.el != EL_TYPE_H) {
+		if(native_pose_atom(a)) {
 			fl r2 = max_fl;
 			VINA_FOR(j, n) {
 				const atom& b = y.atoms[j];
-				if(a.same_element(b) && !b.is_hydrogen()) {
+				if(a.same_element(b) && native_pose_atom(b)) {
 					fl this_r2 = vec_distance_sqr(x.coords[i], 
 					                              y.coords[j]);
 					if(this_r2 < r2)
@@ -1153,7 +1160,7 @@ fl model::rmsd_upper_bound(const model& m) const {
 		const atom& b = m.atoms[i];
 		assert(a.ad == b.ad);
 		assert(a.xs == b.xs);
-		if(a.el != EL_TYPE_H) {
+		if(native_pose_atom(a)) {
 			sum += vec_distance_sqr(coords[i], m.coords[i]);
 			++counter;
 		}
@@ -1175,7 +1182,7 @@ fl model::rmsd_ligands_upper_bound(const model& m) const {
 			const atom& b = m.atoms[i];
 			assert(a.ad == b.ad);
 			assert(a.xs == b.xs);
-			if(a.el != EL_TYPE_H) {
+			if(native_pose_atom(a)) {
 				sum += vec_distance_sqr(coords[i], m.coords[i]);
 				++counter;
 			}

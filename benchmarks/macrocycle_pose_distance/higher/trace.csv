@@ -1,0 +1,7 @@
+key,parent_events,fixed_events,exact_shared_prefix,stage,trigger,pair_i,pair_j,old_A,new_A,radius_A,old_residents,new_residents
+2J9M_191009_48000,19,19,19,,,,,,,,,
+2J9M_458921_48000,24,24,24,,,,,,,,,
+3VHA_191009_48000,32,32,32,,,,,,,,,
+3VHA_458921_48000,31,31,31,trajectory,12,11,12,1.0869136561261348,0.8575203898148582,1.0,12 11 10 4 1,12 10 4 1 0
+4EGK_191009_48000,61,61,61,,,,,,,,,
+4EGK_458921_48000,22,22,22,,,,,,,,,
