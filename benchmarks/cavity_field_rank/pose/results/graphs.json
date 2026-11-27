@@ -1,0 +1,37 @@
+{
+  "3FMZ-A": {
+    "explicit_bonds": 31,
+    "extra": [],
+    "identical_adjacency_types_and_rotors": true,
+    "inferred_bonds": 31,
+    "missing": []
+  },
+  "3FMZ-HA": {
+    "explicit_bonds": 32,
+    "extra": [],
+    "identical_adjacency_types_and_rotors": true,
+    "inferred_bonds": 32,
+    "missing": []
+  },
+  "4GHI": {
+    "explicit_bonds": 24,
+    "extra": [],
+    "identical_adjacency_types_and_rotors": true,
+    "inferred_bonds": 24,
+    "missing": []
+  },
+  "5TBM": {
+    "explicit_bonds": 29,
+    "extra": [],
+    "identical_adjacency_types_and_rotors": true,
+    "inferred_bonds": 29,
+    "missing": []
+  },
+  "82I": {
+    "explicit_bonds": 12,
+    "extra": [],
+    "identical_adjacency_types_and_rotors": true,
+    "inferred_bonds": 12,
+    "missing": []
+  }
+}

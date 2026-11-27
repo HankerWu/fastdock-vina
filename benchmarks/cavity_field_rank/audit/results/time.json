@@ -1,0 +1,13 @@
+{
+  "wall_s": 8.486929113998485,
+  "cpu_self_s": 7.759529403000001,
+  "native_direct_spotchecks": 93,
+  "max_native_direct_error_kcal_mol": 1.862645149230957e-09,
+  "columns": [
+    "RMSD_A",
+    "grid_kcal_per_mol",
+    "direct_kcal_per_mol",
+    "min_contact_A",
+    "heavy_atoms_under_2A"
+  ]
+}

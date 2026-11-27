@@ -1,0 +1,11 @@
+{
+  "candidates": 10240,
+  "stages": 7129,
+  "modes": 594,
+  "max_candidate_delta_A": 1.2434497875801753e-14,
+  "max_stage_delta_A": 1.2434497875801753e-14,
+  "max_endpoint_delta_A": 1.3322676295501878e-14,
+  "ki_table_page": 9927,
+  "source_doi": "10.1021/ja00075a008",
+  "assay_checks": 21
+}

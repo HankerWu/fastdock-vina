@@ -1,0 +1,20 @@
+{
+  "arrays_checked": [
+    "center",
+    "ligand_triangle",
+    "site_triangles",
+    "edge_residual_A2",
+    "shift",
+    "matched_rotation",
+    "matched_score",
+    "matched_best"
+  ],
+  "equal_to_previous_bank": [
+    "3FMZ-A_91813_t1_s1",
+    "3FMZ-HA_91813_t1_s1",
+    "82I_91813_t1_s1",
+    "82I_91823_t1_s1"
+  ],
+  "generated_cases": 10,
+  "observer_sha256": "caa75c7f0089e37078e9ef01d8ec3f757462f862c02c41af1ed3f1a2502b873d"
+}

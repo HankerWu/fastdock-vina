@@ -1,0 +1,21 @@
+{
+  "build": {
+    "status": 0,
+    "wall_s": 35.637030041994876,
+    "cpu_s": 58.432795999999996
+  },
+  "clean_binary_sha256": "f74bab6575414cd6d899e759c976069f4123d3f78b6e13b16e689611851a4b47",
+  "first_binary_sha256": "80c915ab393cb07bf7909d059b985fe491336caa0ba80a130c623120e19bbb70",
+  "clean_replay": {
+    "status": 0,
+    "wall_s": 0.7546336150044226,
+    "cpu_s": 0.8389369999999978
+  },
+  "clean_pool_sha256": "0a098f76a711d75d24808b0d528fdd645c1060cd063e723e0bfa5f100c5ca51b",
+  "unreachable": {
+    "status": 1,
+    "wall_s": 0.3428761789982673,
+    "cpu_s": 0.5136140000000031
+  },
+  "unreachable_preserved_pool": true
+}

@@ -1,0 +1,89 @@
+{
+  "archives": {
+    "benchmarks/cubic_grid/acid_states/acid-pools.tar.xz": "b14488106a1285720835084e7ce910f08f67cacc2c6ec346b22ec314f6959865",
+    "benchmarks/cubic_grid/human_panel/prepared.tar.xz": "64279b6b69390635a72ed213413587e571630dbf279c7c19d49b7ff3d20fcf67",
+    "benchmarks/torsion_proposals/fixtures/inputs.tar.xz": "b656e03ad668fbd47b870a7efe0071deb2b3a2cac29836f5696d09a50a382053"
+  },
+  "cells": {
+    "3FMZ-A": {
+      "bonds": "inputs/3FMZ-A-ligand.bonds",
+      "center": [
+        32.20157142857143,
+        19.508619047619046,
+        48.55028571428572
+      ],
+      "ligand": "inputs/3FMZ-A-ligand.pdbqt",
+      "receptor": "inputs/1RBP.pdbqt",
+      "sha256": {
+        "inputs/1RBP.pdbqt": "d487ea4d9a20a6fd137a5ed3e8d34214d728c38ee02f10d6152fea23fc81288c",
+        "inputs/3FMZ-A-ligand.bonds": "9239c079dbd1105aeb95cd809ba2cabbe8c5c48d27a1ddcfd463a9b573a7dd04",
+        "inputs/3FMZ-A-ligand.pdbqt": "02aa42bd137af7e1fd5e2f006fbc1c72e763945cc05cb11c34647ac7fbb6878a"
+      },
+      "size": 24
+    },
+    "3FMZ-HA": {
+      "bonds": "inputs/3FMZ-HA-ligand.bonds",
+      "center": [
+        32.20157142857143,
+        19.508619047619046,
+        48.55028571428572
+      ],
+      "ligand": "inputs/3FMZ-HA-ligand.pdbqt",
+      "receptor": "inputs/1RBP.pdbqt",
+      "sha256": {
+        "inputs/1RBP.pdbqt": "d487ea4d9a20a6fd137a5ed3e8d34214d728c38ee02f10d6152fea23fc81288c",
+        "inputs/3FMZ-HA-ligand.bonds": "a1e8f150d08151a28e0b37de001da1ed2dfdb0781711e7139c7e0db057a6f9ea",
+        "inputs/3FMZ-HA-ligand.pdbqt": "c774fbcb3a6a1ed5c42042d2e876d4bd35c49c71e7038dc8b9c8b704262f22a9"
+      },
+      "size": 24
+    },
+    "4GHI": {
+      "bonds": "inputs/4GHI-ligand.bonds",
+      "center": [
+        23.973769230769225,
+        -0.25134615384615383,
+        -10.570884615384614
+      ],
+      "ligand": "inputs/4GHI-ligand.pdbqt",
+      "receptor": "inputs/5TBM.pdbqt",
+      "sha256": {
+        "inputs/4GHI-ligand.bonds": "8185965a6c8400c842a4325b9e8816cc3059c78733598e1614ccba1789f917b5",
+        "inputs/4GHI-ligand.pdbqt": "7ba473194c6119c08a56f271e4c2c4d5067ac4d942c7e7cc09e1461cff88f83c",
+        "inputs/5TBM.pdbqt": "b4d7fe0b1e61102c432f5d1c90f4c844150dc1680141adc17ab9b8d0251bbc2f"
+      },
+      "size": 24
+    },
+    "5TBM": {
+      "bonds": "inputs/5TBM-ligand.bonds",
+      "center": [
+        12.737333333333336,
+        -41.66371428571429,
+        10.245476190476191
+      ],
+      "ligand": "inputs/5TBM-ligand.pdbqt",
+      "receptor": "inputs/4GHI.pdbqt",
+      "sha256": {
+        "inputs/4GHI.pdbqt": "a68ced6044a6dba332c1b89d040cc58563b002690005b96cecb823f102d923ca",
+        "inputs/5TBM-ligand.bonds": "3615c4a579244b657344c9f3623a530fb112edb6a6b27aa166cc5299bb391933",
+        "inputs/5TBM-ligand.pdbqt": "43929a770d76f66c8ed0956fd7ede2f72af70dd72d5bbb206396afe0de171828"
+      },
+      "size": 24
+    },
+    "82I": {
+      "bonds": "inputs/82I-ligand.bonds",
+      "center": [
+        128.0266,
+        -2.8662399999999995,
+        35.45272000000001
+      ],
+      "ligand": "inputs/82I-ligand.pdbqt",
+      "receptor": "inputs/6Y7L.pdbqt",
+      "sha256": {
+        "inputs/6Y7L.pdbqt": "741874605fa2e1ea15374a13b4e50a1eb4c2f715f461c568da362ec6bbe48e62",
+        "inputs/82I-ligand.bonds": "38f6964e99b979b8365f7b407ed2c72eb88345cfb8c250da93b44644d640c431",
+        "inputs/82I-ligand.pdbqt": "7d59ab23813167ad956e549cef91cc532c70e9d72c3dd6796506d32fc789ce88"
+      },
+      "size": 24
+    }
+  }
+}

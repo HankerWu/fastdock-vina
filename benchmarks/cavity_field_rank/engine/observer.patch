@@ -1,0 +1,42 @@
+--- a/src/lib/model.h
++++ b/src/lib/model.h
+@@ -188,6 +188,7 @@
+ 
+ private:
+ 	friend struct parallel_mc;
++	friend struct native_field_rank;
+ 	friend struct precalculate_byatom;
+ 	friend struct cache;
+ 	friend class anchored_search_grid;
+--- a/src/lib/monte_carlo.cpp
++++ b/src/lib/monte_carlo.cpp
+@@ -30,6 +30,7 @@
+ #include "cross_hunt.h"
+ #include "inject.h"
+ #include "source_snapshot.h"
++#include "native_rank.h"
+ 
+ output_type monte_carlo::operator()(model& m, const precalculate_byatom& p, const igrid& ig, const vec& corner1, const vec& corner2, incrementable* increment_me, rng& generator) const {
+ 	output_container tmp;
+@@ -90,6 +91,8 @@
+ 		                                    mixed_reorientation, separate_hunt_chain, centered_rotation, balanced_torsion);
+ 		crossover.record(step + 1, candidate.c);
+ 		snapshot.capture(crossover.trajectory, step + 1, m, candidate.c);
++		native_field_rank::select(injection, crossover.trajectory, step + 1,
++		                          m, ig, candidate.c, hunt_cap[1]);
+ 		const bool injected = injection.apply(crossover.trajectory, step + 1, candidate.c);
+ 		if (injected) {
+             model view(m);
+--- a/src/lib/grid.cpp
++++ b/src/lib/grid.cpp
+@@ -203,6 +203,10 @@
+ field_counts observed_fields;
+ }
+ 
++unsigned long long observed_scalar_grid_positions() {
++	return observed_fields.positions[0][0];
++}
++
+ template<bool Cubic, bool Combined>
+ fl grid::evaluate_fields(const vec& location, fl slope, fl v, vec* deriv, fl charge,
+                          const grid* electrostatic, const grid* desolvation) const {
