@@ -1,0 +1,20 @@
+{
+  "sha256_native": "3b988204f9e11a3285fb211c87445b3db8d90f7d76f0b60cd8d67406adbe9285",
+  "sha256_observer": "5eec8cfdfb3855285a2f526bb998ac8f80b3a115d5e24871d09586b751708e47",
+  "sha256_graph": "281c0cbd9e77f0d7894ccb0017bd610b0710caf5a0223fe7ff13a12b2c46ff8f",
+  "sha256_manifold": "02b2354997ab2bbd151a4f0a3ab8dbd55efe63c062fbee9ec0ff1795240f8dbf",
+  "sha256_raw": "c2583c452d6ddbe60eaaa149fbb4fe58cd52b4f9dd7d38a260fc5a0f1a5e6c82",
+  "n_cells": 26,
+  "requested_legs": 78,
+  "unique_jobs": 59,
+  "successful": 59,
+  "calls": 1312,
+  "max_before_map_abs_kcal_mol": 0.00049418290767278,
+  "max_after_map_abs_kcal_mol": 0.0013012114580686074,
+  "full_wall_s": 54.62896052299993,
+  "full_cpu_s": 54.52619412500001,
+  "wall_s": 27.122277908000115,
+  "cpu_s": 27.027618000000043,
+  "observer_wall_s": 24.14600912200126,
+  "observer_cpu_s": 24.063160999999987
+}

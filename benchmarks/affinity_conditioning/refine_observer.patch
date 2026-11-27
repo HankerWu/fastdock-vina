@@ -1,0 +1,13 @@
+--- a/src/lib/quasi_newton.cpp
++++ b/src/lib/quasi_newton.cpp
+@@ -25,0 +26,2 @@
++#include <iomanip>
++#include <iostream>
+@@ -47,0 +50,2 @@
++    fl initial_objective = 0;
++    int actual_calls = 0;
+@@ -50,0 +55 @@
++        if (++actual_calls == 1) initial_objective = energy;
+@@ -63,0 +69,2 @@
++    std::cerr << "REFINE_OBSERVE " << std::setprecision(17) << initial_objective
++              << " " << result.energy << " " << actual_calls << "\n";
