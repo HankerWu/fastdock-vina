@@ -1,0 +1,6 @@
+target,assay,budget,pose_rule,endpoint,ligands,delta_spearman,delta_tau_b,delta_accuracy_all,delta_accuracy_ge3fold,gain_credit_all,lost_credit_all,gain_credit_ge3fold,lost_credit_ge3fold,delta_rho_boot_p025,delta_rho_boot_p975,delta_rho_boot_valid,bootstrap_draws,delta_rho_leave1_min,delta_rho_leave1_max,delta_accuracy_ge3fold_leave1_min,delta_accuracy_ge3fold_leave1_max
+FXa,CHEMBL661804,archived,fixed_native_top1,Ki,28,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,10000,10000,0.0,0.0,0.0,0.0
+Gal3,Sorme_Fig4_FP,archived,fixed_native_top1,Kd,47,0.019662272096726052,0.014849266273972123,0.0074487895716946,0.007444168734491315,36.0,28.0,16.0,13.0,-0.06668923253175818,0.10616066033195115,10000,10000,0.006168460804401588,0.03577817640221126,-0.0026109660574412533,0.018666666666666668
+S6K1,Davis_binding,archived,fixed_native_top1,Kd,14,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,10000,10000,0.0,0.0,0.0,0.0
+ERRg,Thouennon_Table1_ITC,3000,arm_selected_top1,Kd,6,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,9999,10000,0.0,0.0,0.0,0.0
+ERRg,Thouennon_Table1_ITC,12000,arm_selected_top1,Kd,6,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,10000,10000,0.0,0.0,0.0,0.0

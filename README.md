@@ -167,6 +167,10 @@ AD4 仍需对应的原子类型、电势和去溶剂化网格。导入会检查�
 python3 benchmarks/check_local_only.py build/refine-pool/vina /path/to/pre-fix/vina
 ```
 
+### 如何比较算法的预测质量
+
+比较首姿 RMSD 的中位数、均值、尾部和 2 Å 命中，并在同一 assay 内核对预测与实测 Ki/Kd 的排序。可从逐运行或逐配体记录复算各指标。[分布图、排序结果与复现](benchmarks/prediction_metrics/README.md)
+
 ### 固定搜索预算下的核心评分
 
 有独立配体共晶结构时，`--template_stage contact_rank` 按其受体接触模式重排现有候选。亲和力另有两项研究性读数，`--contact_rotor_score` 检验接触约束的扭转代价，`score_physical_pool.py --mmff-affinity` 在冻结姿势上替换配体内能差。五靶点 Ki/Kd 和因子 Xa 外部系列给出了不同的适用范围。[实测对照、新增人源靶点和复算说明](benchmarks/frozen_core/README.md)
