@@ -55,11 +55,11 @@ def ligand_context(mol, platform):
     return polar_endpoint.PolarContext([params], platform, solute_dielectric=1)
 
 
-def free_conformers(ligand, context):
+def free_conformers(ligand, context, seed=physical.GAS_EMBED_SEED):
     mol = Chem.Mol(ligand)
     mol.RemoveAllConformers()
     params = AllChem.ETKDGv3()
-    params.randomSeed = physical.GAS_EMBED_SEED
+    params.randomSeed = seed
     params.numThreads = 1
     ids = AllChem.EmbedMultipleConfs(
         mol, numConfs=physical.GAS_CONFORMERS, params=params
