@@ -894,6 +894,68 @@ static const branch* torsion_branch(const branches& children, sz& index) {
 	return nullptr;
 }
 
+// One leaf-to-root sweep on the actual closure pairs. A descendant rotation
+// leaves all unvisited joint axes fixed. Only the two endpoint coordinates
+// per restraint must be updated between joints.
+void model::project_first_ring_proposal(conf& c) {
+	if (glue_pairs.empty()) return;
+	for (sz i = 0; i < ligands.size(); ++i) {
+		auto& lig = ligands[i];
+		auto& pose = c.ligands[i];
+		szv endpoints;
+		for (const auto& pair : glue_pairs) {
+			if (pair.a >= lig.begin && pair.a < lig.end &&
+			    pair.b >= lig.begin && pair.b < lig.end) {
+				endpoints.push_back(pair.a);
+				endpoints.push_back(pair.b);
+			}
+		}
+		if (endpoints.empty()) continue;
+		lig.set_conf(atoms, coords, pose);
+		vecv xyz;
+		for (sz atom : endpoints) xyz.push_back(coords[atom]);
+		sz next = 0;
+		auto sweep = [&](const auto& self, const branch& b) -> std::vector<bool> {
+			const sz torsion = next++; // forward kinematics consumes preorder
+			const auto& node = b.node;
+			std::vector<bool> moves(endpoints.size());
+			for (sz k = 0; k < endpoints.size(); ++k)
+				moves[k] = endpoints[k] >= node.begin && endpoints[k] < node.end;
+			for (const auto& child : b.children) {
+				const auto child_moves = self(self, child);
+				for (sz k = 0; k < moves.size(); ++k)
+					moves[k] = moves[k] || child_moves[k];
+			}
+			const vec& axis = node.get_axis();
+			const vec& pivot = node.get_origin();
+			fl cosine = 0, sine = 0, scale = 0;
+			for (sz k = 0; k < moves.size(); k += 2) {
+				if (moves[k] == moves[k+1]) continue;
+				const sz mobile = moves[k] ? k : k+1;
+				const sz fixed = moves[k] ? k+1 : k;
+				const vec r = xyz[mobile] - pivot, t = xyz[fixed] - pivot;
+				const vec radial = r - (axis * r) * axis;
+				scale += r.norm() * t.norm();
+				cosine += radial * t;
+				sine += cross_product(axis, radial) * t;
+			}
+			// An endpoint on the rotation axis carries no angular information.
+			if (std::hypot(cosine, sine) <= 32 * std::numeric_limits<fl>::epsilon() * scale)
+				return moves;
+			const fl delta = std::atan2(sine, cosine);
+			const mat rotation = quaternion_to_r3(angle_to_quaternion(axis, delta));
+			pose.torsions[torsion] += delta;
+			normalize_angle(pose.torsions[torsion]);
+			for (sz k = 0; k < moves.size(); ++k)
+				if (moves[k]) xyz[k] = pivot + rotation * (xyz[k] - pivot);
+			return moves;
+		};
+		for (const auto& child : lig.children) sweep(sweep, child);
+		VINA_CHECK(next == pose.torsions.size());
+	}
+	// The caller's first energy/gradient evaluation sets all coordinates.
+}
+
 void model::set_balanced_torsion(ligand_conf& c, sz ligand_number, sz torsion, fl angle) {
 	auto& lig = ligands[ligand_number];
 	// A rejected trial can leave coords at a different minimum than c.
