@@ -1,0 +1,84 @@
+{
+  "jobs_per_batch": 12,
+  "pinned_logical_cpu": 0,
+  "search_binary_sha256": "5a87c310a32f492ca8c4ed550542950305925a217468e78f7575036b75ddf923",
+  "batches": [
+    {
+      "round": 1,
+      "position": 1,
+      "arm": "joint",
+      "wall_s": 5.192693857999984,
+      "cpu_s": 5.1669290000000005,
+      "identical_pools": 12,
+      "identical_winners": 12
+    },
+    {
+      "round": 1,
+      "position": 2,
+      "arm": "native",
+      "wall_s": 4.985534858999017,
+      "cpu_s": 4.944712000000001,
+      "identical_pools": 12,
+      "identical_winners": 12
+    },
+    {
+      "round": 2,
+      "position": 1,
+      "arm": "native",
+      "wall_s": 4.96871805200135,
+      "cpu_s": 4.933503999999999,
+      "identical_pools": 12,
+      "identical_winners": 12
+    },
+    {
+      "round": 2,
+      "position": 2,
+      "arm": "joint",
+      "wall_s": 5.376303765002376,
+      "cpu_s": 5.332086000000002,
+      "identical_pools": 12,
+      "identical_winners": 12
+    }
+  ],
+  "means": {
+    "joint": {
+      "wall_s": 5.28449881150118,
+      "cpu_s": 5.249507500000002
+    },
+    "native": {
+      "wall_s": 4.9771264555001835,
+      "cpu_s": 4.939108
+    }
+  },
+  "wall_ratio_joint_over_native": 1.0617569914586602,
+  "winner_sha256": {
+    "joint": {
+      "5NN5_5NN5_43103": "4de871c47cfafefcf2175b9ad3198ebd28630a834e0b3abfb2466b6255b0f7b4",
+      "5NN5_5NN5_43117": "82b54a2c34255b8f0cf22e8b88271b1b0bad7a4a3fccc7ca88ffecf958c33e52",
+      "5NN5_5NN5_43133": "06b61a0622cc5a42c7540f30974a53a9b96daf4cf6bb3f49f98149d4ba4ae461",
+      "5NN5_5NN6_43103": "c716b79aa138e0b1984beccc1e8a9a0240f07deb4c77706412eba504ad34ac0d",
+      "5NN5_5NN6_43117": "c9221ecacdbfa2376a96c3a82d9339efa7951e2c5477f4ef4973c78b47057111",
+      "5NN5_5NN6_43133": "8affee1832ee878e5f65e6e09b93831ec9537da98a134feee1b398b381a4109a",
+      "5NN6_5NN5_43103": "4d7ab1c4d0c1fa5ec821b4241f7271e8a3ecb105c894d3b234a46bc56005f985",
+      "5NN6_5NN5_43117": "d73697e6960e8aafff55a96c472a6f47e8a57704a01560c07730723f047ba553",
+      "5NN6_5NN5_43133": "25b71b518f70f626f7d9b97ad14d42e89fc7bc31417a9b8ed519012a2dd80fc9",
+      "5NN6_5NN6_43103": "8a765e7d8c63af324718dd91d6326570f4a811d96be3162d6550245ac53e89bd",
+      "5NN6_5NN6_43117": "8e03f28081657d06df881f26f0d5f7e9c0115a1f5bffa5b3f22c72346f3a4e74",
+      "5NN6_5NN6_43133": "b93274400d3e9eb7ad31c2f0e28427417d2e11f9fd1fcd7a139a82312a9a60ff"
+    },
+    "native": {
+      "5NN5_5NN5_43103": "ceba428dcfe6031e9140bd9aa6016b5945d2371166ae13c046d82f9a6fb72e83",
+      "5NN5_5NN5_43117": "3097093e1848ed2a47fdb3dc690d8bcd0268e9ac9e0c06af8d61f6549bcdd589",
+      "5NN5_5NN5_43133": "74ce1ceec346c91c1c998b57f8d72105df7de9129fe4fd17bb76bdb99909109f",
+      "5NN5_5NN6_43103": "ed652f90067b282ed0fbdc3d481020d919b6cfbdf527b91febb4c379e44c3c31",
+      "5NN5_5NN6_43117": "29faf4b5ccccb45f1b5c4e55e97927680d0eb4c3d47cb882db26c622d2e4d31d",
+      "5NN5_5NN6_43133": "3359d83046a237a4c4372846d9033ffc0f1f970f03698fa33cb00134c1231a01",
+      "5NN6_5NN5_43103": "d12068ed81d88fc7368fb7f8d5794e5dca6463a39d8838e96b14747802975ef0",
+      "5NN6_5NN5_43117": "7a5f420f34bf1a9a7adf236cc6686b877e896380cc16102293bed06dfdd397eb",
+      "5NN6_5NN5_43133": "eb37ffd8c43c4a2a2d73685ea456315f91bc9cfa590106768da6b65b6e1cb6b4",
+      "5NN6_5NN6_43103": "2f8ea7f3ec297325a899453e608ebf40531f4e72f992e2d9f95e68a1c6978a53",
+      "5NN6_5NN6_43117": "58989871fd647cef806d7db61dfbd791e6fcd04804b4676e4b3739e5d44ffd63",
+      "5NN6_5NN6_43133": "d628ddbafd2ce7001b710c9a10c68db3e1e39cb51938a95cd3d9be951cc3534e"
+    }
+  }
+}
