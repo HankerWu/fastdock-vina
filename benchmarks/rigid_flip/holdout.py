@@ -3,19 +3,18 @@ import argparse
 import hashlib
 import itertools
 import json
-import os
 from pathlib import Path
 import random
 import re
 import subprocess
 import sys
-import time
 
 BENCH = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(BENCH / "search_backtracking/pose"))
 import backtracking_panel as panel
 
 paired = panel.paired
+paired.RADII["Mg"] = 1.73  # Same validation radius as the existing bond_distance/pose panel.
 CASES = {
     "1T48": ("PTPN1", "BB3", "A"),
     "1T49": ("PTPN1", "892", "A"),
@@ -45,19 +44,13 @@ def run(work, binary, replay, meta, q, r, seed, cap, arm):
     if stats.exists():
         return
     cli = args_for(work, meta, q, r, seed, cap, out)
-    with log.open("wb") as f:
-        t = time.perf_counter()
-        p = subprocess.Popen([str(binary.resolve()), *cli, *([] if arm == "upstream" else ["--search_counters"])],
-                             stdout=f, stderr=subprocess.STDOUT)
-        _, status, usage = os.wait4(p.pid, 0)
-        wall = time.perf_counter() - t
-        p.returncode = os.waitstatus_to_exitcode(status)
-        if p.returncode:
-            raise RuntimeError(log.read_text()[-2000:])
+    cost = prefix.with_suffix(".cost")
+    subprocess.run([sys.executable, "-S", str(Path(__file__).with_name("process_cost.py")), str(log),
+                    str(cost), str(binary.resolve()), *cli, *([] if arm == "upstream" else ["--search_counters"])],
+                   check=True)
     observed = log.read_text()
     row = dict(key=prefix.name, target=CASES[q][0], query=q, receiver=r, seed=seed, cap=cap, arm=arm,
-               kind="cognate" if q == r else "cross", wall_s=wall, cpu_s=usage.ru_utime+usage.ru_stime,
-               peak_rss_KiB=usage.ru_maxrss, sha256=hashlib.sha256(out.read_bytes()).hexdigest(),
+               kind="cognate" if q == r else "cross", **json.loads(cost.read_text()), sha256=hashlib.sha256(out.read_bytes()).hexdigest(),
                upstream_counter_parity="")
     if arm == "upstream":
         check = prefix.with_suffix(".replay")
@@ -84,6 +77,7 @@ def main():
     p.add_argument("--ids", nargs="+", choices=CASES)
     for name in (*ARMS, "counts"):
         p.add_argument("--" + name, type=Path)
+    p.add_argument("--study", choices=("primary", "reduced", "newseeds"), default="primary")
     a = p.parse_args()
     work = a.work.resolve()
     if a.action == "prepare":
@@ -93,6 +87,8 @@ def main():
         return
     meta = {s: json.loads((work / s / "preparation.json").read_text()) for s in CASES}
     ready = {s for s in CASES if meta[s]["receptor_status"] == "ready"}
+    seeds = (91373, 91411) if a.study == "newseeds" else SEEDS
+    caps = {"primary": CAPS, "reduced": (2550, 10200), "newseeds": (12000,)}[a.study]
     cells = []
     excluded = []
     for q, r in itertools.product(sorted(CASES), sorted(ready)):
@@ -103,7 +99,7 @@ def main():
         except ValueError as err:
             excluded.append(dict(q=q, r=r, reason=str(err)))
             continue
-        cells.extend((q, r, s, c) for s, c in itertools.product(SEEDS, CAPS))
+        cells.extend((q, r, s, c) for s, c in itertools.product(seeds, caps))
     (work / "alignment_exclusions.json").write_text(json.dumps(excluded, indent=2) + "\n")
     (work / "runs").mkdir(exist_ok=True)
     if a.action == "dock":
