@@ -178,17 +178,7 @@ fl ad4cache::eval_deriv(model& m, fl v) const { // sets m.minus_forces
 }
 
 bool ad4cache::is_in_grid(const model& m, fl margin) const {
-	VINA_FOR(i, m.num_movable_atoms()) {
-		if(m.atoms[i].is_hydrogen()) continue;
-
-		const vec& a_coords = m.coords[i];
-		VINA_FOR_IN(j, m_gd) {
-			if(m_gd[j].n_voxels > 0)
-				if(a_coords[j] < m_gd[j].begin - margin || a_coords[j] > m_gd[j].end + margin) 
-					return false;
-		}
-	}
-	return true;
+	return m.within_grid(m_gd, margin);
 }
 
 bool ad4cache::are_atom_types_grid_initialized(szv atom_types) const {

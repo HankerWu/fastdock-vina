@@ -132,21 +132,7 @@ fl cache::eval_intra(model& m, fl v) const { return eval_atoms<false>(m, v, null
 fl cache::eval_deriv(model& m, fl v) const { return eval_atoms<false>(m, v, &m.minus_forces, false); }
 
 bool cache::is_in_grid(const model& m, fl margin) const {
-	VINA_FOR(i, m.num_movable_atoms()) {
-		if (m.atoms[i].is_hydrogen()) continue;
-
-		const vec& a_coords = m.coords[i];
-
-		VINA_FOR_IN(j, m_gd) {
-			if (m_gd[j].n_voxels > 0) {
-				if (a_coords[j] < m_gd[j].begin - margin || a_coords[j] > m_gd[j].end + margin) {
-					return false;
-				}
-			}
-		}
-	}
-
-	return true;
+	return m.within_grid(m_gd, margin);
 }
 
 bool cache::are_atom_types_grid_initialized(const szv& atom_types) const {

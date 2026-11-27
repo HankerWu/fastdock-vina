@@ -653,6 +653,32 @@ std::vector<double> model::get_ligand_coords() {
 	return tmp;
 }
 
+// A closure marker measures an internal restraint. It has no receptor map or
+// box force. Keep mapped pseudoatoms such as hydrated-docking W in the domain.
+static bool grid_bounded_atom(const atom_base& atom) {
+	return !atom.is_hydrogen() && !ad_is_closure_dummy(atom.ad);
+}
+
+bool model::within_grid(const grid_dims& gd, fl margin) const {
+	VINA_FOR(i, num_movable_atoms()) {
+		if (!grid_bounded_atom(atoms[i])) continue;
+		VINA_FOR_IN(d, gd) {
+			if (gd[d].enabled() && (coords[i][d] < gd[d].begin - margin ||
+			                        coords[i][d] > gd[d].end + margin))
+				return false;
+		}
+	}
+	return true;
+}
+
+vecv model::get_grid_atom_movable_coords() const {
+	vecv bounded;
+	VINA_FOR(i, num_movable_atoms())
+		if (grid_bounded_atom(atoms[i]))
+			bounded.push_back(coords[i]);
+	return bounded;
+}
+
 static bool chemical_heavy_atom(const atom_base& atom) {
 	return atom.el != EL_TYPE_H && atom.el != EL_TYPE_Dummy;
 }
