@@ -1,0 +1,47 @@
+{
+  "systems": {
+    "1RBP": {
+      "target": "RBP4",
+      "component": "RTL",
+      "chain": "A",
+      "status": "ready",
+      "wall_s": 10.229659112999798,
+      "pdb": "https://files.rcsb.org/download/1RBP.pdb",
+      "pdb_sha256": "fc583fc8197d5ee1e1fec12d6c8f3244de94e95214bbe743de487bfa75ce36d3",
+      "ccd": "https://files.rcsb.org/ligands/download/RTL.cif",
+      "ccd_sha256": "16a259d19a1136ea7abf8a821dff8570c3ef241712f1e4a57a13aaa2d4e7f369"
+    },
+    "3FMZ": {
+      "target": "RBP4",
+      "component": "2T1",
+      "chain": "A",
+      "status": "ready",
+      "wall_s": 9.185308930002066,
+      "pdb": "https://files.rcsb.org/download/3FMZ.pdb",
+      "pdb_sha256": "dda83322e33aaa19747808aa594fe807fc816e4c1ea9486e212b7c16ed37ea7d",
+      "ccd": "https://files.rcsb.org/ligands/download/2T1.cif",
+      "ccd_sha256": "7391d9ac6928abd432ce94c80df300dfeac2a2bc1c8efd31f7cce64a0a11981b"
+    },
+    "1D2S": {
+      "target": "SHBG",
+      "component": "DHT",
+      "chain": "A",
+      "status": "omitted nonwater atom within 8 A",
+      "wall_s": 6.851044404000277,
+      "pdb": "https://files.rcsb.org/download/1D2S.pdb",
+      "pdb_sha256": "b93af0185446a9685219bd13b8a855174c7fb9b2676bd5989454eaa611b8cfe8",
+      "ccd": "https://files.rcsb.org/ligands/download/DHT.cif",
+      "ccd_sha256": "d840a6799b40acb5b4dbf1c49c3b093ddfbff71832510ccd441c1f21fb2ab172"
+    }
+  },
+  "python": "3.12.14",
+  "versions": {
+    "rdkit": "2025.9.3",
+    "meeko": "0.7.1",
+    "pdbfixer": "1.12.0",
+    "OpenMM": "8.6.1",
+    "gemmi": "0.7.4",
+    "numpy": "2.3.5",
+    "scipy": "1.17.0"
+  }
+}

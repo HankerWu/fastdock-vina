@@ -1,0 +1,23 @@
+{
+  "max_grid_gradient_error": 2.7185897977233253e-10,
+  "geometries": {
+    "point": {
+      "rank": 3,
+      "tangent_rms": 0.7500000000000001,
+      "slope_error": 3.439704077123906e-11,
+      "kernel_step_error": 4.996003610813204e-16
+    },
+    "line": {
+      "rank": 5,
+      "tangent_rms": 0.7500000000000001,
+      "slope_error": 1.5524981300529817e-10,
+      "kernel_step_error": 9.159339953157541e-16
+    },
+    "nonlinear": {
+      "rank": 6,
+      "tangent_rms": 0.75,
+      "slope_error": 5.880629316834529e-11,
+      "kernel_step_error": 1.0547118733938987e-15
+    }
+  }
+}

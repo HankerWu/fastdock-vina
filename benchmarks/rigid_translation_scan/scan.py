@@ -69,13 +69,12 @@ def write_start(path, text, rows, coords):
     path.write_text("\n".join(out) + "\n")
 
 
-def translate_search(fields, origin, spacing, center, ligand, seed, arm, observe=None):
-    _, _, base, heavy, types = ligand
+def pose_batches(center, ligand, seed, arm):
+    """Yield shared orientations and parent translations in deterministic order."""
+    _, _, base, heavy, _ = ligand
     phase = Rotation.random(random_state=seed)
     rotations = (Rotation.create_group("O") * phase).as_matrix()
     rng = np.random.default_rng(seed)
-    proposals = []
-    probes = 0
     for index, r in enumerate(rotations):
         rotated = base @ r.T
         offsets = rotated[heavy]
@@ -97,6 +96,29 @@ def translate_search(fields, origin, spacing, center, ligand, seed, arm, observe
             positions = rng.uniform(low, high, (count, 3))
         else:
             raise ValueError(arm)
+        yield index, rotated, positions
+
+
+def select_starts(proposals, heavy):
+    selected = []
+    for candidate in sorted(proposals, key=lambda x: (x[0], x[1])):
+        if all(
+            np.square(candidate[2][heavy] - old[2][heavy]).sum(axis=1).mean() >= 1
+            for old in selected
+        ):
+            selected.append(candidate)
+        if len(selected) == 9:
+            break
+    return selected
+
+
+def translate_search(fields, origin, spacing, center, ligand, seed, arm, observe=None):
+    _, _, _, heavy, types = ligand
+    proposals = []
+    probes = 0
+    for index, rotated, positions in pose_batches(center, ligand, seed, arm):
+        offsets = rotated[heavy]
+        count = len(positions)
         energy = np.zeros(count)
         for off, typ in zip(offsets, types):
             indices = ((positions + off - origin) / spacing).T
@@ -113,13 +135,4 @@ def translate_search(fields, origin, spacing, center, ligand, seed, arm, observe
         j = int(np.argmin(energy))
         probes += count
         proposals.append((float(energy[j]), index, rotated + positions[j]))
-    selected = []
-    for candidate in sorted(proposals, key=lambda x: (x[0], x[1])):
-        if all(
-            np.square(candidate[2][heavy] - old[2][heavy]).sum(axis=1).mean() >= 1
-            for old in selected
-        ):
-            selected.append(candidate)
-        if len(selected) == 9:
-            break
-    return proposals, selected, probes
+    return proposals, select_starts(proposals, heavy), probes

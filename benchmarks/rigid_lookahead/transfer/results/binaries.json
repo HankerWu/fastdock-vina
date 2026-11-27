@@ -1,0 +1,18 @@
+{
+  "upstream": {
+    "sha256": "3b6492ecf51789c71195438b3bda5784455b5e7ab2bceb7a59a25c5c8d182ae8",
+    "version": "AutoDock Vina v1.2.7-27-g3c65c0b"
+  },
+  "counter": {
+    "sha256": "62875fa8d1abc9e1af09f848f6d9cf052828359dd5246a6ef00d0300ca4672b2",
+    "version": "AutoDock Vina v1.2.7-27-g3c65c0b"
+  },
+  "pro": {
+    "sha256": "488f766c683a05418695e066bfb34d9a93cbfe7aade41204cfce518ed24f739b",
+    "version": "AutoDock Vina v1.2.7-27-g3c65c0b"
+  },
+  "probe": {
+    "sha256": "a081a139894a516c8cdff481116d013ea486ff41e846442f79816ed530428b69",
+    "base_revision": "2e610c46dd1933645c2e91d84f320b24c23a40fb"
+  }
+}

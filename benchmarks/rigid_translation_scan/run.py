@@ -58,41 +58,16 @@ def cpu():
     return time.process_time() + ch.ru_utime + ch.ru_stime
 
 
-def main():
-    p = argparse.ArgumentParser()
-    for name in ("dev", "hold", "work", "probe", "vina"):
-        p.add_argument("--" + name, required=True, type=Path)
-    p.add_argument("--seed", type=int, nargs="+", default=[43103, 43117])
-    p.add_argument("--receivers", nargs="+", default=list(CASES))
-    p.add_argument(
-        "--arms",
-        nargs="+",
-        choices=["lattice", "random"],
-        default=["lattice", "random"],
-    )
-    a = p.parse_args()
-    a.work.mkdir(parents=True, exist_ok=True)
-    devmeta = json.loads((a.dev / "metadata.json").read_text())
-    poses = []
-    costs = []
-    all_ranks = []
-    cells = []
-    for rec in a.receivers:
-        dev = rec in ("5C7N", "4OD0")
-        base = a.dev if dev else a.hold
-        meta = (
-            devmeta
-            if dev
-            else {
-                entry: json.loads((base / entry / "preparation.json").read_text())
-                for entry in CASES[rec] + [rec]
-            }
-        )
+def evaluate_receivers(receivers, seeds, arms, work, probe, vina, search, field_passes):
+    """Score, refine and evaluate all data with one protocol and a supplied start generator."""
+    work.mkdir(parents=True, exist_ok=True)
+    poses, costs, all_ranks, cells = [], [], [], []
+    for rec, queries, base, meta, stage in receivers:
         center = np.array(meta[rec]["center"])
         start = time.perf_counter()
         c = cpu()
         fields, origin, spacing = receptor_maps(
-            a.vina, base / rec / "receptor.pdbqt", center, a.work / "maps" / rec
+            vina, base / rec / "receptor.pdbqt", center, work / "maps" / rec
         )
         costs.append(
             {
@@ -108,11 +83,11 @@ def main():
                 "cpu_s": cpu() - c,
             }
         )
-        for query in CASES[rec]:
+        for query in queries:
             start = time.perf_counter()
             c = cpu()
             ligand_path = base / query / "ligand.pdbqt"
-            ligand = read_ligand(a.probe, ligand_path)
+            ligand = read_ligand(probe, ligand_path)
             costs.append(
                 {
                     "receiver": rec,
@@ -127,12 +102,12 @@ def main():
                     "cpu_s": cpu() - c,
                 }
             )
-            for seed, arm in itertools.product(a.seed, a.arms):
+            for seed, arm in itertools.product(seeds, arms):
                 start = time.perf_counter()
                 c = cpu()
-                dest = a.work / "runs" / f"{rec}_{query}_{seed}_{arm}"
+                dest = work / "runs" / f"{rec}_{query}_{seed}_{arm}"
                 dest.mkdir(parents=True, exist_ok=True)
-                proposals, starts, probes = translate_search(
+                proposals, starts, probes = search(
                     fields, origin, spacing, center, ligand, seed, arm
                 )
                 paths = []
@@ -141,7 +116,7 @@ def main():
                     write_start(path, *ligand[:2], coords)
                     paths.append(path)
                 command = [
-                    str(a.probe),
+                    str(probe),
                     "refine",
                     str(base / rec / "receptor.pdbqt"),
                     str(ligand_path),
@@ -171,7 +146,7 @@ def main():
                         "seed": seed,
                         "arm": arm,
                         "probes": probes,
-                        "lookups": probes * len(ligand[3]),
+                        "lookups": probes * len(ligand[3]) * field_passes(arm),
                         "refines": len(paths),
                         "gradients": sum(counts),
                         "wall_s": time.perf_counter() - start,
@@ -220,7 +195,7 @@ def main():
                     {
                         "receiver": rec,
                         "query": query,
-                        "stage": "development" if dev else "transfer",
+                        "stage": stage,
                         "seed": seed,
                         "arm": arm,
                         "reported": len(kept),
@@ -236,8 +211,39 @@ def main():
                 ("cost", costs),
                 ("cells", cells),
             ]:
-                save(a.work / (name + ".csv"), rows)
+                save(work / (name + ".csv"), rows)
             print(rec, query, flush=True)
+
+
+def main():
+    p = argparse.ArgumentParser()
+    for name in ("dev", "hold", "work", "probe", "vina"):
+        p.add_argument("--" + name, required=True, type=Path)
+    p.add_argument("--seed", type=int, nargs="+", default=[43103, 43117])
+    p.add_argument("--receivers", nargs="+", default=list(CASES))
+    p.add_argument(
+        "--arms",
+        nargs="+",
+        choices=["lattice", "random"],
+        default=["lattice", "random"],
+    )
+    a = p.parse_args()
+    a.work.mkdir(parents=True, exist_ok=True)
+    devmeta = json.loads((a.dev / "metadata.json").read_text())
+    receivers = []
+    for rec in a.receivers:
+        dev = rec in ("5C7N", "4OD0")
+        base = a.dev if dev else a.hold
+        meta = (
+            devmeta
+            if dev
+            else {
+                entry: json.loads((base / entry / "preparation.json").read_text())
+                for entry in CASES[rec] + [rec]
+            }
+        )
+        receivers.append((rec, CASES[rec], base, meta, "development" if dev else "transfer"))
+    evaluate_receivers(receivers, a.seed, a.arms, a.work, a.probe, a.vina, translate_search, lambda _: 1)
 
 
 if __name__ == "__main__":

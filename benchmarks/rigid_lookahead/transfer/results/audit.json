@@ -1,0 +1,27 @@
+{
+  "rigid_cells": 24,
+  "rigid_starts": 216,
+  "ranked_poses": 216,
+  "baseline_outputs": 32,
+  "baseline_poses": 285,
+  "rmsds_verified": 717,
+  "maximum_rmsd_discrepancy_A": 7.105427357601002e-15,
+  "single_start_rigid_fit_lower_bound_A": {
+    "1RBP": 1.653663647938013,
+    "3FMZ": 2.2253821832338483
+  },
+  "cross_backbone_alignment": [
+    {
+      "receiver": "1RBP",
+      "query": "3FMZ",
+      "CA_RMSD_A": 1.190897736984464,
+      "shared_ca": 61
+    },
+    {
+      "receiver": "3FMZ",
+      "query": "1RBP",
+      "CA_RMSD_A": 1.1908977369844391,
+      "shared_ca": 61
+    }
+  ]
+}
