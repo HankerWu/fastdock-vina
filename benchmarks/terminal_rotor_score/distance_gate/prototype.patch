@@ -2,13 +2,9 @@ diff --git a/src/lib/conf_independent.cpp b/src/lib/conf_independent.cpp
 index 4380e2a..0d00261 100644
 --- a/src/lib/conf_independent.cpp
 +++ b/src/lib/conf_independent.cpp
-@@ -52,6 +52,9 @@ unsigned conf_independent_inputs::num_bonded_heavy_atoms(const model& m, const a
- 
- // FIXME? - could be static, but I don't feel like declaring function friends
+@@ -54,2 +54,5 @@
  unsigned conf_independent_inputs::atom_rotors(const model& m, const atom_index& i) const { // the number of rotatable bonds to heavy ligand atoms
 +    // A terminal axis only turns hydrogens in the united-atom model.
 +    // Check both ends so the two directed visits count one rotor or zero.
 +    if (num_bonded_heavy_atoms(m, i) <= 1) return 0;
      unsigned acc = 0;
-     const std::vector<bond>& bonds = m.get_atom(i).bonds;
- 
