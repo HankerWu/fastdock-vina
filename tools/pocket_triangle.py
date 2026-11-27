@@ -79,18 +79,9 @@ class Pocket:
             violation * violation
         ).sum(axis=(1, 2))
 
-    def place(self, xyz, seed, timings=None, arms=("matched", "sham")):
-        """Return all blind candidates. Apply each matrix to a centered column vector."""
-        start = perf_counter(), process_time()
-        x = np.asarray(xyz, dtype=float)
-        atoms = _ligand_triangle(x)
-        src = x[atoms]
-        residual = ((self.edges - distance.pdist(src)) ** 2).sum(axis=1)
-        priority = np.argsort(np.round(residual, 10), kind="stable")[:1024]
-        triples = self.triangles[priority]
+    def fit_triangles(self, x, src, triples):
+        """Proper rigid transforms for ordered site triples; centers refer to the full ligand."""
         dest = self.sites[triples]
-        if len(dest) < 2:
-            raise ValueError("cannot form a permutation sham with fewer than two candidates")
         dest_center = dest.mean(axis=1)
         src_center = src.mean(axis=0)
         cov = (src - src_center).T @ (dest - dest_center[:, None, :])
@@ -98,7 +89,21 @@ class Pocket:
         u[:, :, -1] *= np.linalg.det(u @ vt)[:, None]
         matched = (u @ vt).transpose(0, 2, 1)
         centers = (matched @ (x.mean(axis=0) - src_center)) + dest_center
-        shift = int(np.random.default_rng(seed).integers(1, len(dest)))
+        return centers, matched
+
+    def place(self, xyz, seed, timings=None, arms=("matched", "sham"), *, ligand_triangle=None):
+        """Return all blind candidates. Apply each matrix to a centered column vector."""
+        start = perf_counter(), process_time()
+        x = np.asarray(xyz, dtype=float)
+        atoms = _ligand_triangle(x) if ligand_triangle is None else np.asarray(ligand_triangle, dtype=int)
+        src = x[atoms]
+        residual = ((self.edges - distance.pdist(src)) ** 2).sum(axis=1)
+        priority = np.argsort(np.round(residual, 10), kind="stable")[:1024]
+        triples = self.triangles[priority]
+        if len(triples) < 2:
+            raise ValueError("cannot form a permutation sham with fewer than two candidates")
+        centers, matched = self.fit_triangles(x, src, triples)
+        shift = int(np.random.default_rng(seed).integers(1, len(triples)))
         sham = np.roll(matched, shift, axis=0)
         centered = x - x.mean(axis=0)
         out = dict(

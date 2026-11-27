@@ -1,0 +1,48 @@
+{
+  "source_vina_cpp_sha256": "9e756ed35d8de2d61be685d5740e561fcf09778a3bc0ba82916ace640336f238",
+  "retained_source_vina_object_sha256": "4a63fa95eb03001ea79537c00eafbd36538ab867a63902f3e198526fe87348dc",
+  "final_source_vina_object_sha256": "d1959c5689d25ba0c2d2c5d3cf0373a4d3874d1408b92debf87d14b918847d3c",
+  "original_benchmark_executable": "e0bf6f27445fed3fb087ba83744f6e7dbe9133b7a41df7e5341fb2e68cd5ce82",
+  "all_final_source_executable": "8a5027c41db259b7dd6c4dbbcab26a35c5570fa3e13b489be8f885c7d11c1768",
+  "fresh_final_translation_unit_and_link": {
+    "wall_s": 17.473330326996802,
+    "cpu_s": 17.396053,
+    "peak_kib": 670704
+  },
+  "compiler_memory_flags": [
+    "--param",
+    "ggc-min-expand=10",
+    "--param",
+    "ggc-min-heapsize=2048"
+  ],
+  "fresh_output": [
+    {
+      "action": "input_archive_to_prepared",
+      "files": "0",
+      "wall_s": "0.8074926879999111",
+      "cpu_s": "0.8037359999999999",
+      "pool_sha256": ""
+    },
+    {
+      "action": "whole",
+      "files": "9",
+      "wall_s": "2.7545303759980015",
+      "cpu_s": "2.7352350000000003",
+      "pool_sha256": "9aaf1c6e3d69368e1e89de34961a1d0d70244f34cfc9dff4a151f66cdb0830e4"
+    },
+    {
+      "action": "fragment",
+      "files": "9",
+      "wall_s": "2.793007651998778",
+      "cpu_s": "2.769093",
+      "pool_sha256": "1434da0afe0d44dbab73f92bef577223a0a36c036d4b41729948aa9a08619400"
+    },
+    {
+      "action": "sham",
+      "files": "9",
+      "wall_s": "2.481990906999272",
+      "cpu_s": "2.4661150000000003",
+      "pool_sha256": "1311c20504109341b532d59547d81ebd399eacb49c5fd325190d4e8f1c9f4a87"
+    }
+  ]
+}

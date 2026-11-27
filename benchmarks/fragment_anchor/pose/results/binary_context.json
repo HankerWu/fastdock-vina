@@ -1,0 +1,29 @@
+{
+  "binaries": {
+    "observer": "8ffe5fbcc37384c48f6d397adbc50db87558305c6dd00a488b5ef6587f48dfb9",
+    "production": "1807da648da1f441d344c0a0a03004d7559b03adb185e00485ec10f0623b5339",
+    "pro_field_counter": "d5f5623bfe2af88eb1e19f9a7e96bec7976bb53e832bae1b558efc2a3bf1af6a",
+    "official": "f31f774f723bba7bbe6e9d1c47577020eea9a8da16424284c043d22593570644",
+    "official_counter": "6187e26bcd87a16b3dd1bd8becaa33500a1bf0e7065703117113eb4438eacd06",
+    "official_probe": "2a5a4f0802629917fb8f34b717960b3c95b9f9c57d0ef43e81a1afee133cda03",
+    "pro_probe": "b600e6b19d67227f3c8e78b8b857c2271a386fcddd3a3991ae396baf8dd9e7e4"
+  },
+  "production_src_tree": "6c6f65b0b7445cb364415f2079906e0d67e015bb",
+  "official_release_tag": "v1.2.7",
+  "release_commit": "8eb40404f4f45608acb3b01427587ac049f27c1f",
+  "counter_commit": "3c65c0b3e6c2c1d183f6a175ecb65e3c5ba91645",
+  "cpu_affinity": {
+    "controls": 6,
+    "capture": 7,
+    "paired_timing": 6
+  },
+  "environment": {
+    "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+    "numpy": "2.3.5",
+    "scipy": "1.17.0",
+    "gemmi": "0.7.5",
+    "rdkit": "2026.09.2",
+    "blas_threads": 1,
+    "omp_threads": 1
+  }
+}

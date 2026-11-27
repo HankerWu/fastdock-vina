@@ -1,0 +1,37 @@
+--- a/src/lib/inject.h
++++ b/src/lib/inject.h
+@@ -27,6 +27,11 @@
+     bool apply(unsigned tr, unsigned n, conf& c) {
+         if (tr != trajectory || n != step) return false;
+         VINA_CHECK(c.ligands.size() == 1 && c.flex.empty());
++        // Source snapshot has closed both files before apply() enters the FIFO.
++        if (const char* fifo = std::getenv("FD_FRAGMENT_TRANSFORM")) {
++            std::ifstream pipe(fifo);
++            for (fl& v : value) VINA_CHECK(bool(pipe >> v) && std::isfinite(v));
++        }
+         auto& ligand = c.ligands.front();
+         auto& rigid = ligand.rigid;
+         log << "source";
+--- a/src/lib/parallel_mc.cpp
++++ b/src/lib/parallel_mc.cpp
+@@ -29,6 +29,7 @@
+ #include "coords.h"
+ #include "parallel_progress.h"
+ #include "trajectory_archive.h"
++#include "inject.h"
+ 
+ void parallel_mc::operator()(const model& m, output_container& out, const precalculate_byatom& p, const igrid& ig,
+                              const vec& corner1, const vec& corner2, rng& generator, std::function<void(double)>* progress_callback,
+@@ -123,4 +124,12 @@
+ 		VINA_FOR_IN(i, trajectory)
+ 			add_to_output_container(out, trajectory[i], merge_rmsd, mc.num_saved_mins);
+ 	out.sort();
++    if (std::getenv("FD_FRAGMENT_TRANSFORM") && std::getenv("FD_RIGID_COORDS")) {
++        model copy(m);
++        unsigned rank = 0;
++        for (const auto& pose : out) {
++            copy.set(pose.c);
++            rigid_stage_xyz("merged_ad4", 0, ++rank, copy);
++        }
++    }
+ }

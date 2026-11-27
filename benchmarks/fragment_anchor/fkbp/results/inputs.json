@@ -1,0 +1,44 @@
+{
+  "archives": {
+    "benchmarks/cubic_grid/human_panel/affinity-pools.tar.xz": "b5c855bc4113307df131fe067ecb8b572b251a05cb33a2d4a8b8414c1c55b14d",
+    "benchmarks/cubic_grid/fkbp_ad4/maps-1FKG.tar.xz": "9c9bd5af0273f5a4929b2cb723d5fe3e3642be0f8a2b73c0d3635168b4c33f0c",
+    "benchmarks/cubic_grid/fkbp_ad4/maps-1FKH.tar.xz": "c03dae000e6dcd32a4d5f706207ca14278ac93bf0040b7e8c402e40c4d975060",
+    "benchmarks/cubic_grid/human_panel/prepared.tar.xz": "64279b6b69390635a72ed213413587e571630dbf279c7c19d49b7ff3d20fcf67"
+  },
+  "files": {
+    "1FKG/receptor.pdbqt": "ef0541c08f637fbc0d50337057e7e75978e4cd5ed302a8f038bda11e94da70bc",
+    "1FKH/receptor.pdbqt": "35dc3af79db72c297eaf408327761ca0e226f4364e6a9fb634033a7999584e08",
+    "affinity/10.bonds": "adf1a5fa34613d844c235834fe90a8a30cb6fdd92cb4e5905f848f362fa75854",
+    "affinity/10.pdbqt": "8f782dcef6bb2c6d7ccbd4716105d54691052ce5d4bf974730c620d3a1dd8b77",
+    "affinity/11.bonds": "adf1a5fa34613d844c235834fe90a8a30cb6fdd92cb4e5905f848f362fa75854",
+    "affinity/11.pdbqt": "b5d69cbb235f9d851c2626c8b401d6be380cf4ab29d4fb34df9989cbe74335a1",
+    "affinity/4.bonds": "1a69f7b5bd76fab98134ab8115688a359cfbb2ea01475f2d90286424cfdc7b5c",
+    "affinity/4.pdbqt": "dd7abb056c793b4a0b7913205971f8169a8aa399bb779d245d0591dedafb50f7",
+    "affinity/5.bonds": "1a69f7b5bd76fab98134ab8115688a359cfbb2ea01475f2d90286424cfdc7b5c",
+    "affinity/5.pdbqt": "20d29e3d7a7320d3d6d6b4b7a27055a82d9dabf0e98f19e2add357c38405d2e5",
+    "affinity/6.bonds": "cb7c8f4c05c0bd2db6373f977015a74e812ec3d0fb4ca1d0d942714391170001",
+    "affinity/6.pdbqt": "f020231d603d53b2c4206868da276c2405cf471a48016bc561306bdbf13e19ff",
+    "affinity/7.bonds": "91d44c86090814eba0df16b837fd83f98b07309ee89fb3678824160d7f7249cd",
+    "affinity/7.pdbqt": "1683e5955ef654afc9fdb57ce80d7368b6ae56782d8b4a930d74a33d1e503358",
+    "affinity/8.bonds": "adf1a5fa34613d844c235834fe90a8a30cb6fdd92cb4e5905f848f362fa75854",
+    "affinity/8.pdbqt": "246340fcb4c787a0833e9a051c11486b65d6304246745073f1de5b442cdcc668",
+    "affinity/9.bonds": "adf1a5fa34613d844c235834fe90a8a30cb6fdd92cb4e5905f848f362fa75854",
+    "affinity/9.pdbqt": "be09564e6bebc00138de0e3ebd8ae9487d51f8eb631363962d94649fd9c642a6",
+    "maps/1FKG/receptor.A.map": "e6ae90eab7ceae158574e85d67c6164a53c0bad469df14a851578cc046977cec",
+    "maps/1FKG/receptor.C.map": "12384239b0996681269899e38a0bf438761ea7282810fc26f0ea6444a9dfe283",
+    "maps/1FKG/receptor.N.map": "b2be1d726943986e1f430928a26f43e33fc7f8b14b61d660280a0632d459b662",
+    "maps/1FKG/receptor.OA.map": "ccee76d0761b1d3416a959204f3b0a50169514edd5e2249b7f9d3962776d5fd4",
+    "maps/1FKG/receptor.d.map": "d734dbec5dd7efaaf67d652e2d8c7d8c6eedcc7ca1437dd73a0eb13316e90446",
+    "maps/1FKG/receptor.e.map": "156d7c5962a8cc414c09f825c4a961de18e34bebb87829425beb2cce37d923a0",
+    "maps/1FKH/receptor.A.map": "118480040417e63c32cac17cc01305601c21c5db1461745f87fbbbfcdf2225ae",
+    "maps/1FKH/receptor.C.map": "d73ecc0edfe13bc91209f152fcce36848a8e969d9625dca846fecd5f67787664",
+    "maps/1FKH/receptor.N.map": "3779d9bfdb81d27279bf91fd68fd6fa7f02a6c36538fc5dcf5ffd95fd09bf45c",
+    "maps/1FKH/receptor.OA.map": "f5363829f82c698a5d8fb8825e8f93328bae49cd418db97d512d2459de505db6",
+    "maps/1FKH/receptor.d.map": "174116b8d2a3989e9f28ef4b0c8398e972473283e535e646843cd49c147bb3bf",
+    "maps/1FKH/receptor.e.map": "e996ee23aec962854e92d497ba80d18f0e98c4f5543669fb25e0773c1be73161"
+  },
+  "evaluation": {
+    "benchmarks/cubic_grid/human_panel/depositions.tar.xz": "6c2a690d7f7594fa895d1c8e871fc1fbc86d7ed2d9abcc06df136dde6fe728c4",
+    "benchmarks/cubic_grid/human_panel/affinity/ligands.csv": "62cc38720a79cd3238d80281594f128aedc5f4e1bc8b53542582184f4f645d89"
+  }
+}

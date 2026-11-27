@@ -1,0 +1,9 @@
+{
+  "pools": 112,
+  "nominal_pairs": 28,
+  "threefold_pairs": 15,
+  "point_values": 7,
+  "summaries": 21,
+  "wall_s": 0.027958911996393,
+  "cpu_s": 0.02765519900000002
+}

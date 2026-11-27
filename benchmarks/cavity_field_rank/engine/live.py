@@ -26,10 +26,11 @@ def open_bank(stream, child):
     raise RuntimeError(f"engine exited before the requested rank event: {child.returncode}")
 
 
-def main():
+def main(generator=None, arms=("true", "perm")):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--engine", required=True)
-    parser.add_argument("--arm", required=True, choices=["true","perm"])
+    parser.add_argument("--arm", required=True, choices=arms)
+    parser.add_argument("--dump", type=Path, help="persist source, bank and native trace files")
     parser.add_argument("--trajectory", type=int, default=1)
     parser.add_argument("--step", type=int, default=1)
     parser.add_argument("native", nargs=argparse.REMAINDER)
@@ -39,6 +40,8 @@ def main():
     native = args.native[1:] if args.native[:1] == ["--"] else args.native
     options = argparse.ArgumentParser(add_help=False, allow_abbrev=False)
     options.add_argument("--receptor", required=True, type=Path)
+    options.add_argument("--ligand", type=Path, required=generator is not None)
+    options.add_argument("--ligand_bonds", type=Path, required=generator is not None)
     options.add_argument("--seed", required=True, type=int)
     options.add_argument("--cpu", required=True, choices=[1], type=int)
     options.add_argument("--out", required=True, type=Path)
@@ -50,12 +53,19 @@ def main():
         work = Path(tmp).resolve()
         pipe, log, spec = work/"bank.fifo", work/"selection.log", work/"event"
         q, xyz, pool = work/"start.q", work/"start.xyz", work/"pool.pdbqt"
+        if args.dump:
+            dump = args.dump.resolve()
+            dump.mkdir(parents=True, exist_ok=False)
+            q, xyz, log = dump/"source.q", dump/"source.xyz", dump/"inject.log"
         spec.write_text(f"{args.trajectory} {args.step} 0 0 0 1 0 0 0\n")
         os.mkfifo(pipe, mode=0o600)
         env = {k:v for k,v in os.environ.items() if not k.startswith("FD_")}
-        env.update(FD_FIELD_BANK=str(pipe), FD_FIELD_ARM=args.arm, FD_RIGID_LOG=str(log),
+        env.update(FD_FIELD_BANK=str(pipe), FD_FIELD_ARM=args.arm if generator is None else "true", FD_RIGID_LOG=str(log),
                    FD_RIGID_INTERVENTION=str(spec), FD_SOURCE_Q=str(q), FD_SOURCE_XYZ=str(xyz),
                    FD_SOURCE_STEP=str(args.step), FD_SOURCE_TRAJECTORY=str(args.trajectory))
+        if args.dump:
+            env.update(FD_FIELD_TRACE=str(dump/"scores.csv"), FD_RIGID_COORDS=str(dump/"stages.xyz"),
+                       FD_RIGID_HISTORY=str(dump/"history"))
         forwarded = []
         skip = False
         for word in native:
@@ -81,7 +91,14 @@ def main():
                 center = [getattr(cfg,"center_"+a) for a in "xyz"]
                 size = [getattr(cfg,"size_"+a) for a in "xyz"]
                 pocket = Pocket.from_pdbqt(cfg.receptor, center, size)
-                bank = pocket.place(x,cfg.seed,arms=("matched",))
+                if generator is None:
+                    bank = pocket.place(x, cfg.seed, arms=("matched",))
+                else:
+                    bank = generator(pocket, x, np.sort(serials), cfg.ligand, cfg.ligand_bonds,
+                                     cfg.seed, args.arm)
+                if args.dump:
+                    np.savez_compressed(dump/"bank.npz", **bank)
+
                 write_bank(dest, x, seed_conf, bank["center"], bank["matched_rotation"])
             code = child.wait()
             if code:
