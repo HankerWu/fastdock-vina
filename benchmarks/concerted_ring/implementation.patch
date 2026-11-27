@@ -1,0 +1,20 @@
+diff --git a/src/lib/model.h b/src/lib/model.h
+index f7adc74..6555ebd 100755
+--- a/src/lib/model.h
++++ b/src/lib/model.h
+@@ -85,0 +86 @@ public:
++    const ligand& ligand_tree(sz i) const { return ligands[i]; }
+diff --git a/src/lib/mutate.cpp b/src/lib/mutate.cpp
+index 4eec96d..368dc15 100755
+--- a/src/lib/mutate.cpp
++++ b/src/lib/mutate.cpp
+@@ -23,0 +24 @@
++#include "concerted_ring.h"
+@@ -80,2 +81,3 @@ bool mutate_conf(conf& c, model& m, fl amplitude, rng& generator, bool mixed_reo
+-			// For a locked ring move consume the native angular draw and keep the state.
+-			if (allowed_moves && !std::binary_search(allowed_moves->begin(), allowed_moves->end(), selected_entity))
++			// Reuse the same entity and native angular draw as the null-move control.
++			if (allowed_moves && !std::binary_search(allowed_moves->begin(), allowed_moves->end(), selected_entity)) {
++				concerted_ring::propose(c, m, i, which, angle, amplitude);
+@@ -82,0 +85 @@ bool mutate_conf(conf& c, model& m, fl amplitude, rng& generator, bool mixed_reo
++			}

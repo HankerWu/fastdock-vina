@@ -1,0 +1,238 @@
+[
+  {
+    "pdb": "3VHA",
+    "target": "HSP90a",
+    "ccd": "VHA",
+    "chain": "A",
+    "status": "ready",
+    "resolution_A": 1.39,
+    "ring_sizes": [
+      6,
+      6,
+      16,
+      6
+    ],
+    "atoms": 27,
+    "formal_charge": 0,
+    "glue_labels": [
+      "CG0",
+      "G0",
+      "CG0",
+      "G0"
+    ],
+    "maps": 1,
+    "pdb_sha256": "1a65dc723b6acc21843177142c986af3e5b886f86cc4520cbdff1ad923d75ce3",
+    "ccd_sha256": "adb20e2ffd615558ff6fc6f1ca8d8f399a6ea0377be75d3545b995548a3eb5e1",
+    "nearest_omitted": [
+      16.46503012447897,
+      "C6  MES A   1"
+    ],
+    "nearest_repaired": 29.55018182685176,
+    "torsdof": 1,
+    "preparation_wall_s": 5.675646145000428,
+    "PDB": "https://www.rcsb.org/structure/3VHA",
+    "CCD": "https://files.rcsb.org/ligands/download/VHA.cif"
+  },
+  {
+    "pdb": "5EOL",
+    "target": "PIM1",
+    "ccd": "5QO",
+    "chain": "A",
+    "status": "Incompatible reference chemistry 5QO.cif",
+    "preparation_wall_s": 4.343787568999687,
+    "PDB": "https://www.rcsb.org/structure/5EOL",
+    "CCD": "https://files.rcsb.org/ligands/download/5QO.cif"
+  },
+  {
+    "pdb": "6QBG",
+    "target": "CatD",
+    "ccd": "HVT",
+    "chain": "A",
+    "status": "omitted nonwater atom within 8 A",
+    "resolution_A": 1.8,
+    "ring_sizes": [
+      21,
+      6,
+      6
+    ],
+    "atoms": 39,
+    "formal_charge": 0,
+    "glue_labels": [
+      "CG0",
+      "G0",
+      "CG0",
+      "G0"
+    ],
+    "maps": 2,
+    "pdb_sha256": "61db5e16e81372b494b4bf18b1ace6eeaf900d0772c8ab537e16b451a1625232",
+    "ccd_sha256": "08035502a738013a5a28a86c6ef7c8c11c6dcac19720abbdb31f738a3573609a",
+    "nearest_omitted": [
+      2.5643123834665698,
+      "OD2 ASP B 231"
+    ],
+    "nearest_repaired": null,
+    "torsdof": 4,
+    "preparation_wall_s": 4.907683722000002,
+    "PDB": "https://www.rcsb.org/structure/6QBG",
+    "CCD": "https://files.rcsb.org/ligands/download/HVT.cif",
+    "assembly": {
+      "receptor_chains": [
+        "A",
+        "B"
+      ],
+      "nearest_omitted_nonwater": [
+        3.7890414355084574,
+        "C2  DMS A 104"
+      ],
+      "status": "omitted nonwater atom within 8 A",
+      "extra_preparation_s": 0.003078333000303246
+    }
+  },
+  {
+    "pdb": "6QBH",
+    "target": "CatD",
+    "ccd": "S43",
+    "chain": "A",
+    "status": "omitted nonwater atom within 8 A",
+    "resolution_A": 1.85,
+    "ring_sizes": [
+      22,
+      6
+    ],
+    "atoms": 36,
+    "formal_charge": 0,
+    "glue_labels": [
+      "CG0",
+      "G0",
+      "CG0",
+      "G0"
+    ],
+    "maps": 4,
+    "pdb_sha256": "5e5d3ad333b982e1a00bc2349067c955aff944c44a8e65a0a8ca1cc00aaa3994",
+    "ccd_sha256": "cacc3e975368a90e462716a00623e73c593289ed6733e336f31f707d6dd2ce86",
+    "nearest_omitted": [
+      2.5160467006794622,
+      "OH  TYR B 205"
+    ],
+    "nearest_repaired": null,
+    "torsdof": 4,
+    "preparation_wall_s": 3.890052763001222,
+    "PDB": "https://www.rcsb.org/structure/6QBH",
+    "CCD": "https://files.rcsb.org/ligands/download/S43.cif",
+    "assembly": {
+      "receptor_chains": [
+        "A",
+        "B"
+      ],
+      "nearest_omitted_nonwater": [
+        15.62823070600124,
+        "O6  NAG C   1"
+      ],
+      "status": "ready",
+      "reports": {
+        "A": {
+          "trimmed_remote_terminal_stubs": [],
+          "missing_atoms": {},
+          "closest_repaired_ligand_distance": null,
+          "metals": []
+        },
+        "B": {
+          "trimmed_remote_terminal_stubs": [],
+          "missing_atoms": {
+            "86": [
+              "CG",
+              "CD",
+              "CE",
+              "NZ"
+            ],
+            "186": [
+              "CD1",
+              "CD2"
+            ]
+          },
+          "closest_repaired_ligand_distance": 12.448939031098192,
+          "metals": []
+        }
+      },
+      "extra_preparation_s": 9.709348829999726
+    }
+  },
+  {
+    "pdb": "6QCB",
+    "target": "CatD",
+    "ccd": "HWE",
+    "chain": "A",
+    "status": "omitted nonwater atom within 8 A",
+    "resolution_A": 1.55,
+    "ring_sizes": [
+      21,
+      6
+    ],
+    "atoms": 35,
+    "formal_charge": 0,
+    "glue_labels": [
+      "CG0",
+      "G0",
+      "CG0",
+      "G0"
+    ],
+    "maps": 4,
+    "pdb_sha256": "a5053f6f9a66281d7df67a23fb91b2de67f0c8e0d69fa219e296f2da16a8c0fb",
+    "ccd_sha256": "2a54f964e02ee7ec5bdaca1908ecb2728a94f6ad3f7a1fb0cf137fa3690e9c95",
+    "nearest_omitted": [
+      2.5617043154899806,
+      "OH  TYR B 205"
+    ],
+    "nearest_repaired": null,
+    "torsdof": 4,
+    "preparation_wall_s": 4.257915146999949,
+    "PDB": "https://www.rcsb.org/structure/6QCB",
+    "CCD": "https://files.rcsb.org/ligands/download/HWE.cif",
+    "assembly": {
+      "receptor_chains": [
+        "A",
+        "B"
+      ],
+      "nearest_omitted_nonwater": [
+        3.887401831557937,
+        "C2  DMS A 105"
+      ],
+      "status": "omitted nonwater atom within 8 A",
+      "extra_preparation_s": 0.0024891430002753623
+    }
+  },
+  {
+    "pdb": "8H6P",
+    "target": "CDK2",
+    "ccd": "WZU",
+    "chain": "A",
+    "status": "ready",
+    "resolution_A": 2.44,
+    "ring_sizes": [
+      18,
+      6,
+      5,
+      5
+    ],
+    "atoms": 27,
+    "formal_charge": 0,
+    "glue_labels": [
+      "CG0",
+      "G0",
+      "CG0",
+      "G0"
+    ],
+    "maps": 1,
+    "pdb_sha256": "ad2dcf45629886cad5e44931108a8d87a23b23a1b1bbf6f61b01820d7db26cb0",
+    "ccd_sha256": "80f2e49a69c70d372ac0f589e3d2d49bdb28c36c1e07d36078a907b444e71ce5",
+    "nearest_omitted": [
+      14.989932388106359,
+      "CE3 TRP B 239"
+    ],
+    "nearest_repaired": null,
+    "torsdof": 0,
+    "preparation_wall_s": 6.6285978039995825,
+    "PDB": "https://www.rcsb.org/structure/8H6P",
+    "CCD": "https://files.rcsb.org/ligands/download/WZU.cif"
+  }
+]
