@@ -1,0 +1,3 @@
+panel,pools,modes,fits,near_pools,near_no_short_pools,severe_pools,severe_near_no_short,max_original_contact_error_A,max_witness_replay_error_A,wall_s,cpu_s
+rigid_pose_coverage,66,581,3951,66,44,11,0,0.0,4.440892098500626e-16,1.4968646669999544,1.496685582
+fragment_anchor,112,956,7817,111,55,46,22,0.0,4.440892098500626e-16,1.653129700999898,1.652796488

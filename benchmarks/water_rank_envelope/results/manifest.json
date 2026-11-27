@@ -1,0 +1,32 @@
+{
+  "enumerated_pair_checks": 896,
+  "orders": {
+    "11": {
+      "wall_s": 4.0826438229998985,
+      "cpu_s": 4.073758434,
+      "max_historical_score_error": 8.881784197001252e-16
+    },
+    "17": {
+      "wall_s": 14.763105704000054,
+      "cpu_s": 14.741668864000001,
+      "max_historical_score_error": null
+    }
+  },
+  "numpy": "2.3.5",
+  "scipy": "1.17.0",
+  "pandas": "2.2.3",
+  "python": "3.12.14",
+  "pool_count": 156,
+  "mode_count": 1557,
+  "input_sha256": {
+    "soft_water_interaction/results/poses.csv": "22dc9e4ae923c90df0793f7ac26618f949c00443132c3265619e0ddfdb68679e",
+    "soft_water_interaction/results/cells.csv": "0c5c6c8986edfb3835ab6aa1adb98bcae9c499500b25b88ef8466b516442f89d",
+    "paired_crossdocking/fixtures.tar.xz": "a5f987f94c5da5d622d301eeb352764e5fc2a1f72c4a38465b55018abb6ec322",
+    "paired_crossdocking/poses-3000.tar.xz": "764d445838cf1a4a28da0c595493dbce9a90b0f02b2112b27d405095665f0023",
+    "paired_crossdocking/poses-12000.tar.xz": "91fe1b309447cf9d1c254df4e2e46b38bf1352925d1593c838151ce9322f57c8",
+    "torsion_proposals/fixtures/inputs.tar.xz": "b656e03ad668fbd47b870a7efe0071deb2b3a2cac29836f5696d09a50a382053",
+    "soft_water_interaction/transfer_outputs.tar.xz": "7b4f9d1a5f88c2bccd2bf4324cdfaea1b190d0e16281ad44d6f764fd041d6c44"
+  },
+  "wall_s": 19.920982972000047,
+  "cpu_s": 19.888682590000002
+}

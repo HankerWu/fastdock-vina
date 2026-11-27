@@ -1,0 +1,38 @@
+{
+  "comparison_rows": 234,
+  "native_modes": 468,
+  "scaffold_embeddings": 4,
+  "projected_stereo_checks": 936,
+  "removed_pdbqt_serials": [
+    28,
+    29,
+    30,
+    31,
+    32,
+    33
+  ],
+  "formal_charges": [
+    0,
+    0
+  ],
+  "formulas": [
+    "C22H31NO4",
+    "C25H37NO7"
+  ],
+  "printed_partial_charge_sums": [
+    0.0009999999999999974,
+    -0.0019999999999996063
+  ],
+  "retained_charge_without_retyping": 0.6400000000000002,
+  "retained_atoms_with_changed_partial_charge": 6,
+  "largest_retained_atom_partial_charge_change": 0.203,
+  "retained_atoms_with_changed_ad4_type": 0,
+  "max_error_six_score_columns": 2.4868995751603507e-14,
+  "max_symmetry_score_spread": 3.552713678800501e-15,
+  "max_native_score_print_discrepancy": 0.0028422960952800835,
+  "range_of_best_mapping_max_bond_length_change_A": [
+    0.011484801348266016,
+    0.0131491201639089
+  ],
+  "coordinate_rounding_bound_for_two_bond_lengths_A": 0.0034641016151377543
+}

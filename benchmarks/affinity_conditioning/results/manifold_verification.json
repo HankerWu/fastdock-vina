@@ -1,0 +1,14 @@
+{
+  "poses": 234,
+  "branches": 10,
+  "candidate_fits": 1872,
+  "converged_starts": 0,
+  "native_self_control_rmsd": [
+    1.757899921508887e-15,
+    0.00046095720668597775
+  ],
+  "max_rigid_group_distance_change": 3.814726312612038e-13,
+  "finite_scores": 234,
+  "wall_s": 9.660917059999974,
+  "cpu_s": 9.646646801000001
+}

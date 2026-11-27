@@ -26,12 +26,21 @@ def read_map(path):
     return RegularGridInterpolator(axes, values, method="linear", bounds_error=True)
 
 
-def calculate_components(lines, fields):
-    atoms = [l for l in lines if l.startswith(("ATOM", "HETATM"))]
-    coords = np.array([[float(a[30 + k : 38 + k]) for k in (0, 8, 16)] for a in atoms])
+def calculate_components(lines, fields, *, operator="separate", uncapped_terms=False):
+    """Reconstruct an in-box, rigid-receptor AD4 endpoint from printed atoms.
+
+    Official 1.2.7 caps the three positive map values separately. The Pro
+    combined operator caps the assembled signed atom field. Return the legacy
+    official breakdown by default. For either operator, uncapped_terms=True
+    separates the raw additive maps from the nonadditive cap remainder.
+    """
+    if operator not in ("separate", "combined"):
+        raise ValueError(f"Unknown AD4 map operator: {operator}")
+    atoms = [line for line in lines if line.startswith(("ATOM", "HETATM"))]
+    coords = np.array([[float(a[30 + k:38 + k]) for k in (0, 8, 16)] for a in atoms])
     charge = np.array([float(a[70:76]) for a in atoms])
     kinds = np.array([a[77:].strip() for a in atoms])
-    dof = int(next(l for l in lines if l.startswith("TORSDOF")).split()[1])
+    dof = int(next(line for line in lines if line.startswith("TORSDOF")).split()[1])
 
     def val(kind, xyz):
         field = fields[kind]
@@ -41,16 +50,39 @@ def calculate_components(lines, fields):
         inside = np.clip(xyz, lo, hi)
         if np.max(np.abs(inside - xyz)) > 1e-8:
             raise ValueError("A written atom lies outside the scoring box")
-        energy = field(inside)
-        mask = energy > 0
-        energy[mask] *= 1000 / (1000 + energy[mask])
-        return energy
+        return field(inside)
 
-    neutral = sum(val(t, coords[kinds == t]).sum() for t in sorted(set(kinds)))
+    def cap(energy):
+        capped = energy.copy()
+        positive = capped > 0
+        capped[positive] *= 1000 / (1000 + energy[positive])
+        return capped
+
+    typed = np.empty(len(atoms))
+    for kind in sorted(set(kinds)):
+        mask = kinds == kind
+        typed[mask] = val(kind, coords[mask])
+    electric = val("e", coords)
+    desolv = val("d", coords)
+    if operator == "separate" and not uncapped_terms:
+        # Keep the released official component definitions and summation order.
+        return dict(
+            type_maps=sum(cap(typed[kinds == kind]).sum() for kind in sorted(set(kinds))),
+            electrostatic=float(charge @ cap(electric)),
+            charge_desolvation=float(abs(charge) @ cap(desolv)),
+            torsion=0.2983 * dof,
+        )
+
+    raw = typed + charge * electric + abs(charge) * desolv
+    if operator == "combined":
+        final = cap(raw)
+    else:
+        final = cap(typed) + charge * cap(electric) + abs(charge) * cap(desolv)
     return dict(
-        type_maps=neutral,
-        electrostatic=float(charge @ val("e", coords)),
-        charge_desolvation=float(abs(charge) @ val("d", coords)),
+        type_maps=typed.sum(),
+        electrostatic=float(charge @ electric),
+        charge_desolvation=float(abs(charge) @ desolv),
+        cap_adjustment=(final - raw).sum(),
         torsion=0.2983 * dof,
     )
 

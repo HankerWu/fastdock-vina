@@ -1,0 +1,7 @@
+panel,contrast,n,improve,worse,same,mixed,all_components_fixed
+rigid_pose_coverage,top_to_oracle,66,12,0,54,10,54
+rigid_pose_coverage,selected_to_hunt,30,27,3,0,17,0
+rigid_pose_coverage,hunt_to_second,30,22,6,2,15,2
+fragment_anchor,top_to_oracle,112,69,0,43,55,43
+fragment_anchor,selected_to_hunt,48,25,21,2,39,2
+fragment_anchor,hunt_to_second,48,18,13,17,25,17

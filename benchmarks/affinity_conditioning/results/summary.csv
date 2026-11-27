@@ -1,0 +1,5 @@
+panel,receiver,cells,correct,wrong_with_favorable_substitution,wrong_with_unfavorable_substitution,all_favorable_substitutions,projection_improves_5_pool,n_poses
+coverage,1FKG,10,3,4,3,9,3,90
+coverage,1FKH,10,0,1,9,3,0,90
+official_legacy,1FKG,3,1,1,1,4,1,27
+official_legacy,1FKH,3,1,1,1,4,2,27

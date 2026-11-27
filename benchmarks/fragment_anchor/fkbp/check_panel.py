@@ -107,7 +107,8 @@ def check(work,out, *, arms=ARMS, live=LIVE, seed=SEED, gate_arms=("whole","frag
                     m,s,e=old.molecule(b)
                     assert s==serials and np.array_equal(e,bonds) and Chem.MolToSmiles(m)==canonical
                     pred=float(next(l.split()[3] for l in b.splitlines() if l.startswith("REMARK VINA RESULT:")))
-                    recalc=sum(old.calculate_components(b.splitlines(),fields).values())
+                    operator = "separate" if arm in ("official", "official_high") else "combined"
+                    recalc = sum(old.calculate_components(b.splitlines(), fields, operator=operator).values())
                     err=float(rms(x,native)) if crystal else ""
                     if crystal: errors.append(err)
                     modes.append(dict(**key,rank=rank,score=pred,from_xyz=recalc,rmsd_A=err,min_contact_A=tree.query(x)[0].min(),

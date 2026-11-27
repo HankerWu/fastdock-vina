@@ -165,7 +165,8 @@ def inspect(work, out, arms=ARMS, comparison="pivot"):
             reported = float(
                 next(l for l in lines if l.startswith("REMARK VINA RESULT:")).split()[3]
             )
-            rebuilt = sum(calculate_components(lines, maps[rec]).values())
+            operator = "separate" if arm in ("official", "official_high") else "combined"
+            rebuilt = sum(calculate_components(lines, maps[rec], operator=operator).values())
             changed = stereo(mol, positions) != typed
             drift = float(np.max(np.abs(lengths(positions) - initial_bonds)))
             if rank == 1:
