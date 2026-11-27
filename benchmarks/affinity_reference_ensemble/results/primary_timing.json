@@ -1,0 +1,11 @@
+{
+  "workers": 3,
+  "cell_count": 472,
+  "wall_s": 11.347780940999655,
+  "child_cpu_s": 32.93,
+  "scramble": 40721,
+  "hinge_bins": 16,
+  "joint_nodes": 2048,
+  "rigid_control_nodes": 2048,
+  "hinge_control_nodes": 16
+}

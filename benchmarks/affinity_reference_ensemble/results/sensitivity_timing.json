@@ -1,0 +1,9 @@
+{
+  "workers": 3,
+  "cell_count": 472,
+  "wall_s": 49.43090248199951,
+  "child_cpu_s": 146.55,
+  "scramble": 66173,
+  "hinge_bins": 32,
+  "quadrature_evaluations_per_cell": 24577
+}

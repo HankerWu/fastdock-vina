@@ -1,0 +1,39 @@
+{
+  "source_revision": "f0e6dbf8104ed13d925813d28bb7757096616da6",
+  "calibration": "No fitted parameters or outcome-dependent pose selection",
+  "development": [
+    "Gal1",
+    "Gal3"
+  ],
+  "transfer": [
+    "CHEK1",
+    "AURKA"
+  ],
+  "excluded": "Ki20227 in AURKA is a racemate with undefined stereochemistry in primary pools",
+  "input": "Native Late, first reported pose, all prespecified receptor/seed blocks",
+  "temperature_K": 298.15,
+  "translation_radius_A": 1.0,
+  "rotation_half_angle_deg": 15.0,
+  "center": "heavy atom arithmetic centroid",
+  "quadrature": "Nested scrambled Sobol over seven independent unit dimensions. fixed scramble seed 40721. Haar conditional angular CDF (theta-sin(theta))/(cap-sin(cap)).",
+  "primary_points": 1024,
+  "convergence_points": [
+    256,
+    512,
+    2048
+  ],
+  "ablation": [
+    "native",
+    "rigid",
+    "hinge (free reference)",
+    "sum rigid + hinge",
+    "joint rigid + hinge with free reference",
+    "joint without free reference",
+    "minimum (same proposals incl. origin)",
+    "heavy atom count"
+  ],
+  "endpoint": "Vina affinity plus the normalized local work using the same Vina flexibility divisor inside the integrand. For each ligand, average the two receptor medians over the four seeds, then assess >=3-fold same-assay Kd directions, ranks and relative gap MAE.",
+  "interpretation": "One bounded top-pose neighborhood, one allowed internal torsion, frozen remaining internal coordinates; no absolute standard-state affinity, solvent, receptor states, or basin summation.",
+  "prospective_transfer": "S6K1 (Davis Table 4): all exact measured rows among the previously frozen 25 prepared kinase inhibitors, exclude racemate Ki-20227 and the donor staurosporine. 3A60 unphosphorylated human chain A; two fixed seeds 271828,314159, 26 A box, two trajectories 25000 evaluations each; first mode only. One receptor. Known-site, dry rigid receptor.",
+  "coupled_hinge": "Select the declared rotor of greatest reduced axial heavy-atom moment Jl Jr/(Jl+Jr). Apply opposite axial-moment-weighted rotations of its two branches around the bond followed by centroid restoration. Locally sample +/-30 degrees, 16 midpoint nodes. Integrate the joint rigid and hinge increment then subtract the free intramolecular-only integral over the same 16 internal states. Restrict macrocycles to rigid motion until ring closure can be preserved."
+}

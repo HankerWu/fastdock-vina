@@ -1,0 +1,29 @@
+{
+  "chain": "A",
+  "donor": "STU",
+  "missing_residues": [
+    {
+      "start": 73,
+      "end": 84,
+      "flank_min_A": 19.424
+    },
+    {
+      "start": 130,
+      "end": 140,
+      "flank_min_A": 13.339
+    },
+    {
+      "start": 243,
+      "end": 255,
+      "flank_min_A": 17.482
+    },
+    {
+      "start": 372,
+      "end": 399,
+      "flank_min_A": 10.823
+    }
+  ],
+  "nearest_crystal_water_A": 16.272,
+  "nearest_other_hetero_A": 46.901,
+  "nearest_other_chain_protein_A": 9.289
+}
