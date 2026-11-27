@@ -1,0 +1,2 @@
+all 20 probe, atom-lookup and refinement count pairs match; max pair-distance drift (A) 0.001451167135765541
+four native --local_only outputs byte-identical to observer, including both competitors in 3WKE.

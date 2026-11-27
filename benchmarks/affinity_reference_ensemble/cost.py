@@ -4,6 +4,7 @@ import argparse
 import csv
 import json
 import os
+import re
 from pathlib import Path
 import subprocess
 import tempfile
@@ -58,7 +59,25 @@ def run(a):
             began = time.monotonic()
             with (root / "log").open("w") as log:
                 p = subprocess.Popen(cmd, stdout=log, stderr=subprocess.STDOUT)
-                _, status, usage = os.wait4(p.pid, 0)
+                # wait4 alone can retain the launcher RSS from before exec.
+                # Read the kernel high-water mark of the actual target process.
+                rss = 0
+                proc = Path("/proc") / str(p.pid)
+                while True:
+                    try:
+                        if (proc / "exe").resolve() == Path(cmd[0]).resolve():
+                            status_text = (proc / "status").read_text()
+                            high = re.search(r"^VmHWM:\s+(\d+) kB", status_text, re.M)
+                            if high:
+                                rss = max(rss, int(high[1]))
+                    except (OSError, RuntimeError):
+                        pass
+                    pid, status, usage = os.wait4(p.pid, os.WNOHANG)
+                    if pid:
+                        break
+                    time.sleep(.001)
+                if not rss:
+                    raise RuntimeError("Missing post-exec process memory measurement")
                 p.returncode = os.waitstatus_to_exitcode(status)
                 if p.returncode:
                     raise RuntimeError((root / "log").read_text())
@@ -69,7 +88,7 @@ def run(a):
                     arm=name,
                     wall_s=time.monotonic() - began,
                     cpu_s=usage.ru_utime + usage.ru_stime,
-                    peak_rss_KiB=usage.ru_maxrss,
+                    peak_rss_KiB=rss,
                 )
             )
     with (a.s6k / "serial_cost.csv").open("w") as f:
