@@ -1,0 +1,25 @@
+diff --git a/src/lib/monte_carlo.cpp b/src/lib/monte_carlo.cpp
+index 597a142..95f3bbe 100755
+--- a/src/lib/monte_carlo.cpp
++++ b/src/lib/monte_carlo.cpp
+@@ -23,6 +23,8 @@
+ // FastDock: reuse the trial conformation across Monte Carlo steps.
+ 
+ #include "monte_carlo.h"
++#include <iomanip>
++#include <iostream>
+ #include "coords.h"
+ #include "mutate.h"
+ #include "quasi_newton.h"
+@@ -121,7 +123,11 @@ void monte_carlo::operator()(model& m, output_container& out, const precalculate
+ 				if(tmp.e < best_e)
+ 					best_e = tmp.e;
+ 			} else if (archive && archive->deferred_radius >= 0) {
++                const fl near_saved = find_closest(m.get_heavy_atom_movable_coords(), out).second;
++                const sz earlier = archive->records;
+ 				archive->observe_skipped(m, tmp, out);
++                std::cerr << "FDPICK " << (step+1) << ' ' << std::setprecision(17)
++                          << tmp.e << ' ' << near_saved << ' ' << (earlier != archive->records) << '\n';
+ 			}
+ 		}
+ 	}

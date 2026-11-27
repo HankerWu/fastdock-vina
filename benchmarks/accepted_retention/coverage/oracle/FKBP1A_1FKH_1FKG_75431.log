@@ -1,0 +1,48 @@
+AutoDock Vina v1.2.7-27-g3c65c0b
+#################################################################
+# If you used AutoDock Vina in your work, please cite:          #
+#                                                               #
+# J. Eberhardt, D. Santos-Martins, A. F. Tillack, and S. Forli  #
+# AutoDock Vina 1.2.0: New Docking Methods, Expanded Force      #
+# Field, and Python Bindings, J. Chem. Inf. Model. (2021)       #
+# DOI 10.1021/acs.jcim.1c00203                                  #
+#                                                               #
+# O. Trott, A. J. Olson,                                        #
+# AutoDock Vina: improving the speed and accuracy of docking    #
+# with a new scoring function, efficient optimization and       #
+# multithreading, J. Comp. Chem. (2010)                         #
+# DOI 10.1002/jcc.21334                                         #
+#                                                               #
+# Please see https://github.com/ccsb-scripps/AutoDock-Vina for  #
+# more information.                                             #
+#################################################################
+
+Scoring function : vina
+Rigid receptor: /tmp/ret-cov-audit/1FKG/receptor.pdbqt
+Ligand: /tmp/ret-cov-audit/1FKH/ligand.pdbqt
+Grid center: X -26.2451 Y 28.5399 Z 5.24915
+Grid size  : X 24 Y 24 Z 24
+Grid space : 0.375
+Exhaustiveness: 1
+CPU: 1
+Verbosity: 1
+
+Computing Vina grid ... done.
+Performing docking (random seed: 75431) ... 
+0%   10   20   30   40   50   60   70   80   90   100%
+|----|----|----|----|----|----|----|----|----|----|
+*
+mode |   affinity | dist from best mode
+     | (kcal/mol) | rmsd l.b.| rmsd u.b.
+-----+------------+----------+----------
+   1       -7.356          0          0
+   2       -7.344      2.797      7.124
+   3       -6.445      2.694      6.953
+   4       -5.439      2.254       6.37
+   5       -5.403      3.616       7.75
+   6       -5.212      3.165      7.195
+Native merge: rmsd=2 candidates=6
+Search trajectory: index=1 steps=266 hunt_calls=266 hunt_evals=10589 second_calls=34 second_evals=1424 rigid_reorientations=0
+Hunt chain: index=1 separate=0 accepted=181 mixed_accept_checks=48
+Pocket start: index=1 anchored=0 cx=-19.432401483893 cy=25.799308425749 cz=5.220958945609
+Search counters: rigid_reorientation=native explicit_inputs=6 explicit_calls=6 explicit_evals=321 late_prescore=0

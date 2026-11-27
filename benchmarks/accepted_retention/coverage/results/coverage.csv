@@ -1,0 +1,8 @@
+target,cells,proposal,hunt_rejected,accepted,submitted,skipped,second,saved,exit,merged,explicit,top1,top5,oracle,opportunity,skipped_only,endpoint_absent
+all,66,19,22,19,16,15,16,16,16,15,16,14,16,16,3,3,44
+DYRK1A,12,6,6,6,6,5,6,6,6,6,6,6,6,6,0,0,6
+EPAS1,12,5,6,5,5,4,5,5,5,5,5,5,5,5,0,0,6
+FABP4,12,4,6,4,3,3,3,3,3,3,3,2,3,3,1,1,6
+FKBP1A,12,2,2,2,0,2,0,0,0,0,0,0,0,0,2,2,10
+JAK2,6,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,6
+RBP4,12,2,2,2,2,1,2,2,2,1,2,1,2,2,0,0,10

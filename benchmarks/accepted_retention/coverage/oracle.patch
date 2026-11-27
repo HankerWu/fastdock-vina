@@ -1,0 +1,36 @@
+diff --git a/src/lib/monte_carlo.cpp b/src/lib/monte_carlo.cpp
+index 52314af..2f60667 100755
+--- a/src/lib/monte_carlo.cpp
++++ b/src/lib/monte_carlo.cpp
+@@ -110,6 +110,14 @@ void monte_carlo::operator()(model& m, output_container& out, const precalculate
+ 		const bool accepted = step == 0 || metropolis_accept(tmp.e, candidate.e, temperature, generator);
+ 		trace.emit(accepted ? "hunt_accepted" : "hunt_rejected", step + 1, candidate.c);
+ 		if(accepted) {
++            if (const char* step_to_export = std::getenv("FD_ORACLE_ACCEPT_STEP")) {
++                if (std::to_string(step + 1) == step_to_export) {
++                    VINA_CHECK(!(candidate.e < best_e || out.size() < num_saved_mins));
++                    const char* path = std::getenv("FD_ORACLE_CONFORMATION");
++                    VINA_CHECK(path);
++                    capture_hunt(candidate.c, path);
++                }
++            }
+ 			std::swap(tmp.c, candidate.c);
+ 			tmp.e = candidate.e;
+ 			reference_from_save = false;
+diff --git a/src/lib/vina.cpp b/src/lib/vina.cpp
+index 93a02ca..8c586c9 100644
+--- a/src/lib/vina.cpp
++++ b/src/lib/vina.cpp
+@@ -1829,6 +1829,12 @@ void Vina::global_search(const int exhaustiveness, const int n_poses, const doub
+ 		if (m_sf_choice == SF_VINA || m_sf_choice == SF_VINARDO) {
+ 			// Refine poses if no_refine is false and got receptor
+ 			if (m_use_explicit_receptor) {
++                if (const char* path = std::getenv("FD_ORACLE_CONFORMATION")) {
++                    VINA_CHECK(exhaustiveness == 1 && !late_selection && !poses.empty());
++                    restore_hunt(poses.back().c, path);
++                    m_model.set(poses.back().c);
++                    poses.back().coords = m_model.get_heavy_atom_movable_coords();
++                }
+ 				const sz refinement_inputs = poses.size();
+ 				const sz accepted_refinement_inputs = archive_enabled
+ 					? std::count_if(poses.begin(), poses.end(), [](const output_type& pose) {
