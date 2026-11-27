@@ -1,6 +1,6 @@
 {
   "parent": "2e610c4",
-  "fixed": "c0ce55f",
+  "fixed": "a24ff22a475ca724cf1dba43178c59e9c0a2a641",
   "upstream": "3c65c0b",
   "binary_sha256": {
     "parent_cli": "ade79e941d0b90e99071ecc81cef5e37c66b76b74ccd21daba1f36a7d96cd5d1",

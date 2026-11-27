@@ -35,7 +35,7 @@ R=$PWD
 D=$R/benchmarks/terminal_rotor_score
 W=$(mktemp -d)
 git worktree add --detach "$W/parent" 2e610c4
-git worktree add --detach "$W/fixed" c0ce55f
+git worktree add --detach "$W/fixed" a24ff22a475ca724cf1dba43178c59e9c0a2a641
 for arm in parent fixed; do
   B="$W/$arm-build"
   python "$W/$arm/tools/build.py" --output-dir "$B"

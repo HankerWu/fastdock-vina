@@ -1,0 +1,8 @@
+{
+  "byte_identical_to_observer": {
+    "dev": 108,
+    "secondary": 72,
+    "transfer": 72
+  },
+  "release_sha256": "9589c11d324f89606ea05da5c84534800f0033db27ade535269ad6cdb0765f35"
+}
