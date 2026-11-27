@@ -1,0 +1,17 @@
+Traceback (most recent call last):
+  File "/workspace/scratch/c4b572b147a4/repo/benchmarks/rigid_pose_coverage/engine/verify_coordinates.py", line 115, in <module>
+    verify(args.work, args.output)
+  File "/workspace/scratch/c4b572b147a4/repo/benchmarks/rigid_pose_coverage/engine/verify_coordinates.py", line 80, in verify
+    np.testing.assert_array_equal(expect, b["triangle_id"])
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/numpy/testing/_private/utils.py", line 1054, in assert_array_equal
+    assert_array_compare(operator.__eq__, actual, desired, err_msg=err_msg,
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/numpy/testing/_private/utils.py", line 919, in assert_array_compare
+    raise AssertionError(msg)
+AssertionError: 
+Arrays are not equal
+
+Mismatched elements: 137 / 1024 (13.4%)
+Max absolute difference among violations: 26229
+Max relative difference among violations: 34.26875
+ ACTUAL: array([ 3452,  5308,  8897, ...,  6595, 19747, 20259], shape=(1024,))
+ DESIRED: array([ 3452,  5308,  8897, ...,  3404,  6595, 19747], shape=(1024,))

@@ -11,6 +11,7 @@ import resource
 import subprocess
 import sys
 import tarfile
+import tempfile
 import time
 
 HERE = Path(__file__).resolve().parent
@@ -59,7 +60,7 @@ def prep(work):
     (work / "inputs.json").write_text(json.dumps(dict(archives=hashes,files={str(p.relative_to(work)):sha(p) for p in paths}), indent=2)+"\n")
 
 
-def live_one(work, rec, n, arm, exe, stem, conf):
+def live_one(work, rec, n, arm, exe, stem, conf, *, generator=None, seed=SEED):
     import numpy as np
     from scipy.spatial.transform import Rotation
     sys.path[:0] = [str(ROOT / "benchmarks/cavity_field_rank/engine"),str(HERE.parent / "engine"),
@@ -68,7 +69,9 @@ def live_one(work, rec, n, arm, exe, stem, conf):
     from live import open_bank
     from frozen_assay import atom_types, field_score, old
     from pocket_triangle import Pocket
-    pipe = stem.with_suffix(".fifo")
+    # A force-killed controller can leave a FIFO. Give each invocation its own endpoint.
+    pipe_dir = tempfile.TemporaryDirectory(prefix=".transform-", dir=stem.parent)
+    pipe = Path(pipe_dir.name) / "bank.fifo"
     os.mkfifo(pipe, mode=0o600)
     qfile, xfile = stem.with_suffix(".q"), stem.with_suffix(".source")
     event = stem.with_suffix(".event")
@@ -93,7 +96,7 @@ def live_one(work, rec, n, arm, exe, stem, conf):
                         header = [next(f).split() for _ in range(6)]
                     center, size = np.array(header[5][1:],float), np.array(header[4][1:],int)*float(header[3][1])
                     pocket = Pocket.from_pdbqt(work/rec/"receptor.pdbqt",center,size)
-                    bank = place(pocket,x,serial,ligand,ligand.with_suffix(".bonds"),SEED,arm)
+                    bank = (generator or place)(pocket,x,serial,ligand,ligand.with_suffix(".bonds"),seed,arm)
                     rot = bank["matched_rotation"]
                     poses = (x-x.mean(0)) @ rot.transpose(0,2,1) + bank["center"][:,None]
                     real, _ = atom_types(ligand, serial)
@@ -111,18 +114,21 @@ def live_one(work, rec, n, arm, exe, stem, conf):
                 (stem.with_suffix(".transform")).write_text(transform)
                 np.savez(stem.with_suffix(".npz"),site_triangles=bank["site_triangles"],anchor=bank["ligand_triangle"],anchor_serials=bank["anchor_serials"],
                          component_serials=bank["component_serials"],fallback=bank["anchor_fallback"],
-                         true_score=scores,center=bank["center"],rotation=rot,shape=bank["matched_score"])
+                         true_score=scores,center=bank["center"],rotation=rot,shape=bank["matched_score"],
+                         **({"triangle_id":bank["triangle_id"]} if generator is not None else {}))
                 with stem.with_suffix(".rank").open("w") as f:
                     json.dump(dict(winner=i,queries=int(poses.shape[0]*poses.shape[1]),outside=int(outside.sum()),
                               pocket_grid_points=pocket.n_grid,pocket_burial_points=pocket.n_burial,
-                              shape_queries=int(poses.shape[0]*poses.shape[1]), ordered_triangles=len(pocket.triangles)),f)
+                              shape_queries=int(poses.shape[0]*poses.shape[1]), ordered_triangles=len(pocket.triangles),
+                              **{k:np.asarray(bank[k]).item() for k in ("fitted_count","feasible_count","gate_wall_s","gate_cpu_s",
+                                "distance_evals","radius_A2","shape_wall_s","shape_cpu_s") if k in bank}),f)
                 status = child.wait()
                 if status: raise subprocess.CalledProcessError(status,cmd)
             except BaseException:
                 if child.poll() is None: child.terminate()
                 raise
     finally:
-        pipe.unlink(missing_ok=True)
+        pipe_dir.cleanup()
 
 
 def time_one(cmd, work, path):
@@ -136,23 +142,32 @@ def time_one(cmd, work, path):
     return time.perf_counter()-start,cpu()-before
 
 
-def run(work, official, engine, counter, only):
+def run(work, official, engine, counter, only, *, arms=ARMS, live=LIVE, seed=SEED,
+        script=Path(__file__).resolve(), budgets=None, resume=False):
     assert sha(official) == OFFICIAL_SHA
     for j,(rec,n) in enumerate(itertools.product(RECEPTORS,range(4,12))):
-        for arm in ARMS[j%len(ARMS):]+ARMS[:j%len(ARMS)]:
+        for arm in arms[j%len(arms):]+arms[:j%len(arms)]:
             if arm not in only: continue
             stem = work/"pools"/arm/f"{rec}_{n}"
             stem.parent.mkdir(parents=True,exist_ok=True)
             conf, out = stem.with_suffix(".conf"),stem.with_suffix(".pdbqt")
             config = dict(ligand=f"affinity/{n}.pdbqt",maps=f"maps/{rec}/receptor",scoring="ad4",num_modes=9,
-                          energy_range=100,cpu=1,exhaustiveness=3,max_evals=48000 if "high" in arm else 24000,
-                          seed=SEED,out=str(out.relative_to(work)))
-            conf.write_text("".join(f"{k} = {v}\n" for k,v in config.items()))
+                          energy_range=100,cpu=1,exhaustiveness=3,max_evals=(budgets or {}).get(arm, 48000 if "high" in arm else 24000),
+                          seed=seed,out=str(out.relative_to(work)))
+            content = "".join(f"{k} = {v}\n" for k,v in config.items())
+            timing = stem.with_suffix(".timing")
+            if resume and timing.exists():
+                previous = json.loads(timing.read_text())
+                assert conf.read_text() == content and previous["sha256"] == sha(out)
+                assert previous["executable_sha256"] == sha(official if arm.startswith("official") else engine)
+                if arm.startswith("official"): assert previous["counter_sha256"] == sha(counter)
+                continue
+            conf.write_text(content)
             is_off = arm.startswith("official")
             program = official if is_off else engine
             cmd = [str(program),"--config",str(conf.relative_to(work))]
-            if arm in LIVE:
-                cmd = [sys.executable,str(Path(__file__).resolve()),"live",str(work),rec,str(n),arm,str(engine)]
+            if arm in live:
+                cmd = [sys.executable,str(script),"live",str(work),rec,str(n),arm,str(engine)]
             elif not is_off:
                 cmd.append("--search_counters")
             log = stem.with_suffix(".log")
@@ -175,8 +190,8 @@ def run(work, official, engine, counter, only):
             else:
                 channels = 3*sum(int(v) for v in re.findall(r"FIELD_COUNT combined=1 derivative=\d+ positions=(\d+)",output))
             assert channels>0
-            ranks = json.loads(stem.with_suffix(".rank").read_text()) if arm in LIVE else {}
-            row = dict(arm=arm,receiver=rec,compound=n,seed=SEED,modes=out.read_text().count("ENDMDL"),
+            ranks = json.loads(stem.with_suffix(".rank").read_text()) if arm in live else {}
+            row = dict(arm=arm,receiver=rec,compound=n,seed=seed,modes=out.read_text().count("ENDMDL"),
                 sha256=sha(out),executable_sha256=sha(program),counter_sha256=sha(counter) if is_off else "",
                 hunt_evals=count("hunt_evals"),second_evals=count("second_evals"),steps=count("hunt_calls"),
                 coarse_channels=ranks.get("queries",0),downstream_channels=channels,wall_s=wall,cpu_s=cpu,

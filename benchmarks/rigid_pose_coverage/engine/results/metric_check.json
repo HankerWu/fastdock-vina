@@ -1,0 +1,44 @@
+{
+  "max_pair_distance_error_A2": {
+    "full": 1.5916157281026244e-12,
+    "planar": 1.5916157281026244e-12,
+    "linear": 1.3642420526593924e-12,
+    "point": 2.5011104298755527e-12
+  },
+  "pairs_per_geometry": 780,
+  "sources": [
+    "2NNQ_94709_whole",
+    "2NNQ_94727_whole",
+    "3FMZ-A_91813_whole",
+    "3FMZ-A_93241_whole",
+    "3FMZ-A_94709_whole",
+    "3FMZ-HA_91813_whole",
+    "3FMZ-HA_93241_whole",
+    "3FMZ-HA_94709_whole",
+    "3FR2_94709_whole",
+    "3FR2_94727_whole",
+    "4GHI_93241_whole",
+    "4GHI_93257_whole",
+    "5TBM_93241_whole",
+    "5TBM_93257_whole",
+    "82I_91813_whole",
+    "82I_91823_whole"
+  ],
+  "equal_arrays": [
+    "anchor_fallback",
+    "anchor_serials",
+    "center",
+    "component_serials",
+    "edge_residual_A2",
+    "ligand_triangle",
+    "matched_best",
+    "matched_rotation",
+    "matched_score",
+    "shift",
+    "site_triangles",
+    "triangle_id"
+  ],
+  "ties_and_short_pool": "pass",
+  "wall_s": 0.7480472239985829,
+  "cpu_s": 0.7330808609999999
+}

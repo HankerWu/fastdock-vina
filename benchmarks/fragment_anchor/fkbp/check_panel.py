@@ -60,7 +60,8 @@ def trace(stem, native, serials, blocks, key):
         first_later_offered_le2=next(iter(regens),""), **ranklog)
 
 
-def check(work,out):
+def check(work,out, *, arms=ARMS, live=LIVE, seed=SEED, gate_arms=("whole","fragment"),
+          bias_arm="fragment", bias_controls=("base","whole","sham")):
     out.mkdir(parents=True,exist_ok=True)
     input_hashes=json.loads((work/"inputs.json").read_text())
     for p,d in input_hashes["files"].items(): assert sha(work/p)==d
@@ -91,12 +92,12 @@ def check(work,out):
             crystal={8:"1FKG",9:"1FKH"}.get(n)
             native=old.crystal_positions(refs[crystal],refs[rec],mol) if crystal else None
             desc[n]=dict(compound=n,heavy_atoms=len(serials),charge=Chem.GetFormalCharge(mol),torsdof=int(lig.split("TORSDOF ")[-1].split()[0]))
-            for arm in ARMS:
+            for arm in arms:
                 key=dict(arm=arm,receiver=rec,compound=n)
                 stem=work/"pools"/arm/f"{rec}_{n}"
                 row=json.loads(stem.with_suffix(".timing").read_text())
-                assert row["sha256"]==sha(stem.with_suffix(".pdbqt")) and row["seed"]==SEED
-                assert f"(random seed: {SEED})" in stem.with_suffix(".log").read_text()
+                assert row["sha256"]==sha(stem.with_suffix(".pdbqt")) and row["seed"]==seed
+                assert f"(random seed: {seed})" in stem.with_suffix(".log").read_text()
                 blocks=[b for b in stem.with_suffix(".pdbqt").read_text().split("ENDMDL") if b.strip()]
                 assert len(blocks)==row["modes"]
                 runs.append(row)
@@ -114,8 +115,8 @@ def check(work,out):
                     if rank==1: top[arm,rec,n],rebuilt[arm,rec,n]=pred,recalc
                 if crystal and errors:
                     cells.append(dict(**key,top1=errors[0],best5=min(errors[:5]),oracle=min(errors),regret=errors[0]-min(errors)))
-                if arm in LIVE: traces.append(trace(stem,native,serials,blocks,key))
-            if crystal:
+                if arm in live: traces.append(trace(stem,native,serials,blocks,key))
+            if crystal and gate_arms:
                 sys.path[:0]=[str(Path(__file__).resolve().parents[1]/"engine"),str(ROOT/"tools")]
                 from anchors import all_transforms
                 from pocket_triangle import Pocket
@@ -123,7 +124,7 @@ def check(work,out):
                     headers=[next(h).split() for _ in range(6)]
                 pocket=Pocket.from_pdbqt(work/rec/"receptor.pdbqt", np.array(headers[5][1:],float),
                                          np.array(headers[4][1:],int)*float(headers[3][1]))
-                for arm in ("whole","fragment"):
+                for arm in gate_arms:
                     stem=work/"pools"/arm/f"{rec}_{n}"
                     h, line=stem.with_suffix(".source").read_text().splitlines()
                     raw_order=np.array(h[1:].split(),int)
@@ -144,9 +145,9 @@ def check(work,out):
                         postfilter_min_A=float(errs[:1024].min()),first_le2_edge_rank=int(pres[0]+1) if len(pres) else "",
                         pre_le2=len(pres),post_le2=int((errs[:1024]<=2).sum())))
             for ext in (".source",".q"):
-                assert len({sha((work/"pools"/a/f"{rec}_{n}").with_suffix(ext)) for a in LIVE})==1
+                assert len({sha((work/"pools"/a/f"{rec}_{n}").with_suffix(ext)) for a in live})==1
     assayrows,pairs,scores,quantiles,costs=[],[],[],[],[]
-    for a in ARMS:
+    for a in arms:
         for n in labels:
             for d in (top,rebuilt): d[a,"mean",n]=float(np.mean([d[a,r,n] for r in RECEPTORS]))
         for rec in (*RECEPTORS,"mean"):
@@ -186,14 +187,14 @@ def check(work,out):
     for r in production:
         assert r["sha256"]==sha(work/"pools"/r["arm"]/(r["receiver"]+"_"+r["compound"]+".pdbqt"))
     biases=[]
-    for b in ("base","whole","sham"):
-        delta=[top["fragment","mean",n]-top[b,"mean",n] for n in labels]
-        biases.append(dict(arm="fragment",control=b,n=len(delta),charge_levels=len({r["charge"] for r in desc.values()}),
+    for b in bias_controls:
+        delta=[top[bias_arm,"mean",n]-top[b,"mean",n] for n in labels]
+        biases.append(dict(arm=bias_arm,control=b,n=len(delta),charge_levels=len({r["charge"] for r in desc.values()}),
                            **{"rho_"+k:spearmanr(delta,[desc[n][k] for n in labels]).statistic for k in ("heavy_atoms","torsdof")}))
     for name,data in (("assay",assayrows),("scores",scores),("pairs",pairs),("runs",runs),("pose_cells",cells),
                       ("modes",modes),("stages",traces),("distributions",quantiles),("cost",costs),("bias",biases),
                       ("descriptors",list(desc.values())),("gate",gate_rows),("unmodified_pro",production)):
-        table(out/(name+".csv"),data)
+        if data: table(out/(name+".csv"),data)
 
 
 if __name__=="__main__":

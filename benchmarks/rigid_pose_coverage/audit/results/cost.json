@@ -1,0 +1,7 @@
+{
+  "wall_s": 23.042428797001776,
+  "cpu_s": 22.98208392,
+  "n_source": 16,
+  "n_arms": 4,
+  "includes": "offline enumeration, selection, crystal and distance audits"
+}

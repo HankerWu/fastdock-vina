@@ -1,0 +1,30 @@
+{
+  "archives": 8,
+  "raw_files": 1006,
+  "observer_sha256": "8ffe5fbcc37384c48f6d397adbc50db87558305c6dd00a488b5ef6587f48dfb9",
+  "matched": {
+    "gates_pose": {
+      "sha256": "ce3fde1cfb3c660f0400184c6f7eab80d44318c13b7e96a6ab03330ed75725c7",
+      "records": 32
+    },
+    "gates_at9283": {
+      "sha256": "79af3c4f5a4c192d3812829a2839428ec611de5e4ba963f3be2f60b7a6f9d768",
+      "records": 36
+    },
+    "omitted": {
+      "sha256": "6108b94c8e2e5e765dbbd60f756cdb5b268b957ff20fc86b1ee7f5409ad907e0",
+      "records": 32
+    },
+    "near_forks": {
+      "sha256": "22f99f0d9413e6c5183a3121d3c02f1dce69636ad47d13a8ddca0addfb7e6144",
+      "records": 4
+    }
+  },
+  "analysis_wall_s": 23.567572867999843,
+  "stage_wall_s": {
+    "pose": 11.615296923999267,
+    "at9283": 8.71679898200091,
+    "omitted": 1.227786745002959,
+    "forks": 2.0025431840040255
+  }
+}

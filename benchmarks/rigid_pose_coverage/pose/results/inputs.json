@@ -1,0 +1,73 @@
+{
+  "archives": {
+    "benchmarks/cubic_grid/acid_states/acid-pools.tar.xz": "b14488106a1285720835084e7ce910f08f67cacc2c6ec346b22ec314f6959865",
+    "benchmarks/cubic_grid/human_panel/prepared.tar.xz": "64279b6b69390635a72ed213413587e571630dbf279c7c19d49b7ff3d20fcf67",
+    "benchmarks/torsion_proposals/fixtures/inputs.tar.xz": "b656e03ad668fbd47b870a7efe0071deb2b3a2cac29836f5696d09a50a382053"
+  },
+  "cells": {
+    "3ANR": {
+      "bonds": "inputs/3ANR-ligand.bonds",
+      "center": [
+        42.97663157894736,
+        5.463473684210527,
+        13.375842105263157
+      ],
+      "ligand": "inputs/3ANR-ligand.pdbqt",
+      "receptor": "inputs/7AKL.pdbqt",
+      "sha256": {
+        "inputs/3ANR-ligand.bonds": "c888fa405af447ec6c231f079f91bb7c8b50021e53d78055caf0fceb7a1ace44",
+        "inputs/3ANR-ligand.pdbqt": "5425cc554cdf958046612377306eaed2b081a03f2339a6b182f4e7866e96c6e3",
+        "inputs/7AKL.pdbqt": "dbe3a356d5322f6220418ea1f98bb5dcaf1dee9173693a2fef299e18669ab6ce"
+      },
+      "size": 24
+    },
+    "3FMZ-A": {
+      "bonds": "inputs/3FMZ-A-ligand.bonds",
+      "center": [
+        32.20157142857143,
+        19.508619047619046,
+        48.55028571428572
+      ],
+      "ligand": "inputs/3FMZ-A-ligand.pdbqt",
+      "receptor": "inputs/1RBP.pdbqt",
+      "sha256": {
+        "inputs/1RBP.pdbqt": "d487ea4d9a20a6fd137a5ed3e8d34214d728c38ee02f10d6152fea23fc81288c",
+        "inputs/3FMZ-A-ligand.bonds": "9239c079dbd1105aeb95cd809ba2cabbe8c5c48d27a1ddcfd463a9b573a7dd04",
+        "inputs/3FMZ-A-ligand.pdbqt": "02aa42bd137af7e1fd5e2f006fbc1c72e763945cc05cb11c34647ac7fbb6878a"
+      },
+      "size": 24
+    },
+    "3FMZ-HA": {
+      "bonds": "inputs/3FMZ-HA-ligand.bonds",
+      "center": [
+        32.20157142857143,
+        19.508619047619046,
+        48.55028571428572
+      ],
+      "ligand": "inputs/3FMZ-HA-ligand.pdbqt",
+      "receptor": "inputs/1RBP.pdbqt",
+      "sha256": {
+        "inputs/1RBP.pdbqt": "d487ea4d9a20a6fd137a5ed3e8d34214d728c38ee02f10d6152fea23fc81288c",
+        "inputs/3FMZ-HA-ligand.bonds": "a1e8f150d08151a28e0b37de001da1ed2dfdb0781711e7139c7e0db057a6f9ea",
+        "inputs/3FMZ-HA-ligand.pdbqt": "c774fbcb3a6a1ed5c42042d2e876d4bd35c49c71e7038dc8b9c8b704262f22a9"
+      },
+      "size": 24
+    },
+    "7AKL": {
+      "bonds": "inputs/7AKL-ligand.bonds",
+      "center": [
+        7.332375,
+        27.1286875,
+        11.9570625
+      ],
+      "ligand": "inputs/7AKL-ligand.pdbqt",
+      "receptor": "inputs/3ANR.pdbqt",
+      "sha256": {
+        "inputs/3ANR.pdbqt": "0f9c5f6b0185d1dafd11783911b55d19d9f84fff981e2b75989349a3f9c02777",
+        "inputs/7AKL-ligand.bonds": "adf1492ba2db33ea2d04ca345cc9f076b872bd47b39aef0480bfa9705982fc75",
+        "inputs/7AKL-ligand.pdbqt": "97a25347ba90d5a8940d2874c94092619f58b2680ba53b7a02c3763053396c7a"
+      },
+      "size": 24
+    }
+  }
+}

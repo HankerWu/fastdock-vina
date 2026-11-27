@@ -6,12 +6,12 @@ import tarfile
 from assay_runner import ARMS, sha
 
 
-def create(work, dest):
+def create(work, dest, *, arms=ARMS, replay_files=()):
     dest.mkdir(parents=True,exist_ok=True)
-    parts={arm:sorted((work/"pools"/arm).glob("*")) for arm in ARMS}
+    parts={arm:sorted((work/"pools"/arm).glob("*")) for arm in arms}
     # Production replay PDBQTs are byte-identical to the corresponding pools. Keep logs, hashes and clocks.
     parts["replay"]=[*sorted((work/"ordinary_pro").glob("*.log")),work/"unmodified_pro.csv",
-                     *sorted((work/"failures").glob("*"))]
+                     *sorted((work/"failures").glob("*")), *replay_files]
     manifest={}
     for arm,files in parts.items():
         fname=dest/(arm+".tar.xz")
