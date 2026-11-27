@@ -1,0 +1,9 @@
+{
+  "cells": 136,
+  "poses": 1213,
+  "max_raw_full_fixed_error": 4.440892098500626e-16,
+  "max_raw_bonded_72_144": 7.42414489466603e-05,
+  "max_raw_bonded_half_node": 0.00014847359621822376,
+  "total_wall_s": 3.0618234719986503,
+  "peak_RSS_KiB_linux": 176260
+}
