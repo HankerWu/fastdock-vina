@@ -1,0 +1,51 @@
+{
+  "1OL5": {
+    "url": "https://files.rcsb.org/download/1OL5.pdb",
+    "sha256": "e16457dfba745e948bf4a26c147dd7f8a0e62942996d2438fec654b9e99cfe14",
+    "chain": "A",
+    "resolution": "RESOLUTION.    2.50 ANGSTROMS.",
+    "title": "STRUCTURE OF AURORA-A 122-403, PHOSPHORYLATED ON THR287, THR288 AND BOUND TO TPX2 1-43"
+  },
+  "1OL7": {
+    "url": "https://files.rcsb.org/download/1OL7.pdb",
+    "sha256": "2fca36132d6279624df409c8ed7ab5e333d37f272af7de4a875b073149b3bfb5",
+    "chain": "A",
+    "resolution": "RESOLUTION.    2.75 ANGSTROMS.",
+    "title": "STRUCTURE OF HUMAN AURORA-A 122-403 PHOSPHORYLATED ON THR287, THR288"
+  },
+  "1MQ4": {
+    "url": "https://files.rcsb.org/download/1MQ4.pdb",
+    "sha256": "1d1a321f83aa235cd8928f0118287a9c51ede1fc81bf64ae6c2b7f803cdddb4d",
+    "chain": "A",
+    "resolution": "RESOLUTION.    1.90 ANGSTROMS.",
+    "title": "CRYSTAL STRUCTURE OF AURORA-A PROTEIN KINASE"
+  },
+  "2J4Z": {
+    "url": "https://files.rcsb.org/download/2J4Z.pdb",
+    "sha256": "a19719a29447ab5433c939ef90cc0224383d5101e491d8718af9c1b3b59c1334",
+    "chain": "A",
+    "resolution": "RESOLUTION.    2.00 ANGSTROMS.",
+    "title": "STRUCTURE OF AURORA-2 IN COMPLEX WITH PHA-680626"
+  },
+  "2J50": {
+    "url": "https://files.rcsb.org/download/2J50.pdb",
+    "sha256": "f36a4b2c7e840d6ac8167d859ef2f5bda5a28ae225aa52f1d6f4f9a04c7fc1d2",
+    "chain": "A",
+    "resolution": "RESOLUTION.    3.00 ANGSTROMS.",
+    "title": "STRUCTURE OF AURORA-2 IN COMPLEX WITH PHA-739358"
+  },
+  "2W1G": {
+    "url": "https://files.rcsb.org/download/2W1G.pdb",
+    "sha256": "35d220504a433ab3d71668f3abd42413b2e18154d64811438c0261c385fafbce",
+    "chain": "A",
+    "resolution": "RESOLUTION.    2.71 ANGSTROMS.",
+    "title": "STRUCTURE DETERMINATION OF AURORA KINASE IN COMPLEX WITH INHIBITOR"
+  },
+  "6CPG": {
+    "url": "https://files.rcsb.org/download/6CPG.pdb",
+    "sha256": "80ca2336c6971ec1828a8f66cee7b5099c37b96ae4179d994c7ecf1fa3fe255c",
+    "chain": "A",
+    "resolution": "RESOLUTION.    2.80 ANGSTROMS.",
+    "title": "STRUCTURE OF DEPHOSPHORYLATED AURORA A (122-403) IN COMPLEX WITH INHIBITING MONOBODY AND AT9283 IN AN INACTIVE CONFORMATION"
+  }
+}

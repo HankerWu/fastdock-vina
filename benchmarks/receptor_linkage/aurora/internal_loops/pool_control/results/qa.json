@@ -1,0 +1,8 @@
+{
+  "cli_cases": 1140,
+  "max_error_to_three_decimals": 0.0004996005417545746,
+  "distance_checks": 855,
+  "original_rmsd_labels": 285,
+  "fixed_pool_winner_checks": 160,
+  "complete_far_pools_identical": 8
+}

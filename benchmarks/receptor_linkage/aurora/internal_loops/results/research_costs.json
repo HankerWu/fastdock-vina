@@ -1,0 +1,291 @@
+{
+  "scope": "Aurora A internal_loops, fixed poses, blind docking, receptor construction failures and repeats. The later all-pose cross-scoring and far-shift control have their own measurement in pool_control/README.md. VHL and affinity studies have separate workloads.",
+  "runtime": {
+    "cpu_threads_per_production_job": 1,
+    "platform": "CPU, OpenMM Reference for isolated harmonic check. No GPU runs counted.",
+    "python": "3.12.14",
+    "openmm": "8.6.1",
+    "openmm_reported_build": "8.6.1.dev-b399af4",
+    "pdbfixer": "1.12.0",
+    "meeko": "0.7.1",
+    "rdkit_for_protein_and_docking_evaluation": "2025.09.3",
+    "scipy": "1.17.0",
+    "numpy": "2.3.5",
+    "gemmi": "0.7.4"
+  },
+  "interpretation": {
+    "wall_s": "Per-job monotonic elapsed seconds. Jobs across independent branches could overlap in real time.",
+    "cpu_s": "Child user plus system CPU seconds for one invocation. Blank historical measures are null. CPU is not inferred from wall time.",
+    "whole_research_elapsed_wall_s": null,
+    "whole_research_cpu_s": null,
+    "excluded_from_global_sum": "No continuous supervisor accounted for concurrent builds, failed early Meeko attempts, downloads, compilation, archive preparation and all analysis processes. Raw log copies and nested cumulative timers are never summed as independent jobs."
+  },
+  "blind_docking": {
+    "budget": {
+      "drugs": [
+        "danusertib",
+        "at9283"
+      ],
+      "seeds": [
+        60913,
+        60943,
+        61211,
+        61231
+      ],
+      "box_A": [
+        26,
+        26,
+        26
+      ],
+      "trajectories": 2,
+      "cpu_threads": 1,
+      "requested_max_evals_per_trajectory": 25000,
+      "double_max_evals_per_trajectory": 50000,
+      "num_modes_cap": 9,
+      "energy_range": 100,
+      "evaluation_definition": "Pro sums hunt, secondary and explicit gradient counters in the original log. The requested cap can be crossed within an optimization; explicit refinement adds evaluations. Official CLI has no equivalent counters."
+    },
+    "sources": [
+      "base/cells.csv",
+      "templates/cells.csv"
+    ],
+    "per_arm": {
+      "dry": {
+        "calls": 8,
+        "sum_process_wall_s": 2.926505,
+        "sum_process_cpu_s": 2.868352,
+        "returned_modes": 71,
+        "reported_evaluations": 402203,
+        "executable_sha256": "6a56ec3db8c23b2e8bea4f65eb94fe3a4ccc2b272b4ae27c0da8113c078b4304",
+        "receptor_sha256": "6965eac38454787c2ffb7d72617318018d8577ebfa868ec7c77a01708e885c1c"
+      },
+      "official": {
+        "calls": 8,
+        "sum_process_wall_s": 13.143352,
+        "sum_process_cpu_s": 13.062595,
+        "returned_modes": 72,
+        "reported_evaluations": null,
+        "executable_sha256": "f31f774f723bba7bbe6e9d1c47577020eea9a8da16424284c043d22593570644",
+        "receptor_sha256": "6965eac38454787c2ffb7d72617318018d8577ebfa868ec7c77a01708e885c1c"
+      },
+      "double": {
+        "calls": 8,
+        "sum_process_wall_s": 4.617285,
+        "sum_process_cpu_s": 4.534242,
+        "returned_modes": 71,
+        "reported_evaluations": 801999,
+        "executable_sha256": "6a56ec3db8c23b2e8bea4f65eb94fe3a4ccc2b272b4ae27c0da8113c078b4304",
+        "receptor_sha256": "6965eac38454787c2ffb7d72617318018d8577ebfa868ec7c77a01708e885c1c"
+      },
+      "1OL5_restrained": {
+        "calls": 8,
+        "sum_process_wall_s": 2.484955,
+        "sum_process_cpu_s": 2.481695,
+        "returned_modes": 71,
+        "reported_evaluations": 402091,
+        "executable_sha256": "6a56ec3db8c23b2e8bea4f65eb94fe3a4ccc2b272b4ae27c0da8113c078b4304",
+        "receptor_sha256": "c4a46f5597245db166f9c080cb0eb76bb39fca0afccea1919fb88f6998de0bd7"
+      },
+      "1OL7_restrained": {
+        "calls": 8,
+        "sum_process_wall_s": 2.442776,
+        "sum_process_cpu_s": 2.439784,
+        "returned_modes": 72,
+        "reported_evaluations": 401742,
+        "executable_sha256": "6a56ec3db8c23b2e8bea4f65eb94fe3a4ccc2b272b4ae27c0da8113c078b4304",
+        "receptor_sha256": "1892b86670727a85fbd11c2aefedcb948ddae30f579f440453f00780f20b0ead"
+      },
+      "1OL7_released": {
+        "calls": 8,
+        "sum_process_wall_s": 2.443058,
+        "sum_process_cpu_s": 2.426749,
+        "returned_modes": 71,
+        "reported_evaluations": 402227,
+        "executable_sha256": "6a56ec3db8c23b2e8bea4f65eb94fe3a4ccc2b272b4ae27c0da8113c078b4304",
+        "receptor_sha256": "614daf795f09fa31759011508a36e596068df237bc18861a247273f34349c2ea"
+      }
+    },
+    "total": {
+      "calls": 48,
+      "sum_process_wall_s": 28.057931,
+      "sum_process_cpu_s": 27.813417
+    }
+  },
+  "fixed_coordinate_scores": {
+    "comparison": {
+      "sources": [
+        "finalfixed/fixed.csv"
+      ],
+      "per_arm": {
+        "dry": {
+          "calls": 10,
+          "sum_process_wall_s": 0.196776,
+          "sum_process_cpu_s": 0.18429
+        },
+        "1OL5_restrained": {
+          "calls": 10,
+          "sum_process_wall_s": 0.157962,
+          "sum_process_cpu_s": 0.155598
+        },
+        "1OL7_restrained": {
+          "calls": 10,
+          "sum_process_wall_s": 0.158116,
+          "sum_process_cpu_s": 0.155863
+        },
+        "1OL7_released": {
+          "calls": 10,
+          "sum_process_wall_s": 0.161874,
+          "sum_process_cpu_s": 0.159039
+        }
+      },
+      "total": {
+        "calls": 40,
+        "sum_process_wall_s": 0.674727,
+        "sum_process_cpu_s": 0.65479
+      }
+    },
+    "separate_initial_dry_repeat": {
+      "sources": [
+        "fixedbase/fixed.csv"
+      ],
+      "total": {
+        "calls": 10,
+        "sum_process_wall_s": 0.272221,
+        "sum_process_cpu_s": 0.252842
+      }
+    },
+    "all_executed": {
+      "calls": 50,
+      "sum_process_wall_s": 0.946948,
+      "sum_process_cpu_s": 0.907632
+    },
+    "budget": "score_only, common unbound reference zero, locked coordinates and chemical graph. The same 10 dry cases were executed twice; only finalfixed enters the scientific comparison."
+  },
+  "pdbfixer_and_cartesian_attempts": {
+    "sources": "loop<seed>/{raw_geometry,first_release,repaired}.json within evidence.tar.xz",
+    "per_seed": {
+      "43103": {
+        "pdbfixer_until_raw_geometry_wall_s": 14.559741,
+        "ff14sb_hand_omega_preserving_old_H_then_release_wall_s": 14.417316,
+        "ff14sb_hand_omega_reset_H_then_release_wall_s": 13.990235
+      },
+      "43104": {
+        "pdbfixer_until_raw_geometry_wall_s": 18.373629,
+        "ff14sb_hand_omega_preserving_old_H_then_release_wall_s": 11.538356,
+        "ff14sb_hand_omega_reset_H_then_release_wall_s": 10.215693
+      }
+    },
+    "sum_recorded_wall_s": 83.09497,
+    "cpu_s": null,
+    "note": "raw construction timer stops at geometric validation. The first failed signing/Meeko attempt and debugging reruns were not consistently timed. repair.json and first_release.json are byte-identical copies of the first release record."
+  },
+  "crystal_template_attempts": {
+    "sources": "template<donor>/{initial/,trans_model/{restrained,released}/,}template.json; supplemental clean-rebuild cumulative times were read from an independent working directory",
+    "per_donor": {
+      "1OL5": {
+        "single_start_then_direct_ff14sb_wall_s": 12.099742,
+        "multi_start_then_direct_ff14sb_wall_s": 13.255951,
+        "multi_start_through_restrained_stage_wall_s": 18.826266,
+        "multi_start_through_final_release_wall_s": 19.806524,
+        "final_release_and_check_only_wall_s": 0.980258,
+        "separate_clean_rebuild_through_restrained_wall_s": 19.083349,
+        "separate_clean_rebuild_through_final_release_wall_s": 20.009604
+      },
+      "1OL7": {
+        "single_start_then_direct_ff14sb_wall_s": 10.673082,
+        "multi_start_then_direct_ff14sb_wall_s": 10.960124,
+        "multi_start_through_restrained_stage_wall_s": 17.097374,
+        "multi_start_through_final_release_wall_s": 19.989156,
+        "final_release_and_check_only_wall_s": 2.891782,
+        "separate_clean_rebuild_through_restrained_wall_s": 17.46399,
+        "separate_clean_rebuild_through_final_release_wall_s": 20.74746
+      }
+    },
+    "cpu_s": null,
+    "budget": "Long segment starts at donor; short segment starts at donor or from donor plus 16 seeded Sobol starts (7 angles). Final refinement uses no ligand, 3000-iteration maximum for each minimization stage, 10 kJ/mol/nm force tolerance. Failed geometry retained.",
+    "note": "Both trans-stage times share a zero at start of template construction. Use only the final cumulative value for that two-stage invocation. A clean repeat reproduced both closed PDBs, four endpoint PDBs and the three accepted PDBQTs byte for byte."
+  },
+  "known_subtotals": {
+    "main_receptor_generation_sum_logged_wall_s": 169.879549,
+    "clean_template_rebuild_sum_logged_wall_s": 40.757064,
+    "blind_and_all_fixed_cli": {
+      "calls": 98,
+      "sum_process_wall_s": 29.004879,
+      "sum_process_cpu_s": 28.721049
+    },
+    "note": "These are sums of instrumented jobs, not turnaround time or a complete cost for the research round."
+  },
+  "fresh_archive_verification": {
+    "method": "Separate timed reproduction in a clean directory with Linux wait4. Timings include interpreter startup and child CPU. Peak resident set size is reported per process tree in KiB. No blind docking was repeated for this cost audit.",
+    "timings": {
+      "original_export": {
+        "wall_s": 6.171634,
+        "cpu_s": 6.131353,
+        "peak_rss_kib": 174780,
+        "exit": 0
+      },
+      "corrected_export": {
+        "wall_s": 5.926098,
+        "cpu_s": 5.882043,
+        "peak_rss_kib": 174476,
+        "exit": 0
+      },
+      "check_export": {
+        "wall_s": 0.272614,
+        "cpu_s": 0.270426,
+        "peak_rss_kib": 52016,
+        "exit": 0
+      },
+      "check_ff14sb": {
+        "wall_s": 0.199399,
+        "cpu_s": 0.196556,
+        "peak_rss_kib": 52572,
+        "exit": 0
+      },
+      "donor_geometry": {
+        "wall_s": 0.37838,
+        "cpu_s": 0.377794,
+        "peak_rss_kib": 61816,
+        "exit": 0
+      },
+      "table_statistics": {
+        "wall_s": 0.092207,
+        "cpu_s": 0.088686,
+        "peak_rss_kib": 23928,
+        "exit": 0
+      },
+      "check_predictions": {
+        "wall_s": 1.371544,
+        "cpu_s": 1.364548,
+        "peak_rss_kib": 129492,
+        "exit": 0
+      }
+    },
+    "files_verified_byte_identical": [
+      "export.json",
+      "ff14sb_independent.json",
+      "independent_predictions.json",
+      "donor_sources.json",
+      "donor_frames.csv",
+      "donor_distances.csv",
+      "donor_model_rmsd.csv",
+      "cells.csv",
+      "modes.csv",
+      "fixed.csv",
+      "distributions.csv"
+    ],
+    "sum_job_wall_s": 14.411876,
+    "sum_job_cpu_s": 14.311406
+  },
+  "other_work": {
+    "original_export_fix_verification_and_donor_download_timing": {
+      "wall_s": null,
+      "cpu_s": null,
+      "note": "Original 2J4Z/2X6E prep and original geometric checks lacked job-level timings. The clean replay gives comparison measurements above. Initial acquisition of 1OL5, 1OL7 and 1MQ4 used publicly deposited coordinate files."
+    },
+    "pool_cross_evaluation_and_order_control": {
+      "separate_record": "pool_control/README.md",
+      "included_in_any_subtotal_above": false
+    }
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "binary_sha256": "6a56ec3db8c23b2e8bea4f65eb94fe3a4ccc2b272b4ae27c0da8113c078b4304",
+  "dry_sha256": "6965eac38454787c2ffb7d72617318018d8577ebfa868ec7c77a01708e885c1c",
+  "released_sha256": "614daf795f09fa31759011508a36e596068df237bc18861a247273f34349c2ea",
+  "far_receptor_sha256": "276899d0386400eafab3ddc5eb63e7f4e546be164e66ee11190829196b45441f",
+  "n_added": 134,
+  "n_added_heavy": 101,
+  "min_to_cube_A": 51.79286111111111,
+  "displacement_A": [
+    100,
+    0,
+    0
+  ]
+}
