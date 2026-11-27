@@ -6,6 +6,8 @@ AutoDock Vina 的 CPU 优化和对接研发分支。
 
 FastDock Vina 基于 [AutoDock Vina](https://github.com/ccsb-scripps/AutoDock-Vina/tree/3c65c0b3e6c2c1d183f6a175ecb65e3c5ba91645) 做 CPU 优化。Pro 研发分支继承这些优化，并提供可选的搜索、精修和姿势重排方法。
 
+Vina 与 Vinardo 现在按 PDBQT 声明的双侧转轴计算配体扭转分母，末端羟基不同分支写法能得到相同的分数。三个实测亲和力系列中出现了改善和退化。单独的刚体粗筛实验把原子受力投影到平移和旋转，在 BRPF1 中恢复了两个接近晶体的候选，但独立 RBP4 面板未有 2 Å 命中。该搜索方法保留为实验实现。[转子计数与同测定验证](benchmarks/terminal_rotor_score/README.md) · [刚体筛选、预算与结构验证](benchmarks/rigid_lookahead/README.md)
+
 AD4 模式现在先按配体原子的电荷组合三张 AutoGrid 图，再施加一次正能量截断和一次盒壁约束。仅靠地图评分时，软件也在合并候选前排除无效坐标。人 FKBP12 的两批随机种子都使跨受体平均分判对的实测抑制常数分子对从 6/15 增至 9/15，但在单个受体上方向相反。新增激酶、凝血酶和交叉对接实验分别检验了局部构象积分、可移动水及刚体平移扫描。各研究入口保留配对原始输出、反例与成本。[AD4 原子场、姿势和亲和力](benchmarks/ad4_atom_field/README.md) · [五组同靶亲和力实验](benchmarks/affinity_reference_ensemble/README.md) · [有序水](benchmarks/mobile_water/README.md) · [冻结的跨受体验证](benchmarks/hydration_transfer/README.md) · [粗筛与精修的逐步复算](benchmarks/rigid_translation_scan/README.md)
 
 默认算法已按实际使用的力场判断哪些原子必须位于受体网格内。闭环标记单独越界的真实大环姿势可以正常打分，AD4 会拒绝极性氢落在其有效图外的姿势。另在固定预算下检验了只移动氢的扭转提议：将其重新分配给其他扭转，在 RXRα 和 PTP1B 个例找回了正确盆地，按上一次局优目标启用的策略没有保住这些命中。两种搜索变体仅保留为可复现实验。[力场边界修复](benchmarks/macrocycle_domain/README.md) · [扭转搜索和逐步反事实](benchmarks/silent_torsion/README.md) · [游离态参考抽样与实测排序](benchmarks/frozen_core/solution_strain/reference_sampling/README.md)

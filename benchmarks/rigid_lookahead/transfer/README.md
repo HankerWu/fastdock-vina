@@ -1,6 +1,6 @@
 # 人 RBP4 新结构上的独立验证
 
-在预测前冻结两种维生素 A 转运蛋白 RBP4 配体与一个独立的人性激素结合球蛋白 SHBG 结构。RBP4 取 1RBP 的视黄醇（RTL，21 个重原子，2.0 Å）与 3FMZ 的非视黄醇类 A1120（2T1，28 个重原子，2.9 Å）。两者分别原位和相互交叉，两颗种子，共八个配对单元。两份沉积配体重原子均满占有率、无替代构象，口袋没有重建重原子。交叉对齐用 61 个共同口袋 Cα，残差 1.191 Å。3FMZ 的实验研究报道与视黄醇结合时不同的口袋环构象。SHBG 的二氢睾酮晶体结构 1D2S 中，处理流程会移除一个距配体 7.013 Å 的 Ca，按预先冻结的 8 Å 标准排除。新机制在这里取得的是一个家族、两个不同化学结构的结果。[预测前已发布的冻结协议](https://github.com/HankerWu/fastdock-vina/blob/8f4ebac7363dc671066b15eb4c3533b12172ef03/benchmarks/rigid_lookahead/transfer/PROTOCOL.md) · [1RBP](https://www.rcsb.org/structure/1RBP) · [3FMZ 的原始研究](https://pmc.ncbi.nlm.nih.gov/articles/PMC2658061/) · [1D2S](https://www.rcsb.org/structure/1D2S)
+在预测前冻结两种维生素 A 转运蛋白 RBP4 配体与一个独立的人性激素结合球蛋白 SHBG 结构。RBP4 取 1RBP 的视黄醇（RTL，21 个重原子，2.0 Å）与 3FMZ 的非视黄醇类 A1120（2T1，28 个重原子，2.9 Å）。两者分别原位和相互交叉，两颗种子，共八个配对单元。两份沉积配体重原子均满占有率、无替代构象，口袋没有重建重原子。交叉对齐用 61 个共同口袋 Cα，残差 1.191 Å。3FMZ 的实验研究报道与视黄醇结合时不同的口袋环构象。SHBG 的二氢睾酮晶体结构 1D2S 中，处理流程会移除一个距配体 7.013 Å 的 Ca，按预先冻结的 8 Å 标准排除。新机制在这里取得的是一个家族、两个不同化学结构的结果。[预测前冻结的协议](https://github.com/HankerWu/fastdock-vina/blob/8f4ebac7363dc671066b15eb4c3533b12172ef03/benchmarks/rigid_lookahead/transfer/PROTOCOL.md) · [1RBP](https://www.rcsb.org/structure/1RBP) · [3FMZ 的原始研究](https://pmc.ncbi.nlm.nih.gov/articles/PMC2658061/) · [1D2S](https://www.rcsb.org/structure/1D2S)
 
 | 方法 | 2 Å 首位 / 前五 / 候选池命中（各 8 次） | 候选池命中时的首位成功 |
 |---|---|---|

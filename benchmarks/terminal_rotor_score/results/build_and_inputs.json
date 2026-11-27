@@ -1,0 +1,26 @@
+{
+  "parent": "2e610c4",
+  "fixed": "c0ce55f",
+  "upstream": "3c65c0b",
+  "binary_sha256": {
+    "parent_cli": "ade79e941d0b90e99071ecc81cef5e37c66b76b74ccd21daba1f36a7d96cd5d1",
+    "fixed_cli": "0d2a2455b1becdc310f4c5f825be34af4146ad82158f1c29031391708ed87750",
+    "parent_probe": "a0467edb952e30c014ed0f6bfbc6223a600dca4a5e0105885cd7346e98ae849f",
+    "fixed_probe": "5bb9ec21ecc2cbbf7a6084a9d22398554a56fd27580628cf1bbcc5f38e860dc4",
+    "upstream_cli": "1f037763e46350d6c3e71470803caf7bb0598eaa06976a5363922ac553e6214d"
+  },
+  "input_sha256": {
+    "benchmarks/rigid_flip/inputs.tar.xz": "46c04576bbeb9c4bd804b3b9e5f12d6b726b7f79d1bcd7bc0e7be23d6a371245",
+    "benchmarks/silent_torsion/primary/raw.tar.xz": "781f819336d66cecd3e30281f5cf9b280d7ec873fe837b4f8c5c3859f98b8f36",
+    "benchmarks/pair_gradient/galectin_external/raw.tar.xz": "588bf5a9350e9ff03ae7000f1b747faa52b153716fc82077b1176cd6c3b1eb20",
+    "benchmarks/silent_torsion/affinity/primary/raw.tar.xz": "7235294844282b125dd5717b94277aa3f6e36236b4a4c0511f66bc01474e4db1",
+    "benchmarks/frozen_core/affinity/fxa_frozen.tar.xz": "c7786f8f37562a339298f390574ff8aed15131f5aaabc17c11562e80989a5475",
+    "benchmarks/frozen_core/strain_transfer_audit/redock_raw.tar.xz": "22b23a2c92b037ed512e0216c9d61579d6b731dda56752042032e6102b37ebc6",
+    "benchmarks/affinity_reference_ensemble/results/s6k_evidence.tar.xz": "179ea864f497d41dd1172348fc995b2153930e709468e3710acb8f3b941dd269",
+    "benchmarks/affinity_reference_ensemble/results/s6k_docks.csv": "9a4346baedc7cdbec40b00b637a702dc677c4f83707172f719ae466b764e382a",
+    "benchmarks/affinity_reference_ensemble/results/s6k_panel.csv": "c0866678aeda3fb4ce8c80c0a3f581fa819e3537c4dc895326287f49f1397fa5",
+    "benchmarks/affinity_partition/fxa_series.csv": "4d6ce3e372cbd96a09447e45e6f51e9e29b66d296ab960ea819af62d29f69fb1",
+    "benchmarks/pair_gradient/galectin_external/manifest.csv": "941e1e9e44dc44336ccee4e3094b812b1a4f515bfe6662dadd64a278aeaf759d"
+  },
+  "compiler": "c++ (Debian 14.2.0-19) 14.2.0"
+}

@@ -1,0 +1,10 @@
+{
+  "upstream": {
+    "sha256": "3b6492ecf51789c71195438b3bda5784455b5e7ab2bceb7a59a25c5c8d182ae8",
+    "version": "AutoDock Vina v1.2.7-27-g3c65c0b"
+  },
+  "pro": {
+    "sha256": "488f766c683a05418695e066bfb34d9a93cbfe7aade41204cfce518ed24f739b",
+    "version": "AutoDock Vina v1.2.7-27-g3c65c0b"
+  }
+}
