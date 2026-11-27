@@ -100,20 +100,11 @@ def main():
     assert set(observed) == set(indexed)
     output = []
     for target, states in RECEIVERS.items():
-        eligible = [
-            (a, b)
-            for a, b in combinations(labels, 2)
-            if max(
-                float(labels[a][target + "_Kd_uM"]), float(labels[b][target + "_Kd_uM"])
-            )
-            >= 3
-            * min(
-                float(labels[a][target + "_Kd_uM"]), float(labels[b][target + "_Kd_uM"])
-            )
-        ]
+        kd = {i: Decimal(row[target + "_Kd_uM"]) for i, row in labels.items()}
         pairs = [
-            sorted((a, b), key=lambda i: float(labels[i][target + "_Kd_uM"]))
-            for a, b in eligible
+            (strong, weak)
+            for strong, weak in combinations(sorted(kd, key=kd.get), 2)
+            if kd[weak] >= 3 * kd[strong]
         ]
         credit = {}
         for arm in ARMS:

@@ -10,6 +10,7 @@ import subprocess
 import tarfile
 import time
 from concurrent.futures import ThreadPoolExecutor
+from decimal import Decimal
 from pathlib import Path
 from statistics import mean
 
@@ -151,7 +152,7 @@ def run(args):
     }
     pairs, summary = [], []
     for target, states in RECEIVERS.items():
-        kd = {i: float(panel[i][target + "_Kd_uM"]) for i in compounds}
+        kd = {i: Decimal(panel[i][target + "_Kd_uM"]) for i in compounds}
         for arm in binaries:
             for label in (*states, "consensus"):
                 used = states if label == "consensus" else (label,)
@@ -194,7 +195,7 @@ def run(args):
                         )
                     rho = tau = ""
                     if subset != "equal_heavy":
-                        x, y = [scores[i] for i in use], [kd[i] for i in use]
+                        x, y = [scores[i] for i in use], [float(kd[i]) for i in use]
                         rho, tau = spearmanr(x, y).statistic, kendalltau(x, y).statistic
                     summary.append(
                         {

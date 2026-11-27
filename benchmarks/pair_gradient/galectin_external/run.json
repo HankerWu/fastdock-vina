@@ -1,0 +1,18 @@
+{
+  "seed": 214039,
+  "transported_caps": {
+    "1KJL": 11993,
+    "3T1L": 12000
+  },
+  "cpu": 8,
+  "fixed_linear_parent_time_joint_ratios": [
+    1.002763512552381,
+    1.003308712743809
+  ],
+  "series_specific_calibration": false,
+  "binary_sha256": {
+    "parent": "1dd75983501e665ede5bb750cc169947e1fc3f7d7819339f7e957454f654c77e",
+    "linear": "0490742b2c09d28f3c3197131f5ccb76218a7c813040607a5a649a9ee3cdf7b1"
+  },
+  "manifest_sha256": "941e1e9e44dc44336ccee4e3094b812b1a4f515bfe6662dadd64a278aeaf759d"
+}
