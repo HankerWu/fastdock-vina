@@ -1,6 +1,6 @@
 {
   "source_commit": "8eafd0c6fe651f4011c0a0b66ca743e87798b0ff",
-  "protocol_commit": "8cf4326286099dca93571b7338c48f01c794eeca",
+  "protocol_commit": "18a71878b2a5bd3fb67b1ea07cb4145e2dbc006a",
   "compiler": "c++ (Debian 14.2.0-19) 14.2.0",
   "python": "3.12.14",
   "numpy": "2.3.5",
@@ -27,5 +27,6 @@
   },
   "git_src_tree": "6c6f65b0b7445cb364415f2079906e0d67e015bb",
   "novel_trajectory_replays": 2,
-  "stage_and_split_csv_and_all_278_archive_arrays_equal_between_replays": true
+  "stage_and_split_csv_and_all_278_archive_arrays_equal_between_replays": true,
+  "protocol_text_sha256": "70d01788e4f9c49bd7ffce7a127f46c769cf5aef885a6daa098e804874bd2b8c"
 }
