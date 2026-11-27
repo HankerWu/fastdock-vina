@@ -1,5 +1,7 @@
 # FastDock Vina Pro
 
+本轮对三组历史修正分别做了四臂配对实验。在新增的人 GAA 亚氨基糖面板上，CH–π 搜索场和重排把 24000 档的平均首姿误差从 7.168 降至 3.180 Å，单独改变搜索已达到 3.345 Å；在 GBA1 相同预算下，组合使均值从 2.629 升至 3.617 Å。BRD9 出现了同时需要软排斥搜索和水重排的单病例，四靶点总体未复现收益。修正了因子 Xa 配体制备变化后沿用旧转子分母的问题。[组合实验总览与历史复算](benchmarks/mechanism_interactions/README.md)
+
 AutoDock Vina 的 CPU 优化和对接研发分支。
 
 [性能实验记录](docs/BENCHMARKS.md) · [逐项数据](benchmarks/benchmark.csv) · [源码来源](docs/PROVENANCE.md) · [上游 AutoDock Vina](https://github.com/ccsb-scripps/AutoDock-Vina)
