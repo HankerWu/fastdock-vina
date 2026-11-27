@@ -1,0 +1,11 @@
+target,arm,unique_ligands,eligible_pairs,correct,delta_pp,compound_boot_low_pp,compound_boot_high_pp,usable_draws
+Gal1,upstream,13,23,16.0,0.0,0.0,0.0,9860
+Gal1,parent,13,23,16.0,0.0,0.0,0.0,9860
+Gal1,linear,13,23,12.0,-17.391,-66.667,37.5,9860
+Gal1,cubic,13,23,12.0,-17.391,-62.845,22.222,9860
+Gal1,shift,13,23,12.0,-17.391,-66.667,37.5,9860
+Gal3,upstream,13,35,23.0,0.0,0.0,0.0,9998
+Gal3,parent,13,35,23.0,0.0,0.0,0.0,9998
+Gal3,linear,13,35,30.0,20.0,-13.889,63.636,9998
+Gal3,cubic,13,35,20.0,-8.571,-56.0,40.041,9998
+Gal3,shift,13,35,29.0,17.143,-22.222,61.111,9998
