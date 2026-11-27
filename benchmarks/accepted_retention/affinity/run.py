@@ -89,7 +89,7 @@ def cells(work, panel):
     ]
 
 
-def dock(cell, work, binary, arm, seed, cap, include_counters, diag=False):
+def dock(cell, work, binary, arm, seed, cap, include_counters, diag=False, trajectories=1):
     panel, rec, compound, protein, box, ligand = cell
     key = f"{panel}_{rec}_{compound}_{seed}_{arm}_{cap}"
     raw = work / "raw"
@@ -107,7 +107,7 @@ def dock(cell, work, binary, arm, seed, cap, include_counters, diag=False):
         "--cpu",
         "1",
         "--exhaustiveness",
-        "1",
+        str(trajectories),
         "--max_evals",
         str(cap),
         "--num_modes",
@@ -131,7 +131,10 @@ def dock(cell, work, binary, arm, seed, cap, include_counters, diag=False):
     )
     if not all_scores:
         raise ValueError(key)
-    values = {k: next(iter(re.findall(r"\b" + k + r"=(\d+)", log)), "") for k in COUNT}
+    values = {}
+    for k in COUNT:
+        matches = re.findall(r"\b" + k + r"=(\d+)", log)
+        values[k] = str(sum(map(int, matches))) if matches else ""
     join = (
         sum(int(values[k]) for k in COUNT[:3])
         if all(values[k] != "" for k in COUNT[:3])
