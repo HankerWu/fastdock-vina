@@ -43,7 +43,7 @@ def assignments(a, b):
         yield "different_scaffold"
 
 
-def pair_rows(assay, receptor, states, meta):
+def pair_rows(assay, receptor, states, meta, arms=ARMS):
     for a, b in itertools.combinations(
         sorted(states, key=lambda c: Decimal(meta[c]["ki_nm"])), 2
     ):
@@ -60,7 +60,7 @@ def pair_rows(assay, receptor, states, meta):
             "weaker": b,
             "fold": float(fold),
         }
-        for arm in ARMS:
+        for arm in arms:
             # BACE uses a difference of seed-medians, Factor Xa a median of
             # matched differences. Preserve both published definitions exactly.
             if assay == "CHEMBL661804":

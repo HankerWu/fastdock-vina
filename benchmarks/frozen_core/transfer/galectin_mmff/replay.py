@@ -112,7 +112,7 @@ def score(work, binary):
     return results
 
 
-def evaluate(rows, work, out):
+def evaluate(rows, work, out, arms=ARMS, write_table=write):
     label = {int(r["compound"]): r for r in read(work / "panel.csv")}
     ids = sorted(label)
     formula = {
@@ -128,7 +128,7 @@ def evaluate(rows, work, out):
     for target, states in TARGETS.items():
         kd = {i: Decimal(kd_table[i][target + "_Kd_uM"]) for i in ids}
         assert all(k == Decimal(label[i][target + "_Kd_uM"]) for i, k in kd.items())
-        for arm in ARMS:
+        for arm in arms:
             per_state = {}
             for pdb in states:
                 top = top5 = oracle = 0
@@ -242,7 +242,7 @@ def evaluate(rows, work, out):
             )
             weights = counts[:, left] * counts[:, right]
             weights = weights[weights.sum(axis=1) > 0]
-            for arm in ("full", "prepared"):
+            for arm in (a for a in arms if a != "native"):
                 new = values(arm, subset)
                 delta = np.array([new[k] - v for k, v in native.items()])
                 lo, hi = np.quantile(
@@ -259,10 +259,10 @@ def evaluate(rows, work, out):
                         valid=len(weights),
                     )
                 )
-    write(out / "bootstrap.csv", bootstrap)
-    write(out / "geometry.csv", geometry)
-    write(out / "affinity.csv", stats)
-    write(out / "pairs.csv.xz", pairs)
+    write_table(out / "bootstrap.csv", bootstrap)
+    write_table(out / "geometry.csv", geometry)
+    write_table(out / "affinity.csv", stats)
+    write_table(out / "pairs.csv.xz", pairs)
 
 
 if __name__ == "__main__":

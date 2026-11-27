@@ -1,0 +1,17 @@
+target,pdb,arm,pools,top1,top5,oracle
+Gal1,1GZW,native,52,16,20,20
+Gal1,4Q26,native,52,16,18,18
+Gal1,1GZW,full,52,7,20,20
+Gal1,4Q26,full,52,12,15,18
+Gal1,1GZW,gb_fixed,52,7,20,20
+Gal1,4Q26,gb_fixed,52,12,15,18
+Gal1,1GZW,gb_reselected,52,7,20,20
+Gal1,4Q26,gb_reselected,52,12,15,18
+Gal3,1KJL,native,52,1,2,2
+Gal3,3T1L,native,52,3,6,6
+Gal3,1KJL,full,52,0,0,2
+Gal3,3T1L,full,52,3,5,6
+Gal3,1KJL,gb_fixed,52,0,0,2
+Gal3,3T1L,gb_fixed,52,3,6,6
+Gal3,1KJL,gb_reselected,52,0,0,2
+Gal3,3T1L,gb_reselected,52,3,6,6

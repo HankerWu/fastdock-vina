@@ -71,10 +71,10 @@ def atoms(lines, *, receptor=False):
 
 
 class PolarContext:
-    def __init__(self, molecules, platform="CPU"):
+    def __init__(self, molecules, platform="CPU", *, solute_dielectric=4):
         system = mm.System()
         force = mm.GBSAOBCForce()
-        force.setSoluteDielectric(4)
+        force.setSoluteDielectric(solute_dielectric)
         force.setSolventDielectric(78.5)
         force.setSurfaceAreaEnergy(0)
         force.setNonbondedMethod(mm.GBSAOBCForce.NoCutoff)
