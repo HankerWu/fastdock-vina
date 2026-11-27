@@ -103,7 +103,7 @@ std::bitset<XS_TYPE_SIZE> cache::missing_map_types(const szv& atom_types) const 
 	return types;
 }
 
-template<bool Cubic>
+template<bool Cubic, bool Tangent>
 fl cache::eval_atoms(const model& m, fl cap, vecv* gradient, bool flex_only) const {
 	if (flex_only && m.num_flex() == 0) return 0;
 	fl energy = 0;
@@ -115,7 +115,9 @@ fl cache::eval_atoms(const model& m, fl cap, vecv* gradient, bool flex_only) con
 			continue;
 		}
 		const grid& field = m_grids[t];
-		if (Cubic)
+		if (Tangent)
+			energy += field.evaluate_hunt_tangent(m.coords[i], m_slope, cap, gradient ? &(*gradient)[i] : nullptr);
+		else if (Cubic)
 			energy += field.evaluate_cubic(m.coords[i], m_slope, cap, gradient ? &(*gradient)[i] : nullptr);
 		else if (gradient)
 			energy += field.evaluate(m.coords[i], m_slope, cap, (*gradient)[i]);
@@ -125,6 +127,7 @@ fl cache::eval_atoms(const model& m, fl cap, vecv* gradient, bool flex_only) con
 	return energy;
 }
 
+template fl cache::eval_atoms<false, true>(const model&, fl, vecv*, bool) const;
 template fl cache::eval_atoms<true>(const model&, fl, vecv*, bool) const;
 
 fl cache::eval(const model& m, fl v) const { return eval_atoms<false>(m, v, nullptr, false); }

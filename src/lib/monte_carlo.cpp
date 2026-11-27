@@ -80,7 +80,8 @@ void monte_carlo::operator()(model& m, output_container& out, const precalculate
 		const bool reoriented = mutate_conf(candidate.c, m, mutation_amplitude, generator,
 		                                    mixed_reorientation, separate_hunt_chain, centered_rotation, balanced_torsion);
 		const int before_hunt = evalcount;
-		quasi_newton_par(m, p, ig, candidate, hunt_cap, evalcount);
+		const igrid& hunt = hunt_grid && (!first_hunt_only || step == 0) ? *hunt_grid : ig;
+		quasi_newton_par(m, p, hunt, candidate, hunt_cap, evalcount);
 		if (counters) {
 			++counters->hunt_calls;
 			counters->hunt_evals += evalcount - before_hunt;

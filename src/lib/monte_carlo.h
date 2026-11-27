@@ -49,6 +49,8 @@ struct monte_carlo {
 	sz num_saved_mins;
 	fl mutation_amplitude;
 	unsigned local_steps;
+	const igrid* hunt_grid = nullptr;
+	bool first_hunt_only = false;
 	bool mixed_reorientation = false;
 	bool separate_hunt_chain = false;
 	bool centered_rotation = false;
