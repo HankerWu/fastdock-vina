@@ -46,13 +46,17 @@ int main() {
 	gd[0].begin = -2;
 	gd[0].end = 2;
 	gd[0].n_voxels = 8;
-	for (const char* type : {"G0", "G1", "G2", "G3", "HD", "CG0", "CG1", "CG2", "CG3", "W", "C"}) {
-		const model m = parse_root(atom_record(1, "C", 0) + atom_record(2, type, 3));
-		const std::string name(type);
-		const bool bounded = name[0] != 'G' && name != "HD";
-		require(m.within_grid(gd, 0) == !bounded, "Incorrect grid-domain atom selection");
-		require(m.get_grid_atom_movable_coords().size() == 1 + sz(bounded),
-		        "Printable box and validity checks must select the same atoms");
+	for (const auto typing : {atom_type::AD, atom_type::XS}) {
+		for (const char* type : {"G0", "G1", "G2", "G3", "H", "HD", "CG0", "CG1", "CG2", "CG3", "W", "C"}) {
+			const model m = parse_ligand_pdbqt_from_string(
+				"ROOT\n" + atom_record(1, "C", 0) + atom_record(2, type, 3) + "ENDROOT\nTORSDOF 0\n", typing);
+			const std::string name(type);
+			const bool bounded = name[0] != 'G' && (typing == atom_type::AD ||
+			                     (name != "H" && name != "HD" && name != "W"));
+			require(m.within_grid(gd, 0) == !bounded, "Incorrect force-field grid-domain atom selection");
+			require(m.get_grid_atom_movable_coords().size() == 1 + sz(bounded),
+			        "Printable box and validity checks must select the same atoms");
+		}
 	}
 	const auto legacy = a.get_heavy_atom_movable_coords();
 	const auto chemical = a.get_chemical_heavy_atom_movable_coords();

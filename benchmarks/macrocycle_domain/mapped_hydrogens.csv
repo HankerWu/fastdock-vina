@@ -1,0 +1,15 @@
+pose,force_field,operation,arm,status,score
+inside,ad4,score_only,before,0,-12.351
+inside,ad4,score_only,after,0,-12.351
+inside,vina,score_only,before,0,-7.628
+inside,vina,score_only,after,0,-7.628
+only_HD_outside,ad4,score_only,before,0,354114.303
+only_HD_outside,ad4,score_only,after,1,
+only_HD_outside,vina,score_only,before,0,186.719
+only_HD_outside,vina,score_only,after,0,186.719
+clamp_HD_to_face,ad4,score_only,before,0,20528.303
+clamp_HD_to_face,ad4,score_only,after,0,20528.303
+clamp_HD_to_face,vina,score_only,before,0,186.719
+clamp_HD_to_face,vina,score_only,after,0,186.719
+only_HD_outside,ad4,local_only,before,0,354114.303
+only_HD_outside,ad4,local_only,after,1,
