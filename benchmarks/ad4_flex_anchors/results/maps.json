@@ -1,0 +1,98 @@
+[
+  {
+    "pdb": "2NNQ",
+    "seconds": 3.967576392002229,
+    "maps": {
+      "receptor.A.map": "f345d3c7af2638a5ca2ff81bfcb55962565ee31fed51858408b209925707cc73",
+      "receptor.C.map": "e6fe24400a46d232f3a76f768d5d7e151b453883419aaf247276f7bdb7296b08",
+      "receptor.HD.map": "cc699a8e653b67622a1f3efa32e88a2b6e3cda318fa4d1ca3164ced24976241e",
+      "receptor.N.map": "6fb7e578ba91c3d790ec269a02aab90a8967d6eb52de8026c2918dbedc43a49e",
+      "receptor.NA.map": "192d44b194a699f50b5fe3c60df5cec6b8ed84e50b3de5f0906b6aafe1f1aec4",
+      "receptor.OA.map": "9d9e1375ea719e5425cfd19432e9256a33f7a99df5045c520f844c84de19820f",
+      "receptor.d.map": "7c1124399bbf90b0f12324f8d052e5295e2d8424bb330fb10ad7b893c36fd96c",
+      "receptor.e.map": "5f643a0790af361acabea5727b12819e2890185839ee5c07d9194eb56a364ddd"
+    },
+    "types": [
+      "A",
+      "C",
+      "HD",
+      "N",
+      "NA",
+      "OA"
+    ],
+    "side_sha256": "b83c2acb56ad4a5ddbb17c1a09b63303ffa9065bdbd030b32886ad9754f614fb",
+    "rigid_sha256": "ffda8da1639417b9afa721d406a0dfdfb9186b37cb35acf241de1c6cf4d6a461"
+  },
+  {
+    "pdb": "3FR2",
+    "seconds": 3.9309434540009534,
+    "maps": {
+      "receptor.A.map": "9255bc5e5f1dc21670f61348691d8172085303ac20ac8b6bd5b71c96a2f99a04",
+      "receptor.C.map": "66ba73f3b0071b65acda86838cb2b74ce9252fbf67677b666fb6888f57c518d1",
+      "receptor.HD.map": "3ff82262803a413c0d0fe52591e9bc8075ff60cc4decd16ae65eaddefbb0c056",
+      "receptor.N.map": "3d7fb46b9585a1d9d4384d9980ed77c5763216424d52e5f7e3e6f38f7e6f18ea",
+      "receptor.NA.map": "9ec679594c47ec287d21dd1630d13f82b302659051dd44360252f013c8b2a95e",
+      "receptor.OA.map": "076bb8928566a50b515a6eb3041c5b4cf9b00e9919062e052f0f4f6e3008ca0d",
+      "receptor.d.map": "439d5436d4f2a0af5149a5e498feec224b9cb12b803dfb70f2c1c606c74624af",
+      "receptor.e.map": "a14a62ce2a106c78bc12db0eeb1d0db513d34ad4435fc4e02b3a2e8b6a5ed9ae"
+    },
+    "types": [
+      "A",
+      "C",
+      "HD",
+      "N",
+      "NA",
+      "OA"
+    ],
+    "side_sha256": "e901845e82a50549bf5836b5779163a4aac8d2af5bcd0a1dc1ad5d79dd3b9f70",
+    "rigid_sha256": "5d2be16bf1f1717c68744ab51202144750853ac124ad69a1a6a016494ecfefcf"
+  },
+  {
+    "pdb": "1RBP",
+    "seconds": 4.375026443001843,
+    "maps": {
+      "receptor.A.map": "c20586bf02a82e2ef989d4601775b5189f9dec308df82f84e4e2c010b4afadf4",
+      "receptor.C.map": "36195675e8086e8d43c7ae6202293268da0d6ceeacf3e75abdbf7fe85fde46db",
+      "receptor.F.map": "a379f877ce4d7b9d3708162a372d79bcf46a196a5f12e6bdf6e04033986d7197",
+      "receptor.HD.map": "7bac742c9f59d57113c6c1666b0652f13267e74744253f8e4b7c45bec1db437f",
+      "receptor.N.map": "e18d63ea9a1129a1c340f06e83593dcd6421d6d83c9379dac833f5ba6d6e59af",
+      "receptor.OA.map": "e2f08c797d45383e7d204c84da3c5e6e306a307910e717ba27541a453a73b58f",
+      "receptor.d.map": "f6f116dd2ce6ff864d84c43929d7cf7c9babd759cc29a5ff52bad91673483fcc",
+      "receptor.e.map": "51b64ce6aca7689672e739d93dd82fc0b0c2a1c2fa3a19b8e93b727b7d5ac269"
+    },
+    "types": [
+      "A",
+      "C",
+      "F",
+      "HD",
+      "N",
+      "OA"
+    ],
+    "side_sha256": "e8e82a2e37fe198b8a0baf48524dec4aebc62c0b0b3ccd24ee92a7c248e59e23",
+    "rigid_sha256": "61baac311f3bca77f4555b7842dac72bbf66f97f080789fc546813406b29a0eb"
+  },
+  {
+    "pdb": "3FMZ",
+    "seconds": 4.563680433999252,
+    "maps": {
+      "receptor.A.map": "f583c2ac25891b4654289cbe69e13d7f7371271a2b1117fd741d8edbaedf42da",
+      "receptor.C.map": "aaab694f91f7365576a73de85845699191a127abff5f611dc27e73709f5815c7",
+      "receptor.F.map": "15c62fbee34a740f2ba9d83d91657e7d163671fd4adf676308e679edd4e28399",
+      "receptor.HD.map": "c441dc322984072b90252f3990d4848f9aafe5cfa0a302fcbc53e6a37292c2f6",
+      "receptor.N.map": "5f34551509e53441d0d65f9500920b5b8d21d73bfc4b7bd3a2ec246260547e86",
+      "receptor.OA.map": "f034abd7673068926044a8e300add1bf7c533418ee558eb689dfe07bc489c56a",
+      "receptor.d.map": "6a3cab52daddbdaca73500e1c56f2607a3b4a45dab0186fb424b71f5ff4795ee",
+      "receptor.e.map": "6ea57adee11c98befa0a3518d547eda5096dfcd1c5b46bfb51a0ae147d1bc12c"
+    },
+    "types": [
+      "A",
+      "C",
+      "F",
+      "HD",
+      "N",
+      "OA"
+    ],
+    "side_sha256": "41a1e5d6639db9b890c74d09f066d6040cbd25493aa2f409df0c11148490d854",
+    "rigid_sha256": "67e2ca982508b3e3d1482faae17e0616deb5128bf867701a85ce658e5d45ab60"
+  }
+]

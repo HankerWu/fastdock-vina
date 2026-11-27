@@ -4,6 +4,7 @@
 #include "parse_pdbqt.h"
 #include <iostream>
 #include <stdexcept>
+#include <set>
 
 namespace {
 void close(fl actual, fl expected, fl tol = 1e-9) {
@@ -87,6 +88,29 @@ void partitions(const std::string& prefix, const std::string& rigid, const std::
     close(field.eval(m,cap), lig);
     close(field.eval_intra(m,cap), flex);
     close(field.eval_deriv(m,cap), lig+flex);
+    // The AD4 rigid maps are built without the atoms in the flex file.
+    // Both fixed axis endpoints must interact with every mapped ligand site.
+    auto ad4 = parse_receptor_pdbqt("", flexible, atom_type::AD);
+    const auto ad_ligand = parse_ligand_pdbqt_from_string(ligand, atom_type::AD);
+    for (int appended = 0; appended < 2; ++appended) {
+        ad4.append(ad_ligand);
+        std::set<std::pair<sz, sz>> expected;
+        for (sz i = 0; i < ad4.num_movable_atoms(); ++i) {
+            const atom& a = ad4.get_atom(i);
+            if (!ad4.is_atom_in_ligand(i) || a.ad >= AD_TYPE_SIZE || ad_is_closure_dummy(a.ad)) continue;
+            for (sz j = ad4.num_movable_atoms(); j < ad4.num_atoms(); ++j)
+                expected.emplace(i, j);
+        }
+        if (expected.empty()) throw std::runtime_error("Empty AD4 anchor test");
+        for (const auto& pair : ad4.get_inter_pairs()) {
+            if (pair.b < ad4.num_movable_atoms()) continue;
+            if (!expected.erase({pair.a, pair.b}) ||
+                pair.table_index != triangular_matrix_index(ad4.num_atoms(), pair.a, pair.b))
+                throw std::runtime_error("Duplicate or misindexed ligand--anchor contact");
+        }
+        if (!expected.empty()) throw std::runtime_error("Missing AD4 ligand--anchor contact");
+    }
+
 }
 
 // An uninitialized client must not clear a caller's file. A completed
