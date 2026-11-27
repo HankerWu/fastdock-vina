@@ -1,0 +1,113 @@
+[
+  {
+    "target": "THRB",
+    "pdb": "1NAX",
+    "ccd": "IH5",
+    "chain": "A",
+    "structure_source": "https://www.rcsb.org/structure/1NAX",
+    "ccd_source": "https://files.rcsb.org/ligands/download/IH5.cif",
+    "resolution_A": 2.7,
+    "formal_charge": 0,
+    "murcko_smiles": "c1ccc(Oc2ccccc2)cc1",
+    "heavy_atoms": 23,
+    "seconds": 2.5085899620007694,
+    "mate_heavy_pairs_8A": 0,
+    "closest_mate_pair": null,
+    "status": "ready",
+    "nearest_repaired_A": null,
+    "nearest_omitted_nonwater": null,
+    "torsdof": 7,
+    "smiles": "CC(C)c1cc(Oc2c(Cl)cc(CC(=O)O)cc2Cl)ccc1O",
+    "pdb_sha256": "2b2a01999ed1e845ec93b35ecf9a876186711e6766f0ed67d42d1a47a601ebbd",
+    "ccd_sha256": "7d94c6cfb3ce0ea4c43cda4a1de7b1b1f210bed3215cda61ec89ececc3cf2752"
+  },
+  {
+    "target": "THRB",
+    "pdb": "3IMY",
+    "ccd": "B72",
+    "chain": "A",
+    "structure_source": "https://www.rcsb.org/structure/3IMY",
+    "ccd_source": "https://files.rcsb.org/ligands/download/B72.cif",
+    "resolution_A": 2.55,
+    "formal_charge": 0,
+    "murcko_smiles": "c1ccc(Cc2ccccc2)cc1",
+    "heavy_atoms": 24,
+    "seconds": 2.381974648000323,
+    "mate_heavy_pairs_8A": 0,
+    "closest_mate_pair": null,
+    "status": "ready",
+    "nearest_repaired_A": null,
+    "nearest_omitted_nonwater": [
+      8.820030555502626,
+      "O   CAS A 434"
+    ],
+    "torsdof": 8,
+    "smiles": "Cc1cc(OCC(=O)O)cc(C)c1Cc1ccc(O)c(C(C)C)c1",
+    "pdb_sha256": "67592dd77ef179b18f6ff15be94c3ae3a2eac34b8ff57caea5f34d287dc69627",
+    "ccd_sha256": "960f1f5a2c7c72b122826d30b43e29bc649af8fcc6c793d8b8944358da390d88"
+  },
+  {
+    "target": "BRD9",
+    "pdb": "5EU1",
+    "ccd": "5SW",
+    "chain": "A",
+    "structure_source": "https://www.rcsb.org/structure/5EU1",
+    "ccd_source": "https://files.rcsb.org/ligands/download/5SW.cif",
+    "resolution_A": 1.6,
+    "formal_charge": 0,
+    "murcko_smiles": "O=c1[nH]cc(-c2ccccc2)c2ccncc12",
+    "heavy_atoms": 26,
+    "seconds": 1.6299980749990937,
+    "mate_heavy_pairs_8A": 12,
+    "closest_mate_pair": [
+      5.392410963567224,
+      "C25",
+      "A",
+      "201",
+      "5SW",
+      "C25"
+    ],
+    "status": "ready",
+    "nearest_repaired_A": null,
+    "nearest_omitted_nonwater": [
+      23.889606526688546,
+      "N   GLU B  21"
+    ],
+    "torsdof": 5,
+    "smiles": "COc1cc(-c2cn(C)c(=O)c3cnccc23)cc(OC)c1CN(C)C",
+    "pdb_sha256": "5e68ec174ad919d17f23f479ab3d9cd824c3ef8c438a398b82f8d1a72a6b7c1c",
+    "ccd_sha256": "d9006c7e7d47965c5139a65bc9c6fcc2cc12bf0c791594dcbd574066afd1d400"
+  },
+  {
+    "target": "BRD9",
+    "pdb": "5F1H",
+    "ccd": "5U6",
+    "chain": "A",
+    "structure_source": "https://www.rcsb.org/structure/5F1H",
+    "ccd_source": "https://files.rcsb.org/ligands/download/5U6.cif",
+    "resolution_A": 1.82,
+    "formal_charge": 0,
+    "murcko_smiles": "O=c1[nH]cc(-c2ccccc2)c2ccncc12",
+    "heavy_atoms": 26,
+    "seconds": 1.76432354499957,
+    "mate_heavy_pairs_8A": 25,
+    "closest_mate_pair": [
+      5.941145849076589,
+      "C16",
+      "A",
+      "42",
+      "HIS",
+      "O"
+    ],
+    "status": "ready",
+    "nearest_repaired_A": null,
+    "nearest_omitted_nonwater": [
+      23.652149521766514,
+      "CB  GLU B  21"
+    ],
+    "torsdof": 5,
+    "smiles": "COc1cc(-c2cn(C)c(=O)c3cnccc23)c(OC)cc1CN(C)C",
+    "pdb_sha256": "421977bf33b2fa9d2bced7a49dc7fc2290dce5d96f79a10bad037718d98f64ca",
+    "ccd_sha256": "d2ef636e6538a63a4de3f5ed5fe5bcd254bf89b29acdeb6cf450ebc698d63de2"
+  }
+]

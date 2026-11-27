@@ -1,0 +1,32 @@
+diff --git a/src/lib/monte_carlo.cpp b/src/lib/monte_carlo.cpp
+index 3bd139d..b6fcd28 100755
+--- a/src/lib/monte_carlo.cpp
++++ b/src/lib/monte_carlo.cpp
+@@ -24,6 +24,7 @@
+ 
+ #include "monte_carlo.h"
+ #include "coords.h"
++#include <cstdlib>
+ #include "mutate.h"
+ #include "quasi_newton.h"
+ #include "trajectory_archive.h"
+@@ -111,10 +112,19 @@ void monte_carlo::operator()(model& m, output_container& out, const precalculate
+ 		candidate.c = tmp.c;
+ 		const bool reoriented = mutate_conf(candidate.c, m, mutation_amplitude, generator,
+ 		                                    mixed_reorientation, separate_hunt_chain, centered_rotation, balanced_torsion);
++		const char* prefix = std::getenv("FASTDOCK_PROBE_OUT");
++		VINA_CHECK(prefix && step == 0);
++		auto write_stage = [&](const char* stage) {
++			m.set(candidate.c);
++			m.write_structure(path(std::string(prefix) + "." + stage + ".pdbqt"));
++		};
++		write_stage("original");
+ 		if (step == 0 && placement != initial_placement::native)
+ 			fit_first_proposal(m, candidate.c, corner1, corner2, placement);
++		write_stage("placed");
+ 		const int before_hunt = evalcount;
+ 		quasi_newton_par(m, p, ig, candidate, hunt_cap, evalcount);
++		write_stage("end");
+ 		if (counters) {
+ 			++counters->hunt_calls;
+ 			counters->hunt_evals += evalcount - before_hunt;

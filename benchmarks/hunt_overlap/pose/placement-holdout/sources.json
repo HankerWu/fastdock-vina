@@ -1,0 +1,49 @@
+[
+  {
+    "target": "NR1H2",
+    "pdb": "1UPV",
+    "ccd": "444",
+    "chain": "A",
+    "structure_source": "https://www.rcsb.org/structure/1UPV",
+    "ccd_source": "https://files.rcsb.org/ligands/download/444.cif",
+    "resolution_A": 2.1,
+    "formal_charge": 0,
+    "murcko_smiles": "O=S(=O)(Nc1ccccc1)c1ccccc1",
+    "heavy_atoms": 31,
+    "seconds": 2.758733984999708,
+    "mate_heavy_pairs_8A": 0,
+    "closest_mate_pair": null,
+    "status": "ready",
+    "nearest_repaired_A": 8.32445091282302,
+    "nearest_omitted_nonwater": null,
+    "torsdof": 9,
+    "smiles": "O=S(=O)(c1ccccc1)N(CC(F)(F)F)c1ccc(C(O)(C(F)(F)F)C(F)(F)F)cc1",
+    "pdb_sha256": "39efb057a6104ff8ada767c44add4e85b14e5e94596ca6ee0f069be407bf18e5",
+    "ccd_sha256": "5db32b3e293286c6fc7df3f4f1cf1ef0ca240ff29986bd1165295c3e4b7bee16"
+  },
+  {
+    "target": "NR1H2",
+    "pdb": "1P8D",
+    "ccd": "CO1",
+    "chain": "A",
+    "structure_source": "https://www.rcsb.org/structure/1P8D",
+    "ccd_source": "https://files.rcsb.org/ligands/download/CO1.cif",
+    "resolution_A": 2.8,
+    "formal_charge": 0,
+    "murcko_smiles": "C1=C2CCCCC2C2CCC3C(CCCC4CO4)CCC3C2C1",
+    "heavy_atoms": 29,
+    "seconds": 2.9793091010014905,
+    "mate_heavy_pairs_8A": 0,
+    "closest_mate_pair": null,
+    "status": "ready",
+    "nearest_repaired_A": 14.45625134673578,
+    "nearest_omitted_nonwater": [
+      13.608798367232863,
+      "CD1 LEU C   8"
+    ],
+    "torsdof": 5,
+    "smiles": "C[C@H](CC[C@@H]1OC1(C)C)[C@H]1CC[C@H]2[C@@H]3CC=C4C[C@@H](O)CC[C@]4(C)[C@H]3CC[C@]12C",
+    "pdb_sha256": "c6131f20e2c0134b1716f46a6733cf3b2478ec9aded7a4a988327d87f6b94328",
+    "ccd_sha256": "2448085faad58a718b0e1eb5c13e00b832fc5d5b71b821a434aa8deac03870e3"
+  }
+]
