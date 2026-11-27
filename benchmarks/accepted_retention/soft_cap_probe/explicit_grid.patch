@@ -1,0 +1,89 @@
+--- /dev/null
++++ b/src/lib/cap_grid_view.h
+@@ -0,0 +1,12 @@
++// Diagnostic-only read-through view of the native search and explicit receptors.
++#pragma once
++#include "non_cache.h"
++
++struct cap_grid_view : igrid {
++    const igrid& grid;
++    const non_cache& atomic;
++    cap_grid_view(const igrid& g, const non_cache& a) : grid(g), atomic(a) {}
++    fl eval(const model& m, fl v) const override { return grid.eval(m, v); }
++    fl eval_intra(model& m, fl v) const override { return grid.eval_intra(m, v); }
++    fl eval_deriv(model& m, fl v) const override { return grid.eval_deriv(m, v); }
++};
+--- a/src/lib/monte_carlo.cpp
++++ b/src/lib/monte_carlo.cpp
+@@ -23,6 +23,9 @@
+ // FastDock: reuse the trial conformation across Monte Carlo steps.
+ 
+ #include "monte_carlo.h"
++#include "cap_grid_view.h"
++#include <iomanip>
++#include <iostream>
+ #include "coords.h"
+ #include "mutate.h"
+ #include "quasi_newton.h"
+@@ -45,6 +48,10 @@
+ void monte_carlo::operator()(model& m, output_container& out, const precalculate_byatom& p, const igrid& ig, const vec& corner1, const vec& corner2, incrementable* increment_me, rng& generator, trajectory_archive* archive, search_trajectory_counters* counters,
+                              const boost::optional<vec>& pocket_start, bool prepared_torsions) const {
+     int evalcount = 0;
++    bool verify_components = true;
++    // Diagnostic build, one independent force buffer and atom tree per trajectory.
++    model diagnostic(m);
++    flv diagnostic_gradient(m.get_size().num_degrees_of_freedom());
+ 	vec authentic_v(1000, 1000, 1000); // FIXME? this is here to avoid max_fl/max_fl
+ 	const conf_size s = m.get_size();
+ 	output_type tmp(s, 0);
+@@ -121,6 +128,30 @@
+ 				if(tmp.e < best_e)
+ 					best_e = tmp.e;
+ 			} else if (archive && archive->deferred_radius >= 0) {
++                diagnostic.set(tmp.c);
++                const auto coord = diagnostic.get_heavy_atom_movable_coords();
++                const auto live = m.get_heavy_atom_movable_coords();
++                VINA_CHECK(coord.size() == live.size());
++                fl max_distance2 = 0;
++                for (sz i = 0; i < coord.size(); ++i)
++                    max_distance2 = std::max(max_distance2, vec_distance_sqr(coord[i], live[i]));
++                // Exactly one extra model value+gradient call, isolated from native evalcount.
++                const fl hard = diagnostic.eval_deriv(p, ig, authentic_v, diagnostic_gradient);
++                const auto& view = dynamic_cast<const cap_grid_view&>(ig);
++                const fl grid_inter = view.grid.eval_deriv(diagnostic, authentic_v[1]);
++                const fl atom_inter = view.atomic.eval_deriv(diagnostic, authentic_v[1]);
++                // One independent complete smooth atomic value+gradient call per trajectory
++                // checks the component reconstruction, including out-of-box treatment.
++                fl atomic_check = 0;
++                if (verify_components) {
++                    atomic_check = diagnostic.eval_deriv(p, view.atomic, authentic_v, diagnostic_gradient);
++                    verify_components = false;
++                }
++                std::cerr << "FDATOM " << step + 1 << ' ' << std::setprecision(17)
++                          << grid_inter << ' ' << atom_inter << ' ' << view.atomic.within(diagnostic, 0)
++                          << ' ' << atomic_check << '\n';
++                std::cerr << "FDCAPS " << step + 1 << ' ' << std::setprecision(17)
++                          << tmp.e << ' ' << hard << ' ' << max_distance2 << '\n';
+ 				archive->observe_skipped(m, tmp, out);
+ 			}
+ 		}
+--- a/src/lib/vina.cpp
++++ b/src/lib/vina.cpp
+@@ -32,6 +32,7 @@
+ #include <limits>
+ 
+ #include "vina.h"
++#include "cap_grid_view.h"
+ #include "contact_rotors.h"
+ #include "scoring_function.h"
+ #include "precalculate.h"
+@@ -1796,7 +1797,8 @@
+ 			alternate.emplace(search_landscape{m_precalculated_byatom, guide_even_only ? guided_grid : unanchored_grid});
+ 		}
+ 		const igrid& search_grid = guide_even_only ? unanchored_grid : guided_grid;
+-		parallelmc(m_model, poses, m_precalculated_byatom, search_grid, m_grid.corner1(), m_grid.corner2(), generator,
++		const cap_grid_view probe_grid(search_grid, m_non_cache);
++		parallelmc(m_model, poses, m_precalculated_byatom, probe_grid, m_grid.corner1(), m_grid.corner2(), generator,
+ 		           m_progress_callback, (defer_hunt || archive_enabled) ? &archives : nullptr, archive_support, counters,
+ 		           alternate.get_ptr());
+ 	} else {

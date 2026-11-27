@@ -1,0 +1,39 @@
+--- a/src/lib/monte_carlo.cpp
++++ b/src/lib/monte_carlo.cpp
+@@ -23,6 +23,8 @@
+ // FastDock: reuse the trial conformation across Monte Carlo steps.
+ 
+ #include "monte_carlo.h"
++#include <iomanip>
++#include <iostream>
+ #include "coords.h"
+ #include "mutate.h"
+ #include "quasi_newton.h"
+@@ -45,6 +47,9 @@
+ void monte_carlo::operator()(model& m, output_container& out, const precalculate_byatom& p, const igrid& ig, const vec& corner1, const vec& corner2, incrementable* increment_me, rng& generator, trajectory_archive* archive, search_trajectory_counters* counters,
+                              const boost::optional<vec>& pocket_start, bool prepared_torsions) const {
+     int evalcount = 0;
++    // Diagnostic build, one independent force buffer and atom tree per trajectory.
++    model diagnostic(m);
++    flv diagnostic_gradient(m.get_size().num_degrees_of_freedom());
+ 	vec authentic_v(1000, 1000, 1000); // FIXME? this is here to avoid max_fl/max_fl
+ 	const conf_size s = m.get_size();
+ 	output_type tmp(s, 0);
+@@ -121,6 +126,17 @@
+ 				if(tmp.e < best_e)
+ 					best_e = tmp.e;
+ 			} else if (archive && archive->deferred_radius >= 0) {
++                diagnostic.set(tmp.c);
++                const auto coord = diagnostic.get_heavy_atom_movable_coords();
++                const auto live = m.get_heavy_atom_movable_coords();
++                VINA_CHECK(coord.size() == live.size());
++                fl max_distance2 = 0;
++                for (sz i = 0; i < coord.size(); ++i)
++                    max_distance2 = std::max(max_distance2, vec_distance_sqr(coord[i], live[i]));
++                // Exactly one extra model value+gradient call, isolated from native evalcount.
++                const fl hard = diagnostic.eval_deriv(p, ig, authentic_v, diagnostic_gradient);
++                std::cerr << "FDCAPS " << step + 1 << ' ' << std::setprecision(17)
++                          << tmp.e << ' ' << hard << ' ' << max_distance2 << '\n';
+ 				archive->observe_skipped(m, tmp, out);
+ 			}
+ 		}
