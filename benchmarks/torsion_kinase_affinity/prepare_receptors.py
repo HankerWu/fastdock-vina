@@ -10,12 +10,45 @@ import sys
 os.environ.setdefault("OPENMM_CPU_THREADS", "1")
 import numpy as np
 from openmm import Platform
-from openmm.app import PDBFile
+from openmm.app import PDBFile, Topology
 from pdbfixer import PDBFixer
 
 
 def xyz(line):
     return np.array([float(line[k : k + 8]) for k in (30, 38, 46)])
+
+
+def deposited_gaps(path, chain_id):
+    """Read polymer sequence before ATOM filtering removes SEQRES records."""
+    structure = PDBFixer(filename=str(path))
+    structure.findMissingResidues()
+    chains = list(structure.topology.chains())
+    return {
+        key: names for key, names in structure.missingResidues.items()
+        if chains[key[0]].id == chain_id
+    }
+
+
+def write_observed_segments(path, topology, positions, gap_starts):
+    """Preserve missing polymer segments in the coordinate export read by OpenMM."""
+    segments = Topology()
+    replacement = {}
+    for old_chain in topology.chains():
+        chain = segments.addChain(old_chain.id)
+        for pos, residue in enumerate(old_chain.residues()):
+            if pos in gap_starts and pos:
+                chain = segments.addChain(old_chain.id)
+            new = segments.addResidue(residue.name, chain, residue.id, residue.insertionCode)
+            for a in residue.atoms():
+                replacement[a] = segments.addAtom(a.name, a.element, new, a.id)
+    for bond in topology.bonds():
+        a, b = (replacement[atom] for atom in bond)
+        if a.residue.chain != b.residue.chain and {a.name, b.name} == {"C", "N"}:
+            continue
+        segments.addBond(a, b, bond.type, bond.order)
+    segments.setPeriodicBoxVectors(topology.getPeriodicBoxVectors())
+    with path.open("w") as f:
+        PDBFile.writeFile(segments, positions, f, keepIds=True)
 
 
 def prepare(work, pdb, component):
@@ -71,7 +104,9 @@ def prepare(work, pdb, component):
     file.write_text("\n".join(clean) + "\nEND\n")
     f = PDBFixer(filename=str(file), platform=Platform.getPlatformByName("CPU"))
     f.findMissingResidues()
-    gaps = {str(k): v for k, v in f.missingResidues.items()}
+    gaps = deposited_gaps(work / "raw" / f"{pdb}.pdb", "A")
+    res = list(f.topology.residues())
+    internal = {p: names for (_, p), names in gaps.items() if 0 < p < len(res)}
     f.missingResidues = {}
     f.findMissingAtoms()
     missing = {r.id: [a.name for a in atoms] for r, atoms in f.missingAtoms.items()}
@@ -91,7 +126,11 @@ def prepare(work, pdb, component):
                 truncations=truncations,
                 missing=missing,
                 closest_repaired=close,
-                reported_gaps=gaps,
+                reported_gaps={str(k): v for k, v in gaps.items()},
+                unresolved_internal_segments=[
+                    dict(after=res[p-1].id, before=res[p].id, sequence=names)
+                    for p, names in internal.items()
+                ],
                 center=lig.mean(axis=0).tolist(),
             ),
             indent=2,
@@ -113,6 +152,11 @@ def prepare(work, pdb, component):
             stderr=subprocess.STDOUT,
             check=True,
         )
+
+    # The rigid PDBQT uses its established templates. The coordinate export must
+    # also mark gaps so an all-atom reader cannot bond the two distant anchors.
+    if internal:
+        write_observed_segments(file, f.topology, f.positions, internal)
 
 
 if __name__ == "__main__":

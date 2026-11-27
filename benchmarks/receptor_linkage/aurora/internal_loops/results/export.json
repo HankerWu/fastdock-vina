@@ -1,0 +1,143 @@
+{
+  "2X6E": {
+    "segments_before_after": [
+      1,
+      3
+    ],
+    "identical_heavy_coordinates": 1998,
+    "removed_edges": [
+      [
+        [
+          "A",
+          "280",
+          " ",
+          "C"
+        ],
+        [
+          "A",
+          "292",
+          " ",
+          "N"
+        ]
+      ],
+      [
+        [
+          "A",
+          "302",
+          " ",
+          "C"
+        ],
+        [
+          "A",
+          "306",
+          " ",
+          "N"
+        ]
+      ]
+    ],
+    "rigid_pdbqt_sha256_both": "8ccfb1ef010ce92381b689c837b7e4adac59488ac8ab85051d6f4c386b4f8540",
+    "deposited_gaps": {
+      "(0, 0)": [
+        "GLY",
+        "ALA",
+        "MET",
+        "GLU",
+        "SER",
+        "LYS",
+        "LYS"
+      ],
+      "(0, 155)": [
+        "ALA",
+        "PRO",
+        "SER",
+        "SER",
+        "ARG",
+        "ARG",
+        "THR",
+        "THR",
+        "LEU",
+        "CYS",
+        "GLY"
+      ],
+      "(0, 166)": [
+        "GLY",
+        "ARG",
+        "MET"
+      ],
+      "(0, 249)": [
+        "LYS",
+        "PRO",
+        "SER",
+        "ASN",
+        "CYS",
+        "GLN",
+        "ASN",
+        "LYS",
+        "GLU",
+        "SER",
+        "ALA",
+        "SER",
+        "LYS",
+        "GLN",
+        "SER"
+      ]
+    }
+  },
+  "2J4Z": {
+    "segments_before_after": [
+      1,
+      1
+    ],
+    "identical_heavy_coordinates": 2169,
+    "removed_edges": [],
+    "rigid_pdbqt_sha256_both": "982cf9620becbefd8416c38919a21592cf746d166e9a9f2adc61d7aadb2d035b",
+    "deposited_gaps": {
+      "(0, 0)": [
+        "GLY",
+        "PRO",
+        "GLN",
+        "PRO",
+        "LEU",
+        "PRO",
+        "SER",
+        "ALA",
+        "PRO",
+        "GLU",
+        "ASN",
+        "ASN",
+        "PRO",
+        "GLU",
+        "GLU",
+        "GLU",
+        "LEU",
+        "ALA",
+        "SER",
+        "LYS",
+        "GLN",
+        "LYS",
+        "ASN",
+        "GLU",
+        "GLU",
+        "SER",
+        "LYS",
+        "LYS"
+      ],
+      "(0, 264)": [
+        "PRO",
+        "SER",
+        "ASN",
+        "CYS",
+        "GLN",
+        "ASN",
+        "LYS",
+        "GLU",
+        "SER",
+        "ALA",
+        "SER",
+        "LYS",
+        "GLN",
+        "SER"
+      ]
+    }
+  }
+}

@@ -1,0 +1,61 @@
+{
+  "amber14_protein_ff14sb_sha256": "d9f9779c09d67cd5f8bc657692f174ffab14c469dfd06d560ac1899fa7e976b8",
+  "openmm_version": "8.6.1.dev-b399af4",
+  "structures": {
+    "2J4Z": {
+      "SEQRES_count": 306,
+      "observed_residues": 264,
+      "artificial_links": []
+    },
+    "2X6E": {
+      "SEQRES_count": 285,
+      "observed_residues": 249,
+      "artificial_links": [
+        {
+          "from": 280,
+          "to": 292,
+          "missing": [
+            "ALA",
+            "PRO",
+            "SER",
+            "SER",
+            "ARG",
+            "ARG",
+            "THR",
+            "THR",
+            "LEU",
+            "CYS",
+            "GLY"
+          ],
+          "types": [
+            "protein-C",
+            "protein-N"
+          ],
+          "distance_A": 20.72291465986385,
+          "equilibrium_A": 1.335,
+          "k_kJ_mol_nm2": 410031.99999999994,
+          "energy_kJ_mol": 770637.1740568125,
+          "force_magnitude_kJ_mol_nm": 794966.5423813292
+        },
+        {
+          "from": 302,
+          "to": 306,
+          "missing": [
+            "GLY",
+            "ARG",
+            "MET"
+          ],
+          "types": [
+            "protein-C",
+            "protein-N"
+          ],
+          "distance_A": 9.34181229740782,
+          "equilibrium_A": 1.335,
+          "k_kJ_mol_nm2": 410031.99999999994,
+          "energy_kJ_mol": 131433.79593704475,
+          "force_magnitude_kJ_mol_nm": 328304.9259930723
+        }
+      ]
+    }
+  }
+}
