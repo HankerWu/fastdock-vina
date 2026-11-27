@@ -1,0 +1,91 @@
+{
+  "query": "3EML",
+  "receptor": "3UZA",
+  "ca_alignment_rmsd_A": 0.5680582068172687,
+  "common_ca": 58,
+  "symmetry_mappings": 2,
+  "heavy_atoms": 25,
+  "pinned_cpu": 0,
+  "checks": [
+    {
+      "arm": "parent",
+      "seed": 75467,
+      "output_sha256": "f2debd3cb2f0cd82422eb243857ab293e6cffab6ccb56f45942b975f6ae1ce72",
+      "native_counters": [
+        "Native merge: rmsd=2 candidates=6",
+        "Search trajectory: index=1 steps=225 hunt_calls=225 hunt_evals=9926 second_calls=48 second_evals=2090 rigid_reorientations=0",
+        "Hunt chain: index=1 separate=0 accepted=158 mixed_accept_checks=70",
+        "Search counters: rigid_reorientation=native explicit_inputs=6 explicit_calls=6 explicit_evals=251 late_prescore=0"
+      ],
+      "output_byte_identical": true,
+      "plain_s": 0.3006637549997322,
+      "trace_s": 0.22531570500086673,
+      "timing_order": [
+        "plain",
+        "trace"
+      ],
+      "events": 526,
+      "modes": 6
+    },
+    {
+      "arm": "linear",
+      "seed": 75467,
+      "output_sha256": "36538a4a20f33ff455a2abcecc1522a18590cefbbf6704ab56dba6e938d6091e",
+      "native_counters": [
+        "Native merge: rmsd=2 candidates=6",
+        "Search trajectory: index=1 steps=154 hunt_calls=154 hunt_evals=8843 second_calls=68 second_evals=3177 rigid_reorientations=0",
+        "Hunt chain: index=1 separate=0 accepted=87 mixed_accept_checks=126",
+        "Search counters: rigid_reorientation=native explicit_inputs=6 explicit_calls=6 explicit_evals=293 late_prescore=0"
+      ],
+      "output_byte_identical": true,
+      "plain_s": 0.20191090399930545,
+      "trace_s": 0.21493415600070875,
+      "timing_order": [
+        "trace",
+        "plain"
+      ],
+      "events": 404,
+      "modes": 6
+    },
+    {
+      "arm": "parent",
+      "seed": 98251,
+      "output_sha256": "fada0e5159adb800671c9f88ea8d8a73dcf4e6bbd05003192c1a77c75ef85613",
+      "native_counters": [
+        "Native merge: rmsd=2 candidates=6",
+        "Search trajectory: index=1 steps=204 hunt_calls=204 hunt_evals=9815 second_calls=30 second_evals=2187 rigid_reorientations=0",
+        "Hunt chain: index=1 separate=0 accepted=143 mixed_accept_checks=39",
+        "Search counters: rigid_reorientation=native explicit_inputs=6 explicit_calls=7 explicit_evals=298 late_prescore=0"
+      ],
+      "output_byte_identical": true,
+      "plain_s": 0.2010754929997347,
+      "trace_s": 0.21578628400038724,
+      "timing_order": [
+        "trace",
+        "plain"
+      ],
+      "events": 466,
+      "modes": 6
+    },
+    {
+      "arm": "linear",
+      "seed": 98251,
+      "output_sha256": "09f1893e0a3cef11f75d1fca0ac39ded78ac986cb033d567eeff69747b3ff82b",
+      "native_counters": [
+        "Native merge: rmsd=2 candidates=3",
+        "Search trajectory: index=1 steps=210 hunt_calls=210 hunt_evals=10027 second_calls=23 second_evals=2006 rigid_reorientations=0",
+        "Hunt chain: index=1 separate=0 accepted=153 mixed_accept_checks=29",
+        "Search counters: rigid_reorientation=native explicit_inputs=3 explicit_calls=3 explicit_evals=117 late_prescore=0"
+      ],
+      "output_byte_identical": true,
+      "plain_s": 0.20045549400037999,
+      "trace_s": 0.21544946499943762,
+      "timing_order": [
+        "plain",
+        "trace"
+      ],
+      "events": 462,
+      "modes": 3
+    }
+  ]
+}

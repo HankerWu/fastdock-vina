@@ -1,0 +1,184 @@
+diff --git a/src/lib/diagnostic_mc_trace.h b/src/lib/diagnostic_mc_trace.h
+new file mode 100644
+index 0000000..e7274d1
+--- /dev/null
++++ b/src/lib/diagnostic_mc_trace.h
+@@ -0,0 +1,59 @@
++// Research replay of a single trajectory; no scoring, RNG or live model writes.
++#ifndef FASTDOCK_DIAGNOSTIC_MC_TRACE_H
++#define FASTDOCK_DIAGNOSTIC_MC_TRACE_H
++
++#include "parse_pdbqt.h"
++#include <iostream>
++#include <cstdlib>
++#include <fstream>
++#include <iomanip>
++#include <sstream>
++
++inline void capture_hunt(const conf& c, const char* path) {
++    VINA_CHECK(c.ligands.size() == 1 && c.flex.empty());
++    const auto& ligand = c.ligands.front();
++    const auto& q = ligand.rigid.orientation;
++    std::ofstream f(path);
++    f << std::setprecision(17) << ligand.torsions.size();
++    for (sz i = 0; i < 3; ++i) f << ' ' << ligand.rigid.position[i];
++    f << ' ' << q.R_component_1() << ' ' << q.R_component_2()
++      << ' ' << q.R_component_3() << ' ' << q.R_component_4();
++    for (fl t : ligand.torsions) f << ' ' << t;
++    f << '\n';
++    f.close();
++    VINA_CHECK(f.good());
++}
++
++inline void restore_hunt(conf& c, const char* path) {
++    VINA_CHECK(c.ligands.size() == 1 && c.flex.empty());
++    auto& ligand = c.ligands.front();
++    std::ifstream f(path);
++    sz n;
++    VINA_CHECK(f >> n && n == ligand.torsions.size());
++    for (sz i = 0; i < 3; ++i) f >> ligand.rigid.position[i];
++    fl a, b, x, y;
++    VINA_CHECK(f >> a >> b >> x >> y);
++    ligand.rigid.orientation = qt(a, b, x, y);
++    for (fl& t : ligand.torsions) VINA_CHECK(f >> t);
++    std::string extra;
++    VINA_CHECK(!(f >> extra));
++}
++
++class diagnostic_mc_trace {
++    model snapshot;
++    std::map<unsigned, sz> indices;
++public:
++    explicit diagnostic_mc_trace(const model& original)
++        : snapshot(original), indices(ligand_heavy_indices_by_serial(snapshot)) {}
++    void emit(const char* stage, sz index, const conf& c) {
++        snapshot.set(c);
++        std::ostringstream out;
++        out << "FDTRACE " << stage << ' ' << index << std::setprecision(17);
++        for (const auto& kv : indices) {
++            const vec& p = snapshot.movable_coords(kv.second);
++            out << ' ' << kv.first << ',' << p[0] << ',' << p[1] << ',' << p[2];
++        }
++        std::cerr << out.str() << '\n';
++    }
++};
++#endif
+diff --git a/src/lib/monte_carlo.cpp b/src/lib/monte_carlo.cpp
+index 69b9384..52314af 100755
+--- a/src/lib/monte_carlo.cpp
++++ b/src/lib/monte_carlo.cpp
+@@ -23,6 +23,7 @@
+ // FastDock: reuse the trial conformation across Monte Carlo steps.
+ 
+ #include "monte_carlo.h"
++#include "diagnostic_mc_trace.h"
+ #include "coords.h"
+ #include "mutate.h"
+ #include "quasi_newton.h"
+@@ -44,6 +45,7 @@ bool metropolis_accept(fl old_f, fl new_f, fl temperature, rng& generator) {
+ // out is sorted
+ void monte_carlo::operator()(model& m, output_container& out, const precalculate_byatom& p, const igrid& ig, const vec& corner1, const vec& corner2, incrementable* increment_me, rng& generator, trajectory_archive* archive, search_trajectory_counters* counters,
+                              const boost::optional<vec>& pocket_start, bool prepared_torsions) const {
++    diagnostic_mc_trace trace(m);
+     int evalcount = 0;
+ 	vec authentic_v(1000, 1000, 1000); // FIXME? this is here to avoid max_fl/max_fl
+ 	const conf_size s = m.get_size();
+@@ -67,6 +69,7 @@ void monte_carlo::operator()(model& m, output_container& out, const precalculate
+ 			counters->pocket_anchored = bool(pocket_start);
+ 		}
+ 	}
++	trace.emit("start", 0, tmp.c);
+ 	output_type candidate(s, 0);
+ 	fl best_e = max_fl;
+ 	bool reference_from_save = false;
+@@ -79,6 +82,23 @@ void monte_carlo::operator()(model& m, output_container& out, const precalculate
+ 		candidate.c = tmp.c;
+ 		const bool reoriented = mutate_conf(candidate.c, m, mutation_amplitude, generator,
+ 		                                    mixed_reorientation, separate_hunt_chain, centered_rotation, balanced_torsion);
++        if (step + 1 == 151) {
++            if (const char* path = std::getenv("FD_CAPTURE_HUNT_151")) capture_hunt(candidate.c, path);
++        }
++        if (const char* path = std::getenv("FD_REPLAY_SINGLE_HUNT")) {
++            restore_hunt(candidate.c, path);
++            trace.emit("fixed_input", 1, candidate.c);
++            flv gradient(s.num_degrees_of_freedom());
++            m.set(candidate.c);
++            const fl initial = m.eval_deriv(p, ig, hunt_cap, gradient); // diagnostic call
++            int calls = 0;
++            quasi_newton_par(m, p, ig, candidate, hunt_cap, calls);
++            trace.emit("fixed_output", 1, candidate.c);
++            std::cerr << std::setprecision(17) << "FIXED_HUNT " << calls << ' '
++                      << initial << ' ' << candidate.e << '\n';
++            std::exit(0); // offline probe ends before acceptance or further MC search
++        }
++        trace.emit("proposal", step + 1, candidate.c);
+ 		const int before_hunt = evalcount;
+ 		quasi_newton_par(m, p, ig, candidate, hunt_cap, evalcount);
+ 		if (counters) {
+@@ -87,7 +107,9 @@ void monte_carlo::operator()(model& m, output_container& out, const precalculate
+ 			counters->rigid_reorientations += reoriented;
+ 			counters->mixed_accept_checks += reference_from_save;
+ 		}
+-		if(step == 0 || metropolis_accept(tmp.e, candidate.e, temperature, generator)) {
++		const bool accepted = step == 0 || metropolis_accept(tmp.e, candidate.e, temperature, generator);
++		trace.emit(accepted ? "hunt_accepted" : "hunt_rejected", step + 1, candidate.c);
++		if(accepted) {
+ 			std::swap(tmp.c, candidate.c);
+ 			tmp.e = candidate.e;
+ 			reference_from_save = false;
+@@ -116,12 +138,18 @@ void monte_carlo::operator()(model& m, output_container& out, const precalculate
+ 				}
+ 				saved.coords = m.get_heavy_atom_movable_coords();
+ 				add_to_output_container(out, saved, min_rmsd, num_saved_mins); // 20 - max size
++                bool retained = false;
++                VINA_FOR_IN(i, out)
++                    if (out[i].e == saved.e && rmsd_upper_bound(out[i].coords, saved.coords) == 0)
++                        retained = true;
++                trace.emit(retained ? "saved_retained" : "saved_dropped", step + 1, saved.c);
+ 				reference_from_save = !separate_hunt_chain;
+ 				if(tmp.e < best_e)
+ 					best_e = tmp.e;
+ 			}
+ 		}
+ 	}
++	VINA_FOR_IN(i, out) trace.emit("mc_exit", i + 1, out[i].c);
+ 	if (archive)
+ 		archive->native_evaluations = evalcount;
+ 	VINA_CHECK(!out.empty());
+diff --git a/src/lib/vina.cpp b/src/lib/vina.cpp
+index b817ec9..93a02ca 100644
+--- a/src/lib/vina.cpp
++++ b/src/lib/vina.cpp
+@@ -32,6 +32,7 @@
+ #include <limits>
+ 
+ #include "vina.h"
++#include "diagnostic_mc_trace.h"
+ #include "contact_rotors.h"
+ #include "scoring_function.h"
+ #include "precalculate.h"
+@@ -1797,6 +1798,8 @@ void Vina::global_search(const int exhaustiveness, const int n_poses, const doub
+ 	done(m_verbosity, 1);
+ 
+ 	// Docking post-processing and rescoring
++	diagnostic_mc_trace trace(m_model);
++	VINA_FOR_IN(i, poses) trace.emit("merged", i + 1, poses[i].c);
+ 	const sz saved_minima = poses.size();
+ 	const sz accepted_minima = archive_enabled ? append_accepted_minima(poses, archives) : 0;
+ 	const sz prescore_inputs = poses.size();
+@@ -1842,6 +1845,7 @@ void Vina::global_search(const int exhaustiveness, const int n_poses, const doub
+ 				m_non_cache.slope = slope;
+ 
+ 				VINA_FOR_IN(i, poses){
++					trace.emit("explicit_input", i + 1, poses[i].c);
+ 					VINA_FOR(p, 5){
+ 						m_non_cache.slope = 100 * std::pow(10.0, 2.0*p);
+ 						quasi_newton_par(m_model, m_precalculated_byatom, m_non_cache, poses[i], authentic_v, evalcount,
+@@ -1870,6 +1874,7 @@ void Vina::global_search(const int exhaustiveness, const int n_poses, const doub
+ 					double intra_pairs = m_model.evalo(m_precalculated_byatom, authentic_v); // flex_i -- flex_i and flex_i -- flex_j
+ 					double lig_intra = m_model.evali(m_precalculated_byatom, authentic_v); // ligand_i -- ligand_i
+ 					poses[i].e = all_grids + inter_pairs + intra_pairs + lig_intra;
++					trace.emit("explicit_output", i + 1, poses[i].c);
+ 					if (template_refinement) {
+ 						output_type& pose = poses[i];
+ 						pose.native_energy = pose.e;

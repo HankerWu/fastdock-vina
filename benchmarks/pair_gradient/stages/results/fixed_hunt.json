@@ -1,0 +1,33 @@
+{
+  "input_sha256": "d764ff7e9eb1d82d800992c4ecaa29f38534f870c20336a0e6f1811854c6df10",
+  "arms": {
+    "parent": {
+      "local_objective_gradient_calls": 32,
+      "diagnostic_initial_calls": 1,
+      "initial_energy": 87.02869334125867,
+      "final_energy": -7.107535224276894,
+      "initial_A": 5.73417228473384,
+      "final_A": 1.3513604235963292,
+      "source_sha256": {
+        "precalculate.h": "52d8b60700aeccd466b9379c79ad03e8fb8fe79652ba75df8cf99079830b761e",
+        "bfgs.h": "d8b34dd6d98a24907c6341203eb18c53f7472d752bf7fefb4d3340f1a8ac75f2",
+        "quasi_newton.cpp": "07864fdff9921ba64f702514cf02a6bc9e8cd11311cada2f753565e50042405d",
+        "monte_carlo.cpp": "ed265ccee1b2bbae6e236b0654452b53c783520e25d80742a4f85620b4dbea60"
+      }
+    },
+    "linear": {
+      "local_objective_gradient_calls": 31,
+      "diagnostic_initial_calls": 1,
+      "initial_energy": 87.02869334125867,
+      "final_energy": -7.462690322881669,
+      "initial_A": 5.73417228473384,
+      "final_A": 1.005362203108236,
+      "source_sha256": {
+        "precalculate.h": "f4d13b62f6a9ddbba1bd36b39ef9f05dcb6fe69d0eaee9b28e67252497b625a8",
+        "bfgs.h": "d8b34dd6d98a24907c6341203eb18c53f7472d752bf7fefb4d3340f1a8ac75f2",
+        "quasi_newton.cpp": "07864fdff9921ba64f702514cf02a6bc9e8cd11311cada2f753565e50042405d",
+        "monte_carlo.cpp": "ed265ccee1b2bbae6e236b0654452b53c783520e25d80742a4f85620b4dbea60"
+      }
+    }
+  }
+}
