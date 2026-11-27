@@ -19,6 +19,10 @@ The first computational panel embedded one hand at the unspecified stereocenter 
 
 An independent evaluator read the author tables, molecular graphs and 816 raw mode pools. A separate C++ pass rescored every serialized top pose with its original prepared topology and unbound reference. The maximum difference from the printed score was 0.014 kcal/mol. Every arm's four-seed arithmetic-consensus pair signs reproduced. A second source matched 28/34 target–compound entries by CID and parent. BIBF-1120 (derivative) and HKI-272 were outside the selected compounds. Coverage is 20/20 exact AURKA measurements and 14/16 exact CHEK1 measurements from these rows. [Independent ranking](independent/independent_ranking.csv) · [Identity checks](independent/independent_chemistry.csv)
 
+### Reusing the receptor coordinates
+
+The original 2X6E coordinate intermediate omits residues 281–291 and 303–305. OpenMM reads its continuous chain as two additional C–N bonds of 20.723 and 9.342 Å. The current preparation reports the missing sequences from the deposition and separates the observed polymer segments in its coordinate export. The archived docking inputs and results used a rigid PDBQT. A flexible or solvated model needs an explicit treatment of the internal sequences and chemistry. [Topology, matched preparation runs and pose evidence](../receptor_linkage/aurora/internal_loops/README.md)
+
 ## Replay
 
 The archive contains prepared PDBQT, receptor preparation records, all 864 raw runs including the enantiomers, and pair-level sensitivity. Run from the repository root with Python 3.12, RDKit 2026.09.2, Meeko 0.8.0 and a Boost build of Vina. Data extraction and the independent check also use xlrd.
