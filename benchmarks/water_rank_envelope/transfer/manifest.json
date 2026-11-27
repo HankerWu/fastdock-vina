@@ -1,0 +1,82 @@
+{
+  "arm": "pro24k",
+  "command": [
+    "vina",
+    "--receptor",
+    "receptor.pdbqt",
+    "--ligand",
+    "HUP.pdbqt",
+    "--cpu",
+    "1",
+    "--seed",
+    "1103501",
+    "--exhaustiveness",
+    "3",
+    "--max_evals",
+    "24000",
+    "--num_modes",
+    "9",
+    "--energy_range",
+    "100",
+    "--search_counters",
+    "--out",
+    "dry.pdbqt",
+    "--center_x",
+    "-9.942238095238094",
+    "--size_x",
+    "24",
+    "--center_y",
+    "-43.487714285714276",
+    "--size_y",
+    "24",
+    "--center_z",
+    "30.290809523809518",
+    "--size_z",
+    "24"
+  ],
+  "binary_sha256": "3b988204f9e11a3285fb211c87445b3db8d90f7d76f0b60cd8d67406adbe9285",
+  "source_archive_sha256": "35086efc6f715c245bcccad24da3ab6aa0743fcb00776d598103886ee51295f4",
+  "source_urls": [
+    "https://files.rcsb.org/download/4EY5.pdb",
+    "https://files.rcsb.org/ligands/download/HUP.cif",
+    "https://www.rcsb.org/structure/4EY6"
+  ],
+  "hashes": {
+    "4EY5.pdb": "bb2375ef2d7204fdcf497e57c850a11f598a44d02c4786a9b6626e284fb82b73",
+    "HUP.cif": "68fe15278de42d8d751d4669820f9c5cb9567882db45b5536b9d4d0b48b8edef",
+    "4EY6.pdb": "b0437c07883a4342ebe72bf87a1ad5a03c2af71a412bfe0aba863f7ac3787f0b",
+    "receptor.pdbqt": "a8e890f59f5d14e2b48807dd616231b746d1346da0a121cfbe9a75fe6f408dbe",
+    "preparation.json": "a0596787eae0f71cb4d938f8c325a7f29f9b2fe6d113b8a021b9f01e4d726db5",
+    "HUP.pdbqt": "d64a5b88f14409bd13d397a53a7b10d6c8f979b0335268226af57d0dfd2bdf5f",
+    "dry.pdbqt": "568f300199465a0318778eab1f4f715101d22bf6f5546dfcf01a708575a9f650"
+  },
+  "graph_only_pdbqt_sha256": "d64a5b88f14409bd13d397a53a7b10d6c8f979b0335268226af57d0dfd2bdf5f",
+  "matched_reference_pdbqt_sha256": "d64a5b88f14409bd13d397a53a7b10d6c8f979b0335268226af57d0dfd2bdf5f",
+  "box_center_from_receiver_gnt": [
+    -9.942238095238094,
+    -43.487714285714276,
+    30.290809523809518
+  ],
+  "smiles": "C/C=C1\\[C@H]2C=C(C)C[C@]1(N)c1ccc(=O)[nH]c1C2",
+  "formal_charge": 0,
+  "atoms": 18,
+  "mappings": 1,
+  "receptor_alignment_A": 0.27270615053265324,
+  "nca": 64,
+  "local_metal": [],
+  "nearest_omitted_A": 16.4890641941864,
+  "costs": {
+    "load_and_prepare_wall_cpu_s": [
+      0.3315367919999517,
+      0.33153983499999984
+    ],
+    "dock_wall_cpu_s": [
+      0.33057034200010094,
+      0.33057460100000013
+    ],
+    "site_evaluation_wall_cpu_s": [
+      0.378262507999807,
+      0.37820362600000035
+    ]
+  }
+}

@@ -1,0 +1,57 @@
+AutoDock Vina v1.2.7-27-g3c65c0b
+#################################################################
+# If you used AutoDock Vina in your work, please cite:          #
+#                                                               #
+# J. Eberhardt, D. Santos-Martins, A. F. Tillack, and S. Forli  #
+# AutoDock Vina 1.2.0: New Docking Methods, Expanded Force      #
+# Field, and Python Bindings, J. Chem. Inf. Model. (2021)       #
+# DOI 10.1021/acs.jcim.1c00203                                  #
+#                                                               #
+# O. Trott, A. J. Olson,                                        #
+# AutoDock Vina: improving the speed and accuracy of docking    #
+# with a new scoring function, efficient optimization and       #
+# multithreading, J. Comp. Chem. (2010)                         #
+# DOI 10.1002/jcc.21334                                         #
+#                                                               #
+# Please see https://github.com/ccsb-scripps/AutoDock-Vina for  #
+# more information.                                             #
+#################################################################
+
+Scoring function : vina
+Rigid receptor: receptor.pdbqt
+Ligand: HUP.pdbqt
+Grid center: X -9.94224 Y -43.4877 Z 30.2908
+Grid size  : X 24 Y 24 Z 24
+Grid space : 0.375
+Exhaustiveness: 3
+CPU: 1
+Verbosity: 1
+
+Computing Vina grid ... done.
+Performing docking (random seed: 1103501) ... 
+0%   10   20   30   40   50   60   70   80   90   100%
+|----|----|----|----|----|----|----|----|----|----|
+***
+mode |   affinity | dist from best mode
+     | (kcal/mol) | rmsd l.b.| rmsd u.b.
+-----+------------+----------+----------
+   1       -9.411          0          0
+   2       -8.025      2.667       4.68
+   3       -7.406       2.73      4.082
+   4        -6.55      11.98      13.43
+   5       -5.986      2.565      4.461
+   6       -3.374      2.932      4.476
+   7       -1.192      7.931      9.239
+   8        2.409        3.1      5.086
+   9        55.06      14.28       16.3
+Native merge: rmsd=2 candidates=9
+Search trajectory: index=1 steps=747 hunt_calls=747 hunt_evals=17429 second_calls=443 second_evals=6574 rigid_reorientations=0
+Hunt chain: index=1 separate=0 accepted=516 mixed_accept_checks=585
+Pocket start: index=1 anchored=0 cx=-8.638950711761 cy=-52.238309943922 cz=25.910188416989
+Search trajectory: index=2 steps=900 hunt_calls=900 hunt_evals=22779 second_calls=90 second_evals=1242 rigid_reorientations=0
+Hunt chain: index=2 separate=0 accepted=726 mixed_accept_checks=124
+Pocket start: index=2 anchored=0 cx=-1.795499084214 cy=-51.948703134220 cz=20.136561407192
+Search trajectory: index=3 steps=808 hunt_calls=808 hunt_evals=20137 second_calls=297 second_evals=3881 rigid_reorientations=0
+Hunt chain: index=3 separate=0 accepted=657 mixed_accept_checks=383
+Pocket start: index=3 anchored=0 cx=0.041122824851 cy=-44.644019296181 cz=31.136908809433
+Search counters: rigid_reorientation=native explicit_inputs=9 explicit_calls=9 explicit_evals=223 late_prescore=0

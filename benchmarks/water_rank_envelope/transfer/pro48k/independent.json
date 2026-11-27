@@ -1,0 +1,18 @@
+[
+  {
+    "order": 11,
+    "distinct_binary_dimensions": 18,
+    "states": 262144,
+    "verified_rivals": 8,
+    "rmsd_max_error_A": 1.7763568394002505e-15,
+    "minimum_gap_error": 1.3322676295501878e-15
+  },
+  {
+    "order": 17,
+    "distinct_binary_dimensions": 16,
+    "states": 65536,
+    "verified_rivals": 8,
+    "rmsd_max_error_A": 1.7763568394002505e-15,
+    "minimum_gap_error": 1.7763568394002505e-15
+  }
+]
