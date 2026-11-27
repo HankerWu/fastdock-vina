@@ -1,0 +1,27 @@
+panel,arm,graph,certificate,step,target,stronger,weaker,stronger_name,weaker_name,kd_stronger_nM,kd_weaker_nM,score_stronger,score_weaker,weight,exact_weight
+galectin,native,all,max_mean,1,Gal1,8,9,compound 8,compound 9,140000.0,530000.0,-5.7715,-6.02225,0.25075,1003/4000
+galectin,native,all,max_mean,2,Gal3,9,8,compound 9,compound 8,8800.0,31000.0,-5.63625,-5.712,0.07575,303/4000
+galectin,native,without_impossible_reversals,max_mean,1,Gal3,9,13,compound 9,compound 13,8800.0,44000.0,-5.63625,-5.421,-0.21525,-861/4000
+galectin,native,without_impossible_reversals,max_mean,2,Gal1,13,9,compound 13,compound 9,100000.0,530000.0,-6.07075,-6.02225,-0.0485,-97/2000
+galectin,joint,all,max_mean,1,Gal1,8,9,compound 8,compound 9,140000.0,530000.0,-3.29698780735,-3.409812431075,0.112824623725,4512984949/40000000000
+galectin,joint,all,max_mean,2,Gal3,9,8,compound 9,compound 8,8800.0,31000.0,-3.06181664695,-3.02822062665,-0.0335960203,-335960203/10000000000
+galectin,joint,without_impossible_reversals,max_mean,1,Gal1,5,14,compound 5,compound 14,220000.0,680000.0,-3.539399413775,-3.3830531139,-0.156346299875,-1250770399/8000000000
+galectin,joint,without_impossible_reversals,max_mean,2,Gal3,14,5,compound 14,compound 5,19000.0,88000.0,-2.9842124638,-2.9520280389,-0.0321844249,-321844249/10000000000
+kinase,native,all,max_mean,1,AURKA,9829523,11427553,PKC-412,KW-2449,120.0,650.0,-9.985,-8.97075,-1.01425,-4057/4000
+kinase,native,all,max_mean,2,S6K1,11427553,9829523,KW-2449,PKC-412,310.0,1300.0,-8.844,-11.463,2.619,2619/1000
+kinase,native,without_impossible_reversals,max_mean,1,CHEK1,5329102,10138259,Sunitinib,SU-14813,300.0,1200.0,-7.73825,-8.6525,0.91425,3657/4000
+kinase,native,without_impossible_reversals,max_mean,2,S6K1,10138259,9829523,SU-14813,PKC-412,150.0,1300.0,-8.245,-11.463,3.218,1609/500
+kinase,native,without_impossible_reversals,max_mean,3,AURKA,9829523,42642645,PKC-412,EXEL-2880/GSK-1363089,120.0,440.0,-9.985,-7.91525,-2.06975,-8279/4000
+kinase,native,without_impossible_reversals,max_mean,4,AURKA,42642645,5329102,EXEL-2880/GSK-1363089,Sunitinib,440.0,1700.0,-7.91525,-7.40925,-0.506,-253/500
+kinase,native,without_impossible_reversals,compatible_triangle_1,1,CHEK1,153999,11984591,LY-333531,R406,540.0,2500.0,-4.21225,-8.60225,4.39,439/100
+kinase,native,without_impossible_reversals,compatible_triangle_1,2,AURKA,11984591,5329102,R406,Sunitinib,160.0,1700.0,-8.4595,-7.40925,-1.05025,-4201/4000
+kinase,native,without_impossible_reversals,compatible_triangle_1,3,S6K1,5329102,153999,Sunitinib,LY-333531,48.0,210.0,-7.437,-4.1435,-3.2935,-6587/2000
+kinase,joint,all,max_mean,1,S6K1,5329102,9829523,Sunitinib,PKC-412,48.0,1300.0,-4.613869502,-7.73664656395,3.12277706195,62455541239/20000000000
+kinase,joint,all,max_mean,2,AURKA,9829523,5329102,PKC-412,Sunitinib,120.0,1700.0,-6.640945819475,-4.950052313075,-1.6908935064,-2113616883/1250000000
+kinase,joint,without_impossible_reversals,max_mean,1,CHEK1,44259,10138259,Staurosporine,SU-14813,3.2,1200.0,-6.067973480225,-5.322067220675,-0.74590625955,-14918125191/20000000000
+kinase,joint,without_impossible_reversals,max_mean,2,S6K1,10138259,9829523,SU-14813,PKC-412,150.0,1300.0,-4.9298548972,-7.73664656395,2.80679166675,11227166667/4000000000
+kinase,joint,without_impossible_reversals,max_mean,3,CHEK1,9829523,5494449,PKC-412,VX-680/MK-0457,1300.0,8700.0,-5.98121182495,-4.041814593625,-1.939397231325,-77575889253/40000000000
+kinase,joint,without_impossible_reversals,max_mean,4,AURKA,5494449,44259,VX-680/MK-0457,Staurosporine,3.9,17.0,-5.521578176625,-6.6880822666,1.166504089975,46660163599/40000000000
+kinase,joint,without_impossible_reversals,compatible_triangle_1,1,CHEK1,5329102,10138259,Sunitinib,SU-14813,300.0,1200.0,-4.5558793601,-5.322067220675,0.766187860575,30647514423/40000000000
+kinase,joint,without_impossible_reversals,compatible_triangle_1,2,S6K1,10138259,11626560,SU-14813,Crizotinib,150.0,640.0,-4.9298548972,-5.36964076925,0.43978587205,8795717441/20000000000
+kinase,joint,without_impossible_reversals,compatible_triangle_1,3,AURKA,11626560,5329102,Crizotinib,Sunitinib,260.0,1700.0,-5.96608119775,-4.950052313075,-1.016028884675,-40641155387/40000000000

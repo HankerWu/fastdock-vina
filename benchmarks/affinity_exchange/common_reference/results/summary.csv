@@ -1,0 +1,9 @@
+panel,arm,graph,ligands,edges,dropped_unordered_pairs,max_mean,exact_mean,lp_max_mean,witness_length,strictly_feasible
+galectin,native,all,13,58,0,0.16325,653/4000,0.16324999999999998,2,False
+galectin,native,without_impossible_reversals,13,52,3,-0.131875,-211/1600,-0.131875,2,True
+galectin,joint,all,13,58,0,0.0396143017125,3169144137/80000000000,0.039614301712499994,2,False
+galectin,joint,without_impossible_reversals,13,56,1,-0.0942653623875,-7541228991/80000000000,-0.09426536238750001,2,True
+kinase,native,all,24,260,0,0.802375,6419/8000,0.8023750000000001,2,False
+kinase,native,without_impossible_reversals,24,243,7,0.389125,3113/8000,0.38912499999999994,4,False
+kinase,joint,all,24,260,0,0.715941777775,28637671111/40000000000,0.715941777775,2,False
+kinase,joint,without_impossible_reversals,24,235,11,0.3219980664625,25759845317/80000000000,0.32199806646250007,4,False

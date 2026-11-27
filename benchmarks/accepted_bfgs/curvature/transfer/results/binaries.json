@@ -1,0 +1,18 @@
+{
+  "official": {
+    "sha256": "f31f774f723bba7bbe6e9d1c47577020eea9a8da16424284c043d22593570644",
+    "version": "AutoDock Vina v1.2.7"
+  },
+  "parent": {
+    "sha256": "0fcbc40bd77174fb7e85f441d9927f98d30834120b36722c7f86c3c3f63b1bac",
+    "version": "AutoDock Vina v1.2.7-27-g3c65c0b"
+  },
+  "fixed": {
+    "sha256": "6a56ec3db8c23b2e8bea4f65eb94fe3a4ccc2b272b4ae27c0da8113c078b4304",
+    "version": "AutoDock Vina v1.2.7-27-g3c65c0b"
+  },
+  "parent_double": {
+    "sha256": "0fcbc40bd77174fb7e85f441d9927f98d30834120b36722c7f86c3c3f63b1bac",
+    "version": "AutoDock Vina v1.2.7-27-g3c65c0b"
+  }
+}

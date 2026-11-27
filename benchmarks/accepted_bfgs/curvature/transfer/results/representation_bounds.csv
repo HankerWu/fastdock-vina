@@ -1,0 +1,5 @@
+query,domain,heavy_atoms,axes,blocks,symmetry_mappings,lower_bound_A
+4W9H,declared,33,9,9,12,0.2673728580996721
+4W9H,all_amides_locked,33,8,8,12,0.27564999158984493
+5LLI,declared,37,10,10,24,0.2945759656376467
+5LLI,all_amides_locked,37,9,9,24,0.4935424055226193

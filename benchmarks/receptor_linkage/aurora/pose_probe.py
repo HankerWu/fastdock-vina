@@ -60,7 +60,7 @@ def register(points, heavy, target):
     return (points - x.mean(axis=0)) @ R + y.mean(axis=0)
 
 
-def fit_torsions(points, heavy, arms, templates):
+def fit_torsions(points, heavy, arms, templates, *, accept_finite_limit=False):
     def oriented(angles, target):
         x = points.copy()
         for theta, (a, b, nodes) in zip(angles, arms):
@@ -111,7 +111,8 @@ def fit_torsions(points, heavy, arms, templates):
                 xtol=1e-10,
                 gtol=1e-10,
             )
-            if not res.success:
+            finite_limit = accept_finite_limit and res.status == 0 and np.all(np.isfinite(res.fun))
+            if not res.success and not finite_limit:
                 raise ArithmeticError(res.message)
             rmsd = np.linalg.norm(res.fun) / np.sqrt(len(heavy))
             if best is None or rmsd < best[0]:

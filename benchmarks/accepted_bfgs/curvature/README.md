@@ -33,6 +33,8 @@
 
 另在两套人 FKBP12 受体图上完成了 96 次独立运行。在原有 15 个三倍分离表观 Ki 对中，两受体汇总方向由 8/15 降至 5/15，七个点的 Spearman 由 0.536 降至 0.071。[数值、原始池及独立回读](fkbp/README.md)
 
+在这个分支此前未收录的人 VHL 口袋上，双向交叉对接的四格首姿均值从 8.590 升至 9.290 Å。独立的合法扭转放置、酰胺固定、化学图重跑和晶格接触分析将表示能力与实际输出分开。[VHL 结构、原始输入及逐候选验证](transfer/README.md)
+
 ## 复现
 
 父版为 `5015481d4cf62c75bca8b4a67358364813c79c79`。测试环境使用 GCC 14、Boost 1.83、Python 3.12、NumPy、RDKit 和 Linux，生产构建的 SHA-256 存于 [binaries.json](results/binaries.json)。在父版和修复版各从对应源码运行 `python tools/build.py --boost-prefix "$BOOST" --output-dir "$BUILD"`。令 PARENT 和 FIXED 为两个源码树，OLD 和 NEW 为相应构建目录，WORK 为尚不存在的工作目录，D 为本目录，CPU 为可用的 CPU 编号。重放使用仓库现有输入，归档 SHA-256 为 `ca1c78166769f1cc5522b3a619c4db72ffab4facc585bc9edf8474d4d722cacd`。
