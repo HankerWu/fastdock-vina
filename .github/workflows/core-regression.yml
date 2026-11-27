@@ -6,6 +6,7 @@ on:
       - 'src/**'
       - 'tools/build.py'
       - 'benchmarks/check_map_lattice.cpp'
+      - 'benchmarks/check_online_pose_archive.cpp'
       - 'benchmarks/check_macrocycle_labels.cpp'
       - 'benchmarks/bond_distance/**'
       - 'benchmarks/macrocycle_proposal/**'
@@ -26,6 +27,10 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y libboost-system-dev libboost-thread-dev libboost-serialization-dev libboost-filesystem-dev libboost-program-options-dev
       - name: Build current engine
         run: python3 tools/build.py --output-dir build/core --jobs 2
+      - name: Test online pose separation and tie ordering
+        run: |
+          c++ -O2 -DNDEBUG -std=c++14 -Isrc/lib benchmarks/check_online_pose_archive.cpp build/core/obj/coords.o -o build/core/check-online-archive
+          build/core/check-online-archive
       - name: Test imported map lattices
         run: |
           c++ -O2 -DNDEBUG -std=c++14 -pthread -Isrc/lib benchmarks/check_map_lattice.cpp $(find build/core/obj -name '*.o' ! -name main.o) -lboost_system -lboost_thread -lboost_serialization -lboost_filesystem -lboost_program_options -o build/core/check-map-lattice

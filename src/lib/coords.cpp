@@ -41,20 +41,24 @@ std::pair<sz, fl> find_closest(const vecv& a, const output_container& b) {
 }
 
 void add_to_output_container(output_container& out, const output_type& t, fl min_rmsd, sz max_size) {
-	std::pair<sz, fl> closest_rmsd = find_closest(t.coords, out);
-	if(closest_rmsd.first < out.size() && closest_rmsd.second < min_rmsd) { // have a very similar one
-		if(t.e < out[closest_rmsd.first].e) { // the new one is better, apparently
-			out[closest_rmsd.first] = t; // FIXME? slow
-		}
+	VINA_CHECK(out.empty() || t.coords.size() == out.front().coords.size());
+	if (max_size == 0 || (out.size() == max_size && !(t.e < out.back().e)))
+		return;
+	const auto overlaps = [&](const output_type& resident) {
+		return rmsd_upper_bound(t.coords, resident.coords) < min_rmsd;
+	};
+	// Residents are already separated and sorted by energy. Earlier residents
+	// win ties. A single better or tied neighbour blocks the newcomer.
+	auto position = out.begin();
+	while (position != out.end() && !(t.e < position->e)) {
+		if (overlaps(*position)) return;
+		++position;
 	}
-	else { // nothing similar
-		if(out.size() < max_size)
-			out.push_back(new output_type(t)); // the last one had the worst energy - replacing 
-		else
-			if(!out.empty() && t.e < out.back().e) // FIXME? - just changed
-				out.back() = t; // FIXME? slow
-	}
-	out.sort();
+	// A new representative can bridge two distinct basins. Remove every
+	// lower-priority neighbour to maintain pairwise separation after insertion.
+	const auto inserted = out.insert(position, new output_type(t));
+	out.erase_if(inserted + 1, out.end(), overlaps);
+	if (out.size() > max_size) out.pop_back();
 }
 
 output_container select_distinct_poses(const output_container& poses, fl min_rmsd, sz max_size) {
