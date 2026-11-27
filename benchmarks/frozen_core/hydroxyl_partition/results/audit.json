@@ -1,0 +1,11 @@
+{
+  "poses": 1213,
+  "pools": 136,
+  "max_fixed_diff": 4.980904577678302e-12,
+  "max_radial_diff": 4.948708109964173e-12,
+  "max_72_to_144_raw_ensemble_diff": 5.558236912714398e-05,
+  "max_half_step_raw_ensemble_diff": 0.00011115952443419008,
+  "max_72_to_144_raw_minimum_diff": 0.0024713945306416643,
+  "wall_including_diagnostics_s": 3.1119541810003284,
+  "peak_rss_linux_KiB": 124480
+}
