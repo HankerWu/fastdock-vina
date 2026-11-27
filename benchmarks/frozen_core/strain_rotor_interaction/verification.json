@@ -1,0 +1,8 @@
+{
+  "pools_attempted": 122,
+  "pools_verified": 120,
+  "expected_cpp_abstentions": 2,
+  "cpp_contact_mismatches": 0,
+  "max_abs_direct_joint_error": 0.0010000000000118803,
+  "binary_sha256": "156a52f18345dc5ee283c0b854a914dacc175dfb9695f2ddc6737746fa0681b1"
+}
