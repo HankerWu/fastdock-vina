@@ -1,0 +1,22 @@
+--- a/src/lib/vina.cpp
++++ b/src/lib/vina.cpp
+@@ -39 +39,3 @@
+-#include "anchored_search_grid.h"
++#include "anchored_search_grid.h"
++#include "search_grid.h"
++#include <cstdlib>
+@@ -1623 +1625,7 @@
+-	const igrid& base_grid = m_cubic_search_grid ? static_cast<const igrid&>(cubic_grid) : static_cast<const igrid&>(m_grid);
++	const igrid& native_search = m_cubic_search_grid ? static_cast<const igrid&>(cubic_grid) : static_cast<const igrid&>(m_grid);
++	boost::optional<ch_pi_search_grid> chpi;
++	if (const char* sidecar = std::getenv("FASTDOCK_RESEARCH_CHPI")) {
++		ifile spec(sidecar);
++		chpi.emplace(native_search, m_grid.gd(), m_model, spec);
++	}
++	const igrid& base_grid = chpi ? static_cast<const igrid&>(*chpi) : native_search;
+--- a/src/lib/model.h
++++ b/src/lib/model.h
+@@ -194 +194,2 @@
+-	friend class amide_search_grid;
++	friend class amide_search_grid;
++	friend class ch_pi_search_grid;

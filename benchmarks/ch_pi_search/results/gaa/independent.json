@@ -1,0 +1,90 @@
+{
+  "pools": 48,
+  "poses": 432,
+  "cells": 96,
+  "max_errors": {
+    "modes": 5.329070518200751e-15,
+    "cells": 4.440892098500626e-15
+  },
+  "means": [
+    {
+      "panel": "GAA",
+      "cap": 12000,
+      "conditions": 12,
+      "field_field_within_printed_score_tolerance": [
+        3.491268177802233,
+        3.491268177802233
+      ],
+      "interaction_within_printed_score_tolerance": [
+        1.2271752741367559,
+        1.2271752741367559
+      ],
+      "native_native": 6.925817706433411,
+      "field_native": 3.5338357833682266,
+      "native_field": 5.656074826730662,
+      "field_field": 3.491268177802233,
+      "interaction": 1.2271752741367559
+    },
+    {
+      "panel": "GAA",
+      "cap": 24000,
+      "conditions": 12,
+      "field_field_within_printed_score_tolerance": [
+        3.179581906634375,
+        3.179581906634375
+      ],
+      "interaction_within_printed_score_tolerance": [
+        1.4362487875461722,
+        1.4362487875461722
+      ],
+      "native_native": 7.167919326913574,
+      "field_native": 3.3454291077776936,
+      "native_field": 5.5658233382240825,
+      "field_field": 3.179581906634375,
+      "interaction": 1.4362487875461722
+    }
+  ],
+  "switched": 25,
+  "largest_reorder": [
+    {
+      "panel": "GAA",
+      "query": "5NN5",
+      "receptor": "5NN5",
+      "seed": 43133,
+      "cap": 12000,
+      "search": "native",
+      "winner": 5,
+      "before": 11.457076407975196,
+      "after": 5.92408352712583,
+      "printed_dry_gap": 0.2560000000000002,
+      "pair_advantage": 0.9661972023049447
+    },
+    {
+      "panel": "GAA",
+      "query": "5NN5",
+      "receptor": "5NN5",
+      "seed": 43133,
+      "cap": 24000,
+      "search": "native",
+      "winner": 6,
+      "before": 11.457076407975196,
+      "after": 5.92408352712583,
+      "printed_dry_gap": 0.2560000000000002,
+      "pair_advantage": 0.9661972023049447
+    },
+    {
+      "panel": "GAA",
+      "query": "5NN6",
+      "receptor": "5NN5",
+      "seed": 43103,
+      "cap": 12000,
+      "search": "native",
+      "winner": 2,
+      "before": 8.760232920724759,
+      "after": 5.077621536660263,
+      "printed_dry_gap": 0.09999999999999964,
+      "pair_advantage": 1.9683743384055845
+    }
+  ],
+  "close_corrected_winners": []
+}

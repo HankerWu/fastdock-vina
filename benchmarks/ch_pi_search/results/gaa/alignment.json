@@ -1,0 +1,26 @@
+[
+  {
+    "query": "5NN5",
+    "receptor": "5NN5",
+    "pocket_ca": 65,
+    "residual": 9.555859060274905e-15
+  },
+  {
+    "query": "5NN5",
+    "receptor": "5NN6",
+    "pocket_ca": 62,
+    "residual": 0.11071991000708749
+  },
+  {
+    "query": "5NN6",
+    "receptor": "5NN5",
+    "pocket_ca": 62,
+    "residual": 0.1107199100070883
+  },
+  {
+    "query": "5NN6",
+    "receptor": "5NN6",
+    "pocket_ca": 65,
+    "residual": 4.943020281064857e-15
+  }
+]

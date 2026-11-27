@@ -49,11 +49,32 @@ def protonate(smiles, dest):
     return [serial[i + 1] for i in range(mol.GetNumAtoms())], Chem.MolToSmiles(mol)
 
 
-def prepare(w):
+def select_missing_primary_altloc(lines):
+    """Retain a deposited protein conformer when a residue has no A conformer."""
+    occupancies = {}
+    for line in lines:
+        if line.startswith("ATOM  ") and line[16] != " ":
+            groups = occupancies.setdefault(line[17:27], {})
+            groups.setdefault(line[16], []).append(float(line[54:60]))
+    chosen = {
+        residue: min(groups, key=lambda label: (-np.mean(groups[label]), label))
+        for residue, groups in occupancies.items()
+        if "A" not in groups
+    }
+    adjusted = [
+        line[:16] + "A" + line[17:]
+        if line.startswith("ATOM  ") and line[16] == chosen.get(line[17:27])
+        else line
+        for line in lines
+    ]
+    return adjusted, chosen
+
+
+def prepare(w, cases=CASES):
     raw = w / "raw"
     raw.mkdir(parents=True, exist_ok=True)
     meta, costs = {}, []
-    for code, (chain, comp) in CASES.items():
+    for code, (chain, comp) in cases.items():
         d = w / code
         d.mkdir(exist_ok=True)
         pdb = raw / (code + ".pdb")
@@ -70,6 +91,7 @@ def prepare(w):
             for l in pdb.read_text().splitlines()
             if l.startswith(("ATOM  ", "HETATM")) and l[21] == chain
         ]
+        lines, altlocs = select_missing_primary_altloc(lines)
         ref = cross.dep_records(lines, comp)
         deposited = np.asarray(list(ref[0].values()))
         # 2V3E's terminal Gln497 ends at CB in the deposition. Building its
@@ -112,6 +134,7 @@ def prepare(w):
             ca=ca,
             sources=hashes,
             remote_terminal_stub=truncation,
+            **({"alternate_protein_conformers": altlocs} if altlocs else {}),
             protonated_serial=serial,
             protonated_smiles=charged,
             **rec,

@@ -1,0 +1,192 @@
+{
+  "pools": 140,
+  "poses": 1257,
+  "cells": 280,
+  "max_errors": {
+    "modes": 1.0658141036401503e-14,
+    "cells": 4.884981308350689e-15
+  },
+  "means": [
+    {
+      "panel": "GBA1",
+      "cap": 12000,
+      "conditions": 27,
+      "field_field_within_printed_score_tolerance": [
+        3.6295524593319017,
+        3.6295524593319017
+      ],
+      "interaction_within_printed_score_tolerance": [
+        1.3109977156438744,
+        1.3109977156438744
+      ],
+      "native_native": 4.33878333817173,
+      "field_native": 2.9233209715058925,
+      "native_field": 3.734017110353865,
+      "field_field": 3.6295524593319017,
+      "interaction": 1.3109977156438744
+    },
+    {
+      "panel": "GBA1",
+      "cap": 24000,
+      "conditions": 27,
+      "field_field_within_printed_score_tolerance": [
+        3.617316660447204,
+        3.7634164801879493
+      ],
+      "interaction_within_printed_score_tolerance": [
+        0.5877204575567347,
+        0.7338202772974802
+      ],
+      "native_native": 2.6288750270217744,
+      "field_native": 2.661125729364036,
+      "native_field": 2.9973455005482075,
+      "field_field": 3.617316660447204,
+      "interaction": 0.5877204575567347
+    },
+    {
+      "panel": "GCK",
+      "cap": 3000,
+      "conditions": 4,
+      "field_field_within_printed_score_tolerance": [
+        10.179095818954135,
+        10.179095818954135
+      ],
+      "interaction_within_printed_score_tolerance": [
+        0.0,
+        0.0
+      ],
+      "native_native": 5.8370224641119535,
+      "field_native": 10.179095818954135,
+      "native_field": 5.8370224641119535,
+      "field_field": 10.179095818954135,
+      "interaction": 0.0
+    },
+    {
+      "panel": "GCK",
+      "cap": 12000,
+      "conditions": 4,
+      "field_field_within_printed_score_tolerance": [
+        9.412722842751249,
+        9.412722842751249
+      ],
+      "interaction_within_printed_score_tolerance": [
+        0.0,
+        0.0
+      ],
+      "native_native": 4.905181541458761,
+      "field_native": 9.412722842751249,
+      "native_field": 4.905181541458761,
+      "field_field": 9.412722842751249,
+      "interaction": 0.0
+    },
+    {
+      "panel": "GLUT3",
+      "cap": 3000,
+      "conditions": 4,
+      "field_field_within_printed_score_tolerance": [
+        4.53332090872439,
+        4.53332090872439
+      ],
+      "interaction_within_printed_score_tolerance": [
+        0.0,
+        0.0
+      ],
+      "native_native": 3.008713474487611,
+      "field_native": 4.53332090872439,
+      "native_field": 3.008713474487611,
+      "field_field": 4.53332090872439,
+      "interaction": 0.0
+    },
+    {
+      "panel": "GLUT3",
+      "cap": 12000,
+      "conditions": 4,
+      "field_field_within_printed_score_tolerance": [
+        5.487826630950765,
+        5.487826630950765
+      ],
+      "interaction_within_printed_score_tolerance": [
+        0.8334008232798382,
+        0.8334008232798382
+      ],
+      "native_native": 2.5324578481568687,
+      "field_native": 4.654425807670926,
+      "native_field": 2.5324578481568687,
+      "field_field": 5.487826630950765,
+      "interaction": 0.8334008232798382
+    }
+  ],
+  "switched": 47,
+  "largest_reorder": [
+    {
+      "panel": "GBA1",
+      "query": "2V3D",
+      "receptor": "2NSX",
+      "seed": 43103,
+      "cap": 12000,
+      "search": "native",
+      "winner": 2,
+      "before": 12.92839233131158,
+      "after": 4.150856265260168,
+      "printed_dry_gap": 0.15300000000000047,
+      "pair_advantage": 0.5747856517779322
+    },
+    {
+      "panel": "GBA1",
+      "query": "2V3D",
+      "receptor": "2NSX",
+      "seed": 43133,
+      "cap": 12000,
+      "search": "native",
+      "winner": 2,
+      "before": 10.69377327121855,
+      "after": 5.1926140082721055,
+      "printed_dry_gap": 0.07599999999999962,
+      "pair_advantage": 2.9018667890289622
+    },
+    {
+      "panel": "GBA1",
+      "query": "2V3E",
+      "receptor": "2V3D",
+      "seed": 43133,
+      "cap": 12000,
+      "search": "native",
+      "winner": 2,
+      "before": 8.251456649377598,
+      "after": 3.5636422545627457,
+      "printed_dry_gap": 0.08700000000000063,
+      "pair_advantage": 0.36398152587925137
+    }
+  ],
+  "close_corrected_winners": [
+    {
+      "panel": "GBA1",
+      "query": "2V3E",
+      "receptor": "2V3D",
+      "seed": 43103,
+      "cap": 24000,
+      "search": "field",
+      "best_rank": 1,
+      "best_rmsd": 3.258847553214103,
+      "score_gap": 0.00047205161149399544,
+      "runner_up_rank": 4,
+      "runner_up_rmsd": 7.203542686214237,
+      "coordinate_step_angstrom": 0.001,
+      "printed_score_step": 0.001,
+      "score_only_common_reference": [
+        {
+          "rank": 1,
+          "common_reference_dry": -6.812,
+          "corrected": -11.40281566262364
+        },
+        {
+          "rank": 4,
+          "common_reference_dry": -6.287,
+          "corrected": -11.405343611012146
+        }
+      ],
+      "min_plausible": 3.258847553214103,
+      "max_plausible": 7.203542686214237
+    }
+  ]
+}

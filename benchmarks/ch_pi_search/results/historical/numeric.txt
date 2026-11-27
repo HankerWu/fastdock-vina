@@ -1,0 +1,1 @@
+node_checks=33 cartesian_max_error=1.06685e-12 conformation_dof=14 conformation_max_error=8.58876e-12
