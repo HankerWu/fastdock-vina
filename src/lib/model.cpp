@@ -894,6 +894,31 @@ static const branch* torsion_branch(const branches& children, sz& index) {
 	return nullptr;
 }
 
+// A branch rotation is a common rigid motion when both endpoints lie below
+// it. Only a branch separating the two endpoints can open this restraint.
+static unsigned restore_separating_torsions(const branch& rotor, const interacting_pair& pair,
+                                            flv& torsions, sz& next) {
+	const sz index = next++; // tree::set_conf consumes angles in preorder
+	const auto contains = [&](sz i) { return rotor.node.begin <= i && i < rotor.node.end; };
+	unsigned endpoints = (contains(pair.a) ? 1u : 0u) | (contains(pair.b) ? 2u : 0u);
+	for (const auto& child : rotor.children)
+		endpoints |= restore_separating_torsions(child, pair, torsions, next);
+	if (endpoints == 1 || endpoints == 2)
+		torsions[index] = 0; // offset relative to the prepared input conformer
+	return endpoints;
+}
+
+void model::restore_closure_path_torsions(conf& c) const {
+	for (const auto& pair : glue_pairs) {
+		const sz i = find_ligand(pair.a);
+		if (i == ligands.size() || i != find_ligand(pair.b)) continue;
+		sz next = 0;
+		for (const auto& child : ligands[i].children)
+			restore_separating_torsions(child, pair, c.ligands[i].torsions, next);
+		assert(next == c.ligands[i].torsions.size());
+	}
+}
+
 void model::set_balanced_torsion(ligand_conf& c, sz ligand_number, sz torsion, fl angle) {
 	auto& lig = ligands[ligand_number];
 	// A rejected trial can leave coords at a different minimum than c.
