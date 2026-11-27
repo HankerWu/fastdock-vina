@@ -114,7 +114,8 @@ fl cache::eval_atoms(const model& m, fl cap, vecv* gradient, bool flex_only) con
 			if (gradient) (*gradient)[i].assign(0);
 			continue;
 		}
-		const grid& field = m_grids[t];
+		const grid& field = i < m_flex_grids.size() && m_flex_grids[i].initialized()
+		                  ? m_flex_grids[i] : m_grids[t];
 		if (Cubic)
 			energy += field.evaluate_cubic(m.coords[i], m_slope, cap, gradient ? &(*gradient)[i] : nullptr);
 		else if (gradient)
@@ -148,7 +149,18 @@ bool cache::are_atom_types_grid_initialized(const szv& atom_types) const {
 	return true;
 }
 
-void cache::read(const std::string& map_prefix) {
+std::string cache::flex_definition(const model& receptor) {
+	// Use the supplied domain and atom order, independent of the current pose
+	// or any ligand appended later. Comments do not define movable atoms.
+	std::string definition;
+	for (const auto& line : receptor.flex_context) {
+		if (line.first.empty() || line.first.compare(0, 6, "REMARK") == 0) continue;
+		definition += line.first + '\n';
+	}
+	return definition;
+}
+
+void cache::read(const std::string& map_prefix, const model* receptor) {
 	// Load a complete replacement rather than mixing old and new channels.
 	std::vector<grid> loaded(m_grids.size());
 	grid_dims reference;
@@ -168,66 +180,88 @@ void cache::read(const std::string& map_prefix) {
 		std::cerr << "\nERROR: No *.map files with prefix \"" << map_prefix << "\"\n";
 		exit(EXIT_FAILURE);
 	}
+	std::vector<grid> flex_grids;
+	std::string definition;
+	const path manifest(map_prefix + ".flex-fields");
+	if (receptor && receptor->num_flex() && fs::exists(manifest)) {
+		ifile input(manifest);
+		std::string version;
+		std::getline(input, version);
+		sz count;
+		const sz movable = receptor->num_movable_atoms();
+		if (version != "FastDock Vina flex fields 1" || !(input >> count) || count > movable)
+			throw std::runtime_error("Invalid flex field manifest: " + manifest.string());
+		szv indices;
+		for (sz n = 0; n < count; ++n) {
+			sz i;
+			if (!(input >> i) || i >= movable || (!indices.empty() && i <= indices.back()))
+				throw std::runtime_error("Invalid flex atom index: " + manifest.string());
+			indices.push_back(i);
+		}
+		input.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+		definition.assign(std::istreambuf_iterator<char>(input), std::istreambuf_iterator<char>());
+		if (definition != flex_definition(*receptor))
+			throw std::runtime_error("Flexible receptor does not match " + manifest.string());
+		for (sz i : indices) {
+			const path field(map_prefix + ".flex-" + std::to_string(i) + ".map");
+			flex_grids.resize(i + 1);
+			require_matching_map_dimensions(reference, flex_grids[i].read_map(field), field.string());
+		}
+	} else if (receptor && receptor->num_flex()) {
+		std::cerr << "Using legacy shared affinity maps for flexible residues: the maps contain no covalent exclusions.\n";
+	}
 	m_grids.swap(loaded);
+	m_flex_grids.swap(flex_grids);
+	m_flex_definition.swap(definition);
 	m_gd = reference;
 }
 
-void cache::write(const std::string& out_prefix, const szv& atom_types, const std::string& gpf_filename,
-				      const std::string& fld_filename, const std::string& receptor_filename) {
-	std::bitset<XS_TYPE_SIZE> written;
+static void write_xs_field(const grid& field, const path& file, const std::string& gpf,
+                           const std::string& fld, const std::string& receptor) {
+	const sz nx = field.m_data.dim0() - 1;
+	const sz ny = field.m_data.dim1() - 1;
+	const sz nz = field.m_data.dim2() - 1;
+	if (nx % 2 || ny % 2 || nz % 2)
+		throw std::runtime_error("Can't write maps. Number of voxels (NELEMENTS) is odd. Use --force_even_voxels.");
+	ofile out(file);
+	out << "GRID_PARAMETER_FILE " << gpf << "\nGRID_DATA_FILE " << fld
+	    << "\nMACROMOLECULE " << receptor << "\nSPACING " << field.m_factor_inv[0]
+	    << "\nNELEMENTS " << nx << " " << ny << " " << nz << "\nCENTER";
+	VINA_FOR(axis, 3) out << ' ' << field.m_init[axis] + field.m_range[axis] * 0.5;
+	out << "\n" << std::setprecision(4);
+	VINA_FOR(z, field.m_data.dim2())
+	VINA_FOR(y, field.m_data.dim1())
+	VINA_FOR(x, field.m_data.dim0())
+		out << field.m_data(x,y,z) << '\n';
+}
 
-	for (sz type : atom_types) {
-		const sz t = affinity_map_type(type);
-		if (t >= XS_TYPE_SIZE || written[t]) continue;
-		if (m_grids[t].initialized()) {
-			int nx = m_grids[t].m_data.dim0() - 1;
-			int ny = m_grids[t].m_data.dim1() - 1;
-			int nz = m_grids[t].m_data.dim2() - 1;
-			const std::string atom_type = convert_XS_to_string(t);
-
-			// For writing a .map, the number of points in the grid must be odd, which means that the number
-			// of voxels (NELEMENTS) must be even... n_voxels = n_grid_points - 1
-			if (nx % 2 == 1 || ny % 2 == 1 || nz % 2 == 1){
-				std::cerr << "ERROR: Can't write maps. Number of voxels (NELEMENTS) is odd. Use --force_even_voxels.\n";
-				exit(EXIT_FAILURE);
-			} else {
-
-				path p(out_prefix + "." + atom_type + ".map");
-				ofile out(p);
-
-				// write header
-				out << "GRID_PARAMETER_FILE " << gpf_filename << "\n";
-				out << "GRID_DATA_FILE " << fld_filename << "\n";
-				out << "MACROMOLECULE " << receptor_filename << "\n";
-				out << "SPACING " << m_grids[t].m_factor_inv[0] << "\n";
-				
-				out << "NELEMENTS " << nx << " " << ny << " " << nz << "\n";
-
-				// center
-				fl cx = m_grids[t].m_init[0] + m_grids[t].m_range[0] * 0.5;
-				fl cy = m_grids[t].m_init[1] + m_grids[t].m_range[1] * 0.5;
-				fl cz = m_grids[t].m_init[2] + m_grids[t].m_range[2] * 0.5;
-				out << "CENTER " << cx << " " << cy << " " << cz << "\n";
-
-				// write data
-				VINA_FOR(z, m_grids[t].m_data.dim2())
-				{
-					VINA_FOR(y, m_grids[t].m_data.dim1())
-					{
-						VINA_FOR(x, m_grids[t].m_data.dim0())
-						{
-							out << std::setprecision(4) << m_grids[t].m_data(x, y, z) << "\n"; // slow?
-						} // x
-					} // y
-				} // z
-				written.set(t);
-			} // even voxels
-		} // map initialized
-	} // map atom type
-} // cache::write
+void cache::write(const std::string& prefix, const szv& atom_types, const std::string& gpf,
+                  const std::string& fld, const std::string& receptor) {
+	const auto types = map_types(atom_types);
+	VINA_FOR(t, XS_TYPE_SIZE) {
+		if (types[t] && m_grids[t].initialized())
+			write_xs_field(m_grids[t], prefix + "." + convert_XS_to_string(t) + ".map", gpf, fld, receptor);
+	}
+	szv indices;
+	VINA_FOR_IN(i, m_flex_grids) {
+		if (!m_flex_grids[i].initialized()) continue;
+		write_xs_field(m_flex_grids[i], prefix + ".flex-" + std::to_string(i) + ".map", gpf, fld, receptor);
+		indices.push_back(i);
+	}
+	const path manifest(prefix + ".flex-fields");
+	if (indices.empty()) {
+		// A reused prefix must not apply fields from a previous flexible receptor.
+		if (fs::exists(manifest)) fs::remove(manifest);
+	} else {
+		ofile out(manifest);
+		out << "FastDock Vina flex fields 1\n" << indices.size();
+		for (sz i : indices) out << ' ' << i;
+		out << '\n' << m_flex_definition;
+	}
+}
 
 void cache::populate(const model& m, const precalculate& p, const szv_grid& receptor_index,
-                     const std::bitset<XS_TYPE_SIZE>& map_types_needed) {
+                     const std::bitset<XS_TYPE_SIZE>& map_types_needed, const std::vector<szv>& rigid_exclusions) {
 	szv needed;
 	VINA_FOR(t, XS_TYPE_SIZE) {
 		if (map_types_needed[t] && !m_grids[t].initialized())
@@ -321,6 +355,40 @@ void cache::populate(const model& m, const precalculate& p, const szv_grid& rece
 					VINA_RANGE(x, start, span.end)
 						new_grids[j].m_data(x, y, z) = affinities[(x - start) * num_maps + j];
 				start = span.end;
+			}
+		}
+	}
+	// Form each atom's raw field before interpolation, the positive-energy
+	// cap and the box penalty. Ligand atoms continue to share the type map.
+	m_flex_grids.resize(rigid_exclusions.size());
+	if (!rigid_exclusions.empty()) m_flex_definition = flex_definition(m);
+	VINA_FOR_IN(i, rigid_exclusions) {
+		if (rigid_exclusions[i].empty()) continue;
+		const sz t = affinity_map_type(m.atoms[i].xs);
+		const auto channel = std::find(needed.begin(), needed.end(), t);
+		if (channel == needed.end()) continue;
+		grid& field = m_flex_grids[i];
+		field = new_grids[channel - needed.begin()];
+		for (const sz j : rigid_exclusions[i]) {
+			const atom& fixed = receptor[j];
+			if (!receptor_index.atom_types()[fixed.xs]) continue;
+			const auto& pair = p.element(triangular_matrix_index_permissive(nat, fixed.xs, t));
+			const fl cutoff = std::sqrt(cutoff_sqr);
+			sz first[3], end[3];
+			VINA_FOR(axis, 3) {
+				const fl offset = fixed.coords[axis] - field.m_init[axis];
+				const fl step = field.m_factor_inv[axis];
+				const fl count = field.m_data.dim(axis);
+				first[axis] = static_cast<sz>(std::max(0.0, std::min(count, std::floor((offset - cutoff) / step))));
+				end[axis] = static_cast<sz>(std::max(0.0, std::min(count, std::ceil((offset + cutoff) / step) + 1)));
+			}
+			VINA_RANGE(z, first[2], end[2])
+			VINA_RANGE(y, first[1], end[1])
+			VINA_RANGE(x, first[0], end[0]) {
+				const vec point = field.index_to_argument(x, y, z);
+				const fl r2 = vec_distance_sqr(point, fixed.coords);
+				if (r2 <= cutoff_sqr)
+					field.m_data(x, y, z) -= pair.fast_sample(p.fast_index(r2));
 			}
 		}
 	}

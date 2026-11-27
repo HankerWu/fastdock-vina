@@ -55,6 +55,7 @@ private:
 	fl eval_impl(const model& m, fl v, const precalculate& scores, bool flex_only,
 	             const ScoringFunction* sf, const net_polar* polar, net_polar_terms* terms) const;
 	szv_grid sgrid;
+	std::vector<szv> rigid_exclusions;
 	grid_dims gd;
 	precalculate p;
 	std::shared_ptr<const ScoringFunction> scoring;

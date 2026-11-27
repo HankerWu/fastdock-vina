@@ -150,6 +150,8 @@ public:
 	vec ligand_heavy_centroid(const ligand_conf& conf) const;
 
 	const atomv& grid_atoms() const;
+	// Indexed by movable receptor atom, before ligands are appended.
+	std::vector<szv> rigid_bond_exclusions() const;
 	const atom_base& movable_atom  (sz i) const { assert(i < m_num_movable_atoms); return  atoms[i]; }
 	const vec&       movable_coords(sz i) const { assert(i < m_num_movable_atoms); return coords[i]; }
 

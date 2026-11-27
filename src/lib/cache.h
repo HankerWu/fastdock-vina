@@ -60,11 +60,15 @@ public:
     bool are_atom_types_grid_initialized(const szv& atom_types) const;
 	static std::bitset<XS_TYPE_SIZE> map_types(const szv& atom_types);
 	std::bitset<XS_TYPE_SIZE> missing_map_types(const szv& atom_types) const;
-    void read(const std::string& str);
+    void read(const std::string& str, const model* receptor = nullptr);
     void write(const std::string& out_prefix, const szv& atom_types, const std::string& gpf_filename="NULL",
                const std::string& fld_filename="NULL", const std::string& receptor_filename="NULL");
 	void populate(const model& m, const precalculate& p, const szv_grid& receptor_index,
-	              const std::bitset<XS_TYPE_SIZE>& map_types_needed);
+	              const std::bitset<XS_TYPE_SIZE>& types) {
+		populate(m, p, receptor_index, types, m.rigid_bond_exclusions());
+	}
+	void populate(const model& m, const precalculate& p, const szv_grid& receptor_index,
+	              const std::bitset<XS_TYPE_SIZE>& map_types_needed, const std::vector<szv>& rigid_exclusions);
 	// Read-only search view of these same maps. Explicit refinement continues
 	// through non_cache and does not see the interpolant.
 	struct cubic_view : public igrid {
@@ -80,6 +84,10 @@ private:
 	grid_dims m_gd;
 	fl m_slope; // does not get (de-)serialized
 	std::vector<grid> m_grids;
+	// Atom-specific fields only for flexible receptor atoms with covalent exclusions.
+	std::vector<grid> m_flex_grids;
+	std::string m_flex_definition;
+	static std::string flex_definition(const model& receptor);
 };
 
 #endif

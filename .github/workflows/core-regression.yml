@@ -17,6 +17,8 @@ on:
       - 'benchmarks/terminal_rotor_score/independent/axis_check.cpp'
       - 'benchmarks/terminal_rotor_score/independent/verify.py'
       - 'benchmarks/bond_distance/**'
+      - 'benchmarks/flex_covalent_exclusions/check.cpp'
+      - 'benchmarks/flex_covalent_exclusions/*.pdbqt'
       - 'benchmarks/macrocycle_proposal/**'
       - 'benchmarks/fixtures/cyclododecane.pdbqt'
       - 'benchmarks/check_geometry_metric.cpp'
@@ -39,6 +41,11 @@ jobs:
         run: |
           c++ -O2 -DNDEBUG -std=c++14 -pthread -Isrc/lib benchmarks/declared_rotor_bonds/check.cpp $(find build/core/obj -name '*.o' ! -name main.o) -lboost_system -lboost_thread -lboost_serialization -lboost_filesystem -lboost_program_options -o build/core/check-rotor-bonds
           build/core/check-rotor-bonds benchmarks/declared_rotor_bonds/flex.pdbqt
+      - name: Test flexible side-chain covalent exclusions and map round trips
+        run: |
+          d=benchmarks/flex_covalent_exclusions
+          c++ -O2 -DNDEBUG -std=c++14 -pthread -Isrc/lib "$d/check.cpp" $(find build/core/obj -name '*.o' ! -name main.o) -lboost_system -lboost_thread -lboost_serialization -lboost_filesystem -lboost_program_options -o build/core/check-flex-exclusions
+          build/core/check-flex-exclusions "$d/covalent.pdbqt" "$d/four_bonds.pdbqt" benchmarks/fixtures/flex-residue.pdbqt "${RUNNER_TEMP}/flex-roundtrip"
       - name: Test online pose separation and tie ordering
         run: |
           c++ -O2 -DNDEBUG -std=c++14 -Isrc/lib benchmarks/check_online_pose_archive.cpp build/core/obj/coords.o -o build/core/check-online-archive

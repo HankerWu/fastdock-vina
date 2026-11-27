@@ -30,7 +30,7 @@
 non_cache::non_cache(const model& receptor, const grid_dims& bounds,
                      std::shared_ptr<const ScoringFunction> scoring_, fl slope_)
 	: slope(slope_), sgrid(receptor, szv_grid_dims(bounds), sqr(scoring_->get_cutoff())),
-	  gd(bounds), p(scoring_->get_cutoff()), scoring(std::move(scoring_)) {}
+	  rigid_exclusions(receptor.rigid_bond_exclusions()), gd(bounds), p(scoring_->get_cutoff()), scoring(std::move(scoring_)) {}
 
 void non_cache::prepare_for_model(const model& m) {
 	if (scoring)
@@ -48,7 +48,7 @@ void non_cache::populate_maps(cache& maps, const model& receptor, const std::bit
                               bool retain_tables) {
 	if (retain_tables) {
 		p.populate(*scoring, sgrid.atom_types(), types);
-		maps.populate(receptor, p, sgrid, types);
+		maps.populate(receptor, p, sgrid, types, rigid_exclusions);
 	} else {
 		populate_maps_from(maps, receptor, types, *scoring);
 	}
@@ -58,7 +58,7 @@ void non_cache::populate_maps_from(cache& maps, const model& receptor, const std
                                    const ScoringFunction& scoring_function) const {
 	precalculate temporary(scoring_function.get_cutoff());
 	temporary.populate(scoring_function, sgrid.atom_types(), types);
-	maps.populate(receptor, temporary, sgrid, types);
+	maps.populate(receptor, temporary, sgrid, types, rigid_exclusions);
 }
 
 fl non_cache::eval(const model& m, fl v) const {
@@ -107,9 +107,11 @@ fl non_cache::eval_impl(const model& m, fl v, const precalculate& scores, bool f
 		out_of_bounds_penalty *= slope;
 
 		const szv& possibilities = sgrid.possibilities(adjusted_a_coords);
+		const szv* excluded = i < rigid_exclusions.size() ? &rigid_exclusions[i] : nullptr;
 
 		VINA_FOR_IN(possibilities_j, possibilities) {
 			const sz j = possibilities[possibilities_j];
+			if (excluded && has(*excluded, j)) continue;
 			const atom& b = receptor[j];
 			sz t2 = b.get(atom_type::XS);
 			if(t2 >= n) continue;
@@ -178,9 +180,11 @@ fl non_cache::eval_deriv(      model& m, fl v) const { // clean up
 		out_of_bounds_penalty *= slope;
 
 		const szv& possibilities = sgrid.possibilities(adjusted_a_coords);
+		const szv* excluded = i < rigid_exclusions.size() ? &rigid_exclusions[i] : nullptr;
 
 		VINA_FOR_IN(possibilities_j, possibilities) {
 			const sz j = possibilities[possibilities_j];
+			if (excluded && has(*excluded, j)) continue;
 			const atom& b = receptor[j];
 			sz t2 = b.get(atom_type::XS);
 			if(t2 >= n) continue;

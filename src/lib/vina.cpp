@@ -496,7 +496,7 @@ void Vina::load_maps(std::string maps) {
 	if (m_sf_choice == SF_VINA || m_sf_choice == SF_VINARDO) {
 		doing("Reading Vina maps", m_verbosity, 0);
 		cache grid(slope);
-		grid.read(maps);
+		grid.read(maps, &m_receptor);
 		done(m_verbosity, 0);
 		m_grid = std::move(grid);
 	} else {

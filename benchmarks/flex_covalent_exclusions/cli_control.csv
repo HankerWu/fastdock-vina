@@ -1,0 +1,13 @@
+arm,field,angle_rad,flex_both,flex_four_bonds_only,flex_difference,ligand_difference
+baseline,explicit,0,-0.034,-0.023,-0.011,1.296
+baseline,grid,0,-0.021,-0.023,0.002,1.299
+fixed,explicit,0,-0.023,-0.023,0.0,1.296
+fixed,grid,0,-0.023,-0.023,0.0,1.299
+baseline,explicit,0.71,0.073,-0.03,0.103,1.296
+baseline,grid,0.71,0.083,-0.03,0.113,1.299
+fixed,explicit,0.71,-0.03,-0.03,0.0,1.296
+fixed,grid,0.71,-0.03,-0.03,0.0,1.299
+baseline,explicit,-1.29,0.056,-0.029,0.085,1.296
+baseline,grid,-1.29,0.066,-0.03,0.096,1.299
+fixed,explicit,-1.29,-0.029,-0.029,0.0,1.296
+fixed,grid,-1.29,-0.03,-0.03,0.0,1.299

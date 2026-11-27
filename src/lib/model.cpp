@@ -283,6 +283,33 @@ const atomv& model::grid_atoms() const {
 	return m_grid_atoms ? *m_grid_atoms : empty;
 }
 
+// Use the same three-bond neighborhood as the explicit intramolecular pair
+// list, including paths through fixed anchors and the rigid part of the chain.
+std::vector<szv> model::rigid_bond_exclusions() const {
+	std::vector<szv> excluded;
+	if (!num_flex() || grid_atoms().empty()) return excluded;
+	VINA_FOR(i, num_movable_atoms()) {
+		if (is_atom_in_ligand(i) || atoms[i].xs >= XS_TYPE_SIZE) continue;
+		std::vector<atom_index> neighborhood(1, atom_index(i, false));
+		sz first = 0;
+		for (sz depth = 0; depth < 3; ++depth) {
+			const sz end = neighborhood.size();
+			for (; first < end; ++first) {
+				for (const bond& edge : get_atom(neighborhood[first]).bonds) {
+					const atom_index next = edge.connected_atom_index;
+					if (!has(neighborhood, next)) neighborhood.push_back(next);
+				}
+			}
+		}
+		for (const atom_index index : neighborhood) {
+			if (!index.in_grid || grid_atoms()[index.i].xs >= XS_TYPE_SIZE) continue;
+			if (excluded.size() <= i) excluded.resize(i + 1);
+			excluded[i].push_back(index.i);
+		}
+	}
+	return excluded;
+}
+
 atom_index model::sz_to_atom_index(sz i) const {
 	const sz rigid_count = grid_atoms().size();
 	if(i < rigid_count) return atom_index(i, true);
