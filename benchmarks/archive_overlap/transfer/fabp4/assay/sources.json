@@ -1,0 +1,62 @@
+[
+  {
+    "id": "L4",
+    "source_pdb": "https://files.rcsb.org/download/3P6F.pdb",
+    "source_ccd": "https://files.rcsb.org/ligands/download/FBZ.cif",
+    "raw_sha256": {
+      "3P6F.pdb": "5da0f64a042d230c33477c2e9bc5a868779fe392e5dd150b72edf5354defc0dc",
+      "FBZ.cif": "90e33087bc61edcb3224a3d342961d60cc5ccccacd030faff863e46546174060"
+    },
+    "ligand_sha256": "fae3dfb8ef51afa07bc92ebd59291e2411d3fe94a7968178dee381701e445717",
+    "smiles": "C[C@@H](CC(=O)O)c1ccccc1",
+    "CIP": [
+      [
+        1,
+        "S"
+      ]
+    ],
+    "charge": 0,
+    "heavy_atoms": 12,
+    "prepare_seconds": 0.03628962500079069
+  },
+  {
+    "id": "L5",
+    "source_pdb": "https://files.rcsb.org/download/3P6G.pdb",
+    "source_ccd": "https://files.rcsb.org/ligands/download/IZP.cif",
+    "raw_sha256": {
+      "3P6G.pdb": "68e78051b0711d7c43a298a1793aeeb1a9bbee3495f421cae15ee877e6a5c602",
+      "IZP.cif": "16a459bf9e9ae0f64149f4c926a0c249013c1539f9b2f0c393ae0ab6b3760fbc"
+    },
+    "ligand_sha256": "911c4f262bce6ed9f74e135b5552d5cce17fb8dffcba8f3f597a5da780dfb58a",
+    "smiles": "CC(C)Cc1ccc([C@@H](C)C(=O)O)cc1",
+    "CIP": [
+      [
+        8,
+        "R"
+      ]
+    ],
+    "charge": 0,
+    "heavy_atoms": 15,
+    "prepare_seconds": 0.028472432000853587
+  },
+  {
+    "id": "L6",
+    "source_pdb": "https://files.rcsb.org/download/3P6H.pdb",
+    "source_ccd": "https://files.rcsb.org/ligands/download/IBP.cif",
+    "raw_sha256": {
+      "3P6H.pdb": "eeca9bba006b7e7c5b666ef400ecb898334a37b492212dddf88dbf3e50cfe3eb",
+      "IBP.cif": "dcf9fa8c27bbbd901c92ae4f1208d3f4a19d72bf6cf14591daf39e5dc42abdef"
+    },
+    "ligand_sha256": "b7e5859bbb46eb023bb759063c5a6efbd26277aad8e950c0e6c8d8dcef28ef12",
+    "smiles": "CC(C)Cc1ccc([C@H](C)C(=O)O)cc1",
+    "CIP": [
+      [
+        8,
+        "S"
+      ]
+    ],
+    "charge": 0,
+    "heavy_atoms": 15,
+    "prepare_seconds": 0.029662610999366734
+  }
+]

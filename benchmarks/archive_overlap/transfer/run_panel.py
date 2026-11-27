@@ -86,7 +86,7 @@ def pool_spacing(path, serial):
     )
 
 
-def run(args, systems=SYSTEMS, seeds=SEEDS, arms=ARMS):
+def run(args, systems=SYSTEMS, seeds=SEEDS, arms=ARMS, queries=None):
     work = args.work.resolve()
     os.sched_setaffinity(0, {args.cpu})
     bins = {arm: getattr(args, arm).resolve() for arm in (*arms, "counter")}
@@ -105,7 +105,8 @@ def run(args, systems=SYSTEMS, seeds=SEEDS, arms=ARMS):
     cells = [
         (q, r, s)
         for q, r in itertools.product(meta, repeat=2)
-        if meta[q]["target"] == meta[r]["target"]
+        if (queries is None or q in queries)
+        and meta[q]["target"] == meta[r]["target"]
         and meta[r]["receptor_status"] == "ready"
         for s in seeds
     ]

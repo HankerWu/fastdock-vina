@@ -1,0 +1,13 @@
+pose,state,smiles,formal_charge,pdbqt_charge_sum,heavy,max_heavy_displacement_A,torsdof,score,inter,intra,torsion,unbound,zero_charge_terms_equal
+684173_rank1,neutral,COc1ccc(CCC(=O)O)cc1,0,-0.002,13,0,5,-6.138,-7.753,-0.23,1.615,-0.23,10
+684173_rank9,neutral,COc1ccc(CCC(=O)O)cc1,0,-0.002,13,0,5,-4.812,-6.1,-0.208,1.266,-0.23,10
+961751_rank1,neutral,COc1ccc(CCC(=O)O)cc1,0,-0.002,13,0,5,-6.039,-7.616,-0.242,1.589,-0.23,10
+961751_rank5,neutral,COc1ccc(CCC(=O)O)cc1,0,-0.002,13,0,5,-5.16,-6.533,-0.215,1.358,-0.23,10
+crystal_A,neutral,COc1ccc(CCC(=O)O)cc1,0,-0.002,13,0,5,-3.9,-5.554,0.398,1.026,-0.23,10
+crystal_B,neutral,COc1ccc(CCC(=O)O)cc1,0,-0.002,13,0,5,-4.635,-5.798,-0.287,1.219,-0.23,10
+684173_rank1,carboxylate,COc1ccc(CCC(=O)[O-])cc1,-1,-1.002,13,0,4,-6.283,-7.753,-0.23,1.469,-0.23,10
+684173_rank9,carboxylate,COc1ccc(CCC(=O)[O-])cc1,-1,-1.002,13,0,4,-4.926,-6.1,-0.208,1.152,-0.23,10
+961751_rank1,carboxylate,COc1ccc(CCC(=O)[O-])cc1,-1,-1.002,13,0,4,-5.93,-7.304,-0.242,1.387,-0.23,10
+961751_rank5,carboxylate,COc1ccc(CCC(=O)[O-])cc1,-1,-1.002,13,0,4,-5.283,-6.533,-0.215,1.235,-0.23,10
+crystal_A,carboxylate,COc1ccc(CCC(=O)[O-])cc1,-1,-1.002,13,0,4,-3.993,-5.554,0.398,0.934,-0.23,10
+crystal_B,carboxylate,COc1ccc(CCC(=O)[O-])cc1,-1,-1.002,13,0,4,-4.745,-5.798,-0.287,1.11,-0.23,10

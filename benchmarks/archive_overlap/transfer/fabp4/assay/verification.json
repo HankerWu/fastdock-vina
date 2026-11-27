@@ -1,0 +1,10 @@
+{
+  "cells": 60,
+  "raw_poses_and_counters": true,
+  "fixed_scores": 60,
+  "fixed_coordinates": 20,
+  "all_fixed_terms_identical": true,
+  "size_baseline_correct": 9,
+  "size_baseline_tied": 1,
+  "size_baseline_large_correct": 8
+}

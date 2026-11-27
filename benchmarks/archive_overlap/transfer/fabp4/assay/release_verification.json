@@ -1,0 +1,9 @@
+{
+  "release_sha256": "cba3b9fce3e060a3c3c405a1c16ff3070fdf368bd43574ff3028a104d24c1b00",
+  "cells": 20,
+  "same_top1": 20,
+  "same_work": 20,
+  "same_bytes": 20,
+  "removed_modes": 0,
+  "added_modes": 0
+}
