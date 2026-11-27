@@ -21,6 +21,7 @@ SEEDS = (75467, 98251)
 CAPS = (3000, 12000)
 RADII = {
     "C": 1.70,
+    **{f"CG{i}": 1.70 for i in range(4)},  # Physical closure carbons.
     "A": 1.70,
     "N": 1.55,
     "NA": 1.55,
@@ -40,7 +41,7 @@ def atoms(lines):
     data = [
         (int(s[6:11]), base.coords(s), s.split()[-1])
         for s in lines
-        if s.startswith(("ATOM  ", "HETATM")) and s.split()[-1] not in {"H", "HD"}
+        if s.startswith(("ATOM  ", "HETATM")) and s.split()[-1] not in {"H", "HD", "G0", "G1", "G2", "G3"}
     ]
     return {serial: (xyz, RADII[typ]) for serial, xyz, typ in data}
 
