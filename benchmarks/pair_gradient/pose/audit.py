@@ -46,8 +46,7 @@ def coordinates(lines):
     return mol, xyz, tags
 
 
-def main(work):
-    info = {p: reference(work, p, c, ch) for p, (_, c, ch) in CASES.items()}
+def align_renin_numbering(work, info, cases):
     canonical = gemmi.read_structure(str(work / "raw/1RNE.pdb"))
     canonical.setup_entities()
     seq = gemmi.one_letter_code(canonical.entities[0].full_sequence)
@@ -58,7 +57,7 @@ def main(work):
         open_gap_score=-8,
         extend_gap_score=-0.5,
     )
-    for pdb, (target, _, _) in CASES.items():
+    for pdb, (target, _, _) in cases.items():
         if target != "REN":
             continue
         ca, center, mol = info[pdb]
@@ -71,6 +70,12 @@ def main(work):
                 if seq[i] == observed[j]:
                     positions[(i, keys[j][-1])] = ca[keys[j]]
         info[pdb] = positions, center, mol
+
+
+def main(work, cases=CASES):
+    info = {p: reference(work, p, c, ch) for p, (_, c, ch) in cases.items()}
+    if any(target == "REN" for target, _, _ in cases.values()):
+        align_renin_numbering(work, info, cases)
 
     @cache
     def receiver_frame(query, receptor):
@@ -88,7 +93,7 @@ def main(work):
         ) + y.mean(0)
 
     input_geometry = {}
-    for pdb in CASES:
+    for pdb in cases:
         mol, xyz, tags = coordinates(
             (work / pdb / "ligand.pdbqt").read_text().splitlines()
         )

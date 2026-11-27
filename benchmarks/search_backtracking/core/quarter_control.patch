@@ -1,0 +1,39 @@
+diff --git a/src/lib/bfgs.h b/src/lib/bfgs.h
+index ff09b35..cb7d85f 100644
+--- a/src/lib/bfgs.h
++++ b/src/lib/bfgs.h
+@@ -92,7 +92,7 @@ inline void bfgs_update(flmat& h, const flv& direction, const flv& y, fl alpha,
+ }
+ 
+ // Per-trajectory diagnostic, optional in the explicit-refinement path.
+-enum class backtracking_mode { native, halving, quadratic };
++enum class backtracking_mode { native, halving, quadratic, quarter };
+ struct search_backtracking {
+ 	backtracking_mode mode;
+ 	unsigned searches = 0, rejected = 0, exhausted = 0;
+@@ -133,8 +133,11 @@ fl line_search(F& f, const conf& x, fl f0, const flv& p, fl pg, conf& x_new, flv
+ 			return alpha;
+ 		}
+ 		if (monitor) ++monitor->rejected;
+-		alpha *= monitor && monitor->mode == backtracking_mode::quadratic
+-		       ? quadratic_contraction(alpha, pg, f1 - f0) : multiplier;
++		if (monitor && monitor->mode == backtracking_mode::quarter)
++			alpha *= 0.25;
++		else
++			alpha *= monitor && monitor->mode == backtracking_mode::quadratic
++			       ? quadratic_contraction(alpha, pg, f1 - f0) : multiplier;
+ 	}
+ 	if (monitor) ++monitor->exhausted;
+ 	return StrictArmijo || (monitor && monitor->mode != backtracking_mode::native) ? 0 : alpha;
+diff --git a/src/lib/monte_carlo.cpp b/src/lib/monte_carlo.cpp
+index 32200a9..7b373f1 100755
+--- a/src/lib/monte_carlo.cpp
++++ b/src/lib/monte_carlo.cpp
+@@ -53,6 +53,7 @@ void monte_carlo::operator()(model& m, output_container& out, const precalculate
+ 	if (arm && std::strcmp(arm, "native") != 0) {
+ 		if (std::strcmp(arm, "halving") == 0) mode = backtracking_mode::halving;
+ 		else if (std::strcmp(arm, "quadratic") == 0) mode = backtracking_mode::quadratic;
++		else if (std::strcmp(arm, "quarter") == 0) mode = backtracking_mode::quarter;
+ 		else throw std::invalid_argument("unknown FASTDOCK_RESEARCH_BACKTRACK");
+ 	}
+ 	search_backtracking hunt{mode}, save{mode};

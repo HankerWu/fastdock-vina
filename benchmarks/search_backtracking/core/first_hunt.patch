@@ -1,0 +1,36 @@
+diff --git a/src/lib/monte_carlo.cpp b/src/lib/monte_carlo.cpp
+index 1bcd294..32200a9 100755
+--- a/src/lib/monte_carlo.cpp
++++ b/src/lib/monte_carlo.cpp
+@@ -56,6 +56,9 @@ void monte_carlo::operator()(model& m, output_container& out, const precalculate
+ 		else throw std::invalid_argument("unknown FASTDOCK_RESEARCH_BACKTRACK");
+ 	}
+ 	search_backtracking hunt{mode}, save{mode};
++	const conf input = m.get_initial_conf();
++	const char* prefix = std::getenv("FASTDOCK_FIRST_HUNT_OUT");
++	if (!prefix) throw std::invalid_argument("missing replay output prefix");
+ 	vec authentic_v(1000, 1000, 1000); // FIXME? this is here to avoid max_fl/max_fl
+ 	const conf_size s = m.get_size();
+ 	output_type tmp(s, 0);
+@@ -90,8 +93,13 @@ void monte_carlo::operator()(model& m, output_container& out, const precalculate
+ 		candidate.c = tmp.c;
+ 		const bool reoriented = mutate_conf(candidate.c, m, mutation_amplitude, generator,
+ 		                                    mixed_reorientation, separate_hunt_chain, centered_rotation, balanced_torsion);
++		VINA_CHECK(step == 0);
++		candidate.c = input;
++		m.set(input);
++		m.write_structure(path(std::string(prefix) + ".start.pdbqt"));
+ 		const int before_hunt = evalcount;
+ 		quasi_newton_par(m, p, ig, candidate, hunt_cap, evalcount, nullptr, 0, &hunt);
++		m.write_structure(path(std::string(prefix) + ".hunt.pdbqt"));
+ 		if (counters) {
+ 			++counters->hunt_calls;
+ 			counters->hunt_evals += evalcount - before_hunt;
+@@ -121,6 +129,7 @@ void monte_carlo::operator()(model& m, output_container& out, const precalculate
+ 				if (separate_hunt_chain)
+ 					saved.c = tmp.c;
+ 				quasi_newton_par(m, p, ig, saved, authentic_v, evalcount, nullptr, 0, &save);
++				m.write_structure(path(std::string(prefix) + ".save.pdbqt"));
+ 				if (counters) {
+ 					++counters->second_calls;
+ 					counters->second_evals += evalcount - before_second;

@@ -78,19 +78,47 @@ def rms(xyz, refs):
     return float(np.sqrt(np.sum((refs - xyz) ** 2, axis=2).mean(axis=1)).min())
 
 
-def run(work, binary):
+def run(work, binary, pairs=None, compare_mappings=False):
     meta = json.loads((work / "metadata.json").read_text())
     folder = work / "crystal_diagnostic"
     folder.mkdir(exist_ok=True)
     rows = []
+    projection_rows = []
     for source, sm in meta.items():
         for receiver, rm in meta.items():
-            if sm["target"] != rm["target"]:
+            if sm["target"] != rm["target"] or (
+                pairs is not None and (source, receiver) not in pairs
+            ):
                 continue
             rot, t, _, _ = alignment(sm, rm)
             refs = np.array(sm["mapped"]) @ rot + t
             template = (work / source / "ligand.pdbqt").read_text()
-            for arm, mol in structures(sm, refs[0], template).items():
+            starts = structures(sm, refs[0], template)
+            if compare_mappings:
+                # Equivalent atoms (e.g. sulfonyl oxygens) can define different
+                # dihedral reference vectors in the prepared query. Choose by
+                # initial heavy-atom fit before performing any relaxation.
+                best = float("inf")
+                for index, ref in enumerate(refs):
+                    probe = (
+                        starts["projected"]
+                        if index == 0
+                        else structures(sm, ref, template)["projected"]
+                    )
+                    xyz = probe.GetConformer().GetPositions()[: len(sm["serial"])]
+                    initial = rms(xyz, refs)
+                    projection_rows.append(
+                        {
+                            "source": source,
+                            "receiver": receiver,
+                            "mapping": index,
+                            "initial_rmsd": initial,
+                        }
+                    )
+                    if initial < best:
+                        best = initial
+                        starts["best_projected"] = probe
+            for arm, mol in starts.items():
                 base = f"{source}-{receiver}-{arm}"
                 ligand, output = (
                     folder / (base + "-input.pdbqt"),
@@ -141,6 +169,11 @@ def run(work, binary):
                         "inter_plus_intra": inter + intra,
                     }
                 )
+    if compare_mappings:
+        with (work / "projection_mappings.csv").open("w", newline="") as f:
+            writer = csv.DictWriter(f, fieldnames=projection_rows[0])
+            writer.writeheader()
+            writer.writerows(projection_rows)
     with (work / "crystal_starts.csv").open("w", newline="") as f:
         w = csv.DictWriter(f, fieldnames=rows[0])
         w.writeheader()

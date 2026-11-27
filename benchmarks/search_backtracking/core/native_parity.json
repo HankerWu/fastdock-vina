@@ -1,0 +1,62 @@
+[
+  {
+    "pdb": "5S8I",
+    "budget": 3000,
+    "seed": 72451,
+    "pdbqt_sha256": "c1a2b2bef0d060c93576b254ff2824ced135e73d9358a85200ca32187bcfa788",
+    "counters": [
+      "Search trajectory: index=1 steps=61 hunt_calls=61 hunt_evals=2381 second_calls=12 second_evals=639 rigid_reorientations=0",
+      "Search counters: rigid_reorientation=native explicit_inputs=7 explicit_calls=7 explicit_evals=282 late_prescore=0"
+    ]
+  },
+  {
+    "pdb": "5S8I",
+    "budget": 12000,
+    "seed": 72453,
+    "pdbqt_sha256": "fff58e39fb588ff836b8032ac1bf349669944c31bb7bb810a3e286b9528ec4c2",
+    "counters": [
+      "Search trajectory: index=1 steps=283 hunt_calls=283 hunt_evals=11089 second_calls=25 second_evals=988 rigid_reorientations=0",
+      "Search counters: rigid_reorientation=native explicit_inputs=8 explicit_calls=8 explicit_evals=293 late_prescore=0"
+    ]
+  },
+  {
+    "pdb": "7MRH",
+    "budget": 3000,
+    "seed": 72451,
+    "pdbqt_sha256": "f024099cc67bacb65c65beb3542b251109d9bac81de979bec9f118c477f5a0f3",
+    "counters": [
+      "Search trajectory: index=1 steps=35 hunt_calls=35 hunt_evals=1963 second_calls=20 second_evals=1096 rigid_reorientations=0",
+      "Search counters: rigid_reorientation=native explicit_inputs=7 explicit_calls=11 explicit_evals=842 late_prescore=0"
+    ]
+  },
+  {
+    "pdb": "7MRH",
+    "budget": 12000,
+    "seed": 72453,
+    "pdbqt_sha256": "794dc32d39a094ae70eb4ec780e678766c5e22f8d2f8bea1654965eeddfb6db5",
+    "counters": [
+      "Search trajectory: index=1 steps=240 hunt_calls=240 hunt_evals=10642 second_calls=33 second_evals=1378 rigid_reorientations=0",
+      "Search counters: rigid_reorientation=native explicit_inputs=7 explicit_calls=7 explicit_evals=322 late_prescore=0"
+    ]
+  },
+  {
+    "pdb": "7MS7",
+    "budget": 3000,
+    "seed": 72451,
+    "pdbqt_sha256": "56e1a447bf1becec7e294eb4a8b40b3b22df26e311515e4ab7140e6804debe7a",
+    "counters": [
+      "Search trajectory: index=1 steps=24 hunt_calls=24 hunt_evals=1629 second_calls=18 second_evals=1432 rigid_reorientations=0",
+      "Search counters: rigid_reorientation=native explicit_inputs=6 explicit_calls=6 explicit_evals=295 late_prescore=0"
+    ]
+  },
+  {
+    "pdb": "7MS7",
+    "budget": 12000,
+    "seed": 72453,
+    "pdbqt_sha256": "db6060619f16fee5347ed70fabb0398e2b8e019c0735d725d0d3a92a82c6e417",
+    "counters": [
+      "Search trajectory: index=1 steps=201 hunt_calls=201 hunt_evals=10934 second_calls=23 second_evals=1127 rigid_reorientations=0",
+      "Search counters: rigid_reorientation=native explicit_inputs=4 explicit_calls=4 explicit_evals=156 late_prescore=0"
+    ]
+  }
+]

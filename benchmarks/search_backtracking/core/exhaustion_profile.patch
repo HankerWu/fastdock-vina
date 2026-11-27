@@ -1,0 +1,41 @@
+diff --git a/src/lib/bfgs.h b/src/lib/bfgs.h
+index cb7d85f..6ed870e 100644
+--- a/src/lib/bfgs.h
++++ b/src/lib/bfgs.h
+@@ -29,6 +29,8 @@
+ 
+ #include "conf.h"
+ #include <cstring>
++#include <iomanip>
++#include <sstream>
+ 
+ // Only the local BFGS inverse Hessian uses this full symmetric storage.
+ class flmat {
+@@ -140,6 +142,27 @@ fl line_search(F& f, const conf& x, fl f0, const flv& p, fl pg, conf& x_new, flv
+ 			       ? quadratic_contraction(alpha, pg, f1 - f0) : multiplier;
+ 	}
+ 	if (monitor) ++monitor->exhausted;
++	if (monitor && monitor->mode == backtracking_mode::native) {
++		// Diagnostic-only replay: the native return value and iteration count
++		// still refer to the tenth rejected trial. Restore the model's cache.
++		conf probe = x_new;
++		flv probe_gradient = g_new;
++		std::ostringstream log;
++		log << std::setprecision(17) << "Exhausted line " << monitor->searches
++		    << " f0=" << f0 << " pg=" << pg << " delta=" << f1 - f0
++		    << " last_slope=" << scalar_product(g_new, p) << " probes=";
++		fl probe_step = alpha;
++		for (unsigned i = 0; i < 10; ++i) {
++			probe.set_incremented(x, p, probe_step);
++			const fl probe_energy = f(probe, probe_gradient);
++			if (i) log << ',';
++			log << probe_energy - f0;
++			probe_step *= 0.5;
++		}
++		f(x_new, probe_gradient);
++		log << '\n';
++		std::cout << log.str();
++	}
+ 	return StrictArmijo || (monitor && monitor->mode != backtracking_mode::native) ? 0 : alpha;
+ }
+ 
