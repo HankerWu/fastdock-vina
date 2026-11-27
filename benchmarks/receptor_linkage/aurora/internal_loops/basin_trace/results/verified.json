@@ -1,0 +1,22 @@
+{
+  "cases": 11,
+  "models": {
+    "at9283": {
+      "anchor_residues": 67,
+      "equivalent_mappings": 4
+    },
+    "danusertib": {
+      "anchor_residues": 67,
+      "equivalent_mappings": 8
+    }
+  },
+  "counts": {
+    "witness_coordinates": 462,
+    "events": 586792,
+    "returned_different_from_last_evaluation": 11436,
+    "grid_local_returns": 20520,
+    "full_coordinate_events_checked": 586792
+  },
+  "max_witness_abs_diff_A": 3.375077994860476e-14,
+  "max_full_coordinate_abs_diff_A": 7.450580596923828e-09
+}

@@ -1,0 +1,11 @@
+{
+  "modes": 864,
+  "changed_stereochemical_identities": 0,
+  "max_heavy_bond_change_A": 0.001398037849952738,
+  "baseline_byte_matches": 48,
+  "n_finite_reference_compounds": 2,
+  "score_change_spearman": {
+    "heavy_atoms": -0.20619652471058067,
+    "torsdof": -0.7534439302522257
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "replayed_pools": 11,
+  "byte_identical_full_coordinate_streams": 11,
+  "byte_identical_npz": 11,
+  "clean_binary_sha256": "ef8f995cfd10a9f3388d35c97420247920ad2d4b037d0484896fb0888cc851d8",
+  "incremental_binary_sha256": "5db468407f5fdb93b641fb62bb0c21e1571856abcce95b1ea29937bb1e153497",
+  "clean_CLI_cpu_s": 5.241486,
+  "clean_CLI_wall_s": 5.262021113994706,
+  "clean_eval_count": 553109
+}

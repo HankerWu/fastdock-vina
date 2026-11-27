@@ -1,0 +1,12 @@
+{
+  "clean_build": {
+    "wall_s": 35.23963542999991,
+    "cpu_s": 57.978222
+  },
+  "regenerate_and_analyze": {
+    "wall_s": 4.390043236002384,
+    "cpu_s": 4.370244999999997
+  },
+  "verified_quenches": 6224,
+  "verified_coordinate_archives": 4
+}

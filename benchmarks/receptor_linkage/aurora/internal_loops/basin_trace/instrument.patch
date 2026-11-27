@@ -1,0 +1,150 @@
+--- a/src/lib/bfgs.h
++++ b/src/lib/bfgs.h
+@@ -29,6 +29,7 @@
+ 
+ #include "conf.h"
+ #include <cstring>
++void fd_basin_adopt();
+ 
+ // Only the local BFGS inverse Hessian uses this full symmetric storage.
+ class flmat {
+@@ -202,6 +203,7 @@
+ 				restore_coordinates = true; // The model may reflect the last rejected trial.
+ 				break;
+ 			}
++			fd_basin_adopt();
+ 			energy = trial_energy;
+ 			std::swap(x, trial);
+ 			// The inverse Hessian is only used by subsequent steps.
+--- a/src/lib/quasi_newton.cpp
++++ b/src/lib/quasi_newton.cpp
+@@ -23,6 +23,8 @@
+ // Modified for FastDock Vina: reuse coordinates from the final BFGS evaluation.
+ 
+ #include "quasi_newton.h"
++#include "basin_observer.h"
++void fd_basin_adopt() { basin_trace::writer().adopt(); }
+ 
+ namespace {
+ boost::optional<bfgs_rigid_metric> centroid_metric(model& m, const conf& base) {
+@@ -50,6 +52,7 @@
+         const fl energy = m.eval_deriv(p, ig, v, gradient, reference);
+         if (rigid)
+             rigid->to_centroid_gradient(gradient);
++        basin_trace::writer().write(basin_trace::gradient, m, energy);
+         return energy;
+     };
+     VINA_CHECK(!geometry_metric || strict_armijo);
+--- a/src/lib/monte_carlo.cpp
++++ b/src/lib/monte_carlo.cpp
+@@ -23,6 +23,7 @@
+ // FastDock: reuse the trial conformation across Monte Carlo steps.
+ 
+ #include "monte_carlo.h"
++#include "basin_observer.h"
+ #include "coords.h"
+ #include "mutate.h"
+ #include "quasi_newton.h"
+@@ -67,6 +68,14 @@
+ 			counters->pocket_anchored = bool(pocket_start);
+ 		}
+ 	}
++    auto& trace = basin_trace::writer();
++    ++trace.trajectory;
++    trace.step = 0;
++    trace.begin(basin_trace::other);
++    // The first mutation may inspect the original model geometry.
++    model start(m);
++    start.set(tmp.c);
++    trace.write(basin_trace::start, start, std::numeric_limits<double>::quiet_NaN());
+ 	output_type candidate(s, 0);
+ 	fl best_e = max_fl;
+ 	bool reference_from_save = false;
+@@ -79,8 +88,11 @@
+ 		candidate.c = tmp.c;
+ 		const bool reoriented = mutate_conf(candidate.c, m, mutation_amplitude, generator,
+ 		                                    mixed_reorientation, separate_hunt_chain, centered_rotation, balanced_torsion);
++		trace.step = step + 1;
++		trace.begin(basin_trace::hunt);
+ 		const int before_hunt = evalcount;
+ 		quasi_newton_par(m, p, ig, candidate, hunt_cap, evalcount);
++		trace.write(basin_trace::hunt_return, m, candidate.e);
+ 		if (counters) {
+ 			++counters->hunt_calls;
+ 			counters->hunt_evals += evalcount - before_hunt;
+@@ -88,6 +100,7 @@
+ 			counters->mixed_accept_checks += reference_from_save;
+ 		}
+ 		if(step == 0 || metropolis_accept(tmp.e, candidate.e, temperature, generator)) {
++			trace.write(basin_trace::mc_accept, m, candidate.e);
+ 			std::swap(tmp.c, candidate.c);
+ 			tmp.e = candidate.e;
+ 			reference_from_save = false;
+@@ -109,13 +122,21 @@
+ 				output_type& saved = separate_hunt_chain ? candidate : tmp;
+ 				if (separate_hunt_chain)
+ 					saved.c = tmp.c;
++				trace.begin(basin_trace::second);
+ 				quasi_newton_par(m, p, ig, saved, authentic_v, evalcount);
++				trace.write(basin_trace::second_return, m, saved.e);
+ 				if (counters) {
+ 					++counters->second_calls;
+ 					counters->second_evals += evalcount - before_second;
+ 				}
+ 				saved.coords = m.get_heavy_atom_movable_coords();
+ 				add_to_output_container(out, saved, min_rmsd, num_saved_mins); // 20 - max size
++                for (const auto& resident : out) {
++                    if (resident.e == saved.e && rmsd_upper_bound(resident.coords, saved.coords) == 0) {
++                        trace.write(basin_trace::saved, m, saved.e);
++                        break;
++                    }
++                }
+ 				reference_from_save = !separate_hunt_chain;
+ 				if(tmp.e < best_e)
+ 					best_e = tmp.e;
+--- a/src/lib/vina.cpp
++++ b/src/lib/vina.cpp
+@@ -32,6 +32,7 @@
+ #include <limits>
+ 
+ #include "vina.h"
++#include "basin_observer.h"
+ #include "contact_rotors.h"
+ #include "scoring_function.h"
+ #include "precalculate.h"
+@@ -1767,8 +1768,13 @@
+ 		// Use the saved conformation with chemical atoms only for selection geometry.
+ 		// Score with native weights and the same box penalty used for final refinement ranking.
+ 		m_non_cache.slope = 1e6;
++        auto& trace = basin_trace::writer();
++        trace.trajectory = trace.step = 0;
++        trace.begin(basin_trace::other);
+ 		for (auto& pose : poses) {
+ 			m_model.set(pose.c);
++            ++trace.step;
++            trace.write(basin_trace::pooled, m_model, pose.e);
+ 			pose.coords = m_model.get_chemical_heavy_atom_movable_coords();
+ 			pose.e = m_non_cache.eval(m_model, authentic_v[1])
+ 			       + m_model.evali(m_precalculated_byatom, authentic_v);
+@@ -1805,7 +1811,13 @@
+ 				m_non_cache.slope = slope;
+ 
+ 				VINA_FOR_IN(i, poses){
++                    auto& trace = basin_trace::writer();
++                    trace.step = i + 1;
++                    trace.begin(basin_trace::refine);
++                    m_model.set(poses[i].c);
++                    trace.write(basin_trace::explicit_input, m_model, poses[i].e);
+ 					VINA_FOR(p, 5){
++                        trace.begin(basin_trace::refine);
+ 						m_non_cache.slope = 100 * std::pow(10.0, 2.0*p);
+ 						quasi_newton_par(m_model, m_precalculated_byatom, m_non_cache, poses[i], authentic_v, evalcount,
+ 						                 template_refinement ? template_reference.get() : nullptr);
+@@ -1833,6 +1845,7 @@
+ 					double intra_pairs = m_model.evalo(m_precalculated_byatom, authentic_v); // flex_i -- flex_i and flex_i -- flex_j
+ 					double lig_intra = m_model.evali(m_precalculated_byatom, authentic_v); // ligand_i -- ligand_i
+ 					poses[i].e = all_grids + inter_pairs + intra_pairs + lig_intra;
++                    trace.write(basin_trace::explicit_output, m_model, poses[i].e);
+ 					if (template_refinement) {
+ 						output_type& pose = poses[i];
+ 						pose.native_energy = pose.e;

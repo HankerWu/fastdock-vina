@@ -1,0 +1,10 @@
+{
+  "cells": 35,
+  "modes": 312,
+  "maximum_RMSD_difference_A": 2.4868995751603507e-14,
+  "maximum_heavy_bond_drift_A": 0.0012698847830052706,
+  "checked_signed_volumes": 90,
+  "sign_changes": 0,
+  "empty_pools": 0,
+  "matched_input_triplets": 3
+}

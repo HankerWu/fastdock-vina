@@ -1,0 +1,21 @@
+{
+  "incremental_build": "wall_s=3.760 user_s=3.127 sys_s=0.588",
+  "clean_full_build": "wall_s=28.693 user_s=50.912 sys_s=7.277",
+  "clean_replay_driver": "wall_s=8.316 user_s=9.271 sys_s=0.682",
+  "clean_replay_docking": {
+    "evaluations": 1055436,
+    "wall_s": 6.001124718997744,
+    "cpu_s": 5.976598999999999
+  },
+  "clean_full_binary_sha256": "dc4eb38e6bbac4e12b6b1ecfcbc278a1fbbdf9bd04ae26945744d93eb8bea4a0",
+  "matching_pool_hashes": 21,
+  "version": {
+    "python": "3.12.14",
+    "rdkit": "2026.09.2",
+    "meeko": "0.8.0",
+    "gemmi": "0.7.5",
+    "numpy": "2.3.5",
+    "scipy": "1.17.0",
+    "compiler": "c++ (Debian 14.2.0-19) 14.2.0"
+  }
+}

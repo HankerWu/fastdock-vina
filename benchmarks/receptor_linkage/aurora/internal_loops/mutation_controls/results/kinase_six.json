@@ -1,0 +1,46 @@
+{
+  "temperature_convention_K": 298.15,
+  "RT_kcal_mol": 0.5924849497137634,
+  "source_cells": [
+    {
+      "target": "AURKA",
+      "uniprot_or_refseq_accession": "NP_003591.2",
+      "gene": "AURKA",
+      "mutant": "NO",
+      "numerator": "VX-680/MK-0457",
+      "denominator": "Sunitinib",
+      "Kd_nM": [
+        3.9,
+        1700.0
+      ],
+      "RT_log_ratio": -3.60077216710383
+    },
+    {
+      "target": "CHEK1",
+      "uniprot_or_refseq_accession": "NP_001265.2",
+      "gene": "CHEK1",
+      "mutant": "NO",
+      "numerator": "CEP-701",
+      "denominator": "VX-680/MK-0457",
+      "Kd_nM": [
+        2.8,
+        8700.0
+      ],
+      "RT_log_ratio": -4.764443364562933
+    },
+    {
+      "target": "S6K1",
+      "uniprot_or_refseq_accession": "NP_003152.1",
+      "gene": "RPS6KB1",
+      "mutant": "NO",
+      "numerator": "Sunitinib",
+      "denominator": "CEP-701",
+      "Kd_nM": [
+        48.0,
+        69.0
+      ],
+      "RT_log_ratio": -0.21501604317939396
+    }
+  ],
+  "closed_sum_kcal_mol": -8.580231574846156
+}

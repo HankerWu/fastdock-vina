@@ -1,0 +1,128 @@
+[
+  {
+    "ligand": "82I",
+    "seed": 71261,
+    "arm": "official",
+    "receptor": "741874605fa2e1ea15374a13b4e50a1eb4c2f715f461c568da362ec6bbe48e62",
+    "ligand_pdbqt": "7d59ab23813167ad956e549cef91cc532c70e9d72c3dd6796506d32fc789ce88",
+    "bonds": null,
+    "exe": "f31f774f723bba7bbe6e9d1c47577020eea9a8da16424284c043d22593570644"
+  },
+  {
+    "ligand": "82I",
+    "seed": 71261,
+    "arm": "pro_double",
+    "receptor": "741874605fa2e1ea15374a13b4e50a1eb4c2f715f461c568da362ec6bbe48e62",
+    "ligand_pdbqt": "7d59ab23813167ad956e549cef91cc532c70e9d72c3dd6796506d32fc789ce88",
+    "bonds": "38f6964e99b979b8365f7b407ed2c72eb88345cfb8c250da93b44644d640c431",
+    "exe": "6a56ec3db8c23b2e8bea4f65eb94fe3a4ccc2b272b4ae27c0da8113c078b4304"
+  },
+  {
+    "ligand": "82I",
+    "seed": 71263,
+    "arm": "pro_double",
+    "receptor": "741874605fa2e1ea15374a13b4e50a1eb4c2f715f461c568da362ec6bbe48e62",
+    "ligand_pdbqt": "7d59ab23813167ad956e549cef91cc532c70e9d72c3dd6796506d32fc789ce88",
+    "bonds": "38f6964e99b979b8365f7b407ed2c72eb88345cfb8c250da93b44644d640c431",
+    "exe": "6a56ec3db8c23b2e8bea4f65eb94fe3a4ccc2b272b4ae27c0da8113c078b4304"
+  },
+  {
+    "ligand": "82I",
+    "seed": 71263,
+    "arm": "official",
+    "receptor": "741874605fa2e1ea15374a13b4e50a1eb4c2f715f461c568da362ec6bbe48e62",
+    "ligand_pdbqt": "7d59ab23813167ad956e549cef91cc532c70e9d72c3dd6796506d32fc789ce88",
+    "bonds": null,
+    "exe": "f31f774f723bba7bbe6e9d1c47577020eea9a8da16424284c043d22593570644"
+  },
+  {
+    "ligand": "at9283",
+    "seed": 71261,
+    "arm": "official",
+    "receptor": "614daf795f09fa31759011508a36e596068df237bc18861a247273f34349c2ea",
+    "ligand_pdbqt": "6c3a027a25d4030ee4d89228e712c064e8fb9148afdd731c4460c05dddaf58e4",
+    "bonds": null,
+    "exe": "f31f774f723bba7bbe6e9d1c47577020eea9a8da16424284c043d22593570644"
+  },
+  {
+    "ligand": "at9283",
+    "seed": 71261,
+    "arm": "pro_double",
+    "receptor": "614daf795f09fa31759011508a36e596068df237bc18861a247273f34349c2ea",
+    "ligand_pdbqt": "6c3a027a25d4030ee4d89228e712c064e8fb9148afdd731c4460c05dddaf58e4",
+    "bonds": "451492d5653fc434ab0228280fb56f87cc0dce63abe0a35bf025ba4df7c1563f",
+    "exe": "6a56ec3db8c23b2e8bea4f65eb94fe3a4ccc2b272b4ae27c0da8113c078b4304"
+  },
+  {
+    "ligand": "at9283",
+    "seed": 71263,
+    "arm": "pro_double",
+    "receptor": "614daf795f09fa31759011508a36e596068df237bc18861a247273f34349c2ea",
+    "ligand_pdbqt": "6c3a027a25d4030ee4d89228e712c064e8fb9148afdd731c4460c05dddaf58e4",
+    "bonds": "451492d5653fc434ab0228280fb56f87cc0dce63abe0a35bf025ba4df7c1563f",
+    "exe": "6a56ec3db8c23b2e8bea4f65eb94fe3a4ccc2b272b4ae27c0da8113c078b4304"
+  },
+  {
+    "ligand": "at9283",
+    "seed": 71263,
+    "arm": "official",
+    "receptor": "614daf795f09fa31759011508a36e596068df237bc18861a247273f34349c2ea",
+    "ligand_pdbqt": "6c3a027a25d4030ee4d89228e712c064e8fb9148afdd731c4460c05dddaf58e4",
+    "bonds": null,
+    "exe": "f31f774f723bba7bbe6e9d1c47577020eea9a8da16424284c043d22593570644"
+  },
+  {
+    "ligand": "at9283",
+    "seed": 61231,
+    "arm": "pro_double",
+    "receptor": "614daf795f09fa31759011508a36e596068df237bc18861a247273f34349c2ea",
+    "ligand_pdbqt": "6c3a027a25d4030ee4d89228e712c064e8fb9148afdd731c4460c05dddaf58e4",
+    "bonds": "451492d5653fc434ab0228280fb56f87cc0dce63abe0a35bf025ba4df7c1563f",
+    "exe": "6a56ec3db8c23b2e8bea4f65eb94fe3a4ccc2b272b4ae27c0da8113c078b4304"
+  },
+  {
+    "ligand": "at9283",
+    "seed": 61231,
+    "arm": "official",
+    "receptor": "614daf795f09fa31759011508a36e596068df237bc18861a247273f34349c2ea",
+    "ligand_pdbqt": "6c3a027a25d4030ee4d89228e712c064e8fb9148afdd731c4460c05dddaf58e4",
+    "bonds": null,
+    "exe": "f31f774f723bba7bbe6e9d1c47577020eea9a8da16424284c043d22593570644"
+  },
+  {
+    "ligand": "danusertib",
+    "seed": 71261,
+    "arm": "official",
+    "receptor": "614daf795f09fa31759011508a36e596068df237bc18861a247273f34349c2ea",
+    "ligand_pdbqt": "eea2c398f719ec3f04cf69d34024e350bc46a2416b3441cd24828dd59b122e91",
+    "bonds": null,
+    "exe": "f31f774f723bba7bbe6e9d1c47577020eea9a8da16424284c043d22593570644"
+  },
+  {
+    "ligand": "danusertib",
+    "seed": 71261,
+    "arm": "pro_double",
+    "receptor": "614daf795f09fa31759011508a36e596068df237bc18861a247273f34349c2ea",
+    "ligand_pdbqt": "eea2c398f719ec3f04cf69d34024e350bc46a2416b3441cd24828dd59b122e91",
+    "bonds": "20864c8691c05247dfe205f9faaa3c637a2d7275d7ca8a5e534fbd63115a6de5",
+    "exe": "6a56ec3db8c23b2e8bea4f65eb94fe3a4ccc2b272b4ae27c0da8113c078b4304"
+  },
+  {
+    "ligand": "danusertib",
+    "seed": 71263,
+    "arm": "pro_double",
+    "receptor": "614daf795f09fa31759011508a36e596068df237bc18861a247273f34349c2ea",
+    "ligand_pdbqt": "eea2c398f719ec3f04cf69d34024e350bc46a2416b3441cd24828dd59b122e91",
+    "bonds": "20864c8691c05247dfe205f9faaa3c637a2d7275d7ca8a5e534fbd63115a6de5",
+    "exe": "6a56ec3db8c23b2e8bea4f65eb94fe3a4ccc2b272b4ae27c0da8113c078b4304"
+  },
+  {
+    "ligand": "danusertib",
+    "seed": 71263,
+    "arm": "official",
+    "receptor": "614daf795f09fa31759011508a36e596068df237bc18861a247273f34349c2ea",
+    "ligand_pdbqt": "eea2c398f719ec3f04cf69d34024e350bc46a2416b3441cd24828dd59b122e91",
+    "bonds": null,
+    "exe": "f31f774f723bba7bbe6e9d1c47577020eea9a8da16424284c043d22593570644"
+  }
+]

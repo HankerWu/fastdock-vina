@@ -1,0 +1,28 @@
+--- a/src/lib/monte_carlo.cpp
++++ b/src/lib/monte_carlo.cpp
+@@ -27,6 +27,7 @@
+ #include "mutate.h"
+ #include "quasi_newton.h"
+ #include "trajectory_archive.h"
++#include "cross_hunt.h"
+ 
+ output_type monte_carlo::operator()(model& m, const precalculate_byatom& p, const igrid& ig, const vec& corner1, const vec& corner2, incrementable* increment_me, rng& generator) const {
+ 	output_container tmp;
+@@ -71,6 +72,9 @@
+ 	fl best_e = max_fl;
+ 	bool reference_from_save = false;
+ 	quasi_newton quasi_newton_par(s, local_steps);
++	static cross_hunt::Recorder crossover;
++	if (++crossover.trajectory == 1 && crossover.outputs.is_open())
++		crossover.quench(m, p, ig, hunt_cap, local_steps);
+ 	VINA_U_FOR(step, global_steps) {
+ 		if(increment_me)
+ 			++(*increment_me);
+@@ -79,6 +83,7 @@
+ 		candidate.c = tmp.c;
+ 		const bool reoriented = mutate_conf(candidate.c, m, mutation_amplitude, generator,
+ 		                                    mixed_reorientation, separate_hunt_chain, centered_rotation, balanced_torsion);
++		crossover.record(step + 1, candidate.c);
+ 		const int before_hunt = evalcount;
+ 		quasi_newton_par(m, p, ig, candidate, hunt_cap, evalcount);
+ 		if (counters) {

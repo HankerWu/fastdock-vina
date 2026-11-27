@@ -78,7 +78,7 @@ def prep_grid(work, out, autogrid, receiver):
     return {p.name: sha(p) for p in sorted(dest.glob("*.map"))}
 
 
-def run_one(work, ligands, out, vina, job):
+def run_one(work, ligands, out, vina, job, *, search_counters=False):
     receiver, compound, seed, arm = job
     stem = out / "pools" / f"{compound}_{receiver}_{seed}_{arm}"
     pose = stem.with_suffix(".pdbqt")
@@ -104,6 +104,8 @@ def run_one(work, ligands, out, vina, job):
         "--out",
         str(pose),
     ]
+    if search_counters:
+        args.append("--search_counters")
     if arm == "ad4":
         args += ["--maps", str(out / "maps" / receiver / "receptor")]
     else:

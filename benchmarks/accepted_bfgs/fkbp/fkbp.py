@@ -22,6 +22,7 @@ def main():
     p = argparse.ArgumentParser(description=__doc__)
     for key in ("repo", "work", "parent", "fixed"):
         p.add_argument(key, type=lambda s: Path(s).resolve())
+    p.add_argument("--search-counters", action="store_true")
     a = p.parse_args()
     benchmark = a.repo / "benchmarks/cubic_grid"
     source = benchmark / "fkbp_ad4"
@@ -64,6 +65,7 @@ def main():
                 work / arm,
                 getattr(a, arm),
                 (rec, compound, seed, "ad4"),
+                search_counters=a.search_counters,
             )
             rows.append({**row, "arm": arm, "cpu_s": child_cpu() - start})
     table(work / "runs.csv", rows)
