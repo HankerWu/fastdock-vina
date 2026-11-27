@@ -1,0 +1,24 @@
+{
+  "development_conditions": 48,
+  "development_poses": 140,
+  "fixed_development_modes": 36,
+  "gal3_runs": 376,
+  "gal3_fixed": 94,
+  "gal3_assay_pairs": 403,
+  "gal3_consensus": {
+    "parent": 201.0,
+    "always": 176.0,
+    "adaptive": 171.0,
+    "upstream": 220.0
+  },
+  "leave_one_ligand_out_deltas": {
+    "always": [
+      -33.0,
+      -12.0
+    ],
+    "adaptive": [
+      -39.0,
+      -12.0
+    ]
+  }
+}

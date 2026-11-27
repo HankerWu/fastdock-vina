@@ -6,7 +6,9 @@ AutoDock Vina 的 CPU 优化和对接研发分支。
 
 FastDock Vina 基于 [AutoDock Vina](https://github.com/ccsb-scripps/AutoDock-Vina/tree/3c65c0b3e6c2c1d183f6a175ecb65e3c5ba91645) 做 CPU 优化。Pro 研发分支继承这些优化，并提供可选的搜索、精修和姿势重排方法。
 
-[大环提议与持续约束的等成本实验](benchmarks/macrocycle_proposal/README.md)比较了上游、当前 Pro 和三个 C++ 研究版本。持续约束消除了本面板中的严重断环，唯一新增的 2 Å 命中来自近晶体教程输入。新靶点与同系列实测 Kd 均不足以支持替换默认搜索。
+本轮在三个新的人源靶点检验了刚体主轴翻转，在三个独立大环复合物检验了协同扭转。ESR1 的交叉对接与 HSP90α–3VHA 有较低实耗下的局部收益；Galectin-3 的 47 配体 Kd 排序出现退化。生产版本继续沿用当前搜索。逐病例结果与复现入口见[刚体提议](benchmarks/shape_flip/README.md)、[独立结构](benchmarks/rigid_flip/README.md)、[大环协同转动](benchmarks/concerted_ring/README.md)和[游离态参照实验](benchmarks/frozen_core/solution_strain/README.md)。
+
+上一轮的[大环提议与持续约束的等成本实验](benchmarks/macrocycle_proposal/README.md)比较了上游、当前 Pro 和三个 C++ 研究版本。持续约束消除了本面板中的严重断环，唯一新增的 2 Å 命中来自近晶体教程输入。新靶点与同系列实测 Kd 均不足以支持替换默认搜索。
 
 [小环键距、大环闭合与同测定 Kd 的验证](benchmarks/bond_distance/README.md)复现了四元环原子编号改变能量和梯度的错误，默认实现已修正。同一组盲对接中出现了姿势退化。另一个研究变体在较少求值下消除了雷帕霉素的两次严重断环，尚未提高整分子姿势命中率。
 

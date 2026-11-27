@@ -1,0 +1,41 @@
+--- a/src/lib/monte_carlo.cpp
++++ b/src/lib/monte_carlo.cpp
+@@ -24,0 +25,3 @@
++#include <cstdlib>
++#include <fstream>
++#include <iomanip>
+@@ -80,0 +84,2 @@
++	const char* prefix = std::getenv("SHAPE_TRACE");
++	bool traced = false;
+@@ -86,0 +92,3 @@
++		rng before_draw = generator;
++		boost::optional<model> frozen;
++		if (prefix && !traced) frozen.emplace(m);
+@@ -90,0 +99,27 @@
++		if (prefix && !traced && reoriented) {
++			traced = true;
++			std::ofstream states(std::string(prefix) + ".pdbqt");
++			std::ofstream details(std::string(prefix) + ".tsv");
++			details << "step\tbranch\tprevious_energy\thunt_energy\tevals\taccepted\n";
++			model& sample = *frozen;
++			output_type old(s, 0);
++			old.c = tmp.c;
++			mutate_conf(old.c, sample, mutation_amplitude, before_draw, false);
++			VINA_CHECK(generator == before_draw);
++			sample.set(tmp.c);
++			sample.write_model(states, 1, "REMARK source");
++			for (unsigned branch = 0; branch < 2; ++branch) {
++				output_type trial = branch ? candidate : old;
++				sample.set(trial.c);
++				sample.write_model(states, 2 + branch * 2, "REMARK proposed");
++				int calls = 0;
++				quasi_newton replay(s, local_steps);
++				replay(sample, p, ig, trial, hunt_cap, calls);
++				sample.write_model(states, 3 + branch * 2, "REMARK hunt");
++				rng common = generator;
++				const bool accepted = step == 0 || metropolis_accept(tmp.e, trial.e, temperature, common);
++				details << step << '\t' << (branch ? "flip" : "native") << '\t'
++				        << std::setprecision(17) << tmp.e << '\t' << trial.e << '\t'
++				        << calls << '\t' << accepted << '\n';
++			}
++		}
