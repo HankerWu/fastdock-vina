@@ -1,0 +1,62 @@
+[
+  {
+    "pdb": "2LBD",
+    "target": "RARG",
+    "deposited_organism": "HOMO SAPIENS",
+    "component": "REA",
+    "chain": "A",
+    "status": "ready",
+    "preparation_wall_s": 6.497821939999994,
+    "source": "https://www.rcsb.org/structure/2LBD",
+    "ccd": "https://files.rcsb.org/ligands/download/REA.cif",
+    "sha256": {
+      "2LBD.pdb": "95c0c14b900d4cd106704a71d871c35bf1b20e8f7d75b6075ffb2d7ad623be33",
+      "REA.cif": "e4820a29de8e7266ec03c7692dde82207ce3301fc2ffdb548e56e099ff45dd4c"
+    }
+  },
+  {
+    "pdb": "1FBY",
+    "target": "RXRA",
+    "deposited_organism": "HOMO SAPIENS",
+    "component": "9CR",
+    "chain": "A",
+    "status": "ready",
+    "preparation_wall_s": 7.577473445002397,
+    "source": "https://www.rcsb.org/structure/1FBY",
+    "ccd": "https://files.rcsb.org/ligands/download/9CR.cif",
+    "sha256": {
+      "1FBY.pdb": "29119c0f2c4e5657fda25d15a5355aa752ea4b81097e933ac10480467fe32ca7",
+      "9CR.cif": "de766719e16bfe322a705fee0fc489aeabc9f4e6fcd96ecb5843959d5d65d51c"
+    }
+  },
+  {
+    "pdb": "1Q41",
+    "target": "GSK3B",
+    "deposited_organism": "HOMO SAPIENS",
+    "component": "IXM",
+    "chain": "A",
+    "status": "ready",
+    "preparation_wall_s": 6.912418023002829,
+    "source": "https://www.rcsb.org/structure/1Q41",
+    "ccd": "https://files.rcsb.org/ligands/download/IXM.cif",
+    "sha256": {
+      "1Q41.pdb": "5e7395b6245478e44d95209759df9267eddcf5f8b395a2cc6acdef594dc1806d",
+      "IXM.cif": "dab9e00f93ebf82ee5762e48b231013980ee34d79b0677032456a2e598b24b50"
+    }
+  },
+  {
+    "pdb": "1Q5K",
+    "target": "GSK3B",
+    "deposited_organism": "HOMO SAPIENS",
+    "component": "TMU",
+    "chain": "A",
+    "status": "ready",
+    "preparation_wall_s": 7.423721148999903,
+    "source": "https://www.rcsb.org/structure/1Q5K",
+    "ccd": "https://files.rcsb.org/ligands/download/TMU.cif",
+    "sha256": {
+      "1Q5K.pdb": "0b218a51c46695fabc2c9897f064d5b4e4ce2654461a7c1c34795523593329c9",
+      "TMU.cif": "558bc178d5e7138e31601a959b4e7fb8042da60d9a31f9be2861e263be180f21"
+    }
+  }
+]

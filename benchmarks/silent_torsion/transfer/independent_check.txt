@@ -1,0 +1,1 @@
+144 pools, 654 modes, maximum absolute RMSD difference 1.25331202e-06 A
