@@ -1,0 +1,28 @@
+[
+  {
+    "pdb": "1A9U",
+    "component": "SB2",
+    "cid": "176155",
+    "heavy_atoms": 27,
+    "query_input_smiles": "CS(=O)c1ccc(-c2nc(-c3ccc(F)cc3)c(-c3ccncc3)[nH]2)cc1",
+    "query_3d_stereo": "C[S@@](=O)c1ccc(-c2nc(-c3ccc(F)cc3)c(-c3ccncc3)[nH]2)cc1",
+    "crystal_3d_stereo": "C[S@](=O)c1ccc(-c2nc(-c3ccc(F)cc3)c(-c3ccncc3)[nH]2)cc1",
+    "input_3d_inchikey": "CDMGBJANTYXAIV-HHHXNRCGSA-N",
+    "crystal_inchikey": "CDMGBJANTYXAIV-MHZLTWQESA-N",
+    "stereo_matches": 0,
+    "topology_matches": 8
+  },
+  {
+    "pdb": "1KV2",
+    "component": "B96",
+    "cid": "156422",
+    "heavy_atoms": 39,
+    "query_input_smiles": "Cc1ccc(-n2nc(C(C)(C)C)cc2NC(=O)Nc2ccc(OCCN3CCOCC3)c3ccccc23)cc1",
+    "query_3d_stereo": "Cc1ccc(-n2nc(C(C)(C)C)cc2NC(=O)Nc2ccc(OCCN3CCOCC3)c3ccccc23)cc1",
+    "crystal_3d_stereo": "Cc1ccc(-n2nc(C(C)(C)C)cc2NC(=O)Nc2ccc(OCCN3CCOCC3)c3ccccc23)cc1",
+    "input_3d_inchikey": "MVCOAUNKQVWQHZ-UHFFFAOYSA-N",
+    "crystal_inchikey": "MVCOAUNKQVWQHZ-UHFFFAOYSA-N",
+    "stereo_matches": 24,
+    "topology_matches": 24
+  }
+]

@@ -1,0 +1,30 @@
+{
+  "1A9U.pdb": {
+    "url": "https://files.rcsb.org/download/1A9U.pdb",
+    "sha256": "c6fa08f3c26c99b8b8ee78862129103d2ee5ea937160d32e5148777093c05074"
+  },
+  "1KV2.pdb": {
+    "url": "https://files.rcsb.org/download/1KV2.pdb",
+    "sha256": "1c68ca0b760198bbfdb9e4b06154f2e67c596aaf0bdd96c5b994b12b13b64ec2"
+  },
+  "B96.cif": {
+    "url": "https://files.rcsb.org/ligands/download/B96.cif",
+    "sha256": "ff8ba1b5762f596f8c0d2fdb1e55dcdc90bcbaab04155ab7b70316082b573573"
+  },
+  "SB2.cif": {
+    "url": "https://files.rcsb.org/ligands/download/SB2.cif",
+    "sha256": "f86b71870cda1aed0ae67f5e68db9a3d0ac07fa0bc1aad1d3b913762e6544533"
+  },
+  "query_origin": "benchmarks/search_backtracking/assay/inputs.tar.xz",
+  "original_1A9U_runs": {
+    "archive": "benchmarks/search_backtracking/assay/runs.tar.xz",
+    "members_directories": [
+      "experiments/raw",
+      "cost_check/raw"
+    ]
+  },
+  "query_sha256": {
+    "176155.pdbqt": "44745e2da443fa9af872327e94c603654c407fd1d7a357e1136ed963567a1828",
+    "156422.pdbqt": "5f1ef727add9fd4dda1d43f66108b63bd3d610515eebae97bacb00f68b2fec6a"
+  }
+}

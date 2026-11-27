@@ -48,7 +48,7 @@ python benchmarks/search_backtracking/core/build.py /tmp/backtrack-profile --pro
 python benchmarks/search_backtracking/core/replay.py /tmp/backtrack-profile/build/vina /tmp/local-profiles --only native
 ```
 
-第一条命令编译实际端到端研究用的同一可执行文件，对照由 `native/vina`、`halving/vina` 和 `quadratic/vina` 三个薄包装选择。构建脚本从固定父提交导出核心源码，并检查数值最小值、方向导数有限差分、收缩上下界、非有限试步、十次失败后的坐标恢复和调用数。局部回放的 `--max_evals 1` 仅用于强制原生 Monte Carlo 完成第一对 hunt/save 后退出；实耗是表中数值。局部回放和诊断探测二进制不用于端到端耗时对照。
+第一条命令编译实际端到端研究用的同一可执行文件，对照由 `native/vina`、`halving/vina` 和 `quadratic/vina` 三个薄包装选择。构建脚本从已归档的 C++ 研究提交导出核心源码，并检查数值最小值、方向导数有限差分、收缩上下界、非有限试步、十次失败后的坐标恢复和调用数。局部回放的 `--max_evals 1` 仅用于强制原生 Monte Carlo 完成第一对 hunt/save 后退出；实耗是表中数值。局部回放和诊断探测二进制不用于端到端耗时对照。
 
 复算六个 native 文件哈希时，从局部回放解包的各 PDB 目录取 `receptor.pdbqt`、`ligand.pdbqt` 和 `metadata.json` 的中心，显式指定 24 Å 各边、`--cpu 1 --exhaustiveness 1 --num_modes 9 --energy_range 100 --search_counters`，并按 `native_parity.json` 各行设置种子和预算。
 

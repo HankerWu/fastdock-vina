@@ -6,6 +6,8 @@ AutoDock Vina 的 CPU 优化和对接研发分支。
 
 FastDock Vina 基于 [AutoDock Vina](https://github.com/ccsb-scripps/AutoDock-Vina/tree/3c65c0b3e6c2c1d183f6a175ecb65e3c5ba91645) 做 CPU 优化。Pro 研发分支继承这些优化，并提供可选的搜索、精修和姿势重排方法。
 
+[搜索阶段 BFGS 的固定预算验证](benchmarks/search_backtracking/README.md)复现了回溯耗尽时接受上坡试步的问题。修正后，三个靶点的独立结构面板仍为 3/40 个首姿命中；两项同测定激酶 Kd 的结果也不支持更换默认搜索。另一次[因子 Xa 的单配体几何修复与重对接](benchmarks/frozen_core/strain_transfer_audit/README.md)将原生与 MMFF 的排序差从 17 对缩小到 1 对。
+
 [固定精修名额的候选保存研究](benchmarks/accepted_retention/README.md)追踪了已接受却未进入精修的姿势。在一条 FABP4 轨迹中，保留一个新颖接受态恢复了次名近原位姿势；八家族的新种子测试未提高首姿或候选池命中率。
 
 上一轮[径向梯度与 8 Å 截断的配对实验](benchmarks/pair_gradient/README.md)定位了真实受体上的旋转导数符号错误，并检验了三种 C++ 修正。新结构及同测定 Kd 结果不足以替换默认算法。

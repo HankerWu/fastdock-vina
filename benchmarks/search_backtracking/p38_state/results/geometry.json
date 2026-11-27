@@ -1,0 +1,86 @@
+[
+  {
+    "pdb": "1A9U",
+    "pocket_CA": 50,
+    "pocket_CA_RMSD_A": 1.6195841874914483,
+    "closest_A": 0.3872292299360365,
+    "reference_clashes": 33,
+    "clashes_by_residue": {
+      "LEU A 108": 1,
+      "MET A 109": 10,
+      "PHE A 169": 22
+    },
+    "out_of_box_atoms": 0,
+    "center_shift_A": 4.239538786454579,
+    "mate_heavy_pairs_8A": 0,
+    "closest_mate_pair": null,
+    "new_heavy_atoms_within_8A": [],
+    "min_repaired_to_BIRB_A": 19.512606467467055,
+    "resolved_gap_flanks_A": {
+      "114": 12.461790688480294,
+      "123": 23.70534100722077,
+      "169": 0.3872292299360365,
+      "185": 14.407080034868386
+    },
+    "alignment_sensitivity": {
+      "pocket_without_activation_loop": {
+        "n_CA": 45,
+        "clashes": 34,
+        "Phe169_clashes": 23,
+        "closest_A": 0.6780014126038059
+      },
+      "whole_chain": {
+        "n_CA": 325,
+        "clashes": 50,
+        "Phe169_clashes": 30,
+        "closest_A": 0.6690585851204592
+      }
+    },
+    "crystal_start_local_rmsd_A": 2.089292920753728,
+    "resolution_A": 2.5
+  },
+  {
+    "pdb": "1KV2",
+    "pocket_CA": 71,
+    "pocket_CA_RMSD_A": 3.333274212383948e-16,
+    "closest_A": 2.8895250474775267,
+    "reference_clashes": 0,
+    "clashes_by_residue": {},
+    "out_of_box_atoms": 0,
+    "center_shift_A": 4.615384613752364e-06,
+    "mate_heavy_pairs_8A": 0,
+    "closest_mate_pair": null,
+    "new_heavy_atoms_within_8A": [
+      " CG  TYR A  35 ",
+      "CD1  TYR A  35 ",
+      "CD2  TYR A  35 ",
+      "CE1  TYR A  35 ",
+      "CE2  TYR A  35 ",
+      " CZ  TYR A  35 ",
+      " OH  TYR A  35 "
+    ],
+    "min_repaired_to_BIRB_A": 5.293922364372185,
+    "resolved_gap_flanks_A": {
+      "114": 11.143641101543071,
+      "123": 22.050258071052138,
+      "169": 3.1264217565773147,
+      "185": 14.379071040926116
+    },
+    "alignment_sensitivity": {
+      "pocket_without_activation_loop": {
+        "n_CA": 66,
+        "clashes": 0,
+        "Phe169_clashes": 0,
+        "closest_A": 2.8895250474775267
+      },
+      "whole_chain": {
+        "n_CA": 325,
+        "clashes": 0,
+        "Phe169_clashes": 0,
+        "closest_A": 2.8895250474775267
+      }
+    },
+    "crystal_start_local_rmsd_A": 0.3170038016434665,
+    "resolution_A": 2.8
+  }
+]
