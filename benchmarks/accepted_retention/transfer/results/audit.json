@@ -1,0 +1,8 @@
+{
+  "poses_verified": 752,
+  "max_rmsd_difference_A": 2.842170943040401e-14,
+  "max_covalent_bond_length_change_A": 0.0013181522033065551,
+  "poses_with_stereocenter_tag_change": 0,
+  "source_count_log_checks": 128,
+  "paired_comparisons": 96
+}
