@@ -1,0 +1,91 @@
+{
+  "directions": {
+    "1FKG-1FKH": {
+      "target_cpu_s": 2.399922,
+      "caps": {
+        "official": 12000,
+        "parent": 134200,
+        "stable": 128536,
+        "candidate": 88249
+      }
+    },
+    "1FKH-1FKG": {
+      "target_cpu_s": 2.836212,
+      "caps": {
+        "official": 12000,
+        "parent": 59410,
+        "stable": 86305,
+        "candidate": 68452
+      }
+    },
+    "1RBP-3FMZ": {
+      "excluded": {
+        "failed_probes": [],
+        "nonpositive_slope": [
+          "parent"
+        ]
+      }
+    },
+    "2NNQ-3FR2": {
+      "target_cpu_s": 2.738411,
+      "caps": {
+        "official": 12000,
+        "parent": 96667,
+        "stable": 59690,
+        "candidate": 82701
+      }
+    },
+    "3ANR-7AKL": {
+      "excluded": {
+        "failed_probes": [],
+        "nonpositive_slope": [
+          "candidate"
+        ]
+      }
+    },
+    "3FMZ-1RBP": {
+      "target_cpu_s": 1.702906,
+      "caps": {
+        "official": 12000,
+        "parent": 106685,
+        "stable": 114373,
+        "candidate": 86738
+      }
+    },
+    "3FR2-2NNQ": {
+      "excluded": {
+        "failed_probes": [],
+        "nonpositive_slope": [
+          "official",
+          "stable"
+        ]
+      }
+    },
+    "4GHI-5TBM": {
+      "excluded": {
+        "failed_probes": [],
+        "nonpositive_slope": [
+          "official",
+          "parent"
+        ]
+      }
+    },
+    "5TBM-4GHI": {
+      "excluded": {
+        "failed_probes": [],
+        "nonpositive_slope": [
+          "official"
+        ]
+      }
+    },
+    "7AKL-3ANR": {
+      "target_cpu_s": 1.721766,
+      "caps": {
+        "official": 12000,
+        "parent": 25776,
+        "stable": 156244,
+        "candidate": 169628
+      }
+    }
+  }
+}
