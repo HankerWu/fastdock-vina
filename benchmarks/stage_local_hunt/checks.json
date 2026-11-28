@@ -1,0 +1,51 @@
+[
+  {
+    "check": "tangent",
+    "command": [
+      "../check-hunt"
+    ],
+    "exit": 0,
+    "cpu_s": 0.003149,
+    "wall_s": 0.003906285000084608,
+    "peak_rss_kib": 9856,
+    "result": "pure translation, short arc, multiple ligands/residues, mixed descent, fallback, half-step and failure restoration passed"
+  },
+  {
+    "check": "armijo",
+    "command": [
+      "../check-armijo"
+    ],
+    "exit": 0,
+    "cpu_s": 0.002404,
+    "wall_s": 0.003348223999637412,
+    "peak_rss_kib": 9984,
+    "result": "Native, Armijo and geometry-preconditioned numerical regressions passed."
+  },
+  {
+    "check": "locked",
+    "command": [
+      "python",
+      "benchmarks/stage_local_hunt/locked.py",
+      "../audits/locked",
+      "benchmarks/stage_local_hunt/locked"
+    ],
+    "exit": 0,
+    "cpu_s": 1.532108,
+    "wall_s": 1.5408803820000685,
+    "peak_rss_kib": 90820,
+    "result": "Verified 7130 paired inputs against both controls"
+  },
+  {
+    "check": "coverage",
+    "command": [
+      "python",
+      "benchmarks/stage_local_hunt/coverage.py",
+      "benchmarks/stage_local_hunt/coverage"
+    ],
+    "exit": 0,
+    "cpu_s": 2.239382,
+    "wall_s": 2.252879875999497,
+    "peak_rss_kib": 112936,
+    "result": "Verified 12 published pools and all stage summaries"
+  }
+]

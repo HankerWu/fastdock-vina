@@ -49,3 +49,18 @@ python "$D/analyze_stages.py" /tmp/stage-live /tmp/stage-live-tables
 ```
 
 重新运行后，实际时钟和包含时钟字段的原始日志哈希随执行而变。脚本在动态运行中核对发布池、归档角点、稳定源态和同求解器返回的所有非计时字段。
+
+## 候选方向的独立复查
+
+候选 0bcae6e 通过每个自由度的坐标单位把管控对象分为三个 Å 平移分量、SO(3) 的实验室坐标切向量和各 S¹ 扭角。若原方向功为 `w = g·p < 0`，平移功为 `t`，角度缩放因子为 `0 < k < 1`，保留平移时的新方向功为 `kw + (1−k)t`。相应分支只在 `t ≤ 0` 时采用；其余情况的方向功为 `kw`。这两式都严格小于零。源码中拟牛顿割线使用实际改变后的方向和线搜索接受的步长。判据使用引擎在刚体原点与当前扭转坐标系下提供的梯度。
+
+[另一个观察器](audit_direction.h)在真实六套锁定库的每一个拟牛顿方向上独立计算分量级期望值、有限性和方向功。52,721 个方向中，45,161 个保持原方向，7,462 个保留下坡平移并缩短角度，98 个因平移上坡而整体缩短。原方向和修改后方向的非负斜率计数均为零。相对 `max(1, Σᵢ |gᵢp′ᵢ|)`，方向功与解析式的最大差异为 7.47×10⁻¹⁶。6 份完整返回与已冻结的候选轨迹逐字节一致。独立的 SVD 配准和解析同时复核 7,130 个探针、两种历史求解器的调用、候选的 153,530 次调用以及 4,794 次耗尽十次回溯。所有耗尽调用的终止斜率均有限且为负，最后一个试探方向的最大角度位移均不超过 π/512。[逐库原始计数、成本与返回哈希](candidate_direction_audit.json)
+
+独立编译并运行了候选 `check_direction.cpp` 和已有 `check_armijo_numeric.cpp`，多配体/柔性残基布局、纯平移、小角度、平移上坡回退、半步及失败后恢复、曲率和尺度回归全部通过。真实轨迹的分量审计是对源程序所用梯度与切向量的数值检验；分子物理势及网格梯度的准确度需要单独的实验和数值差分。以下从干净的源代码目录复现。HISTORY 为按照 `bfgs_source_replay/README.md` 已解包的历史轨迹。
+
+```sh
+D=benchmarks/stage_local_attribution
+python "$D/audit_candidate.py" prepare /tmp/stage-direction-src
+python /tmp/stage-direction-src/tools/build.py --boost-prefix "$BOOST_PREFIX" --jobs 3 --output-dir /tmp/stage-direction-build
+python "$D/audit_candidate.py" check "$HISTORY" /tmp/stage-direction-data /tmp/stage-direction-build/vina /tmp/stage-direction.json
+```
