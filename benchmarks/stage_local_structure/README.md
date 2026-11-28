@@ -92,3 +92,5 @@ python "$WORK/release-source/tools/build.py" --boost-prefix "$BOOST" --output-di
 python "$UP/run_panel.py" stable "$WORK/release/vina" "$WORK/release-runs" --jobs 4
 python "$D/restore.py" "$stable" "$WORK/release/vina" "$WORK/release-runs" "$WORK/release-check"
 ```
+
+另从两份真实上游提交独立导出并重新编译。复现历史路径字面量后，官方 859,976 字节和父版 860,096 字节的 ELF 均与参评文件逐字节相同，版本、普通及高级帮助、全部打印默认值一致。两次编译分别耗用 67.71 CPU 秒。[命令、源码树、编译器、默认值、费用及 ELF 哈希](restored/upstream_rebuild.json)
