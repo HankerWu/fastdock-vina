@@ -1,0 +1,3 @@
+# Counter verification on a fixed subset
+
+Before any pose run with an observer executable: reuse the official and parent instrumented builds from `benchmarks/cumulative/affinity/COUNTER_PROTOCOL.md` for the 12k reciprocal cohort, seed 85231, both directions of all five targets (ten cells per arm). Collect per-trajectory hunt, second-pass and explicit refinement counts in addition to the original CPU/wall/RSS. A matching full unmodified PDBQT SHA-256 is required before assigning any counts. Failed primary cells stay failed. Observer costs are separate. Do not transfer counts to other seeds, budgets, directions or structures.
