@@ -34,6 +34,7 @@ class quasi_newton {
 
 public:
     bool strict_armijo = false;
+    bool limit_angles = false;
     bool geometry_metric = false;
     bool rigid_metric = false;
     quasi_newton(const conf_size& size, unsigned steps) : workspace(size), max_steps(steps) {}
