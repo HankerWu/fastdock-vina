@@ -16,8 +16,8 @@ def read(path):
         return list(csv.DictReader(stream))
 
 
-def snapshot():
-    builds = json.loads((POSE / "builds.json").read_text())["versions"]
+def snapshot(build_file, pose_tables, assay_file):
+    builds = json.loads(build_file.read_text())["versions"]
     round_source = builds["candidate"]["revision"]
     rows = []
 
@@ -31,14 +31,14 @@ def snapshot():
         )
         rows.append({k: str(row.get(k, "")) for k in FIELDS})
 
-    for path in (POSE / "results/summary.csv", HERE / "external/results/summary.csv"):
+    for path, prefix in pose_tables:
         for r in read(path):
             if r["target"] == "ALL":
                 add(
                     r["arm"],
                     path,
                     task="pose",
-                    cohort=r["cohort"],
+                    cohort=prefix + r["cohort"],
                     target="ALL",
                     planned=r["scheduled"],
                     observed=r["valid"],
@@ -51,7 +51,7 @@ def snapshot():
                     cpu_s=r["cpu_s"],
                     wall_s=r["wall_s_sum"],
                 )
-    path = HERE / "affinity/results/assays.csv"
+    path = assay_file
     for r in read(path):
         if r["stage"] == "nominal":
             add(
@@ -80,26 +80,50 @@ def main():
         help="add a new source snapshot, preserving older rounds",
     )
     args = p.parse_args()
-    fresh = snapshot()
-    if not fresh:
-        raise ValueError("empty snapshot")
+    bench = HERE.parent
+    panel = bench / "search_trial_panel/results"
+    assays = bench / "search_trial_affinity"
+    series = [
+        (
+            POSE / "builds.json",
+            [
+                (POSE / "results/summary.csv", ""),
+                (HERE / "external/results/summary.csv", ""),
+            ],
+            HERE / "affinity/results/assays.csv",
+        ),
+        (
+            panel / "builds.json",
+            [
+                (panel / "summary.csv", ""),
+                (assays / "controls/four_versions/summary.csv", ""),
+                (bench / "search_trial_nov28/results/summary.csv", "BRD4_transfer_"),
+            ],
+            assays / "results/assays.csv",
+        ),
+    ]
     old = read(LEDGER) if LEDGER.exists() else []
-    existing = [r for r in old if r["round_source"] == fresh[0]["round_source"]]
-    if existing:
-        if existing != fresh:
+    additions = []
+    for build_file, pose_tables, assay_file in series:
+        fresh = snapshot(build_file, pose_tables, assay_file)
+        revision = fresh[0]["round_source"]
+        existing = [r for r in old if r["round_source"] == revision]
+        if existing == fresh:
+            print(f"Verified {len(fresh)} records for {revision}")
+        elif existing:
+            raise ValueError(f"Different measurements for existing round {revision}")
+        elif not args.append:
             raise ValueError(
-                "different measurements for an existing round; keep the original snapshot"
+                f"Round {revision} missing; use --append after verifying evidence"
             )
-        print(f"Verified {len(fresh)} records for {fresh[0]['round_source']}")
-    elif args.append:
+        else:
+            additions.extend(fresh)
+    if additions:
         with LEDGER.open("w", newline="") as f:
             w = csv.DictWriter(f, FIELDS, lineterminator="\n")
             w.writeheader()
-            w.writerows(old + fresh)
-    else:
-        raise ValueError(
-            "round missing from ledger; use --append after confirming inputs and evidence"
-        )
+            w.writerows(old + additions)
+        print(f"Added {len(additions)} records")
 
 
 if __name__ == "__main__":

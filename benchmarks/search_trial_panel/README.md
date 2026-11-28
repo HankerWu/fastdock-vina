@@ -84,3 +84,14 @@ python "$P/panel.py" check "$NEW/results"
 ```
 
 `check` 从原始坐标、命令与搜索日志复算固定研究候选、四臂成本试验及计数，验证原始得分、RMSD、预算、二进制身份和逐格配对统计，并只用标定 CPU 记录重建冻结预算。原有三个固定对照由 `offline.py` 独立读取。165 个新执行均成功，原始四组中最大 RMSD 数值复算差低于 1.1×10⁻¹⁴ Å。
+
+## 逐方向分布及生产版本回放
+
+[by_direction.csv](results/by_direction.csv) 给出每个有序配体–受体方向在相应种子上的首姿均值、中位数、Q1/Q3、P90/P95、Best@5、Oracle、Regret、空池数及相对三份基线的改善/持平/退化数。每个种子的精确读数在各实验的 cells.csv；单方向仅一至两枚种子时，分位数只描述这几次实际运行。表由 `python benchmarks/search_trial_panel/case_summary.py` 重建。
+
+生产源码在 `d37e5e4743f2460c89726d18b6452487ae085096` 完整恢复至轮前。用相同工具链重新编译，再用该二进制执行含默认设置的全部 65 个固定格，65/65 个 PDBQT 与上一轮最终版原始输出逐字节一致，572 个模式、首轮局优、入池前二次局优及显式精修计数全部一致。两份二进制有 20 处构建目录字面量和一份 ELF build ID 不同；归一化后全部字节比较相等。这轮单独复现用时 123.274 CPU 秒，单进程墙钟合计 124.206 秒，最高 RSS 43724 KiB。[构建与重放收据](restored/verification.json) · [命令、坐标及日志](restored/raw.tar.xz)
+
+```bash
+python "$D/run_panel.py" stable "$RESTORED" "$NEW/restored-runs" --jobs 4
+python "$P/restore.py" "$STABLE" "$RESTORED" "$NEW/restored-runs" "$NEW/restored-evidence"
+```
