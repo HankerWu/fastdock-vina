@@ -1,0 +1,114 @@
+{
+  "archive": "benchmarks/cubic_grid/human_panel/prepared.tar.xz",
+  "sha256": "64279b6b69390635a72ed213413587e571630dbf279c7c19d49b7ff3d20fcf67",
+  "inputs": {
+    "1FKG": {
+      "receptor.pdbqt": "ef0541c08f637fbc0d50337057e7e75978e4cd5ed302a8f038bda11e94da70bc",
+      "ligand.pdbqt": "246340fcb4c787a0833e9a051c11486b65d6304246745073f1de5b442cdcc668",
+      "preparation.json": "d222b98f1a5900a4918a6218997aaf75771729d7057ff849609f5d2ab5f7e6fb"
+    },
+    "1FKH": {
+      "receptor.pdbqt": "35dc3af79db72c297eaf408327761ca0e226f4364e6a9fb634033a7999584e08",
+      "ligand.pdbqt": "be09564e6bebc00138de0e3ebd8ae9487d51f8eb631363962d94649fd9c642a6",
+      "preparation.json": "94ad6c0ddd293a82f2f9c99019116269b2a423d71e6fe98d152a9d0a36e19daf"
+    },
+    "1RBP": {
+      "receptor.pdbqt": "d487ea4d9a20a6fd137a5ed3e8d34214d728c38ee02f10d6152fea23fc81288c",
+      "ligand.pdbqt": "a1724211c6c87e80fb1b0c4106a0bcb7627856b70fbdef69f58a8bdd49e15ed9",
+      "preparation.json": "692507d5b79950d2744ddb3b62b0d2cbf6b16b42583c49283177cdaf64092f36"
+    },
+    "2NNQ": {
+      "receptor.pdbqt": "16965a9e18e9ae25c0a163dd9b5a1181292a63d912d5b2e6a1fdbde75aebf2bb",
+      "ligand.pdbqt": "648a9e73483a1b129251641004c82296059528536c7046c94d914299fd279414",
+      "preparation.json": "f113e84b8b8a06f11bf668980b1987b9a37a43ef92f8a8477b33d731d408236b"
+    },
+    "3ANR": {
+      "receptor.pdbqt": "0f9c5f6b0185d1dafd11783911b55d19d9f84fff981e2b75989349a3f9c02777",
+      "ligand.pdbqt": "5425cc554cdf958046612377306eaed2b081a03f2339a6b182f4e7866e96c6e3",
+      "preparation.json": "ed38b381a5599058f2352df31f054a8cc2258c2ac00f857876acb2a8149fc5db"
+    },
+    "3FMZ": {
+      "receptor.pdbqt": "77fc1f68f94c0f1025f401625eaf533fb73fcbbbff44283d98931994258d7902",
+      "ligand.pdbqt": "c774fbcb3a6a1ed5c42042d2e876d4bd35c49c71e7038dc8b9c8b704262f22a9",
+      "preparation.json": "1c4e25e3e4b64a3db525836bb34d021f8a358e390649e763067116f3f3639a10"
+    },
+    "3FR2": {
+      "receptor.pdbqt": "ebd6f737a60fa26ac36e7e999601205f938826f3e91f8217e1a877c4632e2efa",
+      "ligand.pdbqt": "407cef9292ce492a7d49edaea66170d2f4da906cd5fda03cdfa83a38d4123f43",
+      "preparation.json": "bfe456a5e0647d9702bcf163e6abc8197cb5438d510a96bb44124d077616e529"
+    },
+    "4GHI": {
+      "receptor.pdbqt": "a68ced6044a6dba332c1b89d040cc58563b002690005b96cecb823f102d923ca",
+      "ligand.pdbqt": "7ba473194c6119c08a56f271e4c2c4d5067ac4d942c7e7cc09e1461cff88f83c",
+      "preparation.json": "824654ab3eb906c29f24d2c564e8db082a75199e9c04a43de1057360cb547cb7"
+    },
+    "5TBM": {
+      "receptor.pdbqt": "b4d7fe0b1e61102c432f5d1c90f4c844150dc1680141adc17ab9b8d0251bbc2f",
+      "ligand.pdbqt": "43929a770d76f66c8ed0956fd7ede2f72af70dd72d5bbb206396afe0de171828",
+      "preparation.json": "ac081c3c8aa49cb3bfed1a0a370e81d3b0d96b08825623665cee5f1104630265"
+    },
+    "7AKL": {
+      "receptor.pdbqt": "dbe3a356d5322f6220418ea1f98bb5dcaf1dee9173693a2fef299e18669ab6ce",
+      "ligand.pdbqt": "97a25347ba90d5a8940d2874c94092619f58b2680ba53b7a02c3763053396c7a",
+      "preparation.json": "e25874ad7bc23a29e42570ab3921acacfbabc8cbfd17b84f95c557cc95fbdcda"
+    }
+  },
+  "cost_cap_source_sha256": "13378a2377a4a2450e9d7af2347aa1544a95805e91a175ea2f1524c60036abb2",
+  "cognate": {
+    "archive": "benchmarks/geometry_comparison/pose/inputs.tar.xz",
+    "sha256": "fc58a62358a1917990396b96705784374aa43f6734194318aa348bb12afcf92b",
+    "manifest_sha256": "6ac7b742262c551f28c4da08dcd829724009f655e69fbf08214053889eccc19a",
+    "inputs": {
+      "5S8I": {
+        "ligand.pdbqt": "2e955fea19311b57243e8ae5e3f2e89c4f83562e096419204ba6d08273f16f10",
+        "receptor.pdbqt": "2584b7bab2befeb342df70afc7a8be47353cab46608cc42791ddc23f86a6abf4",
+        "metadata.json": "a5e87fa7827eb0f1b14d239befa810a19a2aeb289c9ed9ba277475bb443075a2"
+      },
+      "7F5D": {
+        "ligand.pdbqt": "800d034e2ad07a908582bfbb7245d2bc0725748dd1b98dafa741333af67322a9",
+        "receptor.pdbqt": "a88373f63a70c6a6cfd67c71d44c9e6b4d77d06ac5d0f52c92cc4a3e8c8f6e47",
+        "metadata.json": "461138141e97c173e31d162f1bbdba258a8342754327223845e09ede58c56baf"
+      },
+      "7LT0": {
+        "ligand.pdbqt": "7ba039b34cd0574a62dbc3978293745fb71f7ac0a96f2e6d1c924eff7b214661",
+        "receptor.pdbqt": "3ff093325cfb32cdaab9fd24230e009f2c26e7c7ab459a8c95c0043dad2f6a93",
+        "metadata.json": "43ec88335b755a9d7394bd66794788c3692159d3c1007e00aaaabefee690c5c5"
+      },
+      "7JGW": {
+        "ligand.pdbqt": "1b0e86ebdc43b02b475ae6ec3ae7f4822f9ea74a4455e9758d1eacaeb154e452",
+        "receptor.pdbqt": "5314bc9485a4cda6850f4608ec2e78c35c20def75bd17eae93347b56ef6b5f56",
+        "metadata.json": "3462bcb251717c8cdea84d7c7d5c5debf8b6903cb421726bd1d43bfd4971f5a6"
+      },
+      "7BLA": {
+        "ligand.pdbqt": "33107d2e6deb82a9f8addceb5c409ba72ea6097d896cd89d920adad0ce82ddb1",
+        "receptor.pdbqt": "54abfc7513a2f917bf6abb1238b4f6685b5513fbb908d92694c1dea741af7356",
+        "metadata.json": "ca06fff66db7e9c55d2bbcac1cc6ad1db49bb51b08d612f9ce0053abaee33c8d"
+      },
+      "7MRH": {
+        "ligand.pdbqt": "fd04b658b5653141d5dc03697761c024fc9c729f8ecd34bdd87c66979000e042",
+        "receptor.pdbqt": "f8ebbde5f242f08b68bd1ffe6344bcb3bbdf24ca3f71b23d46a548160875f419",
+        "metadata.json": "29f0e987ff546b335622bc2a35329b23da2c855d627b6c65f5bdfd4d812a941c"
+      },
+      "7LZQ": {
+        "ligand.pdbqt": "29232185b12c9f9c5e6e147afb9cee019a21284938bf2bee32492de40855f6e2",
+        "receptor.pdbqt": "3770f009e1cfaadf09d953e85dc77f6635d4cf8268daedf46c1e6aa27e946454",
+        "metadata.json": "289a4f591b448e37d74b7961da38dbe6d31d7ae675235dada6f550d70983c50f"
+      },
+      "7MS7": {
+        "ligand.pdbqt": "39aca33e4f007aeb939a29cf611adce672eca294abcd18678d24840746170ff8",
+        "receptor.pdbqt": "5b395a148cbc2be8c79b4ce4088551aca669198aa0668207139fef0f520eb8fd",
+        "metadata.json": "f8b7e0f487da6847f96cdc86bd4d5ece6a7ba2a59c66d676e5f54d71f3c8fad4"
+      },
+      "7RWO": {
+        "ligand.pdbqt": "6a6e52ce6d90a66901b3343929220e67e8596d756943ff8539f7f932a67a67b4",
+        "receptor.pdbqt": "201f28af256fda450c5946e54b0c2514ec1cd69832aeaa7d3b8f9efdb7d5ee42",
+        "metadata.json": "304472704fe3f8087ba01f07df26e9a150ab90748373c6d6403eda29d5c830f9"
+      },
+      "7QK0": {
+        "ligand.pdbqt": "030efb1f9561e674cfb14b7207050583f19bad8dfbceacc5b6267efedbcb373f",
+        "receptor.pdbqt": "3aec8759f0939a56f0d246a7b3d5864cd94b2bf020b9eb5655acf172323f133f",
+        "metadata.json": "a4e7a9f53418ac7525dac0b666837f321a348f391938cd249339d27a7fe34637"
+      }
+    }
+  }
+}
