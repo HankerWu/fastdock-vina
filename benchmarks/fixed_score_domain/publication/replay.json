@@ -1,0 +1,16 @@
+{
+  "source": "8d24ebebbd272d7ef05f15cd5ec9643460192f66",
+  "independent_clean_binary_sha256": "f6ff9e0d9d6f0bc6e77e65409f9c7f88fccd826eca064a49e9c91a9a73496f9f",
+  "candidate_binary_sha256": "f6ff9e0d9d6f0bc6e77e65409f9c7f88fccd826eca064a49e9c91a9a73496f9f",
+  "repeated_processes": 46,
+  "coordinate_files_byte_equal": 46,
+  "coordinate_and_energy_tables_byte_equal": true,
+  "raw_logs_equal_after_workdir_substitution": 46,
+  "secondary_replay_cpu_s": 5.267892,
+  "secondary_replay_wall_s": 5.302616329999637,
+  "original_fixed_domain_cli_log_parity": 92,
+  "original_fixed_domain_regression_cpu_s": 2.506801,
+  "original_fixed_domain_regression_wall_s": 5.546759395001573,
+  "numerical_controls": "benchmarks/rigid_window/analytic.cpp passed",
+  "raw_archive_sha256": "826b575c75f0aeeccd47c79568233e601b251dd765448effccf061f99fb389cf"
+}

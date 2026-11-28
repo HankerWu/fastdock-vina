@@ -1,0 +1,4 @@
+cohort,arm,scheduled,complete,mean_original_A,original_change_vs_printed,mean_archived_A,archived_change_vs_printed,mean_batch_A,batch_change_vs_printed,mean_fixed_A,fixed_change_vs_printed,mean_oracle_A,improved,worsened,tied
+cognate,candidate,10,9,6.2779487757584445,0,6.714011389277056,1,6.714011389277056,1,6.714011389277056,1,4.797068228594111,0,1,8
+external,candidate,1,1,10.310033429625726,0,10.310033429625726,0,10.310033429625726,0,10.310033429625726,0,1.761683320009587,0,0,1
+reciprocal,candidate,10,7,3.485205795427149,0,3.485205795427149,0,3.485205795427149,0,3.485205795427149,0,2.9137121074037653,0,0,7

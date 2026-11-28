@@ -1,0 +1,9 @@
+{
+  "pairs": 21,
+  "coordinates": 376,
+  "verified_selections": 77,
+  "probe_and_batch_binaries": {
+    "vina": "87b28d5da9113939b6eac15aa869cb0f58b05c542eb0b381128b2492d521c707",
+    "fd4-fixed": "e4a519a7a1ce6c6f5895ab379b57f38c44eca76c909ae94c4fea75d8d063208a"
+  }
+}
