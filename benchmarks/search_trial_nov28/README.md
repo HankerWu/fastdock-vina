@@ -45,3 +45,13 @@ c++ -O3 -std=c++14 -I"$CANDIDATE_SRC/src/lib" -I"$BOOST/include" benchmarks/chec
   "$CANDIDATE_OBJ/quaternion.o" "$CANDIDATE_OBJ/random.o" -o "$WORK/check-armijo"
 "$WORK/check-armijo"
 ```
+
+## 5U2E 已揭盲两姿势的同图零参考复算
+
+外检结束后另行登记，冻结种子 85237 的两个候选姿势、评价图、参考能、两个源码版本与 0.03 kcal/mol 判差。两次零参考复算都给首位（7.190 Å）−8.102 和第二位（1.211 Å）−7.788 kcal/mol，两个程序的十项打印分解逐项相同。近姿减远姿，配体–受体项 +0.358、配体内部项 +0.048，Vina 对同一配体转子数施加的能量变换对应的报告项 −0.092，合计 +0.314 kcal/mol。报告分解中的转子项由同一柔性因子对原始能量缩放得到，此数值差没有独立的构象熵测量。发布时的参考只改变两者的共同零点；在打印精度上，固定坐标的原生经验势能解释此对的全部排序差。该对能量分解无法识别应修正的原子相互作用或缺失的溶剂贡献。[揭盲后事前登记](POSTHOC_5U2E.md) · [四次 CLI 原始结果、逐项能量和成本](results/fixed_5u2e/receipt.json)
+
+重放前先按上一节解包或生成外检输入及候选池，再运行以下命令。
+
+```bash
+python "$D/fixed_5u2e.py" "$WORK/inputs" "$WORK/run" "$STABLE" "$CANDIDATE" "$WORK/fixed-pair"
+```
