@@ -1,0 +1,55 @@
+[
+  {
+    "cmd": [
+      "python",
+      "benchmarks/merge_replay/replay.py",
+      "analyze",
+      "benchmarks/merge_replay/raw",
+      "../merge_recheck"
+    ],
+    "cpu_s": 1.467484,
+    "wall_s": 3.300454271999115,
+    "peak_rss_kib": 105560
+  },
+  {
+    "cmd": [
+      "diff",
+      "-qr",
+      "benchmarks/merge_replay/results",
+      "../merge_recheck"
+    ],
+    "cpu_s": 0.004193,
+    "wall_s": 0.010388639999291627,
+    "peak_rss_kib": 9344
+  },
+  {
+    "cmd": [
+      "python",
+      "benchmarks/merge_replay/verify.py",
+      "../merge_reverify.json"
+    ],
+    "cpu_s": 1.746306,
+    "wall_s": 3.9208966299993335,
+    "peak_rss_kib": 102808
+  },
+  {
+    "cmd": [
+      "cmp",
+      "benchmarks/merge_replay/verification.json",
+      "../merge_reverify.json"
+    ],
+    "cpu_s": 0.012639,
+    "wall_s": 0.03943081000033999,
+    "peak_rss_kib": 9344
+  },
+  {
+    "cmd": [
+      "python",
+      "benchmarks/merge_replay/refinement.py",
+      "benchmarks/merge_replay/refinement"
+    ],
+    "cpu_s": 1.0002879999999998,
+    "wall_s": 1.8798754079998616,
+    "peak_rss_kib": 80992
+  }
+]
