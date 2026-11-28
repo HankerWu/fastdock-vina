@@ -1819,17 +1819,18 @@ void Vina::global_search(const int exhaustiveness, const int n_poses, const doub
 						if(m_non_cache.within(m_model))
 							break;
 					}
-					poses[i].coords = late_selection ? m_model.get_chemical_heavy_atom_movable_coords()
-					                                : m_model.get_heavy_atom_movable_coords();
-					if (late_selection && m_model.num_ligands() == 1 && m_model.num_flex() == 0) {
+					// An emitted PDBQT must round to coordinates in the same box
+					// used for rescoring. Translate the full single rigid-ligand pose.
+					if (m_model.num_ligands() == 1 && m_model.num_flex() == 0) {
 						const vec shift = printable_box_shift(m_model.get_grid_atom_movable_coords(),
-															  m_grid.corner1(), m_grid.corner2());
+						                                      m_grid.corner1(), m_grid.corner2());
 						if (sqr(shift) > 0) {
 							poses[i].c.ligands[0].rigid.position += shift;
 							m_model.set(poses[i].c);
-							poses[i].coords = m_model.get_chemical_heavy_atom_movable_coords();
 						}
 					}
+					poses[i].coords = late_selection ? m_model.get_chemical_heavy_atom_movable_coords()
+					                                : m_model.get_heavy_atom_movable_coords();
 					m_non_cache.slope = slope;
 					// rescoring in case a ligand or flex sidechain atom is outside box
 					// ensuring poses will be sorted with the same slope (a.k.a. out of
