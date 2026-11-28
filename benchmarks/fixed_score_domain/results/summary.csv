@@ -1,0 +1,7 @@
+target,reference,bounded_atoms,interior_score,old_wall_delta
+ABL,auto,37,-12.513,
+ABL,0,37,-12.857,37000000.0
+ABL,-3,37,-10.728,37000000.0
+BPTF,auto,21,-6.87,
+BPTF,0,21,-7.264,21000000.0
+BPTF,-3,21,-4.712,21000000.0

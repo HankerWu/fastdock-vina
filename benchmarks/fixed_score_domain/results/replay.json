@@ -1,0 +1,13 @@
+{
+  "cli_logs_checked": 92,
+  "logs_byte_identical": true,
+  "all_exit_statuses_identical": true,
+  "primary_cpu_s": 2.8159549999999998,
+  "primary_wall_s": 5.499987664998571,
+  "replay_cpu_s": 2.783645,
+  "replay_wall_s": 6.00455537200196,
+  "archive_sha256": "259d4f094e764243ee4cdfa24e1d28e14471acf06b17037d856945776278d147",
+  "source_commit": "4dd4e37945819139c43573f86c3efa467418da26",
+  "independent_clean_build_sha256": "87b28d5da9113939b6eac15aa869cb0f58b05c542eb0b381128b2492d521c707",
+  "clean_build_matches_tested_binary": true
+}

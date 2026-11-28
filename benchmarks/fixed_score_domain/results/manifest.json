@@ -1,0 +1,48 @@
+{
+  "inputs": {
+    "ABL": {
+      "center": [
+        15.19,
+        53.9025,
+        16.917
+      ],
+      "bounded_atoms": 37,
+      "preparation": {
+        "cpu_s": 0.002055995000000005,
+        "wall_s": 0.0020560729999488103
+      },
+      "sha256": {
+        "malformed.pdbqt": "d528a6a9da6ea5e2e17f195afb563d107899a8a092b3c22681e0c2fc894a1b8f",
+        "pose0.pdbqt": "15fb35648d8c18c70317842f3a0631b73a19429c710a037ab07310084d579bb8",
+        "pose1.pdbqt": "64c99638b55da57472d521de1ccf4b14b8a7bab20064e4527e0ff7ee0073c59e",
+        "pose40.pdbqt": "573288434afa2982a9940cef7a8ce5da580f9ab41e7ace066fa43373104c4686",
+        "pose41.pdbqt": "f42a35fa9cbcd4059644c1378a5f844c50981ba8590a55d545628256dff94c03",
+        "receptor.pdbqt": "f13cf3b36f61d87c3b58983e0b8ecf1c3456a685eb86dfe9ccfb139c7bdc2586"
+      }
+    },
+    "BPTF": {
+      "center": [
+        7.9015,
+        -5.1955,
+        30.164
+      ],
+      "bounded_atoms": 21,
+      "preparation": {
+        "cpu_s": 0.09638476699999998,
+        "wall_s": 0.2205621909997717
+      },
+      "sha256": {
+        "malformed.pdbqt": "d528a6a9da6ea5e2e17f195afb563d107899a8a092b3c22681e0c2fc894a1b8f",
+        "pose0.pdbqt": "a0334a75982ebfbd17845a4fcce015dd65c1c9d59051d0ae4147bb9379d7195b",
+        "pose1.pdbqt": "0c0ac6c1e7aa6b842a9a592a8f27d4810b2ba220ff702c9cffad2485773ca842",
+        "pose40.pdbqt": "7057c4a71ca4a30c8d69d7e3b147920abebf5ac2196de326576356800de6d085",
+        "pose41.pdbqt": "a6a47b3340f0c91fde962118be836ef80d163d6fef9d5c3e85683dc60a327783",
+        "receptor.pdbqt": "a88373f63a70c6a6cfd67c71d44c9e6b4d77d06ac5d0f52c92cc4a3e8c8f6e47"
+      }
+    }
+  },
+  "binaries": {
+    "stable": "a39261c561df69b36b48777be08b2ab806abdd691e002b287ba1ad718760228f",
+    "candidate": "87b28d5da9113939b6eac15aa869cb0f58b05c542eb0b381128b2492d521c707"
+  }
+}
