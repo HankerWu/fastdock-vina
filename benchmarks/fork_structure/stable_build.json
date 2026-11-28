@@ -1,0 +1,23 @@
+{
+  "revision": "0449b1d0bc3adec768dd9a9f243f3ce5a29cef58",
+  "src_tree": "f22a5de502749b4743ab0ce7fc2c9cbcbfdf7948",
+  "source_prefix_map": "-ffile-prefix-map=/tmp/fork28-stable-clean/src-tree=/workspace/scratch/a0337c8bef8c/repo",
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "/tmp/fork28-stable-clean/src-tree/tools/build.py",
+    "--boost-prefix",
+    "/tmp/fastdock-ache-tools/boost",
+    "--output-dir",
+    "/tmp/fork28-stable-clean/bin",
+    "--cxx",
+    "/tmp/fork28-stable-clean/cxx",
+    "--jobs",
+    "2"
+  ],
+  "cpu_s": 140.870463,
+  "wall_s": 101.09096264399886,
+  "peak_rss_kib": 871268,
+  "binary_sha256": "f6ff9e0d9d6f0bc6e77e65409f9c7f88fccd826eca064a49e9c91a9a73496f9f",
+  "bytes": 1420472,
+  "byte_identical": true
+}

@@ -1,0 +1,42 @@
+[
+  {
+    "pdb": "1BL7",
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+      "/workspace/scratch/b9702cdc7d18/repo/benchmarks/fork_structure/reprepare.py",
+      "--one",
+      "/tmp/fork28-prep-replay",
+      "1BL7",
+      "SB4"
+    ],
+    "exit": 0,
+    "sha256": {
+      "metadata.json": "f58d59457e536c3f0fbb547a4c98843646df9777f8450a6bd0af73ff621fffa4",
+      "ligand.pdbqt": "e7b12768ce7f1f3a20755e15af65eb3c9671c388a6634ffd50e3c853106f0465",
+      "receptor.pdbqt": "abe999a1bc17416b9932f7c0b28307d41fe51103719ec526ed9e6758f859ef8b"
+    },
+    "wall_s": 6.185021172999768,
+    "cpu_s": 5.567053,
+    "peak_rss_kib": 196128
+  },
+  {
+    "pdb": "1DI9",
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+      "/workspace/scratch/b9702cdc7d18/repo/benchmarks/fork_structure/reprepare.py",
+      "--one",
+      "/tmp/fork28-prep-replay",
+      "1DI9",
+      "MSQ"
+    ],
+    "exit": 0,
+    "sha256": {
+      "metadata.json": "a8e4688a14e90e609bea92a7c7c6ccc1ac09d34810a4b452f4cb41ea09e12145",
+      "ligand.pdbqt": "d5573ac1957f4578064bfe44ca3a8f691948cb27f8af6c902bc7e21544d45c22",
+      "receptor.pdbqt": "7512ddc645fb7e9d8b26a0781a4d1e7fe4d06c01be0c61b776de4c4abbf4f0f4"
+    },
+    "wall_s": 6.771969923000142,
+    "cpu_s": 6.707126,
+    "peak_rss_kib": 195472
+  }
+]

@@ -1,0 +1,4 @@
+cohort,baseline,scheduled,within_25pct,ratio_min,ratio_median,ratio_max,mean_delta_within,improved_within,tied_within,worse_within
+matched,official,0,0,,,,,0,0,0
+matched,parent,0,0,,,,,0,0,0
+matched,stable,0,0,,,,,0,0,0

@@ -1,0 +1,23 @@
+{
+  "reason": "stale cache had a different ELF hash; never use as a registered control",
+  "actual": [
+    {
+      "phase": "external",
+      "executions": 8,
+      "binary_sha256": "87b28d5da9113939b6eac15aa869cb0f58b05c542eb0b381128b2492d521c707",
+      "cpu_s": 4.361055,
+      "wall_s_sum": 5.011139,
+      "peak_rss_kib": 59428
+    },
+    {
+      "phase": "timing",
+      "executions": 60,
+      "binary_sha256": "87b28d5da9113939b6eac15aa869cb0f58b05c542eb0b381128b2492d521c707",
+      "cpu_s": 53.887901,
+      "wall_s_sum": 54.746695,
+      "peak_rss_kib": 63072
+    }
+  ],
+  "expected_sha256": "f6ff9e0d9d6f0bc6e77e65409f9c7f88fccd826eca064a49e9c91a9a73496f9f",
+  "independent_first_stable_build": "first clean build actually reproduced expected hash but identity assertion used wrong reference file; first compile CPU/RSS unavailable, reran full clean build against verified ELF"
+}

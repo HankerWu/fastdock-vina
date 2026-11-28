@@ -1,0 +1,16 @@
+{
+  "argv": [
+    "python",
+    "../candidate-src/tools/build.py",
+    "--boost-prefix",
+    "/tmp/fastdock-ache-tools/boost",
+    "--output-dir",
+    "/workspace/scratch/b9702cdc7d18/candidate-build",
+    "--jobs",
+    "3"
+  ],
+  "exit_code": 0,
+  "cpu_s": 122.789313,
+  "wall_s": 55.386432682000304,
+  "maxrss_kib": 871948
+}

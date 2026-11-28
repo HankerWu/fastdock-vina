@@ -1,0 +1,19 @@
+{
+  "cells": 32,
+  "published_poses": 288,
+  "max_difference_A": 1.865174681370263e-14,
+  "stereo_mappings": {
+    "1BL7": 4,
+    "1DI9": 1
+  },
+  "pocket_alignments": {
+    "1BL7-1DI9": {
+      "n": 50,
+      "fit_rmsd": 0.6611022727263156
+    },
+    "1DI9-1BL7": {
+      "n": 50,
+      "fit_rmsd": 0.6611022727263148
+    }
+  }
+}
