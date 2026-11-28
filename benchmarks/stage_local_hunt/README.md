@@ -56,3 +56,5 @@ for test in "$D/check_direction.cpp" benchmarks/check_armijo_numeric.cpp; do
     "$W/test"
 done
 ```
+
+从干净检出的分支运行 `python benchmarks/stage_local_hunt/verify_round.py`，可按顺序复算两轮结构面板、历史及本轮轨迹、外检、分测定排名和累计台账。依赖 Python 3.12、NumPy、SciPy、RDKit、xlrd。需要再次编译和执行对接时使用上面的真实运行命令。

@@ -101,6 +101,14 @@ def main():
             ],
             assays / "results/assays.csv",
         ),
+        (
+            bench / "stage_local_structure/fixed/builds.json",
+            [
+                (bench / "stage_local_structure/fixed/summary.csv", ""),
+                (bench / "stage_local_structure/external/summary.csv", "ESR1_transfer_"),
+            ],
+            bench / "stage_local_affinity/results/assays.csv",
+        ),
     ]
     old = read(LEDGER) if LEDGER.exists() else []
     additions = []
