@@ -1,5 +1,7 @@
 # FastDock Vina Pro
 
+[四版本累计预测性能与真实成本](benchmarks/cumulative/README.md)汇总官方 Vina、分叉前 FastDock 和两代 Pro 的固定结构与同测定亲和力实测。固定 12k 上限的交叉对接平均首姿误差为 2.863、2.863、6.016、6.016 Å。
+
 现在的默认优化器在首次曲率无效时保留正定逆 Hessian。真实搜索中恢复了下降方向，但糖配体高预算首姿平均误差从 4.824 升到 5.703 Å，FKBP12 三倍分离表观 Ki 对从 8/15 降至 5/15。物理模型实验显示，Aurora A 的两个受体加姿势局部积分用共同权重最多识别 9/16 个晶体引导见证；跨靶点的配体交换差还能辨认任意游离配体参考都无法修正的错序。[优化器与结构数据](benchmarks/accepted_bfgs/curvature/README.md) · [同测定亲和力](benchmarks/accepted_bfgs/curvature/fkbp/README.md) · [受体与局部姿势联合积分](benchmarks/receptor_linkage/aurora/state_windows/README.md) · [交换差与实测 Kd](benchmarks/affinity_exchange/README.md)
 
 此前 BFGS 修复了十次回溯全拒后接受错误坐标、使用未经求值步长更新曲率的问题。在 Aurora A 可恢复原先丢失的近晶体局部解。修复前后，常规预算首姿均值为 9.106 与 9.031 Å，双预算为 8.896 与 9.117 Å。FKBP12 同测定的 15 个分离对判对数由 9 降到 8，七个点值的秩相关却升高。[默认优化器、跨家族与亲和力验证](benchmarks/accepted_bfgs/README.md)
