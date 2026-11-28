@@ -1,0 +1,14 @@
+{
+  "argv": [
+    "python",
+    "benchmarks/search_trial_affinity/study.py",
+    "replay",
+    "/tmp/ff28-assay-audit",
+    "--artifacts",
+    "benchmarks/fork_round/affinity"
+  ],
+  "exit_code": 0,
+  "cpu_s": 2.233273,
+  "wall_s": 2.2417253859985067,
+  "maxrss_kib": 91900
+}

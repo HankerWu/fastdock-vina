@@ -90,3 +90,11 @@ bash "$D/build_free.sh" "$W/free_last_trial" "$BOOST"
 python "$D/free.py" "$W/free_results" --binaries "$STABLE_STOCK" "$W/free/stable/build/vina" "$NEW_STOCK" "$W/free_last_trial/build/vina"
 python "$D/free.py" "$D/free"
 ```
+
+[追加的源代码判据重放](gate.py)再按事件顺序重建反向 ESR1 门槛。从每条轨迹的空池开始，维护上一轮单轨迹池大小，并用已执行二次局优后的能量更新历史最好值。对所有 2,303 个已接受的 H 求值，是否调用二次局优的预测与 D 事件逐次相符。新候选的 47 个已接受近姿都遇到 9 个位置已占满的池，各自 hunt 能量减去当时门槛的最小、中位和最大值为 0.812、0.937、1.641。稳定链被挡的 329 个已接受近姿对应为 0.001、0.264、2.347。门槛来自以 authentic_v 局优后的能量，当前被比较的状态来自 hunt_cap。两种 cap 在梯度或能量上的具体差异尚需固定坐标求值。这项描述性重放没有执行被阻止的二次局优。[每次近姿的真实能量、门槛、池大小和调用](free/save_gate.csv.xz) · [分母和差值汇总](free/save_gate.json)
+
+三格两臂各自的正常预测累计 1.732 CPU s、1.832 个作业墙钟秒；观察器累计 2.089 CPU s、2.161 个作业墙钟秒，两组最大 RSS 均为 93,132 KiB。
+
+```sh
+python benchmarks/proposal_fork/gate.py
+```

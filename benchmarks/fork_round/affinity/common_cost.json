@@ -1,0 +1,108 @@
+{
+  "logical_cpu": 8,
+  "target_s": 14.5,
+  "attempts": [
+    {
+      "engine": "official",
+      "stage": "cpu3k",
+      "cap": 3000,
+      "cpu_s": 12.035128
+    },
+    {
+      "engine": "parent",
+      "stage": "cpu3k",
+      "cap": 3000,
+      "cpu_s": 4.643294999999999
+    },
+    {
+      "engine": "official",
+      "stage": "cpu96k",
+      "cap": 96000,
+      "cpu_s": 16.229719
+    },
+    {
+      "engine": "parent",
+      "stage": "cpu96k",
+      "cap": 96000,
+      "cpu_s": 8.918814
+    },
+    {
+      "engine": "parent",
+      "stage": "cpu384k",
+      "cap": 384000,
+      "cpu_s": 22.994405999999998
+    },
+    {
+      "engine": "official",
+      "stage": "confirmation1",
+      "cap": 57600,
+      "cpu_s": 17.939825
+    },
+    {
+      "engine": "parent",
+      "stage": "confirmation1",
+      "cap": 210200,
+      "cpu_s": 16.626579
+    },
+    {
+      "engine": "official",
+      "stage": "confirmation2",
+      "cap": 57600,
+      "cpu_s": 13.974848000000001
+    },
+    {
+      "engine": "stable",
+      "stage": "cpu3k",
+      "cap": 3000,
+      "cpu_s": 1.5603239999999998
+    },
+    {
+      "engine": "stable",
+      "stage": "cpu96k",
+      "cap": 96000,
+      "cpu_s": 5.48416
+    },
+    {
+      "engine": "stable",
+      "stage": "cpu384k",
+      "cap": 384000,
+      "cpu_s": 14.319872
+    },
+    {
+      "engine": "stable",
+      "stage": "confirmation1",
+      "cap": 384000,
+      "cpu_s": 14.077276
+    },
+    {
+      "engine": "candidate",
+      "stage": "cpu3k",
+      "cap": 3000,
+      "cpu_s": 2.3114399999999997
+    },
+    {
+      "engine": "candidate",
+      "stage": "cpu96k",
+      "cap": 96000,
+      "cpu_s": 7.266904
+    },
+    {
+      "engine": "candidate",
+      "stage": "cpu384k",
+      "cap": 384000,
+      "cpu_s": 18.983571
+    },
+    {
+      "engine": "candidate",
+      "stage": "confirmation1",
+      "cap": 273800,
+      "cpu_s": 12.329558
+    }
+  ],
+  "final": {
+    "official": "confirmation2",
+    "parent": "confirmation1",
+    "stable": "confirmation1",
+    "candidate": "confirmation1"
+  }
+}

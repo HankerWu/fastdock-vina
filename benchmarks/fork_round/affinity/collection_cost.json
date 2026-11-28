@@ -1,0 +1,14 @@
+{
+  "argv": [
+    "python",
+    "benchmarks/search_trial_affinity/study.py",
+    "collect",
+    "/tmp/ff28-affinity",
+    "--artifacts",
+    "benchmarks/fork_round/affinity"
+  ],
+  "exit_code": 0,
+  "cpu_s": 5.412516999999999,
+  "wall_s": 5.4453181749995565,
+  "maxrss_kib": 166300
+}

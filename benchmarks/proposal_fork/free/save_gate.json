@@ -1,0 +1,18 @@
+{
+  "stable": {
+    "all_accepted_checked": 1180,
+    "all_save_calls": 283,
+    "near_blocked": 329,
+    "blocked_energy_gap_min": 0.0011992221636081268,
+    "blocked_energy_gap_median": 0.2644335800696549,
+    "blocked_energy_gap_max": 2.3468173964198202
+  },
+  "last_trial": {
+    "all_accepted_checked": 1123,
+    "all_save_calls": 272,
+    "near_blocked": 47,
+    "blocked_energy_gap_min": 0.8115314553283,
+    "blocked_energy_gap_median": 0.9372663850721192,
+    "blocked_energy_gap_max": 1.6407938928204882
+  }
+}

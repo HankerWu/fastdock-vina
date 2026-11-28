@@ -109,6 +109,14 @@ def main():
             ],
             bench / "stage_local_affinity/results/assays.csv",
         ),
+        (
+            bench / "fork_structure/builds.json",
+            [
+                (bench / "fork_structure/fixed/summary.csv", ""),
+                (bench / "fork_structure/external/summary.csv", "MAPK14_transfer_"),
+            ],
+            bench / "fork_round/affinity/assays.csv",
+        ),
     ]
     old = read(LEDGER) if LEDGER.exists() else []
     additions = []

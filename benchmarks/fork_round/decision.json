@@ -1,0 +1,48 @@
+{
+  "round_start": "0449b1d0bc3adec768dd9a9f243f3ce5a29cef58",
+  "candidate": "1c672a8e2ce12c7a16e20172a3315ea5a19c23d8",
+  "gates": {
+    "fixed/reciprocal/mean_first": {
+      "start": 6.015867521248448,
+      "candidate": 5.404822775006049,
+      "pass_gate": true
+    },
+    "fixed/reciprocal/mean_best": {
+      "start": 4.925286826065226,
+      "candidate": 3.959121397968031,
+      "pass_gate": true
+    },
+    "fixed/reciprocal/p95": {
+      "start": 14.504358608803468,
+      "candidate": 13.811372676613818,
+      "pass_gate": true
+    },
+    "external/cognate/mean_first": {
+      "start": 6.151470874765781,
+      "candidate": 4.8357110060831925,
+      "pass_gate": true
+    },
+    "external/reciprocal/mean_first": {
+      "start": 5.758616162706933,
+      "candidate": 4.5082960145688284,
+      "pass_gate": true
+    },
+    "external/reciprocal/mean_best": {
+      "start": 3.319414900411003,
+      "candidate": 3.143152029851837,
+      "pass_gate": true
+    },
+    "nominal_assay_3x_credit": {
+      "start": 90.0,
+      "candidate": 90.0,
+      "pass_gate": true
+    }
+  },
+  "nominal_assay_credit": {
+    "official": 93.0,
+    "parent": 93.0,
+    "stable": 90.0,
+    "candidate": 90.0
+  },
+  "passed": true
+}
