@@ -1,0 +1,2 @@
+cohort,target,query,receiver,seed,arm,cap,status,exit,cpu_s,user_s,system_s,wall_s,peak_rss_kib,modes,first,best5,best,regret,native_score,hunt_evals,second_evals,explicit_evals,explicit_calls,late_prescore,pool_sha256,key
+default,FKBP1A,1FKG,1FKH,85231,official,,ok,0,112.867951,110.752058,2.115893,118.582137,507208,9,1.4584549459482972,1.4584549459482972,1.4584549459482972,0.0,-8.02,,,,,,b82fae828eb127735f1aef16f8970b6829b5993402a7156f29cabc91c36410f7,default-1FKG-1FKH-85231-official
