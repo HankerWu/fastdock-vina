@@ -1,0 +1,7 @@
+two_ligands	ligands=2	flex=0	dof=21	direction_cases=150	max_abs_error=6.4177818615007709e-10
+ligand_flex	ligands=1	flex=1	dof=14	direction_cases=108	max_abs_error=4.2078163176029193e-10
+two_ligands_flex	ligands=2	flex=1	dof=24	direction_cases=168	max_abs_error=6.4177818615007709e-10
+scripted	spacing=0	accept_tenth=0	evals=12	tenth_x=1026	returned_x=1024	returned_e=-1000
+scripted	spacing=0	accept_tenth=1	evals=12	tenth_x=1026	returned_x=1026	returned_e=-2000
+scripted	spacing=0.375	accept_tenth=0	evals=12	tenth_x=1024.375	returned_x=1024	returned_e=-1000
+scripted	spacing=0.375	accept_tenth=1	evals=12	tenth_x=1024.375	returned_x=1024.375	returned_e=-2000

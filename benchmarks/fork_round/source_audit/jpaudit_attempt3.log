@@ -1,0 +1,4 @@
+trials 0 1024 512 256 128 64 32 16 8 4 2
+terminate called after throwing an instance of 'std::runtime_error'
+  what():  expected initial, one accept, ten trials
+benchmarks/fork_round/source_audit/run.sh: line 22:    18 Aborted                 "$WORK/check" "$WORK/prepared/3FMZ/ligand.pdbqt" "$WORK/prepared/3FR2/ligand.pdbqt" "$WORK/prepared/3FMZ/partition_rigid.pdbqt" "$WORK/prepared/3FMZ/partition_flex.pdbqt" "$WORK/wall" > "$WORK/results.tsv"

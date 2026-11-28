@@ -1,0 +1,4 @@
+/workspace/scratch/b9702cdc7d18/repo/benchmarks/fork_round/source_audit/check.cpp: In function ‘void failure(const std::string&, bool, fl)’:
+/workspace/scratch/b9702cdc7d18/repo/benchmarks/fork_round/source_audit/check.cpp:92:25: error: aggregate ‘precalculate_byatom p’ has incomplete type and cannot be defined
+   92 |     precalculate_byatom p;
+      |                         ^
