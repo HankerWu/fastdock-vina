@@ -1,0 +1,81 @@
+{
+  "binary_sha256": "ba15a83df2e5ef22ec1bd2a1fbee2b0bcc887367600cf62fa5f085ac3f5cde5e",
+  "observer_sha256": "4e05305b34dd88f7186cb47d0497201dede740620212b5e59e2b6767ca3be8e1",
+  "inputs": {
+    "hashes": {
+      "receptor_archive": "35086efc6f715c245bcccad24da3ab6aa0743fcb00776d598103886ee51295f4",
+      "HUP.pdbqt": "d64a5b88f14409bd13d397a53a7b10d6c8f979b0335268226af57d0dfd2bdf5f",
+      "HUP.cif": "68fe15278de42d8d751d4669820f9c5cb9567882db45b5536b9d4d0b48b8edef",
+      "raw/4EY6.pdb": "b0437c07883a4342ebe72bf87a1ad5a03c2af71a412bfe0aba863f7ac3787f0b",
+      "4EY6/preparation.json": "a0596787eae0f71cb4d938f8c325a7f29f9b2fe6d113b8a021b9f01e4d726db5",
+      "4EY6/receptor.pdbqt": "a8e890f59f5d14e2b48807dd616231b746d1346da0a121cfbe9a75fe6f408dbe",
+      "raw/4EY7.pdb": "6bca2109d7b512a576458c3261e597bb5159e8fb43162c5b6c88df71f9fcdbd2",
+      "4EY7/preparation.json": "89b9ac7f7fc6774fbeb7f2008dc105277c032f0649918106cedb35a578923396",
+      "4EY7/receptor.pdbqt": "80d4d359736ea6d185b593e743a0f2f5c094d42362ef0271bee30bd0e9c44a5f"
+    },
+    "centers_A": {
+      "4EY6": [
+        -9.942238095238094,
+        -43.487714285714276,
+        30.290809523809518
+      ],
+      "4EY7": [
+        -14.108464285714291,
+        -43.83271428571428,
+        27.669928571428574
+      ],
+      "4EY7_mapped": [
+        -10.012829175639213,
+        -43.56206710374183,
+        30.181653662315146
+      ]
+    },
+    "noncognate_fit": {
+      "shared_ca": 48,
+      "rmsd_A": 0.2758399476879144,
+      "rotation": [
+        [
+          0.9998854869183261,
+          -0.013488028366147637,
+          0.006861934194982542
+        ],
+        [
+          0.01347497701216614,
+          0.9999073173001518,
+          0.0019446861279735028
+        ],
+        [
+          -0.006887528194052665,
+          -0.0018519990304359962,
+          0.9999745657040326
+        ]
+      ],
+      "translation_A": [
+        0.7228951582034249,
+        -0.15638601638013228,
+        0.04440750218922318
+      ]
+    }
+  },
+  "pool_sha256": {
+    "4EY6/pro24k_1103501": "568f300199465a0318778eab1f4f715101d22bf6f5546dfcf01a708575a9f650",
+    "4EY6/pro24k_1103503": "cd3da65982943f56e5404fb399acd8f7084be9594a2f853543caa041a9a89ea9",
+    "4EY6/pro24k_1103507": "cc2d53bffa4ca9438679654d5ccc7bcef8c3095a734009e1082aaa8ced3f9b42",
+    "4EY7/pro24k_1103501": "a97829e14cb29cf8bf7b1ba20ec6d4b88880111cf3709edf5bf88257331ad8ef",
+    "4EY7/pro24k_1103503": "ca5c7f0ad8ef906e448d3d76d912eef88ceb4dfbf16d78f625d7a77e3602feb2",
+    "4EY7/pro24k_1103507": "bbf2ff98ce6ed41dafce733e9068b1f2e105284a0890d1eb495eb144813936aa",
+    "4EY6/pro48k_1103501": "63f5ccf3b8540c0129942f83f0a53fc0e6ef6cd39b1d9a7343d23a0056ca3bc3",
+    "4EY6/pro48k_1103503": "0af17374feb6df9619002d4b16da4fed2c8f2132f8b892794d657635f8239a40",
+    "4EY6/pro48k_1103507": "f5eed8a8f176a0a3fda3cf7eaebdaeb7840efd79f9ef59381af8ce8ba514f49d",
+    "4EY7/pro48k_1103501": "afdffda50736fc5b4023376d7c1c910e926995ac7b5d307ff0c5b273b71f02bc",
+    "4EY7/pro48k_1103503": "5c1ae1119bfde3a40a2f4f6587a3490d92ae14cafb76dd1b7677ea9de3b8d803",
+    "4EY7/pro48k_1103507": "82321692d54a8ecdaae53067d1ca241b9d6811d39fd2efe6048fe5640c891550"
+  },
+  "raw_sha256": "d4ca5aaeb4fff4a173b69bb58a98ae6fb551b6898a9295f51789f1ea59a951b3",
+  "n_jobs": 108,
+  "failures": [],
+  "total_wall_cpu_s": [
+    169.27933728799997,
+    168.74735088300002
+  ]
+}

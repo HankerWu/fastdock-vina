@@ -1,0 +1,30 @@
+{
+  "4EY6": {
+    "output_sha256": "cd3da65982943f56e5404fb399acd8f7084be9594a2f853543caa041a9a89ea9",
+    "binary_sha256": "417508a1c7c692d5e04a32c0e0dbc907e53b4167f490110b31a96cc086524d88",
+    "probe_wall_s": 0.35697206600002573,
+    "probe_cpu_s": 0.35692518500000003,
+    "compression_wall_s": 0.709997858999941,
+    "compression_cpu_s": 0.6971790540000001,
+    "events_sha256": "0406b885475c2dcde2bc725f8ad203cb6e52445987a22dfb025470dfdb1bb5bc",
+    "members_sha256": "3fefdd6e27f8c01c844089472856ccad7589ea92bd782ee0993a1e77d16b883c",
+    "chunks": [
+      "4EY6.events.xz.00",
+      "4EY6.members.xz.00"
+    ]
+  },
+  "4EY7": {
+    "output_sha256": "ca5c7f0ad8ef906e448d3d76d912eef88ceb4dfbf16d78f625d7a77e3602feb2",
+    "binary_sha256": "417508a1c7c692d5e04a32c0e0dbc907e53b4167f490110b31a96cc086524d88",
+    "probe_wall_s": 0.3685555380000096,
+    "probe_cpu_s": 0.3685943829999998,
+    "compression_wall_s": 0.5981375690000732,
+    "compression_cpu_s": 0.5979730000000001,
+    "events_sha256": "a95a67af5a4accd6d7740894a3535ebf81d49378284805a7e9d929bd06cf2e70",
+    "members_sha256": "868069d1889c98ca0602a05fff7f294ecc8d0b46a2fa7f566dde5aa80efc8f8c",
+    "chunks": [
+      "4EY7.events.xz.00",
+      "4EY7.members.xz.00"
+    ]
+  }
+}

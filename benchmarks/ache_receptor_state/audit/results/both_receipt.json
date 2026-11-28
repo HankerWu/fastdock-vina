@@ -1,0 +1,102 @@
+{
+  "proper_protein_fits": {
+    "4EY5_4EY5": {
+      "shared_ca": 68,
+      "rmsd_A": 1.0154133627689245e-15
+    },
+    "4EY5_4EY6": {
+      "shared_ca": 64,
+      "rmsd_A": 0.272706150532654
+    },
+    "4EY5_4EY7": {
+      "shared_ca": 45,
+      "rmsd_A": 0.1939567185330863
+    },
+    "4EY6_4EY5": {
+      "shared_ca": 64,
+      "rmsd_A": 0.2727061505326546
+    },
+    "4EY6_4EY6": {
+      "shared_ca": 69,
+      "rmsd_A": 1.9753999124232747e-15
+    },
+    "4EY6_4EY7": {
+      "shared_ca": 48,
+      "rmsd_A": 0.27583994768791265
+    },
+    "4EY7_4EY5": {
+      "shared_ca": 45,
+      "rmsd_A": 0.19395671853308635
+    },
+    "4EY7_4EY6": {
+      "shared_ca": 48,
+      "rmsd_A": 0.27583994768791154
+    },
+    "4EY7_4EY7": {
+      "shared_ca": 61,
+      "rmsd_A": 1.897149936107019e-15
+    }
+  },
+  "blind": {
+    "production_pools": 21,
+    "modes": 186,
+    "replay_byte_matches": 27,
+    "max_command_center_error_A": 7.105427357601002e-15,
+    "original_pool_byte_matches": 3,
+    "zero_pools": 0,
+    "severe": 3,
+    "min_published_rmsd_A": {
+      "4EY6": 0.40849069518585984,
+      "4EY7": 2.9762678508060576
+    },
+    "counters_from_matched_outputs": {
+      "hunt_calls": 64928,
+      "hunt_evals": 1650372,
+      "second_calls": 14281,
+      "second_evals": 294716,
+      "explicit_calls": 189,
+      "explicit_evals": 5472
+    },
+    "mode_max_abs_error": {
+      "rmsd_A": 7.105427357601002e-15,
+      "score": 0.0
+    },
+    "cell_max_abs_error": {
+      "top1_A": 2.0539125955565396e-15,
+      "best5_A": 2.0539125955565396e-15,
+      "oracle_A": 2.0539125955565396e-15,
+      "oracle_mode": 0.0,
+      "regret_A": 1.3322676295501878e-15,
+      "modes": 0.0
+    },
+    "paired_rows_checked": 27,
+    "max_paired_metric_error_A": 2.6645352591003757e-15,
+    "max_group_stat_error_A": 1.7763568394002505e-15
+  },
+  "diagnostic": {
+    "excluded_cognate_contact": [
+      4.694375996871152,
+      "C1  DMS A 605"
+    ],
+    "independent_vs_primary": {
+      "rmsd_in": 3.552713678800501e-15,
+      "rmsd_out": 5.329070518200751e-15,
+      "score_in": 0.0,
+      "score_out": 0.0,
+      "gradient_evals": 0.0
+    },
+    "same_state_score_order_inversions_gt_point01": 0,
+    "raw_archive_sha256": "ad7507587aea39194854af965c40ea4822f5d7bc6c6f2771ee91fd391e5d24dc",
+    "successes": 54,
+    "scored_coordinates": 108,
+    "observed_gradient_calls": 1325,
+    "max_transformed_start_component_error_A": 0.0004992276716055954,
+    "original_oracle_id": {
+      "pro24k": 1,
+      "pro48k": 2,
+      "official24k": 4
+    }
+  },
+  "wall_s": 2.618246992999957,
+  "cpu_s": 2.6167313329999997
+}

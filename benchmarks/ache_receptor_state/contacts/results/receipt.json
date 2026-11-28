@@ -1,0 +1,15 @@
+{
+  "hashes": {
+    "probe": "e1cd225a42cb0df894957e4b74f928f39032236cec412865ad917fae515314df",
+    "inputs": "e6568a62d249d4d339879c2b868e749d1942af586c3e4a41a145cfb7700c3616",
+    "4EY6/receptor.pdbqt": "a8e890f59f5d14e2b48807dd616231b746d1346da0a121cfbe9a75fe6f408dbe",
+    "4EY7/receptor.pdbqt": "80d4d359736ea6d185b593e743a0f2f5c094d42362ef0271bee30bd0e9c44a5f"
+  },
+  "start_evaluations": 12,
+  "gradients": 0,
+  "receptor_ligand_pairs": 18759,
+  "requested_contrasts": 18,
+  "verified_contrasts": 12,
+  "cpu_s": 1.03524123,
+  "wall_s": 1.0355999979999524
+}

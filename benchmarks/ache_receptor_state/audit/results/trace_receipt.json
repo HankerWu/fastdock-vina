@@ -1,0 +1,110 @@
+{
+  "4EY6": {
+    "proposals": 2431,
+    "near_proposals": 731,
+    "near_hunt": 768,
+    "near_accepted": 620,
+    "near_second": 229,
+    "near_final": 2,
+    "near_merged": 1,
+    "checked_release_origins": [
+      [
+        3,
+        447
+      ],
+      [
+        2,
+        200
+      ],
+      [
+        1,
+        334
+      ],
+      [
+        1,
+        91
+      ],
+      [
+        2,
+        38
+      ],
+      [
+        3,
+        41
+      ],
+      [
+        1,
+        8
+      ],
+      [
+        3,
+        214
+      ],
+      [
+        2,
+        26
+      ]
+    ],
+    "output_sha256": "cd3da65982943f56e5404fb399acd8f7084be9594a2f853543caa041a9a89ea9"
+  },
+  "4EY7": {
+    "proposals": 2828,
+    "near_proposals": 1,
+    "near_hunt": 0,
+    "near_accepted": 0,
+    "near_second": 0,
+    "near_final": 0,
+    "near_merged": 0,
+    "checked_release_origins": [
+      [
+        2,
+        663
+      ],
+      [
+        1,
+        141
+      ],
+      [
+        1,
+        92
+      ],
+      [
+        2,
+        340
+      ],
+      [
+        2,
+        31
+      ],
+      [
+        3,
+        810
+      ],
+      [
+        3,
+        57
+      ],
+      [
+        1,
+        2
+      ],
+      [
+        1,
+        36
+      ]
+    ],
+    "output_sha256": "ca5c7f0ad8ef906e448d3d76d912eef88ceb4dfbf16d78f625d7a77e3602feb2",
+    "sole_near_proposal": {
+      "trajectory_step": [
+        1,
+        163
+      ],
+      "proposal_A": 1.9898118464377463,
+      "hunt_A": 2.2876810757720345,
+      "accepted": true,
+      "has_second": false
+    }
+  },
+  "wall_s": 0.815762014000029,
+  "cpu_s": 0.8157755120000001
+}

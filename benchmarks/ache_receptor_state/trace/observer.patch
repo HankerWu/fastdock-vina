@@ -1,0 +1,127 @@
+--- a/src/lib/monte_carlo.cpp
++++ b/src/lib/monte_carlo.cpp
+@@ -27,6 +27,7 @@
+ #include "mutate.h"
+ #include "quasi_newton.h"
+ #include "trajectory_archive.h"
++#include "trace_extra.h"
+ 
+ output_type monte_carlo::operator()(model& m, const precalculate_byatom& p, const igrid& ig, const vec& corner1, const vec& corner2, incrementable* increment_me, rng& generator) const {
+ 	output_container tmp;
+@@ -68,6 +69,15 @@
+ 		}
+ 	}
+ 	output_type candidate(s, 0);
++    auto& trace = basin_trace::writer();
++    ++trace.trajectory;
++    trace.step = 0;
++    trace.begin(basin_trace::other);
++    model observed(m);
++    observed.set(tmp.c);
++    trace.write(basin_trace::start, observed, 0);
++    std::map<std::vector<double>, unsigned> origins;
++    std::ofstream members(std::getenv("FD_MEMBERS"), std::ios::app);
+ 	fl best_e = max_fl;
+ 	bool reference_from_save = false;
+ 	quasi_newton quasi_newton_par(s, local_steps);
+@@ -80,7 +90,12 @@
+ 		const bool reoriented = mutate_conf(candidate.c, m, mutation_amplitude, generator,
+ 		                                    mixed_reorientation, separate_hunt_chain, centered_rotation, balanced_torsion);
+ 		const int before_hunt = evalcount;
++        trace.step = step + 1;
++        trace.begin(basin_trace::hunt);
++        observed.set(candidate.c);
++        trace.write(static_cast<basin_trace::Event>(11), observed, 0);
+ 		quasi_newton_par(m, p, ig, candidate, hunt_cap, evalcount);
++        trace.write(basin_trace::hunt_return, m, candidate.e);
+ 		if (counters) {
+ 			++counters->hunt_calls;
+ 			counters->hunt_evals += evalcount - before_hunt;
+@@ -88,6 +103,7 @@
+ 			counters->mixed_accept_checks += reference_from_save;
+ 		}
+ 		if(step == 0 || metropolis_accept(tmp.e, candidate.e, temperature, generator)) {
++            trace.write(basin_trace::mc_accept, m, candidate.e);
+ 			std::swap(tmp.c, candidate.c);
+ 			tmp.e = candidate.e;
+ 			reference_from_save = false;
+@@ -110,18 +126,31 @@
+ 				if (separate_hunt_chain)
+ 					saved.c = tmp.c;
+ 				quasi_newton_par(m, p, ig, saved, authentic_v, evalcount);
++                trace.begin(basin_trace::second);
++                trace.write(basin_trace::second_return, m, saved.e);
+ 				if (counters) {
+ 					++counters->second_calls;
+ 					counters->second_evals += evalcount - before_second;
+ 				}
+ 				saved.coords = m.get_heavy_atom_movable_coords();
+ 				add_to_output_container(out, saved, min_rmsd, num_saved_mins); // 20 - max size
++                const auto key = coord_key(saved);
++                origins.emplace(key, trace.step);
++                members << trace.trajectory << " " << trace.step;
++                for (const auto& resident : out)
++                    members << " " << origins.at(coord_key(resident));
++                members << "\n";
+ 				reference_from_save = !separate_hunt_chain;
+ 				if(tmp.e < best_e)
+ 					best_e = tmp.e;
+ 			}
+ 		}
+ 	}
++    for (const auto& resident : out) {
++        observed.set(resident.c);
++        trace.step = origins.at(coord_key(resident));
++        trace.write(static_cast<basin_trace::Event>(12), observed, resident.e);
++    }
+ 	if (archive)
+ 		archive->native_evaluations = evalcount;
+ 	VINA_CHECK(!out.empty());
+--- a/src/lib/vina.cpp
++++ b/src/lib/vina.cpp
+@@ -32,6 +32,7 @@
+ #include <limits>
+ 
+ #include "vina.h"
++#include "trace_extra.h"
+ #include "contact_rotors.h"
+ #include "scoring_function.h"
+ #include "precalculate.h"
+@@ -1760,6 +1761,15 @@
+ 	done(m_verbosity, 1);
+ 
+ 	// Docking post-processing and rescoring
++    auto& trace = basin_trace::writer();
++    trace.trajectory = 0;
++    trace.begin(basin_trace::other);
++    model observed(m_model);
++    VINA_FOR_IN(i, poses) {
++        observed.set(poses[i].c);
++        trace.step = i + 1;
++        trace.write(basin_trace::pooled, observed, poses[i].e);
++    }
+ 	const sz saved_minima = poses.size();
+ 	const sz accepted_minima = archive_enabled ? append_accepted_minima(poses, archives) : 0;
+ 	const sz prescore_inputs = poses.size();
+@@ -1804,8 +1814,11 @@
+ 				const fl slope = 1e6;
+ 				m_non_cache.slope = slope;
+ 
+-				VINA_FOR_IN(i, poses){
+-					VINA_FOR(p, 5){
++                VINA_FOR_IN(i, poses){
++                    trace.step = i + 1;
++                    observed.set(poses[i].c);
++                    trace.write(basin_trace::explicit_input, observed, poses[i].e);
++                    VINA_FOR(p, 5){
+ 						m_non_cache.slope = 100 * std::pow(10.0, 2.0*p);
+ 						quasi_newton_par(m_model, m_precalculated_byatom, m_non_cache, poses[i], authentic_v, evalcount,
+ 						                 template_refinement ? template_reference.get() : nullptr);
+@@ -1833,6 +1846,7 @@
+ 					double intra_pairs = m_model.evalo(m_precalculated_byatom, authentic_v); // flex_i -- flex_i and flex_i -- flex_j
+ 					double lig_intra = m_model.evali(m_precalculated_byatom, authentic_v); // ligand_i -- ligand_i
+ 					poses[i].e = all_grids + inter_pairs + intra_pairs + lig_intra;
++                    trace.write(basin_trace::explicit_output, m_model, poses[i].e);
+ 					if (template_refinement) {
+ 						output_type& pose = poses[i];
+ 						pose.native_energy = pose.e;
