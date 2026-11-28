@@ -1,0 +1,16 @@
+receiver,seed,source,compared,closest_rank,rmsd_A,identical
+4EY6,1103501,pro24k_top1,pro48k,2,0.0,True
+4EY6,1103501,pro24k_top1,official24k,2,0.04821537329755144,False
+4EY6,1103503,pro24k_top1,pro48k,1,0.09658732375995895,False
+4EY6,1103503,pro24k_top1,official24k,1,0.0794351587424887,False
+4EY6,1103507,pro24k_top1,pro48k,2,0.06481297880997478,False
+4EY6,1103507,pro24k_top1,official24k,1,0.07255534286169259,False
+4EY7,1103501,pro24k_top1,pro48k,2,0.1458650441713545,False
+4EY7,1103501,pro24k_top1,official24k,1,0.10848604620974171,False
+4EY7,1103501,pro24k_top1,pro24k_mapped,2,0.1386692708088806,False
+4EY7,1103503,pro24k_top1,pro48k,2,0.0,True
+4EY7,1103503,pro24k_top1,official24k,1,4.629803583546739,False
+4EY7,1103503,pro24k_top1,pro24k_mapped,4,3.529091974809762,False
+4EY7,1103507,pro24k_top1,pro48k,1,0.0,True
+4EY7,1103507,pro24k_top1,official24k,1,3.3821312396508536,False
+4EY7,1103507,pro24k_top1,pro24k_mapped,2,3.366369244288108,False

@@ -1,0 +1,11 @@
+{
+  "binary_sha256": {
+    "official": "f31f774f723bba7bbe6e9d1c47577020eea9a8da16424284c043d22593570644",
+    "pro": "ba15a83df2e5ef22ec1bd2a1fbee2b0bcc887367600cf62fa5f085ac3f5cde5e",
+    "counter": "b83080b2b9789123a9af3c871af4be04616fc9708cf8846afdc0ef130418014c"
+  },
+  "total_wall_cpu_s": [
+    24.643729018000045,
+    24.598090049
+  ]
+}

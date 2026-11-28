@@ -1,0 +1,12 @@
+{
+  "binary_sha256": {
+    "official": "f31f774f723bba7bbe6e9d1c47577020eea9a8da16424284c043d22593570644",
+    "pro": "ba15a83df2e5ef22ec1bd2a1fbee2b0bcc887367600cf62fa5f085ac3f5cde5e"
+  },
+  "total_wall_cpu_s": [
+    14.934014677999926,
+    14.903606051000002
+  ],
+  "successful": 21,
+  "attempted": 21
+}
