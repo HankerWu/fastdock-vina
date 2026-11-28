@@ -1,0 +1,48 @@
+[
+  {
+    "pdb": "4OCZ",
+    "ligand": "2RU",
+    "target": "EPHX2",
+    "status": "ready",
+    "wall_s": 12.986609942000086,
+    "cpu_s": 5.612788,
+    "sha256": {
+      "2RU.cif": "00377fea5ca94d3b7a93ecc570ddfced381749d92088da477714f6756b26990e",
+      "4OCZ.pdb": "b8305035e157417e2ae58f6e33ea4cff65bfb45daf94a6f87b9d55c6d8421394",
+      "chain-A.pdb": "66e1ca1fcbe61618acc42932ab02ec071eaf829ec4a2f2850d9659afd57622ff",
+      "ligand.pdbqt": "397772d21ec92303e2676c2e58adf5e36eee206253c0dd51439c201f77ee4c4b",
+      "metadata.json": "e54a074714e17015b9d12531f9c5bfab7b99f1b2db8ca2c2ac9f4d72623e0840",
+      "prep.log": "81ac8028fe8a1964ff375ef255c91549dcb836e6008bfec404979c0e542259f2",
+      "receptor.pdbqt": "d90f3adbd3f8090676233e5760970c21f3ce0e2bf53b0cdcc47eaf69dead3c68",
+      "source.json": "20943294c7da2f11a263fe255245a12019fd326c90afea6638a41830895de720"
+    }
+  },
+  {
+    "pdb": "6AUM",
+    "ligand": "BXV",
+    "target": "EPHX2",
+    "status": "excluded",
+    "reason": "omitted nonwater atom within 8 A: 4.129",
+    "wall_s": 4.616234291000183,
+    "cpu_s": 0.06713799999999992,
+    "sha256": {
+      "6AUM.pdb": "e2a94ad86609d59eb9c424c05db22f0b6563a894ea44b7c5da1b1dac53fa2a36",
+      "BXV.cif": "5ac54075aaa856bc2faaeacf22dfbf69f9f3457cfbd0ddd65b8b29f554d9b84e",
+      "source.json": "e4f42be65bf2d01d20dbf3ef77af2ff8ab7ba637d964a8e19987cc2b0db576ef"
+    }
+  },
+  {
+    "pdb": "4R6E",
+    "ligand": "3JD",
+    "target": "PARP1",
+    "status": "excluded",
+    "reason": "omitted nonwater atom within 8 A: 3.526",
+    "wall_s": 4.5407614179998745,
+    "cpu_s": 0.2082500000000005,
+    "sha256": {
+      "3JD.cif": "3aee356d6630b8f0776ed32bd8ded9b27b608f9dad979aa92b945f3d96cc0680",
+      "4R6E.pdb": "6886197f16e32a842811ae57bb8102a5b296b260361da306ecefe04b76005fa8",
+      "source.json": "b85dff38189a5ac1ad98f997f472a45cafd9562aaa36f0be6a70b3da71e13c10"
+    }
+  }
+]
