@@ -1,0 +1,23 @@
+{
+  "identical_cells": 32,
+  "identical_ranks": 245,
+  "independent_geometry": {
+    "cells": 32,
+    "published_poses": 245,
+    "max_difference_A": 5.329070518200751e-15,
+    "stereo_mappings": {
+      "1QKT": 1,
+      "1X7R": 2
+    },
+    "pocket_alignments": {
+      "1QKT-1X7R": {
+        "n": 65,
+        "fit_rmsd": 0.529272446214629
+      },
+      "1X7R-1QKT": {
+        "n": 65,
+        "fit_rmsd": 0.52927244621463
+      }
+    }
+  }
+}

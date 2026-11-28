@@ -1,0 +1,27 @@
+{
+  "binaries": {
+    "baseline": {
+      "sha256": "f6ff9e0d9d6f0bc6e77e65409f9c7f88fccd826eca064a49e9c91a9a73496f9f",
+      "compiled_path": "/workspace/scratch/a0337c8bef8c/repo",
+      "path_literals": 20,
+      "elf_build_id": "3b4c649f42cf4b6f97ed40f1860eb9b9a3a5b224",
+      "normalized_sha256": "eda2a4d3a1aec84656d26dc2d8220913392e3a51f4258a4782df1c1e5b2513e9"
+    },
+    "restored": {
+      "sha256": "e2a018fb9436bbf54a769e560317ef1e2040634f1d6631b2fbebdce9f3ee273a",
+      "compiled_path": "/tmp/fds-stage-restored-src",
+      "path_literals": 20,
+      "elf_build_id": "5230e911d93f7b681d3734133ac85a3d935a73d9",
+      "normalized_sha256": "cc0163613a1b5d258b08d4723d2bbf9aaa01c13b4dd137d140dbde77c3370295"
+    }
+  },
+  "source_commit": "1c3141238511ba98e13232ffff8f2ba51efef3d1",
+  "normalized_binary_identical": false,
+  "byte_identical_pools": 65,
+  "modes": 572,
+  "cpu_s": 149.865429,
+  "summed_wall_s": 155.202487,
+  "peak_rss_kib": 43732,
+  "source_tree": "f22a5de502749b4743ab0ce7fc2c9cbcbfdf7948",
+  "round_start": "666f49d2570c047470d3c281df30d18c5ebd3ce1"
+}

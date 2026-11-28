@@ -1,0 +1,23 @@
+{
+  "source_commit": "1c3141238511ba98e13232ffff8f2ba51efef3d1",
+  "source_tree": "f22a5de502749b4743ab0ce7fc2c9cbcbfdf7948",
+  "old_source_directory": "/workspace/scratch/a0337c8bef8c/repo",
+  "clean_source_directory": "/tmp/fds-stage-restored-src",
+  "compiler_wrapper": "#!/bin/sh\nexec /usr/bin/c++ -ffile-prefix-map=/tmp/fds-stage-restored-src=/workspace/scratch/a0337c8bef8c/repo \"$@\"\n",
+  "argv": [
+    "python",
+    "/tmp/fds-stage-restored-src/tools/build.py",
+    "--cxx",
+    "/tmp/fds-stage-remap-cxx",
+    "--boost-prefix",
+    "/tmp/fastdock-ache-tools/boost",
+    "--output-dir",
+    "/tmp/fds-stage-restored-remap",
+    "--jobs",
+    "4"
+  ],
+  "archived_sha256": "f6ff9e0d9d6f0bc6e77e65409f9c7f88fccd826eca064a49e9c91a9a73496f9f",
+  "independently_rebuilt_sha256": "f6ff9e0d9d6f0bc6e77e65409f9c7f88fccd826eca064a49e9c91a9a73496f9f",
+  "byte_identical": true,
+  "bytes": 1420472
+}

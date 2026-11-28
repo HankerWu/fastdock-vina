@@ -1,0 +1,27 @@
+[
+  {
+    "argv": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+      "benchmarks/stage_local_structure/cost.py",
+      "check",
+      "benchmarks/stage_local_structure/fixed"
+    ],
+    "exit": 0,
+    "cpu_s": 2.3104679999999997,
+    "wall_s": 2.3144523399996615,
+    "peak_rss_kib": 86824
+  },
+  {
+    "argv": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+      "benchmarks/stage_local_structure/external.py",
+      "check",
+      "/tmp/fds-stage-inputs",
+      "benchmarks/stage_local_structure/external"
+    ],
+    "exit": 0,
+    "cpu_s": 2.0219750000000003,
+    "wall_s": 2.0230407099998047,
+    "peak_rss_kib": 81824
+  }
+]

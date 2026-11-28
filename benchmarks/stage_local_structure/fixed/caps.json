@@ -1,0 +1,177 @@
+{
+  "directions": {
+    "1FKG-1FKH": {
+      "excluded": {
+        "failed_probes": [],
+        "nonpositive_slope": [
+          "official"
+        ]
+      }
+    },
+    "1FKH-1FKG": {
+      "excluded": {
+        "failed_probes": [],
+        "nonpositive_slope": [
+          "official"
+        ]
+      }
+    },
+    "1RBP-3FMZ": {
+      "target_cpu_s": 1.235912,
+      "caps": {
+        "official": 12000,
+        "parent": 159220,
+        "stable": 180549,
+        "candidate": 70394
+      },
+      "predicted_cpu_ranges_s": {
+        "official": [
+          1.149581,
+          3.4229639999999986
+        ],
+        "parent": [
+          0.402358,
+          1.6669373333333335
+        ],
+        "stable": [
+          0.175826,
+          1.5908739999999995
+        ],
+        "candidate": [
+          0.284922,
+          3.6292289999999996
+        ]
+      }
+    },
+    "2NNQ-3FR2": {
+      "target_cpu_s": 2.050361,
+      "caps": {
+        "official": 12000,
+        "parent": 75479,
+        "stable": 98487,
+        "candidate": 61248
+      },
+      "predicted_cpu_ranges_s": {
+        "official": [
+          1.496851,
+          16.07261433333334
+        ],
+        "parent": [
+          0.501911,
+          5.565205333333334
+        ],
+        "stable": [
+          0.245288,
+          4.725483333333334
+        ],
+        "candidate": [
+          0.363796,
+          7.226104666666666
+        ]
+      }
+    },
+    "3ANR-7AKL": {
+      "target_cpu_s": 1.422065,
+      "predicted_cpu_ranges_s": {
+        "official": [
+          1.24896,
+          5.807391666666663
+        ],
+        "parent": [
+          0.48035,
+          1.5897470000000007
+        ],
+        "stable": [
+          0.21431,
+          0.4055689999999998
+        ],
+        "candidate": [
+          0.324619,
+          1.643550333333334
+        ]
+      },
+      "excluded": {
+        "unreachable_target": [
+          "stable"
+        ]
+      }
+    },
+    "3FMZ-1RBP": {
+      "target_cpu_s": 1.635581,
+      "caps": {
+        "official": 12000,
+        "parent": 76323,
+        "stable": 194075,
+        "candidate": 77629
+      },
+      "predicted_cpu_ranges_s": {
+        "official": [
+          1.36316,
+          8.536913000000002
+        ],
+        "parent": [
+          0.507405,
+          4.153992333333333
+        ],
+        "stable": [
+          0.237632,
+          1.9715766666666672
+        ],
+        "candidate": [
+          0.364847,
+          4.400351333333336
+        ]
+      }
+    },
+    "3FR2-2NNQ": {
+      "excluded": {
+        "failed_probes": [],
+        "nonpositive_slope": [
+          "official"
+        ]
+      }
+    },
+    "4GHI-5TBM": {
+      "target_cpu_s": 2.960915,
+      "predicted_cpu_ranges_s": {
+        "official": [
+          2.6649,
+          10.45996166666667
+        ],
+        "parent": [
+          0.548715,
+          2.967194666666668
+        ],
+        "stable": [
+          0.207888,
+          2.6231550000000006
+        ],
+        "candidate": [
+          0.347583,
+          4.4323043333333345
+        ]
+      },
+      "excluded": {
+        "unreachable_target": [
+          "stable"
+        ]
+      }
+    },
+    "5TBM-4GHI": {
+      "excluded": {
+        "failed_probes": [],
+        "nonpositive_slope": [
+          "stable"
+        ]
+      }
+    },
+    "7AKL-3ANR": {
+      "excluded": {
+        "failed_probes": [],
+        "nonpositive_slope": [
+          "stable"
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,42 @@
+[
+  {
+    "pdb": "1QKT",
+    "argv": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+      "/workspace/scratch/7aece7fb53b6/repo/benchmarks/stage_local_structure/reprepare.py",
+      "--one",
+      "/tmp/fds-stage-reprepare",
+      "1QKT",
+      "EST"
+    ],
+    "exit": 0,
+    "sha256": {
+      "metadata.json": "07f8d80d715d156c5a2c92faa50280341c2dc1e81f8b898e03a8ee5b346f15ad",
+      "ligand.pdbqt": "baa72b9385694e134fe69fd493d06ac32abd1ad028d89cabfdc535ed324555ac",
+      "receptor.pdbqt": "4d2d7b2b31c2282f29b275669906f888fd2a348e636adedc8eff9959f6f9b2af"
+    },
+    "wall_s": 3.636579760999666,
+    "cpu_s": 3.6302689999999997,
+    "peak_rss_kib": 184940
+  },
+  {
+    "pdb": "1X7R",
+    "argv": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+      "/workspace/scratch/7aece7fb53b6/repo/benchmarks/stage_local_structure/reprepare.py",
+      "--one",
+      "/tmp/fds-stage-reprepare",
+      "1X7R",
+      "GEN"
+    ],
+    "exit": 0,
+    "sha256": {
+      "metadata.json": "3479084a31045e284748b9afac2894689d263596b337b43457e92ca428d66b8f",
+      "ligand.pdbqt": "066aead632c60046f2a2c2031139739a99c1e15131f09b875f938ab2f3cf555e",
+      "receptor.pdbqt": "deb63ab629344efd233905f1ee20342ceb3657a12529e430bffb520fbfd594ca"
+    },
+    "wall_s": 3.36806420099947,
+    "cpu_s": 3.362505,
+    "peak_rss_kib": 183672
+  }
+]

@@ -1,0 +1,111 @@
+{
+  "system": "Linux",
+  "arch": "x86_64",
+  "compiler": "x86_64-linux-gnu-g++-14 (Debian 14.2.0-19) 14.2.0",
+  "compiler_sha256": "6b3696e4dcb85e1c949c732a02befa50e3983ecf94ce7e8e58d9d503b954b79d",
+  "versions": {
+    "official": {
+      "revision": "8eb40404f4f45608acb3b01427587ac049f27c1f",
+      "src_tree": "15d35ab08a0c7971f700dcce8d2bde16eff6f834",
+      "binary_sha256": "1eadadbc14e0f442620610062e2d09072a59d8c87a9817be3b99d39dd0e7a20e",
+      "printed_version": "AutoDock Vina v1.2.7",
+      "help_sha256": "f1495ad10dc76a3b182470772512f827e10d45d9ad0a5c77fe5bbe387fe91c0b",
+      "printed_option_defaults": {
+        "scoring": "vina",
+        "cpu": "0",
+        "seed": "0",
+        "exhaustiveness": "8",
+        "max_evals": "0",
+        "num_modes": "9",
+        "min_rmsd": "1",
+        "energy_range": "3",
+        "spacing": "0.375",
+        "verbosity": "1"
+      },
+      "runtime_boost_sha256": {
+        "libboost_thread.so.1.83.0": "d194d1c6aef3ad0020f1a20dd804a9c3fa3e7d9d49fa4ca1fe8275247c219313",
+        "libboost_filesystem.so.1.83.0": "2c7b57a0b57199accc88c1882db981a2181f313b2ad15e5a40a0e28914bf78fd",
+        "libboost_program_options.so.1.83.0": "354c882597083950d0df032f1c0e14e56b827565860185f3440cf5b23ae1ce41"
+      }
+    },
+    "parent": {
+      "revision": "05ec6ed580999d9c541664673c6dfe46b89be0f5",
+      "src_tree": "3a316c9df45b29426f2ad1fe3a4f279ae4fa01d5",
+      "binary_sha256": "0c1f72d4c2ddae5a0372baaa582bf38c92032527e6128a49ab14dc049427886b",
+      "printed_version": "AutoDock Vina v1.2.7-27-g3c65c0b",
+      "help_sha256": "625304cdbf02fcbbcd4da369b36280f2e95148eed47db9d444c169917a3bb891",
+      "printed_option_defaults": {
+        "scoring": "vina",
+        "cpu": "0",
+        "seed": "0",
+        "exhaustiveness": "8",
+        "max_evals": "0",
+        "num_modes": "9",
+        "min_rmsd": "1",
+        "energy_range": "3",
+        "spacing": "0.375",
+        "interaction_cutoff": "8",
+        "verbosity": "1"
+      },
+      "runtime_boost_sha256": {
+        "libboost_thread.so.1.83.0": "d194d1c6aef3ad0020f1a20dd804a9c3fa3e7d9d49fa4ca1fe8275247c219313",
+        "libboost_filesystem.so.1.83.0": "2c7b57a0b57199accc88c1882db981a2181f313b2ad15e5a40a0e28914bf78fd",
+        "libboost_program_options.so.1.83.0": "354c882597083950d0df032f1c0e14e56b827565860185f3440cf5b23ae1ce41"
+      }
+    },
+    "stable": {
+      "revision": "666f49d2570c047470d3c281df30d18c5ebd3ce1",
+      "src_tree": "f22a5de502749b4743ab0ce7fc2c9cbcbfdf7948",
+      "binary_sha256": "f6ff9e0d9d6f0bc6e77e65409f9c7f88fccd826eca064a49e9c91a9a73496f9f",
+      "printed_version": "AutoDock Vina v1.2.7-27-g3c65c0b",
+      "help_sha256": "07286c1fe5109a206c8cf3edd91986fb9ab7342e8938a3601a48b059e9232eec",
+      "printed_option_defaults": {
+        "scoring": "vina",
+        "cpu": "0",
+        "seed": "0",
+        "exhaustiveness": "8",
+        "max_evals": "0",
+        "num_modes": "9",
+        "pose_selection": "native",
+        "min_rmsd": "1",
+        "energy_range": "3",
+        "spacing": "0.375",
+        "interaction_cutoff": "8",
+        "verbosity": "1"
+      },
+      "runtime_boost_sha256": {
+        "libboost_thread.so.1.83.0": "d194d1c6aef3ad0020f1a20dd804a9c3fa3e7d9d49fa4ca1fe8275247c219313",
+        "libboost_filesystem.so.1.83.0": "2c7b57a0b57199accc88c1882db981a2181f313b2ad15e5a40a0e28914bf78fd",
+        "libboost_program_options.so.1.83.0": "354c882597083950d0df032f1c0e14e56b827565860185f3440cf5b23ae1ce41"
+      },
+      "same_source_archived_build_revision": "ed0d42d50dd3f3de011b99b57ba76438929aae07"
+    },
+    "candidate": {
+      "revision": "0bcae6ef09857f97656291bb4821d20b3b619bf5",
+      "src_tree": "0fe5e05fb75d479d8d352fcae1ca52b8a9bdde3c",
+      "binary_sha256": "e7805c5911cc34ec5a47c9e53c1067ac2305d9c064c04ebd200ec7ffbd4a3b70",
+      "printed_version": "AutoDock Vina v1.2.7-27-g3c65c0b",
+      "help_sha256": "07286c1fe5109a206c8cf3edd91986fb9ab7342e8938a3601a48b059e9232eec",
+      "printed_option_defaults": {
+        "scoring": "vina",
+        "cpu": "0",
+        "seed": "0",
+        "exhaustiveness": "8",
+        "max_evals": "0",
+        "num_modes": "9",
+        "pose_selection": "native",
+        "min_rmsd": "1",
+        "energy_range": "3",
+        "spacing": "0.375",
+        "interaction_cutoff": "8",
+        "verbosity": "1"
+      },
+      "runtime_boost_sha256": {
+        "libboost_thread.so.1.83.0": "d194d1c6aef3ad0020f1a20dd804a9c3fa3e7d9d49fa4ca1fe8275247c219313",
+        "libboost_filesystem.so.1.83.0": "2c7b57a0b57199accc88c1882db981a2181f313b2ad15e5a40a0e28914bf78fd",
+        "libboost_program_options.so.1.83.0": "354c882597083950d0df032f1c0e14e56b827565860185f3440cf5b23ae1ce41"
+      }
+    }
+  },
+  "build_recipe": "benchmarks/geometry_comparison/upstream/four_versions/build.sh for controls; archive CANDIDATE src tools/build.py, run build.py --boost-prefix BOOST --output-dir OUT --jobs 2"
+}

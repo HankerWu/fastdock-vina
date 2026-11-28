@@ -1,0 +1,38 @@
+[
+  {
+    "pdb": "1QKT",
+    "ligand": "EST",
+    "target": "ESR1",
+    "status": "ready",
+    "wall_s": 10.464853595000022,
+    "cpu_s": 2.8616009999999994,
+    "sha256": {
+      "1QKT.pdb": "9268e26b14796af567dbd58a11ffa06632e0853fe573650d030bb9b40cf651bf",
+      "EST.cif": "8b80ee77d734e62a82a27571bc1de261e8ea4cf9d053490d10a39c614a69d3a8",
+      "chain-A.pdb": "c8dff28e72bfcc10d23a0d3e4288498044e8aab5caf13710448547a72f8e6223",
+      "ligand.pdbqt": "baa72b9385694e134fe69fd493d06ac32abd1ad028d89cabfdc535ed324555ac",
+      "metadata.json": "07f8d80d715d156c5a2c92faa50280341c2dc1e81f8b898e03a8ee5b346f15ad",
+      "prep.log": "3e43c4d2da7e52d28bbf1ca44624ed47fdeef044f08ea4cccb306cda9267632d",
+      "receptor.pdbqt": "4d2d7b2b31c2282f29b275669906f888fd2a348e636adedc8eff9959f6f9b2af",
+      "source.json": "3d4f3912205759bfec7c4c793868405bcfdcd827b8eae38ce29a8b1e55cb7886"
+    }
+  },
+  {
+    "pdb": "1X7R",
+    "ligand": "GEN",
+    "target": "ESR1",
+    "status": "ready",
+    "wall_s": 8.466527259000031,
+    "cpu_s": 2.2677110000000007,
+    "sha256": {
+      "1X7R.pdb": "c3aeff08ac684b2cab896a12a44e02152d1ceaa859ab241ba7abedef787fe98a",
+      "GEN.cif": "d00155ce9514b57e84aca007529c6b745f6b08b7d6df7c272cce67bf4ba427eb",
+      "chain-A.pdb": "e4dc90e554248045ee9ee62865575472d07565a0348cf45e4bb6690151586348",
+      "ligand.pdbqt": "066aead632c60046f2a2c2031139739a99c1e15131f09b875f938ab2f3cf555e",
+      "metadata.json": "3479084a31045e284748b9afac2894689d263596b337b43457e92ca428d66b8f",
+      "prep.log": "cfebac1aaee5bd3266dfa08163d64ad7222e51639949c5f1c8f988f11e8c34ba",
+      "receptor.pdbqt": "deb63ab629344efd233905f1ee20342ceb3657a12529e430bffb520fbfd594ca",
+      "source.json": "e9344f7858874ed1fff3e3c486a26ab13ed4cdb1ffd194168e8ab8183d81966b"
+    }
+  }
+]
