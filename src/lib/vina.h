@@ -274,6 +274,8 @@ private:
 	fl output_energy_reference() const;
 	void write_pose_models(std::ostream& out, int how_many, double energy_range);
 	bool current_pose_in_grid() const;
+	void validate_score_input() const;
+	std::vector<double> score_current_conf(double intramolecular_energy);
 	output_container remove_redundant(const output_container& in, fl min_rmsd);
 	void rerank_poses(output_container& poses, const vec& authentic_v);
 	void rank_template_poses(output_container& poses, pose_template& reference, sz& rank_evals);

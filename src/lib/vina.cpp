@@ -893,7 +893,7 @@ const igrid& Vina::vina_receptor_interactions() {
 	return m_grid;
 }
 
-std::vector<double> Vina::score(double intramolecular_energy) {
+std::vector<double> Vina::score_current_conf(double intramolecular_energy) {
 	// Score the current conf in the model
 	double total = 0;
 	double inter = 0;
@@ -961,10 +961,7 @@ bool Vina::current_pose_in_grid() const {
 	return m_sf_choice == SF_AD42 ? m_ad4grid.is_in_grid(m_model) : m_grid.is_in_grid(m_model);
 }
 
-std::vector<double> Vina::score() {
-	// Score the current conf in the model
-	// Check if ff and ligand were initialized
-	// Check if the ligand is not outside the box
+void Vina::validate_score_input() const {
 	if (!m_ligand_initialized) {
 		throw vina_runtime_error("Cannot score the pose. Ligand(s) was(ere) not initialized.");
 	} else if (!m_map_initialized) {
@@ -972,7 +969,17 @@ std::vector<double> Vina::score() {
 	} else if (!current_pose_in_grid()) {
 		throw vina_runtime_error("The ligand is outside the grid box. Increase the size of the grid box or center it accordingly around the ligand.");
 	}
+}
 
+std::vector<double> Vina::score(double intramolecular_energy) {
+	validate_score_input();
+	if (!std::isfinite(intramolecular_energy))
+		throw vina_runtime_error("The unbound system's energy must be finite.");
+	return score_current_conf(intramolecular_energy);
+}
+
+std::vector<double> Vina::score() {
+	validate_score_input();
 	double intramolecular_energy = 0;
 	const vec authentic_v(1000, 1000, 1000);
 
@@ -980,8 +987,7 @@ std::vector<double> Vina::score() {
 		intramolecular_energy = m_model.eval_intramolecular(m_precalculated_byatom, vina_receptor_interactions(), authentic_v);
 	}
 
-	std::vector<double> energies = score(intramolecular_energy);
-	return energies;
+	return score_current_conf(intramolecular_energy);
 }
 
 std::vector<double> Vina::optimize(output_type& out, int max_steps, int max_evals, bool rigid_metric) {
@@ -1889,7 +1895,7 @@ void Vina::global_search(const int exhaustiveness, const int n_poses, const doub
 			m_model.set(poses[i].c);
 
 			// For AD42 intramolecular_energy is equal to 0
-			std::vector<double> energies = score(intramolecular_energy);
+			std::vector<double> energies = score_current_conf(intramolecular_energy);
 			// Store energy components in current pose
 			poses[i].e = energies[0]; // specific to each scoring function
 			poses[i].inter = energies[1] + energies[2];

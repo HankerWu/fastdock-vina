@@ -660,6 +660,9 @@ Thank you!\n";
 				v.write_maps(out_maps);
 		}
 
+		const auto report_fixed_score = [&] {
+			v.show_score(vm["unbound_energy"].defaulted() ? v.score() : v.score(unbound_energy));
+		};
 		if (vm.count("ligand")) {
 			if (vm.count("ligand_bonds"))
 				v.set_ligand_from_file_with_bonds(ligand_names.front(), ligand_bonds);
@@ -704,13 +707,7 @@ Thank you!\n";
 				v.randomize();
 				v.write_pose(out_name);
 			} else if (score_only) {
-				std::vector<double> energies;
-				if (std::isnan(unbound_energy)) {
-					energies = v.score();
-				} else {
-					energies = v.score(unbound_energy);
-				}
-				v.show_score(energies);
+				report_fixed_score();
 			} else if (local_only) {
 				const auto energies = refinement_optimizer == "native" ? v.optimize() : v.optimize(0, max_evals, rigid_metric);
 				v.write_pose(out_name);
@@ -755,6 +752,7 @@ Thank you!\n";
 			std::unordered_map<std::string, int> instance_counter;
 
 			std::size_t failed_ligand_parsing = 0;
+			std::size_t failed_scores = 0;
 			VINA_RANGE(i, 0, batch_ligand_names.size()) {
 				name = get_filename(batch_ligand_names[i]);
 				if (repeated_names.count(name)) {
@@ -782,10 +780,12 @@ Thank you!\n";
 					v.randomize();
 					v.write_pose(out_name);
 				} else if (score_only) {
-					if (std::isnan(unbound_energy)) {
-						v.score();
-					} else {
-						v.score(unbound_energy);
+					std::cout << "Scoring ligand: " << batch_ligand_names[i] << '\n';
+					try {
+						report_fixed_score();
+					} catch (const vina_runtime_error& error) {
+						std::cerr << "Failed scoring " << batch_ligand_names[i] << ": " << error.what();
+						++failed_scores;
 					}
 				} else if (local_only) {
 					v.optimize();
@@ -802,6 +802,10 @@ Thank you!\n";
 			if (failed_ligand_parsing) {
 				std::cout << "Failed to parse " << failed_ligand_parsing << " ligands.\n";
 			}
+			if (failed_scores)
+				std::cerr << "Failed to score " << failed_scores << " ligands.\n";
+			if (score_only && (failed_scores || failed_ligand_parsing))
+				return 1;
 		}
 	}
 
