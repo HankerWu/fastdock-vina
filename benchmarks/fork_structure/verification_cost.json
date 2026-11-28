@@ -1,0 +1,11 @@
+{
+  "phase": "verify.py full independent reconstruction including excluded controls and disclosed panels",
+  "argv": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "benchmarks/fork_structure/verify.py"
+  ],
+  "exit_code": 0,
+  "cpu_s": 10.642344999999999,
+  "wall_s": 10.679076792999695,
+  "peak_rss_kib": 98948
+}

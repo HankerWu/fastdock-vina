@@ -1,0 +1,22 @@
+[
+  {
+    "arm": "official",
+    "query": "4WIV",
+    "reason": "Command '['/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python', '-m', 'meeko.cli.mk_prepare_receptor', '--read_pdb', 'WORK/4WIV/chain-A.pdb', '-p', 'WORK/4WIV/receptor.pdbqt']' returned non-zero exit status 1."
+  },
+  {
+    "arm": "parent",
+    "query": "4WIV",
+    "reason": "Command '['/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python', '-m', 'meeko.cli.mk_prepare_receptor', '--read_pdb', 'WORK/4WIV/chain-A.pdb', '-p', 'WORK/4WIV/receptor.pdbqt']' returned non-zero exit status 1."
+  },
+  {
+    "arm": "stable",
+    "query": "4WIV",
+    "reason": "Command '['/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python', '-m', 'meeko.cli.mk_prepare_receptor', '--read_pdb', 'WORK/4WIV/chain-A.pdb', '-p', 'WORK/4WIV/receptor.pdbqt']' returned non-zero exit status 1."
+  },
+  {
+    "arm": "candidate",
+    "query": "4WIV",
+    "reason": "Command '['/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python', '-m', 'meeko.cli.mk_prepare_receptor', '--read_pdb', 'WORK/4WIV/chain-A.pdb', '-p', 'WORK/4WIV/receptor.pdbqt']' returned non-zero exit status 1."
+  }
+]

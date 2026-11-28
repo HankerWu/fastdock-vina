@@ -69,6 +69,15 @@ def main():
 
         assert pools(D / "external") == pools(D / "external/repeat")
         identical(D / "external/ranks.csv", D / "external/repeat/ranks.csv")
+        # Rejected controls use a different ELF; retain and verify their real expense.
+        rejected = D / "rejected_identity"
+        assert holdout.external.verify(
+            work / "inputs", rejected / "external"
+        ) == json.loads((rejected / "external/verification.json").read_text())
+        reject_probes = rejected / "timing/probes"
+        assert evidence.check_cost(reject_probes, "probes") == json.loads(
+            (reject_probes / "verification.json").read_text()
+        )
         summaries(D / "external", work / "ext")
         fixed = D / "fixed"
         assert P.verify(fixed / "fixed", 65) == json.loads(
@@ -102,6 +111,28 @@ def main():
             evidence.cpu_repeats(evidence.evaluate.read(D / "timing/probes/cells.csv")),
         )
         identical(work / "repeats.csv", D / "timing/repeats.csv")
+    for arm, name in (
+        ("stable", "stable_build.json"),
+        ("candidate", "candidate_rebuild.json"),
+    ):
+        rebuilt = json.loads((D / name).read_text())
+        expected = versions[arm]
+        assert rebuilt["byte_identical"] and all(
+            rebuilt[k] == expected[k]
+            for k in ("revision", "src_tree", "binary_sha256", "bytes")
+        )
+    for family in ("ESR1", "BRD4"):
+        subprocess.run(
+            [
+                sys.executable,
+                D / "disclosed/replay.py",
+                "check",
+                family,
+                D / "disclosed" / family,
+            ],
+            check=True,
+        )
+    subprocess.run([sys.executable, D / "disclosed/sensitivity.py"], check=True)
     src = versions["candidate"]["revision"]
     assert (
         subprocess.check_output(

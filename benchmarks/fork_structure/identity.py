@@ -5,6 +5,7 @@ import hashlib
 import json
 from pathlib import Path
 import re
+import shutil
 import subprocess
 
 HERE = Path(__file__).resolve().parent
@@ -78,11 +79,15 @@ def identity(upstream, binaries, revision):
             option_defaults=defaults,
             runtime_boost_sha256=dependencies,
         )
+    compiler = Path(shutil.which("c++")).resolve()
+    assert sha(compiler.read_bytes()) == prior["compiler_sha256"]
     return dict(
         versions=result,
         upstream_build_receipts="benchmarks/stage_local_structure/restored/upstream_rebuild.json",
         stable_build_receipt="benchmarks/fork_structure/stable_build.json",
-        compiler=prior["compiler"],
+        compiler=subprocess.check_output(
+            [compiler, "--version"], text=True
+        ).splitlines()[0],
         compiler_sha256=prior["compiler_sha256"],
     )
 

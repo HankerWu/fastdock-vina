@@ -1,9 +1,11 @@
-"""Verify a new stable rebuild against the byte-reproducible historical executable."""
+"""Rebuild a registered Pro revision and compare the entire measured executable."""
 
 import argparse
 import hashlib
 import json
 import os
+import re
+import shlex
 from pathlib import Path
 import subprocess
 import sys
@@ -14,13 +16,18 @@ ROOT = HERE.parents[1]
 START = "0449b1d0bc3adec768dd9a9f243f3ce5a29cef58"
 
 
-def build(work, baseline, boost, output):
+def build(work, baseline, boost, output, round_candidate=False):
     out = work.resolve()
     out.mkdir(parents=True, exist_ok=False)
     source = out / "src-tree"
     source.mkdir()
+    role = "candidate" if round_candidate else "stable"
+    registered = json.loads((HERE / "builds.json").read_text())["versions"][role]
+    revision = registered["revision"]
+    if not round_candidate:
+        assert revision == START
     payload = subprocess.check_output(
-        ["git", "-C", ROOT, "archive", START, "src", "tools/build.py"]
+        ["git", "-C", ROOT, "archive", revision, "src", "tools/build.py"]
     )
     subprocess.run(["tar", "-x", "-C", source], input=payload, check=True)
     historical = json.loads(
@@ -29,11 +36,11 @@ def build(work, baseline, boost, output):
         ).read_text()
     )
     cxx = out / "cxx"
-    import shlex
-
-    remap = (
-        "-ffile-prefix-map=" + str(source) + "=" + historical["old_source_directory"]
-    )
+    original = historical["old_source_directory"]
+    if round_candidate:
+        command_line = (HERE / "candidate_build.log").read_text().splitlines()[0]
+        original = re.search(r"-I([^ ]+)/src/lib ", command_line)[1]
+    remap = "-ffile-prefix-map=" + str(source) + "=" + original
     cxx.write_text("#!/bin/sh\nexec /usr/bin/c++ " + shlex.quote(remap) + ' "$@"\n')
     cxx.chmod(0o755)
     command = [
@@ -57,11 +64,11 @@ def build(work, baseline, boost, output):
         raise RuntimeError("build failed: " + str(out / "build.log"))
     binary = (out / "bin/vina").read_bytes()
     digest = hashlib.sha256(binary).hexdigest()
-    assert digest == historical["archived_sha256"] and binary == baseline.read_bytes()
+    assert digest == registered["binary_sha256"] and binary == baseline.read_bytes()
     result = dict(
-        revision=START,
+        revision=revision,
         src_tree=subprocess.check_output(
-            ["git", "-C", ROOT, "rev-parse", START + ":src"], text=True
+            ["git", "-C", ROOT, "rev-parse", revision + ":src"], text=True
         ).strip(),
         source_prefix_map=remap,
         command=command,
@@ -80,4 +87,5 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     for arg in ("work", "baseline", "boost", "output"):
         parser.add_argument(arg, type=Path)
+    parser.add_argument("--round-candidate", action="store_true")
     build(**vars(parser.parse_args()))

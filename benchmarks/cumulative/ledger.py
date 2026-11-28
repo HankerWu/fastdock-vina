@@ -51,6 +51,8 @@ def snapshot(build_file, pose_tables, assay_file):
                     cpu_s=r["cpu_s"],
                     wall_s=r["wall_s_sum"],
                 )
+    if assay_file is None:
+        return rows
     path = assay_file
     for r in read(path):
         if r["stage"] == "nominal":
@@ -122,10 +124,18 @@ def main():
     additions = []
     for build_file, pose_tables, assay_file in series:
         fresh = snapshot(build_file, pose_tables, assay_file)
+        if build_file == bench / "fork_structure/builds.json":
+            disclosed = bench / "fork_structure/disclosed"
+            fresh.extend(snapshot(build_file, [
+                (disclosed / "ESR1/summary.csv", "disclosed_ESR1_"),
+                (disclosed / "BRD4/summary.csv", "disclosed_BRD4_"),
+            ], None))
         revision = fresh[0]["round_source"]
         existing = [r for r in old if r["round_source"] == revision]
         if existing == fresh:
             print(f"Verified {len(fresh)} records for {revision}")
+        elif args.append and existing and existing == fresh[:len(existing)]:
+            additions.extend(fresh[len(existing):])
         elif existing:
             raise ValueError(f"Different measurements for existing round {revision}")
         elif not args.append:

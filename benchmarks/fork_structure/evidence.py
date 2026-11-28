@@ -2,6 +2,7 @@
 
 import argparse
 import json
+import re
 import shutil
 import tarfile
 from statistics import mean, median
@@ -59,6 +60,17 @@ def check_cost(path, stage):
             assert ("--search_counters" in args) == (
                 r["arm"] in ("stable", "candidate")
             )
+            if r["status"] == "ok" and r["arm"] in ("stable", "candidate"):
+                log = archive.extractfile(r["key"] + ".log").read().decode()
+                for name in (
+                    "hunt_evals",
+                    "second_evals",
+                    "explicit_calls",
+                    "explicit_evals",
+                    "late_prescore",
+                ):
+                    values = re.findall(r"\b" + name + r"=(\d+)", log)
+                    assert values and sum(map(int, values)) == int(r[name])
             if stage == "probes":
                 assert (
                     r["cohort"] in [f"probe{i}_{r['cap']}" for i in (1, 2)]
