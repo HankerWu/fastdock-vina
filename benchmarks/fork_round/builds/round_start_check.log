@@ -1,0 +1,58 @@
+results {"scheduled": 260, "verified_valid": 259, "verified_ranks": 2276, "maximum_RMSD_difference_A": 8.881784197001252e-15}
+intermediate {"scheduled": 65, "verified_valid": 65, "verified_ranks": 572, "maximum_RMSD_difference_A": 8.881784197001252e-15}
+bfgs_results {"scheduled": 80, "verified_valid": 80, "verified_ranks": 714, "maximum_RMSD_difference_A": 1.0658141036401503e-14}
+default_completion {"scheduled": 1, "verified_valid": 1, "verified_ranks": 9, "maximum_RMSD_difference_A": 2.6645352591003757e-15}
+Verified 20 stock-identical counter replays, all primary summaries and five complete official defaults.
+fixed {'scheduled': 65, 'verified_valid': 65, 'verified_ranks': 572, 'maximum_RMSD_difference_A': 7.993605777301127e-15}
+pilot {'scheduled': 80, 'verified_valid': 80, 'verified_ranks': 711, 'maximum_RMSD_difference_A': 7.993605777301127e-15}
+matched {'scheduled': 20, 'verified_valid': 20, 'verified_ranks': 180, 'maximum_RMSD_difference_A': 7.993605777301127e-15}
+Verified source-locked controls, frozen CPU allocation, scores and aggregate tables.
+{
+  "method": "Independent SVD pocket fit and raw event parser; log/coordinate/energy checks",
+  "historical_driver_paths": 18,
+  "matched_native_controls": 7130,
+  "stable_candidate_pairs": 7130,
+  "first_divergences": 9,
+  "verified_published_ranks": 51,
+  "max_abs_numeric_discrepancy": 4.440892098500626e-15
+}
+{
+  "published": 108,
+  "paths": 36,
+  "same_solver": 5613,
+  "locked_returns": 11226,
+  "corners": 6,
+  "max_abs_geometry_discrepancy_A": 7.993605777301127e-15
+}
+Verified 7130 paired inputs against both controls
+Verified 12 published pools and all stage summaries
+fixed {'scheduled': 65, 'verified_valid': 65, 'verified_ranks': 572, 'maximum_RMSD_difference_A': 7.993605777301127e-15}
+pilot {'scheduled': 80, 'verified_valid': 80, 'verified_ranks': 704, 'maximum_RMSD_difference_A': 7.993605777301127e-15}
+matched {'scheduled': 12, 'verified_valid': 12, 'verified_ranks': 107, 'maximum_RMSD_difference_A': 5.329070518200751e-15}
+Verified 65 restored production pools and all recorded stage counts
+{
+  "cells": 32,
+  "published_poses": 245,
+  "max_difference_A": 5.329070518200751e-15,
+  "stereo_mappings": {
+    "1QKT": 1,
+    "1X7R": 2
+  },
+  "pocket_alignments": {
+    "1QKT-1X7R": {
+      "n": 65,
+      "fit_rmsd": 0.529272446214629
+    },
+    "1X7R-1QKT": {
+      "n": 65,
+      "fit_rmsd": 0.52927244621463
+    }
+  }
+}
+{"source_hashes": 10, "primary_assay_labels": 47, "unique_raw_top_scores": 728, "planned_runs": 752, "rank_summaries": 68, "verified_pair_rows": 1448, "new_search_receipts": 182}
+{"binary_sha256": "181963d595b77eb7822e874a669882952765f685bef965f4090ef85951882aaa", "reference_binary_sha256": "f6ff9e0d9d6f0bc6e77e65409f9c7f88fccd826eca064a49e9c91a9a73496f9f", "identical_pools": 140, "total_modes": 1205, "counters": {"hunt_evals": 3064849, "second_evals": 300631, "explicit_evals": 29085, "late_prescore": 0}, "cpu_s": 57.13020699999998, "sum_job_wall_s": 57.334571166004025, "max_rss_kib": 34316}
+Verified four immutable source trees, upstream original commit and license, and true pre-Pro parent
+Verified 56 records for 5847b1bc061b27d64bba5a9d38a03a26d2bf5068
+Verified 68 records for 0bb827ebfe69a32504b74488730f80a21495eccf
+Verified 64 records for 0bcae6ef09857f97656291bb4821d20b3b619bf5
+Verified historical and current four-source evidence, locked and free paths, transfer, assays and ledger.

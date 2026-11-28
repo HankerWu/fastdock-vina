@@ -1,0 +1,12 @@
+{
+  "binary_sha256": "f6ff9e0d9d6f0bc6e77e65409f9c7f88fccd826eca064a49e9c91a9a73496f9f",
+  "identical_pools": 140,
+  "modes": 1205,
+  "hunt_evals": 3064849,
+  "second_evals": 300631,
+  "explicit_evals": 29085,
+  "late_prescore": 0,
+  "cpu_s": 72.95549400000003,
+  "sum_job_wall_s": 73.34323521801525,
+  "maxrss_kib": 34340
+}

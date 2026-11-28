@@ -1,0 +1,2 @@
+#!/bin/sh
+exec /usr/bin/c++ -ffile-prefix-map=/workspace/scratch/b9702cdc7d18/prod-src=/workspace/scratch/a0337c8bef8c/repo "$@"

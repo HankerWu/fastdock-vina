@@ -1,0 +1,15 @@
+{
+  "argv": [
+    "bash",
+    "benchmarks/fork_round/check_numeric.sh",
+    "../candidate-src",
+    "../candidate-build",
+    "/tmp/fastdock-ache-tools/boost",
+    "/tmp/ff28-affinity/prepared",
+    "../numerics"
+  ],
+  "exit_code": 0,
+  "cpu_s": 14.714153,
+  "wall_s": 22.686627437000425,
+  "maxrss_kib": 294016
+}
