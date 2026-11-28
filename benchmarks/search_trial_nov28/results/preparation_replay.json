@@ -1,0 +1,65 @@
+[
+  {
+    "pdb": "4BJX",
+    "argv": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+      "/workspace/scratch/f14e3b42fd33/repo/benchmarks/search_trial_nov28/replay_preparation.py",
+      "--one",
+      "/tmp/fd-angular-prep-repeat",
+      "4BJX",
+      "73B"
+    ],
+    "status": "ready",
+    "exit": 0,
+    "offline_wall_s": 3.1612546569995175,
+    "cpu_s": 3.144106,
+    "peak_rss_kib": 172288,
+    "input_outputs_match": {
+      "ligand.pdbqt": true,
+      "receptor.pdbqt": true,
+      "metadata.json": true
+    }
+  },
+  {
+    "pdb": "4WIV",
+    "argv": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+      "/workspace/scratch/f14e3b42fd33/repo/benchmarks/search_trial_nov28/replay_preparation.py",
+      "--one",
+      "/tmp/fd-angular-prep-repeat",
+      "4WIV",
+      "3P2"
+    ],
+    "status": "excluded",
+    "exit": 1,
+    "offline_wall_s": 2.46539130400015,
+    "cpu_s": 2.463219,
+    "peak_rss_kib": 163872,
+    "input_outputs_match": {
+      "ligand.pdbqt": true,
+      "receptor.pdbqt": true,
+      "metadata.json": true
+    }
+  },
+  {
+    "pdb": "5U2E",
+    "argv": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+      "/workspace/scratch/f14e3b42fd33/repo/benchmarks/search_trial_nov28/replay_preparation.py",
+      "--one",
+      "/tmp/fd-angular-prep-repeat",
+      "5U2E",
+      "837"
+    ],
+    "status": "ready",
+    "exit": 0,
+    "offline_wall_s": 2.6128007040006196,
+    "cpu_s": 2.590899,
+    "peak_rss_kib": 173056,
+    "input_outputs_match": {
+      "ligand.pdbqt": true,
+      "receptor.pdbqt": true,
+      "metadata.json": true
+    }
+  }
+]

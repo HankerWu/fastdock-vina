@@ -1,0 +1,19 @@
+{
+  "cells": 32,
+  "published_poses": 288,
+  "max_difference_A": 1.0658141036401503e-14,
+  "stereo_mappings": {
+    "4BJX": 4,
+    "5U2E": 4
+  },
+  "pocket_alignments": {
+    "4BJX-5U2E": {
+      "n": 36,
+      "fit_rmsd": 0.672649888696931
+    },
+    "5U2E-4BJX": {
+      "n": 36,
+      "fit_rmsd": 0.6726498886969309
+    }
+  }
+}

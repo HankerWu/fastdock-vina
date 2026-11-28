@@ -1,0 +1,55 @@
+[
+  {
+    "pdb": "4BJX",
+    "ligand": "73B",
+    "target": "BRD4",
+    "status": "ready",
+    "wall_s": 14.350411624000117,
+    "cpu_s": 3.0611329999999994,
+    "sha256": {
+      "4BJX.pdb": "7835025ffa5f44aeb7b78af04715e646d470fdbc5d9a48d465620933da1eb9c7",
+      "73B.cif": "7daf76d3eaf449f998936db283f92350762f1f6d2548cd8c5ef38c4e9bb360f4",
+      "chain-A.pdb": "ddf24df709411de5287c6b1916f95603518e267c9ee95aa1327512e9042c5bad",
+      "ligand.pdbqt": "7e9c18fd08c7cab8442d14d773b299f062807fa43d8a957facd3e52bd1979d82",
+      "metadata.json": "5401bdb6b40c61610d0cd41fb742e88db09a2ba23f7fd8f2af3f37127b8d59a3",
+      "prep.log": "1a158f9c616f60fc8d4025b81e1857453a6915bb79efade3c43cec50a3e45f01",
+      "receptor.pdbqt": "d9440a13521569dd564b9861f25d8b77979627e7dc0aa48fdbf0b17da3733702",
+      "source.json": "d5ad54db2e462e989e8b7a684c06c1d184f8a941cd0ff3f89973af2d4ba6763c"
+    }
+  },
+  {
+    "pdb": "4WIV",
+    "ligand": "3P2",
+    "target": "BRD4",
+    "status": "excluded",
+    "reason": "Command '['/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python', '-m', 'meeko.cli.mk_prepare_receptor', '--read_pdb', 'WORK/4WIV/chain-A.pdb', '-p', 'WORK/4WIV/receptor.pdbqt']' returned non-zero exit status 1.",
+    "wall_s": 9.48098257499987,
+    "cpu_s": 1.6431549999999993,
+    "sha256": {
+      "3P2.cif": "0960879b193374d5657e638730b35044021d1357de86ad8b592a36426610249b",
+      "4WIV.pdb": "c98e7998d858522de69c0435963661da7ca61e0ba3d025fce8efad865a77e5fc",
+      "chain-A.pdb": "3dada8e6f34c52a268d18cf68e2d00a548b51dabf33d0a3442a53852ff33a6b6",
+      "ligand.pdbqt": "c0880f6996f9996040f07434c95a6ddb5a805943eb83e7156a407ca2d45918a0",
+      "prep.log": "c2240dbc14fd19003e0301b3fbdb0b2f03237b701e8841ed90df47ffc23ff894",
+      "source.json": "ae349c9dcf9809bf90f198efa2b4bd8198fca755a5f38ddd525bda87efc950ba"
+    }
+  },
+  {
+    "pdb": "5U2E",
+    "ligand": "837",
+    "target": "BRD4",
+    "status": "ready",
+    "wall_s": 10.236857763999978,
+    "cpu_s": 2.1544630000000016,
+    "sha256": {
+      "5U2E.pdb": "54d2dfd851a9a4a7fa7c1bfbd6b827241d0a0088a5ee7b3e6c2779bfbdf4e02d",
+      "837.cif": "b056dc62e2b4c345ded444a148f46a6eabd36fb617b9a2213e9e7d325048836e",
+      "chain-A.pdb": "03871d594f7a35a0c0977858fa2e7fcbbcd9eb22e4587536515cce545951ec88",
+      "ligand.pdbqt": "f083449ed60f1a5be56ef1b7954e2ef8f0366894036165e10fc1496481377b08",
+      "metadata.json": "16e426768dc12fe545177efe06b17a52efac008f9ecee7de5b3379e28db4c75a",
+      "prep.log": "8f70fa8c3dbccdde8d72f06abe6f8567801725c27a96ef6ba0f458a4c11767b3",
+      "receptor.pdbqt": "bf163e2fb0d9176455b690a78258f4a654bd9f29ed77b3d78d4bdff19b3cba2c",
+      "source.json": "6d725a231745f267ac2903263514d6fde7a7f120ec04335547d65f36bb071583"
+    }
+  }
+]

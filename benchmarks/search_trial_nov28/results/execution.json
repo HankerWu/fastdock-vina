@@ -1,0 +1,15 @@
+{
+  "exclusions": [
+    {
+      "query": "4WIV",
+      "reason": "Command '['/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python', '-m', 'meeko.cli.mk_prepare_receptor', '--read_pdb', 'WORK/4WIV/chain-A.pdb', '-p', 'WORK/4WIV/receptor.pdbqt']' returned non-zero exit status 1."
+    }
+  ],
+  "cases": 32,
+  "binary_sha256": {
+    "official": "1eadadbc14e0f442620610062e2d09072a59d8c87a9817be3b99d39dd0e7a20e",
+    "parent": "0c1f72d4c2ddae5a0372baaa582bf38c92032527e6128a49ab14dc049427886b",
+    "stable": "f6ff9e0d9d6f0bc6e77e65409f9c7f88fccd826eca064a49e9c91a9a73496f9f",
+    "candidate": "c7d4ca42dca2da9d864bdef91458706e73722278f49a3ea8291d8c9fc3947e23"
+  }
+}
