@@ -1,7 +1,7 @@
 请继续实际研发 HankerWu/fastdock-vina 的 fastdock-vina-pro 分支。
 https://github.com/HankerWu/fastdock-vina/tree/fastdock-vina-pro
 
-先 fetch 最新远程，核对并保留并行提交。上一轮算法源码为 8d24ebebbd272d7ef05f15cd5ec9643460192f66，累计评价与复算接续点为 c28f8577f731c0502df5e1dec0af70beb51a3cbf。先读 benchmarks/cumulative/README.md、ledger.csv、docs/BINDING_ENSEMBLE_AND_DOCKING.md，以及 benchmarks/geometry_comparison/upstream/four_versions 下的 README、bfgs_results 和 default_completion。运行 offline.py 核对原始坐标、历史干预和真实成本。亲和力见 benchmarks/cumulative/affinity，固定图重评分见 common_reference，盒壁与发布舍入见 benchmarks/fixed_score_domain/publication。以最新可复算证据为准。
+先 fetch 最新远程，核对并保留并行提交。上一轮算法源码为 5847b1bc061b27d64bba5a9d38a03a26d2bf5068，累计评价与复算接续点为 3b510cd5722afb0c9be90803e99f0bcbbd593d5a。先读 benchmarks/cumulative/README.md、ledger.csv、docs/BINDING_ENSEMBLE_AND_DOCKING.md，以及 benchmarks/geometry_comparison/upstream/four_versions 下的 README、bfgs_results 和 default_completion。运行 offline.py 核对原始坐标、历史干预和真实成本。亲和力见 benchmarks/cumulative/affinity，固定图重评分见 common_reference，盒壁与发布舍入见 benchmarks/fixed_score_domain/publication。以最新可复算证据为准。
 
 长期目标是降低受体坐标系内化学对称校正重原子 RMSD，提高同靶、同测定或条件明确可比的 Ki/Kd 排序，减少严重错姿、虚假高亲和力和跨家族偏差。在两相参考、标准态、约束释放、采样重叠和收敛成立时评估绝对或相对结合自由能。允许重设计表示、势、采样、局优、候选保留与终排。从统一的物理模型说明显式和积分掉的自由度、单位、参考态及相关的温度和化学势，检验耦合、重复计分、误差补偿与可辨识性。
 

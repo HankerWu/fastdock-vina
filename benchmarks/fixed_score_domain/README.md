@@ -1,6 +1,6 @@
 # Fixed-coordinate scores share one domain
 
-A caller who supplies an unbound reference changes the zero of the empirical score. The grid on which the receptor field is defined still limits the valid pose coordinates. Before `4dd4e37`, the single-ligand CLI passed the supplied reference to `Vina::score(double)` without the ligand, map, or box checks used by `Vina::score()`. A batch performed the calculation but discarded its returned energy vector. These defects affect downstream users exporting fixed scores, for example before calculating a ranking. They do not explain a blind search that already produced an in-domain but wrongly ranked pose.
+A caller who supplies an unbound reference changes the zero of the empirical score. The grid on which the receptor field is defined still limits the valid pose coordinates. Before `673f226`, the single-ligand CLI passed the supplied reference to `Vina::score(double)` without the ligand, map, or box checks used by `Vina::score()`. A batch performed the calculation but discarded its returned energy vector. These defects affect downstream users exporting fixed scores, for example before calculating a ranking. They do not explain a blind search that already produced an in-domain but wrongly ranked pose.
 
 ## Registered result
 
@@ -24,6 +24,6 @@ All 92 complete CLI processes used one CPU. For the same 36 registered process c
 From the repository root, build the two pinned versions with `tools/build.py`. Pass their paths to the runner and specify a fresh output directory. All structural inputs are in this repository. The C++ test links against the candidate library objects without main.o; use the same compiler and Boost configuration as the executable build.
 
 ```sh
-python benchmarks/fixed_score_domain/run.py /path/to/f46aa37/vina /path/to/4dd4e37/vina /tmp/fixed-domain-fresh
+python benchmarks/fixed_score_domain/run.py /path/to/f46aa37/vina /path/to/673f226/vina /tmp/fixed-domain-fresh
 diff benchmarks/fixed_score_domain/results/summary.csv /tmp/fixed-domain-fresh/summary.csv
 ```

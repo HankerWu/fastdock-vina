@@ -12,7 +12,7 @@ root=$(git rev-parse --show-toplevel)
 official=8eb40404f4f45608acb3b01427587ac049f27c1f
 parent=05ec6ed580999d9c541664673c6dfe46b89be0f5
 stable=f46aa3774f9c77503b98654ec3903fbdb1c72fc0
-candidate=${CANDIDATE_COMMIT:-8d24ebebbd272d7ef05f15cd5ec9643460192f66}
+candidate=${CANDIDATE_COMMIT:-5847b1bc061b27d64bba5a9d38a03a26d2bf5068}
 git clone --bare --depth 1 --branch v1.2.7 https://github.com/forlilab/AutoDock-Vina "$work/official.git"
 test "$(git --git-dir="$work/official.git" rev-parse v1.2.7)" = "$official"
 for arm in official parent stable candidate; do

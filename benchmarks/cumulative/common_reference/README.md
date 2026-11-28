@@ -2,7 +2,7 @@
 
 Each cell pools two already paid blind searches of the same prepared query and receptor. Ordinary Vina stores an unbound energy from its own best pose. In the rigid-receptor Vina scoring function, the torsion transform is monotone and constant across poses of this same molecule. Minimizing the published INTER + INTRA therefore removes the run-specific zero. We compared this choice with the lowest published VINA RESULT, with fixed zero-reference batch re-parsing, and with scoring all saved coordinates on the original ligand topology. These are selectors on an existing pool. They do not estimate a solution-state population, binding free energy or the accuracy of one twice-as-long blind search.
 
-For the final engine all **376/376** published modes in **21/21** two-seed comparisons accepted the common-reference rescore. For the initial Pro the corresponding numbers were **371/376** and **17/21**. Official and parent each accepted **369/374** and completed **17/21**. One out-of-domain input makes the complete-pool selector undefined; all source pools, partial rescoring, and failed runs remain in the denominator. All four engines were rescored by the very same fixed-score implementation (4dd4e37). The visible difference in coverage is upstream of the scorer.
+For the final engine all **376/376** published modes in **21/21** two-seed comparisons accepted the common-reference rescore. For the initial Pro the corresponding numbers were **371/376** and **17/21**. Official and parent each accepted **369/374** and completed **17/21**. One out-of-domain input makes the complete-pool selector undefined; all source pools, partial rescoring, and failed runs remain in the denominator. All four engines were rescored by the very same fixed-score implementation (673f226). The visible difference in coverage is upstream of the scorer.
 
 | Final Pro cohort | Two-seed pools | Lowest printed score, mean error (Å) | Fixed topology and common zero (Å) | Released union oracle (Å) | Better / tied / worse |
 |---|---:|---:|---:|---:|---:|
@@ -16,7 +16,7 @@ Extra work across all four arms was 6.084 CPU s / 11.823 summed wall s for the b
 
 ## Reproduction
 
-Use score-only candidate 4dd4e37 for both methods. Build it with the same tools/build.py and Boost prefix used for the four production builds. Compile the probe with `bash build.sh /path/to/4dd4e37/build/obj "$boost" "$probe"`. The C++ probe uses public Vina APIs to replace coordinates on the prepared ligand, preserving connectivity. PDBQT scoring inputs are deterministically split from the archived blind pools. Every single-model byte hash is in scores.csv.
+Use score-only candidate 673f226 for both methods. Build it with the same tools/build.py and Boost prefix used for the four production builds. Compile the probe with `bash build.sh /path/to/673f226/build/obj "$boost" "$probe"`. The C++ probe uses public Vina APIs to replace coordinates on the prepared ligand, preserving connectivity. PDBQT scoring inputs are deterministically split from the archived blind pools. Every single-model byte hash is in scores.csv.
 
 From the repository root, with an empty work directory and absolute paths to the intermediate CLI and the probe:
 

@@ -32,4 +32,4 @@ tar xf "$D/inputs.tar.xz" -C "$work/fixtures"
 python "$D/audit.py" "$work/fixtures" "$work/runs"
 ```
 
-Regenerate the chemistry with `OPENMM_CPU_THREADS=1 python "$D/prepare.py" "$work/new-inputs"`; the recorded chemistry environment was RDKit 2026.9.2, Meeko 0.8.0, Gemmi 0.7.5, OpenMM 8.6.1 and PDBFixer 1.12.0. The published input hashes are authoritative for the fixed benchmark. `intermediate/` retains the first candidate (4dd4e37) separately.
+Regenerate the chemistry with `OPENMM_CPU_THREADS=1 python "$D/prepare.py" "$work/new-inputs"`; the recorded chemistry environment was RDKit 2026.9.2, Meeko 0.8.0, Gemmi 0.7.5, OpenMM 8.6.1 and PDBFixer 1.12.0. The published input hashes are authoritative for the fixed benchmark. `intermediate/` retains the first candidate (673f226) separately.

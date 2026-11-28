@@ -1,0 +1,219 @@
+{
+  "schema_version": 1,
+  "base_commit": "f46aa3774f9c77503b98654ec3903fbdb1c72fc0",
+  "base_tree": "90305ce7b35bb8bc5a36afaebb046ff8dfb3a71b",
+  "published_tip": "b54c96b03007f2674c760449b85ed13c69a94f03",
+  "published_tip_tree": "9b118fa3b01a400b9ac3312d2583357cba927fd1",
+  "commits": [
+    {
+      "old": "db68451801068f2c698142bae9b15dfd7117a4bd",
+      "new": "de1f6e0ed7e62f930729c3942f48a3d6445aa444",
+      "tree": "a83ef5f369419bb406c8bd6a31a81f644716d5f2",
+      "raw_local_commit": "tree a83ef5f369419bb406c8bd6a31a81f644716d5f2\nparent f46aa3774f9c77503b98654ec3903fbdb1c72fc0\nauthor Codex <codex@openai.com> 1795836602 -0800\ncommitter Codex <codex@openai.com> 1795836602 -0800\n\nFreeze the four-version same-assay affinity comparison and cost control\n"
+    },
+    {
+      "old": "7d6405010b376239ba75d8ad4d5dfd327c67c319",
+      "new": "9466f6752e7627405b3913cb63b850ff87a7c3bd",
+      "tree": "69cd8631a311f68562f7b45bd5490360cffcf82c",
+      "raw_local_commit": "tree 69cd8631a311f68562f7b45bd5490360cffcf82c\nparent db68451801068f2c698142bae9b15dfd7117a4bd\nauthor Codex <codex@openai.com> 1795836647 -0800\ncommitter Codex <codex@openai.com> 1795836647 -0800\n\nPrespecify three external human cognate structures and readout before docking\n"
+    },
+    {
+      "old": "4fcd641e256894e6d75cbe5972ca27b530907875",
+      "new": "2c1f7edff574ef242d2eef12c853d9d31ba4c6e3",
+      "tree": "5233f8b3c397ba8fe07d7fa792323d050f4e4aff",
+      "raw_local_commit": "tree 5233f8b3c397ba8fe07d7fa792323d050f4e4aff\nparent 7d6405010b376239ba75d8ad4d5dfd327c67c319\nauthor Codex <codex@openai.com> 1795836655 -0800\ncommitter Codex <codex@openai.com> 1795836655 -0800\n\nRegister fixed-score domain and reference invariance tests on two human targets\n"
+    },
+    {
+      "old": "7b1fdcd48104600f8966d6fe5717e3310e7040e0",
+      "new": "504c8b044d6630fb29f86ab6a6c9583f4eaa54ab",
+      "tree": "8ffef6aa6f6f32f2e4e4a134a6b3d100ca6e7213",
+      "raw_local_commit": "tree 8ffef6aa6f6f32f2e4e4a134a6b3d100ca6e7213\nparent 4fcd641e256894e6d75cbe5972ca27b530907875\nauthor Codex <codex@openai.com> 1795836660 -0800\ncommitter Codex <codex@openai.com> 1795836660 -0800\n\nFreeze both historical pose cohorts and four executable baselines with cost controls\n"
+    },
+    {
+      "old": "740f416b0a1631ff62c8e5201a15ab69b4084deb",
+      "new": "8ceae077a47f41a6939ac5f4b88096892ce2f52c",
+      "tree": "d222320974227cc6632348784c9545ec31078a01",
+      "raw_local_commit": "tree d222320974227cc6632348784c9545ec31078a01\nparent 7b1fdcd48104600f8966d6fe5717e3310e7040e0\nauthor Codex <codex@openai.com> 1795836751 -0800\ncommitter Codex <codex@openai.com> 1795836751 -0800\n\nFreeze deposited structures and prepared external inputs including exclusions\n"
+    },
+    {
+      "old": "6671fff8d25bd545bd5acad6fcb9b36857a6134f",
+      "new": "12c091471b89d4c9db085e3e84fb6908fb92cecb",
+      "tree": "c89fe136341be12f92a9e0db11faed91b8328068",
+      "raw_local_commit": "tree c89fe136341be12f92a9e0db11faed91b8328068\nparent 740f416b0a1631ff62c8e5201a15ab69b4084deb\nauthor Codex <codex@openai.com> 1795836770 -0800\ncommitter Codex <codex@openai.com> 1795836770 -0800\n\nPrespecify passive counter validation for stock affinity engines\n"
+    },
+    {
+      "old": "159ca0f14c26f713d74ba8a018669cb15abfd54e",
+      "new": "d73755995b2700e336a87b7d9e632687b3498e7f",
+      "tree": "0d7e17ebe33134528505edf0636d3aff47061ace",
+      "raw_local_commit": "tree 0d7e17ebe33134528505edf0636d3aff47061ace\nparent 6671fff8d25bd545bd5acad6fcb9b36857a6134f\nauthor Codex <codex@openai.com> 1795836798 -0800\ncommitter Codex <codex@openai.com> 1795836798 -0800\n\nRegister two-seed common-reference pool diagnostic and stock pose counters\n"
+    },
+    {
+      "old": "4dd4e37945819139c43573f86c3efa467418da26",
+      "new": "673f22634f5196f089a852ba8823a55f669d4786",
+      "tree": "158ed8bf43fae4e61ef79715a1152e8035f34ff4",
+      "raw_local_commit": "tree 158ed8bf43fae4e61ef79715a1152e8035f34ff4\nparent 159ca0f14c26f713d74ba8a018669cb15abfd54e\nauthor Codex <codex@openai.com> 1795836812 -0800\ncommitter Codex <codex@openai.com> 1795836812 -0800\n\nValidate fixed-pose references and return each batch score with its ligand\n"
+    },
+    {
+      "old": "0ebb66279f2dd800cfa82ceeba8f9e0ebea3c1f5",
+      "new": "cb5603bccd1e0f3e398e5097d6cb2e9e183a7b1e",
+      "tree": "ff220dbf0e86e1e35d0d9941dd05816794a9d16d",
+      "raw_local_commit": "tree ff220dbf0e86e1e35d0d9941dd05816794a9d16d\nparent 4dd4e37945819139c43573f86c3efa467418da26\nauthor Codex <codex@openai.com> 1795836840 -0800\ncommitter Codex <codex@openai.com> 1795836840 -0800\n\nFreeze topology-preserving and archived-energy controls before pool rescoring\n"
+    },
+    {
+      "old": "5a8e7b620fa433303beada05e1b734b66ef1b646",
+      "new": "7d7e436f33aa6501a445d14b88f95cfabdcedb29",
+      "tree": "5f00bd472510c80503cd6cfcd8dac6070ec8b092",
+      "raw_local_commit": "tree 5f00bd472510c80503cd6cfcd8dac6070ec8b092\nparent 0ebb66279f2dd800cfa82ceeba8f9e0ebea3c1f5\nauthor Codex <codex@openai.com> 1795837049 -0800\ncommitter Codex <codex@openai.com> 1795837049 -0800\n\nRegister attainable equal-CPU affinity calibration and confirmation\n"
+    },
+    {
+      "old": "6cf92a46639adac6255b8b00b0800c3f89e4de73",
+      "new": "5eef8db456fb0bcc0bd312c67a241e840dba37ed",
+      "tree": "8d3b33ce860024d8119519a929a95a3ac5a6b07f",
+      "raw_local_commit": "tree 8d3b33ce860024d8119519a929a95a3ac5a6b07f\nparent 5a8e7b620fa433303beada05e1b734b66ef1b646\nauthor Codex <codex@openai.com> 1795837054 -0800\ncommitter Codex <codex@openai.com> 1795837054 -0800\n\nPrespecify historical BFGS attribution across both fixed pose panels\n"
+    },
+    {
+      "old": "14d198d65ad62e6b37c050a0161e3176018b1985",
+      "new": "43d87077bb4a3b9491dac468f5b9f87f80488f61",
+      "tree": "c465281a94ec13e3efc18838b3d34dc5d425d408",
+      "raw_local_commit": "tree c465281a94ec13e3efc18838b3d34dc5d425d408\nparent 6cf92a46639adac6255b8b00b0800c3f89e4de73\nauthor Codex <codex@openai.com> 1795837119 -0800\ncommitter Codex <codex@openai.com> 1795837119 -0800\n\nRegister native decimal publication repair and full four-version rerun\n"
+    },
+    {
+      "old": "7d275453b23d84806697ffa0e09f2dc6e417a9f9",
+      "new": "c09ea03018c1e41590eec22cbd567c33cb536daf",
+      "tree": "50967ebecb98f9c05c03eb3a7a2a576b422818a2",
+      "raw_local_commit": "tree 50967ebecb98f9c05c03eb3a7a2a576b422818a2\nparent 14d198d65ad62e6b37c050a0161e3176018b1985\nauthor Codex <codex@openai.com> 1795837132 -0800\ncommitter Codex <codex@openai.com> 1795837132 -0800\n\nVerify the fixed-score domain and batch replay from two independent builds\n"
+    },
+    {
+      "old": "8d24ebebbd272d7ef05f15cd5ec9643460192f66",
+      "new": "5847b1bc061b27d64bba5a9d38a03a26d2bf5068",
+      "tree": "a0c385cb3b27e70a2e10af688b7d68a78823fe28",
+      "raw_local_commit": "tree a0c385cb3b27e70a2e10af688b7d68a78823fe28\nparent 7d275453b23d84806697ffa0e09f2dc6e417a9f9\nauthor Codex <codex@openai.com> 1795837137 -0800\ncommitter Codex <codex@openai.com> 1795837137 -0800\n\nKeep native rigid refinement outputs representable inside the scoring box\n"
+    },
+    {
+      "old": "0c06c46c895f389350162627c05e3cd434ff3016",
+      "new": "02adbdef8e605df4800dc088f4b86700b9821807",
+      "tree": "fdb2a9f95aa449568579280c5ad8022635f3c081",
+      "raw_local_commit": "tree fdb2a9f95aa449568579280c5ad8022635f3c081\nparent 8d24ebebbd272d7ef05f15cd5ec9643460192f66\nauthor Codex <codex@openai.com> 1795837180 -0800\ncommitter Codex <codex@openai.com> 1795837180 -0800\n\nRegister final release rerun and longer official default completion\n"
+    },
+    {
+      "old": "f8c49f4a09a677519c0b0ab88e7fd85629e5689d",
+      "new": "9bfd7f6d2b9326c322c07baa30cf8a99520e0a40",
+      "tree": "65d2551bb2d5a204e4ed2898240268e7b2346572",
+      "raw_local_commit": "tree 65d2551bb2d5a204e4ed2898240268e7b2346572\nparent 0c06c46c895f389350162627c05e3cd434ff3016\nauthor Codex <codex@openai.com> 1795837268 -0800\ncommitter Codex <codex@openai.com> 1795837268 -0800\n\nVerify external EPHX2 poses across four engines and retain excluded deposits\n"
+    },
+    {
+      "old": "61887bf8a56c3eea9bee6fdc90d87946c47f2a22",
+      "new": "b8bf9754ad220144a3bb1e790e707f9e599fc0aa",
+      "tree": "22c76e3694506c6293b3ef5a64534fb039561200",
+      "raw_local_commit": "tree 22c76e3694506c6293b3ef5a64534fb039561200\nparent f8c49f4a09a677519c0b0ab88e7fd85629e5689d\nauthor Codex <codex@openai.com> 1795837482 -0800\ncommitter Codex <codex@openai.com> 1795837482 -0800\n\nRe-evaluate both blind seeds on a common graph and verify decimal box consistency\n"
+    },
+    {
+      "old": "ad8fa0214c2c409b7bc8d9cd1e23d2e24480a9cb",
+      "new": "68ad83521d87ac578ea51a91dd5ed08adda3df38",
+      "tree": "429e948d80a4c31efafaad897f61798979a2b0fa",
+      "raw_local_commit": "tree 429e948d80a4c31efafaad897f61798979a2b0fa\nparent 61887bf8a56c3eea9bee6fdc90d87946c47f2a22\nauthor Codex <codex@openai.com> 1795837482 -0800\ncommitter Codex <codex@openai.com> 1795837482 -0800\n\nMeasure four engines on nine assay and receptor strata with reachable CPU controls\n"
+    },
+    {
+      "old": "cdbc71ffb4dfc54017099b8efd44c287d1908c01",
+      "new": "013f68af9a1ffeaddcc85c409b48425375933202",
+      "tree": "115244ed62765ac4f25c227f37ea75629eb24bbe",
+      "raw_local_commit": "tree 115244ed62765ac4f25c227f37ea75629eb24bbe\nparent ad8fa0214c2c409b7bc8d9cd1e23d2e24480a9cb\nauthor Codex <codex@openai.com> 1795837556 -0800\ncommitter Codex <codex@openai.com> 1795837556 -0800\n\nRecover cumulative docking accuracy and isolate the historical search regression\n"
+    },
+    {
+      "old": "192e909f8c527a0706d44ddc6dcaa5b5e88ef9f2",
+      "new": "aa08bb2f5416ba1d1b142fdbd58c38db86dbcc43",
+      "tree": "7ff86221620e21eb95b8242e2cfbbd71ff2b8cdd",
+      "raw_local_commit": "tree 7ff86221620e21eb95b8242e2cfbbd71ff2b8cdd\nparent cdbc71ffb4dfc54017099b8efd44c287d1908c01\nauthor Codex <codex@openai.com> 1795837623 -0800\ncommitter Codex <codex@openai.com> 1795837623 -0800\n\nPublish the longitudinal four-version performance ledger and continuous distributions\n"
+    },
+    {
+      "old": "c28f8577f731c0502df5e1dec0af70beb51a3cbf",
+      "new": "3b510cd5722afb0c9be90803e99f0bcbbd593d5a",
+      "tree": "c2baa929f1029c58cd4cecdde7adf33668d20be0",
+      "raw_local_commit": "tree c2baa929f1029c58cd4cecdde7adf33668d20be0\nparent 192e909f8c527a0706d44ddc6dcaa5b5e88ef9f2\nauthor Codex <codex@openai.com> 1795837628 -0800\ncommitter Codex <codex@openai.com> 1795837628 -0800\n\nVerify archived coordinates, counters and historical pose runs without executing docking\n"
+    },
+    {
+      "old": "eb83eaca20148fdff04af2c723f0a9e19ca377ce",
+      "new": "b54c96b03007f2674c760449b85ed13c69a94f03",
+      "tree": "9b118fa3b01a400b9ac3312d2583357cba927fd1",
+      "raw_local_commit": "tree 9b118fa3b01a400b9ac3312d2583357cba927fd1\nparent c28f8577f731c0502df5e1dec0af70beb51a3cbf\nauthor Codex <codex@openai.com> 1795837669 -0800\ncommitter Codex <codex@openai.com> 1795837669 -0800\n\nHand off the four-version ledger and the identified BFGS search deficit\n"
+    }
+  ],
+  "updated_source_references": [
+    {
+      "path": "benchmarks/cumulative/README.md",
+      "original_blob": "622b2ce99d3d5db333a02dc7e06efb5dd5d972f9",
+      "original_sha256": "8912854c0769d0319d0417066e6d11e6450d9bf57d82c263783c59310a137d65"
+    },
+    {
+      "path": "benchmarks/cumulative/affinity/README.md",
+      "original_blob": "67148b7011e7b6816a5e2853bf6901f4e5342391",
+      "original_sha256": "2cb55538c4683b08225977fb7c85f67a2f602671f69a1f46061d3e1f32e0f0b1"
+    },
+    {
+      "path": "benchmarks/cumulative/common_reference/README.md",
+      "original_blob": "b8f7e11e569c76e7df6b5fe7ca66e045ec0dba19",
+      "original_sha256": "6caf08485e4c049a77b00cf25111520dfb4400d9f4d89bd36154909b11e195ef"
+    },
+    {
+      "path": "benchmarks/cumulative/external/README.md",
+      "original_blob": "8c3ce052bb1cfd6da8424b086bd852e9ab6ee47a",
+      "original_sha256": "26e07956cae2125ca22ff6fd030618037e08112725599da020d0299537fb6add"
+    },
+    {
+      "path": "benchmarks/cumulative/ledger.csv",
+      "original_blob": "e32067514d1c041eed8177e247d305bff5c35897",
+      "original_sha256": "1717fa3c8f3f6640ba575c2a1d03f1f921edd3d018f1df31d085953d998b7323"
+    },
+    {
+      "path": "benchmarks/fixed_score_domain/PUBLICATION.md",
+      "original_blob": "554ff97eda2fc26bb666c238e8fc699fd0254c1c",
+      "original_sha256": "382011a42330550c4c278f4f996bfb4e9342d93148d1e701fcd4358ec2fb76bd"
+    },
+    {
+      "path": "benchmarks/fixed_score_domain/README.md",
+      "original_blob": "54a6a34c23a19a004b52f6189d177ec7e4836eda",
+      "original_sha256": "4478e241ef48b1616accbdce83559dbdcacd7063139a780e2d1fa079e5c5301e"
+    },
+    {
+      "path": "benchmarks/fixed_score_domain/publication/README.md",
+      "original_blob": "d16dfcfdd336b94b2bb927a1b9097a01466e86c2",
+      "original_sha256": "676a78d474143d3d986737528ed80e51be4c7ca2982d1fc4de9c0ec121e9b8c9"
+    },
+    {
+      "path": "benchmarks/fixed_score_domain/publication/replay.json",
+      "original_blob": "98a8e1bb1f820fdea173e1f376a0c9d209736150",
+      "original_sha256": "8b749af241c3c2c8a6ce2b2136c7d28dc64cef09826133ed2a5a103ffc20398a"
+    },
+    {
+      "path": "benchmarks/fixed_score_domain/results/replay.json",
+      "original_blob": "7deecf22e603d783f3f031522c525e282c8ce2ec",
+      "original_sha256": "a83ec321c1fe3108ca6b86a960d22a42d2da2eb6b05eb107a544b7ece888120e"
+    },
+    {
+      "path": "benchmarks/geometry_comparison/upstream/four_versions/COMPLETION.md",
+      "original_blob": "44cee47262951e2fe4e949f73803685427f89f0c",
+      "original_sha256": "0732d83e1f77f3f21923002c64f8ebedd8384d2ba2a5b72839e58646b061815f"
+    },
+    {
+      "path": "benchmarks/geometry_comparison/upstream/four_versions/README.md",
+      "original_blob": "d5053056041d4716437b881987622aece76e1f25",
+      "original_sha256": "c78cf20c4610f0716c0d4109b43d25636c0e12f582c564b25d37cc7194f73508"
+    },
+    {
+      "path": "benchmarks/geometry_comparison/upstream/four_versions/build.sh",
+      "original_blob": "55711a8d00fa269bd667db72cb1cb0c62a1e522c",
+      "original_sha256": "70d56aecf03d97a52c7dc9197e39dfbba505c1a26ccca5d50e82a81cf63145a1"
+    },
+    {
+      "path": "benchmarks/geometry_comparison/upstream/four_versions/builds.json",
+      "original_blob": "b5c415afe6aae536d52be1388ac8ceb981b60636",
+      "original_sha256": "9b5a589273c69b74f54332ffe08d3601366315fae7e6a19320f0b87d03f3a4e0"
+    },
+    {
+      "path": "docs/NEXT_RESEARCH_PROMPT.md",
+      "original_blob": "1a4631e8e65390f43ee86e8e41004b9777b02ccb",
+      "original_sha256": "d877e2d63adaceb871ceed5839de8364c075724270eb69a1a3476108d7d6b469"
+    }
+  ],
+  "archive_integrity": "Published terminal tree retains every original file byte. Only source identity references in the listed text files were normalized afterwards; all binary, coordinate, measurement and raw-archive hashes are unchanged."
+}

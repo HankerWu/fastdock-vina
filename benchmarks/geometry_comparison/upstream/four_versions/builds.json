@@ -41,14 +41,14 @@
       "repository": "https://github.com/HankerWu/fastdock-vina"
     },
     "intermediate": {
-      "revision": "4dd4e37945819139c43573f86c3efa467418da26",
+      "revision": "673f22634f5196f089a852ba8823a55f669d4786",
       "src_tree": "b1460ce9802cd4ed3cb260f060605b9854131ba3",
       "binary_sha256": "87b28d5da9113939b6eac15aa869cb0f58b05c542eb0b381128b2492d521c707",
       "printed_version": "AutoDock Vina v1.2.7-27-g3c65c0b",
       "repository": "https://github.com/HankerWu/fastdock-vina"
     },
     "candidate": {
-      "revision": "8d24ebebbd272d7ef05f15cd5ec9643460192f66",
+      "revision": "5847b1bc061b27d64bba5a9d38a03a26d2bf5068",
       "src_tree": "f22a5de502749b4743ab0ce7fc2c9cbcbfdf7948",
       "binary_sha256": "f6ff9e0d9d6f0bc6e77e65409f9c7f88fccd826eca064a49e9c91a9a73496f9f",
       "printed_version": "AutoDock Vina v1.2.7-27-g3c65c0b",
