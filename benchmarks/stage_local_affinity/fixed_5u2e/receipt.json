@@ -1,0 +1,248 @@
+{
+  "source_pool": "cognate-5U2E-5U2E-85237-candidate.pdbqt",
+  "source_sha256": "179794f40fbba67c42956e204cf51fea01278fda0f0858f43fb6c586eaad8ab5",
+  "inputs": {
+    "ligand.pdbqt": "f083449ed60f1a5be56ef1b7954e2ef8f0366894036165e10fc1496481377b08",
+    "receptor.pdbqt": "bf163e2fb0d9176455b690a78258f4a654bd9f29ed77b3d78d4bdff19b3cba2c"
+  },
+  "executables": {
+    "stable": "181963d595b77eb7822e874a669882952765f685bef965f4090ef85951882aaa",
+    "candidate": "e7805c5911cc34ec5a47c9e53c1067ac2305d9c064c04ebd200ec7ffbd4a3b70"
+  },
+  "rows": [
+    {
+      "rank": 1,
+      "published": -7.549,
+      "pose_sha256": "690fdeb2792dda5d4281ba0ef23099feb1bca99d9349e622be3467a6ca2f943c",
+      "scores": {
+        "stable": {
+          "log": "stable_rank1.log",
+          "argv": [
+            "/tmp/n28-restored/vina",
+            "--receptor",
+            "/tmp/fd-angular-external-inputs/5U2E/receptor.pdbqt",
+            "--ligand",
+            "/tmp/fd-angular-external-inputs/5U2E/ligand.pdbqt",
+            "--pose_coordinates",
+            "/workspace/scratch/7aece7fb53b6/repo/benchmarks/stage_local_affinity/fixed_5u2e/rank1.pdbqt",
+            "--score_only",
+            "--unbound_energy",
+            "0",
+            "--spacing",
+            "0.375",
+            "--cpu",
+            "1",
+            "--seed",
+            "85237",
+            "--center_x",
+            "-34.50762962962963",
+            "--size_x",
+            "24",
+            "--center_y",
+            "14.071703703703703",
+            "--size_y",
+            "24",
+            "--center_z",
+            "-4.056592592592593",
+            "--size_z",
+            "24"
+          ],
+          "exit": 0,
+          "cpu_s": 0.030015,
+          "wall_s": 0.06945139599974937,
+          "peak_rss_kib": 23508,
+          "terms": [
+            {
+              "Estimated Free Energy of Binding": -8.102,
+              "(1) Final Intermolecular Energy": -9.755,
+              "Ligand - Receptor": -9.755,
+              "Ligand - Flex side chains": 0.0,
+              "(2) Final Total Internal Energy": -0.715,
+              "Ligand": -0.715,
+              "Flex   - Receptor": 0.0,
+              "Flex   - Flex side chains": 0.0,
+              "(3) Torsional Free Energy": 2.368,
+              "(4) Unbound System's Energy": 0.0
+            }
+          ]
+        },
+        "candidate": {
+          "log": "candidate_rank1.log",
+          "argv": [
+            "/workspace/scratch/7aece7fb53b6/hunt-build/vina",
+            "--receptor",
+            "/tmp/fd-angular-external-inputs/5U2E/receptor.pdbqt",
+            "--ligand",
+            "/tmp/fd-angular-external-inputs/5U2E/ligand.pdbqt",
+            "--pose_coordinates",
+            "/workspace/scratch/7aece7fb53b6/repo/benchmarks/stage_local_affinity/fixed_5u2e/rank1.pdbqt",
+            "--score_only",
+            "--unbound_energy",
+            "0",
+            "--spacing",
+            "0.375",
+            "--cpu",
+            "1",
+            "--seed",
+            "85237",
+            "--center_x",
+            "-34.50762962962963",
+            "--size_x",
+            "24",
+            "--center_y",
+            "14.071703703703703",
+            "--size_y",
+            "24",
+            "--center_z",
+            "-4.056592592592593",
+            "--size_z",
+            "24"
+          ],
+          "exit": 0,
+          "cpu_s": 0.023398,
+          "wall_s": 0.04489904399997613,
+          "peak_rss_kib": 23508,
+          "terms": [
+            {
+              "Estimated Free Energy of Binding": -8.102,
+              "(1) Final Intermolecular Energy": -9.755,
+              "Ligand - Receptor": -9.755,
+              "Ligand - Flex side chains": 0.0,
+              "(2) Final Total Internal Energy": -0.715,
+              "Ligand": -0.715,
+              "Flex   - Receptor": 0.0,
+              "Flex   - Flex side chains": 0.0,
+              "(3) Torsional Free Energy": 2.368,
+              "(4) Unbound System's Energy": 0.0
+            }
+          ]
+        }
+      }
+    },
+    {
+      "rank": 2,
+      "published": -7.235,
+      "pose_sha256": "7697f9b9217682401b6ee9d920229c199682b40fbe66a5383813817000d12cad",
+      "scores": {
+        "stable": {
+          "log": "stable_rank2.log",
+          "argv": [
+            "/tmp/n28-restored/vina",
+            "--receptor",
+            "/tmp/fd-angular-external-inputs/5U2E/receptor.pdbqt",
+            "--ligand",
+            "/tmp/fd-angular-external-inputs/5U2E/ligand.pdbqt",
+            "--pose_coordinates",
+            "/workspace/scratch/7aece7fb53b6/repo/benchmarks/stage_local_affinity/fixed_5u2e/rank2.pdbqt",
+            "--score_only",
+            "--unbound_energy",
+            "0",
+            "--spacing",
+            "0.375",
+            "--cpu",
+            "1",
+            "--seed",
+            "85237",
+            "--center_x",
+            "-34.50762962962963",
+            "--size_x",
+            "24",
+            "--center_y",
+            "14.071703703703703",
+            "--size_y",
+            "24",
+            "--center_z",
+            "-4.056592592592593",
+            "--size_z",
+            "24"
+          ],
+          "exit": 0,
+          "cpu_s": 0.021365,
+          "wall_s": 0.05240372800017212,
+          "peak_rss_kib": 23508,
+          "terms": [
+            {
+              "Estimated Free Energy of Binding": -7.788,
+              "(1) Final Intermolecular Energy": -9.397,
+              "Ligand - Receptor": -9.397,
+              "Ligand - Flex side chains": 0.0,
+              "(2) Final Total Internal Energy": -0.667,
+              "Ligand": -0.667,
+              "Flex   - Receptor": 0.0,
+              "Flex   - Flex side chains": 0.0,
+              "(3) Torsional Free Energy": 2.276,
+              "(4) Unbound System's Energy": 0.0
+            }
+          ]
+        },
+        "candidate": {
+          "log": "candidate_rank2.log",
+          "argv": [
+            "/workspace/scratch/7aece7fb53b6/hunt-build/vina",
+            "--receptor",
+            "/tmp/fd-angular-external-inputs/5U2E/receptor.pdbqt",
+            "--ligand",
+            "/tmp/fd-angular-external-inputs/5U2E/ligand.pdbqt",
+            "--pose_coordinates",
+            "/workspace/scratch/7aece7fb53b6/repo/benchmarks/stage_local_affinity/fixed_5u2e/rank2.pdbqt",
+            "--score_only",
+            "--unbound_energy",
+            "0",
+            "--spacing",
+            "0.375",
+            "--cpu",
+            "1",
+            "--seed",
+            "85237",
+            "--center_x",
+            "-34.50762962962963",
+            "--size_x",
+            "24",
+            "--center_y",
+            "14.071703703703703",
+            "--size_y",
+            "24",
+            "--center_z",
+            "-4.056592592592593",
+            "--size_z",
+            "24"
+          ],
+          "exit": 0,
+          "cpu_s": 0.021071,
+          "wall_s": 0.033773819000089134,
+          "peak_rss_kib": 23508,
+          "terms": [
+            {
+              "Estimated Free Energy of Binding": -7.788,
+              "(1) Final Intermolecular Energy": -9.397,
+              "Ligand - Receptor": -9.397,
+              "Ligand - Flex side chains": 0.0,
+              "(2) Final Total Internal Energy": -0.667,
+              "Ligand": -0.667,
+              "Flex   - Receptor": 0.0,
+              "Flex   - Flex side chains": 0.0,
+              "(3) Torsional Free Energy": 2.276,
+              "(4) Unbound System's Energy": 0.0
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "comparable": true,
+  "near_minus_far": {
+    "Estimated Free Energy of Binding": 0.314,
+    "(1) Final Intermolecular Energy": 0.358,
+    "Ligand - Receptor": 0.358,
+    "Ligand - Flex side chains": 0.0,
+    "(2) Final Total Internal Energy": 0.048,
+    "Ligand": 0.048,
+    "Flex   - Receptor": 0.0,
+    "Flex   - Flex side chains": 0.0,
+    "(3) Torsional Free Energy": -0.092,
+    "(4) Unbound System's Energy": 0.0
+  },
+  "published_gap": 0.314,
+  "gap_discrepancy": 0.0,
+  "passes_prediction": true
+}

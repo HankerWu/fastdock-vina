@@ -1,0 +1,28 @@
+{
+  "stages": [
+    {
+      "step": "study.py",
+      "wall_s": 3.666626183000517,
+      "cpu_s": 3.65856,
+      "rss_kib": 91504
+    },
+    {
+      "step": "paired.py",
+      "wall_s": 0.07539774300039426,
+      "cpu_s": 0.075036,
+      "rss_kib": 11264
+    },
+    {
+      "step": "costs.py",
+      "wall_s": 0.06427171099949192,
+      "cpu_s": 0.06397,
+      "rss_kib": 11392
+    }
+  ],
+  "compared_extra_tables": [
+    "pair_changes.csv",
+    "pair_summary.csv",
+    "bace1_receptor_pairs.csv",
+    "physical_costs.json"
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "binary_sha256": "181963d595b77eb7822e874a669882952765f685bef965f4090ef85951882aaa",
+  "reference_binary_sha256": "f6ff9e0d9d6f0bc6e77e65409f9c7f88fccd826eca064a49e9c91a9a73496f9f",
+  "identical_pools": 140,
+  "total_modes": 1205,
+  "counters": {
+    "hunt_evals": 3064849,
+    "second_evals": 300631,
+    "explicit_evals": 29085,
+    "late_prescore": 0
+  },
+  "cpu_s": 57.13020699999998,
+  "sum_job_wall_s": 57.334571166004025,
+  "max_rss_kib": 34316
+}
