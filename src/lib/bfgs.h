@@ -91,33 +91,15 @@ inline void bfgs_update(flmat& h, const flv& direction, const flv& y, fl alpha, 
 		}
 }
 
-// Stay on a principal angular arc for each SO(3) orientation and S1 torsion.
-// The entire direction takes one common scalar step, including translations.
-inline fl principal_angle_step(const conf& x, const flv& direction) {
-	sz offset = 0;
-	fl largest = 0;
-	for (const auto& ligand : x.ligands) {
-		const fl angle = std::hypot(std::hypot(direction[offset + 3], direction[offset + 4]), direction[offset + 5]);
-		largest = std::max(largest, angle);
-		offset += conf_size::rigid_degrees_of_freedom;
-		for (sz i = 0; i < ligand.torsions.size(); ++i)
-			largest = std::max(largest, std::abs(direction[offset++]));
-	}
-	// All remaining coordinates are flexible residue torsions.
-	for (; offset < direction.size(); ++offset)
-		largest = std::max(largest, std::abs(direction[offset]));
-	return largest > pi ? pi / largest : 1;
-}
-
 template<bool StrictArmijo = false, typename F>
 fl line_search(F& f, const conf& x, fl f0, const flv& p, fl pg, conf& x_new, flv& g_new, fl& f1, int& evalcount,
-               int max_evals = 0, bool limit_angles = false) {
+               int max_evals = 0) {
 	if (!std::isfinite(pg) || pg >= 0)
 		return 0;
 	const fl c0 = 0.0001;
 	const unsigned max_trials = 10;
 	const fl multiplier = 0.5;
-	fl alpha = limit_angles ? principal_angle_step(x, p) : 1;
+	fl alpha = 1;
 
 	VINA_U_FOR(trial, max_trials) {
 		if (StrictArmijo && max_evals > 0 && evalcount >= max_evals)
@@ -186,7 +168,7 @@ public:
 	template<bool StrictArmijo = false, typename F>
 	bfgs_result minimize(F& f, conf& x, unsigned max_steps, int& evalcount,
 	                     const flv* inverse_metric = nullptr, int max_evals = 0,
-	                     const bfgs_rigid_metric* rigid_metric = nullptr, bool limit_angles = false) {
+	                     const bfgs_rigid_metric* rigid_metric = nullptr) {
 		h.clear();
 		if (inverse_metric) {
 			VINA_CHECK(StrictArmijo && inverse_metric->size() == h.dim());
@@ -215,7 +197,7 @@ public:
 			}
 			fl trial_energy = 0;
 			const fl alpha = line_search<StrictArmijo>(f, x, energy, *conformation_step, scalar_product(direction, gradient),
-			                                           trial, trial_gradient, trial_energy, evalcount, max_evals, limit_angles);
+			                                           trial, trial_gradient, trial_energy, evalcount, max_evals);
 			if (alpha == 0) {
 				restore_coordinates = true; // The model may reflect the last rejected trial.
 				break;

@@ -71,7 +71,6 @@ void monte_carlo::operator()(model& m, output_container& out, const precalculate
 	fl best_e = max_fl;
 	bool reference_from_save = false;
 	quasi_newton quasi_newton_par(s, local_steps);
-	quasi_newton_par.limit_angles = true;
 	VINA_U_FOR(step, global_steps) {
 		if(increment_me)
 			++(*increment_me);

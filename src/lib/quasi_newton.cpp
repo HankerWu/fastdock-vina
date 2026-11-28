@@ -57,7 +57,7 @@ void quasi_newton::operator()(model& m, const precalculate_byatom& p, const igri
     const bfgs_result result = strict_armijo
         ? workspace.minimize<true>(evaluate, out.c, max_steps, evalcount,
                                    geometry_metric ? &inverse : nullptr, max_evals, rigid ? &*rigid : nullptr)
-        : workspace.minimize(evaluate, out.c, max_steps, evalcount, nullptr, 0, nullptr, limit_angles);
+        : workspace.minimize(evaluate, out.c, max_steps, evalcount);
     if (result.restore_coordinates)
         m.set(out.c);
     out.e = result.energy;
