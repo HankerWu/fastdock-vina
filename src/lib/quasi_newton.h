@@ -39,7 +39,7 @@ public:
     quasi_newton(const conf_size& size, unsigned steps) : workspace(size), max_steps(steps) {}
     void operator()(model& m, const precalculate_byatom& p, const igrid& ig,
                     output_type& out, const vec& v, int& evalcount, pose_template* reference = nullptr,
-                    int max_evals = 0, bool hunt_direction = false);
+                    int max_evals = 0);
 };
 
 #endif

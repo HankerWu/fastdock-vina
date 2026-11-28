@@ -43,7 +43,7 @@ boost::optional<bfgs_rigid_metric> centroid_metric(model& m, const conf& base) {
 } // namespace
 
 void quasi_newton::operator()(model& m, const precalculate_byatom& p, const igrid& ig,
-                              output_type& out, const vec& v, int& evalcount, pose_template* reference, int max_evals, bool hunt_direction) {
+                              output_type& out, const vec& v, int& evalcount, pose_template* reference, int max_evals) {
     const auto rigid = rigid_metric ? centroid_metric(m, out.c) : boost::none;
     auto evaluate = [&](const conf& c, flv& gradient) {
         m.set(c);
@@ -57,7 +57,7 @@ void quasi_newton::operator()(model& m, const precalculate_byatom& p, const igri
     const bfgs_result result = strict_armijo
         ? workspace.minimize<true>(evaluate, out.c, max_steps, evalcount,
                                    geometry_metric ? &inverse : nullptr, max_evals, rigid ? &*rigid : nullptr)
-        : workspace.minimize(evaluate, out.c, max_steps, evalcount, nullptr, 0, nullptr, hunt_direction);
+        : workspace.minimize(evaluate, out.c, max_steps, evalcount);
     if (result.restore_coordinates)
         m.set(out.c);
     out.e = result.energy;

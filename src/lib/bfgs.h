@@ -91,34 +91,6 @@ inline void bfgs_update(flmat& h, const flv& direction, const flv& y, fl alpha, 
 		}
 }
 
-// Winding is bounded in radians. Translation (angstroms) may keep its full
-// trial length only when its combined contribution to g.p is nonpositive.
-inline void limit_hunt_direction(const conf& x, const flv& gradient, flv& direction) {
-	sz offset = 0;
-	fl largest_angle = 0, translation_work = 0;
-	for (const auto& ligand : x.ligands) {
-		for (sz k = 0; k < 3; ++k)
-			translation_work += gradient[offset + k] * direction[offset + k];
-		const fl rotation = std::hypot(std::hypot(direction[offset + 3], direction[offset + 4]), direction[offset + 5]);
-		largest_angle = std::max(largest_angle, rotation);
-		offset += conf_size::rigid_degrees_of_freedom;
-		for (sz i = 0; i < ligand.torsions.size(); ++i)
-			largest_angle = std::max(largest_angle, std::abs(direction[offset++]));
-	}
-	for (; offset < direction.size(); ++offset)
-		largest_angle = std::max(largest_angle, std::abs(direction[offset]));
-	if (!(largest_angle > pi)) return;
-
-	const fl angular_scale = pi / largest_angle;
-	const fl translation_scale = translation_work <= 0 ? 1 : angular_scale;
-	offset = 0;
-	for (const auto& ligand : x.ligands) {
-		for (sz k = 0; k < 3; ++k) direction[offset++] *= translation_scale;
-		for (sz k = 0; k < 3 + ligand.torsions.size(); ++k) direction[offset++] *= angular_scale;
-	}
-	for (; offset < direction.size(); ++offset) direction[offset] *= angular_scale;
-}
-
 template<bool StrictArmijo = false, typename F>
 fl line_search(F& f, const conf& x, fl f0, const flv& p, fl pg, conf& x_new, flv& g_new, fl& f1, int& evalcount,
                int max_evals = 0) {
@@ -196,7 +168,7 @@ public:
 	template<bool StrictArmijo = false, typename F>
 	bfgs_result minimize(F& f, conf& x, unsigned max_steps, int& evalcount,
 	                     const flv* inverse_metric = nullptr, int max_evals = 0,
-	                     const bfgs_rigid_metric* rigid_metric = nullptr, bool hunt_direction = false) {
+	                     const bfgs_rigid_metric* rigid_metric = nullptr) {
 		h.clear();
 		if (inverse_metric) {
 			VINA_CHECK(StrictArmijo && inverse_metric->size() == h.dim());
@@ -217,7 +189,6 @@ public:
 		bool restore_coordinates = false;
 		VINA_U_FOR(step, max_steps) {
 			minus_mat_vec_product(h, gradient, direction);
-			if (hunt_direction) limit_hunt_direction(x, gradient, direction);
 			const flv* conformation_step = &direction;
 			if (StrictArmijo && rigid_metric) {
 				minus_hy = direction;
