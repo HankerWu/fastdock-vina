@@ -51,7 +51,7 @@
 
 交叉成本标定沿用先前另用种子 74317、只读计时数据定出的每个复合物上限。末版 / 官方的实测单格 CPU 成本比中位 0.923，范围 0.299–1.836。本机多进程共同运行，墙钟、调度及 CPU 频率随任务变化。最终与稳定搜索计数匹配且两次测量负载有别，单次计时差异不足以估计本轮代码的加速比。不同引擎的常用 Vina 评估是一次能量和梯度联合计算；相同上限不等于相同提议数、墙钟或浮点工作。官方和父版没有原生计数参数，另在十个固定交叉格各用相同源码加只读计数运行，20/20 与其未修改程序输出逐字节一致。两臂在这十格各实耗 hunt 272272、二次局优 88791、显式精修 4090 次。其余官方和父版格这些计数保留为空。Vina 启动、输入读取、建图、搜索、精修、打分、输出的单次进程用户 / 系统 CPU、墙钟与峰值 RSS 逐格保留；未把合计冒充为各阶段独立用时。[计数追加登记](COUNTERS.md) · [计数与逐例哈希](counter_results/)
 
-全部固定面板合计 260 次主执行，1155.065 CPU 秒、1442.036 逐作业墙钟秒之和；主输出含 2276 个带序姿势，两种独立的对齐和 PDBQT 解析所得最大 RMSD 差为 8.9×10⁻¹⁵ Å。额外研究开销为中间候选 192.291 CPU 秒、两次历史 BFGS 分叉合计 36.810 CPU 秒、遥测复跑 29.587 CPU 秒和官方默认补跑 112.868 CPU 秒。并行作业的墙钟相加不等于整场实验历时。历史已制备输入由四臂复用；其原始离线制作时间未归档到此表。计时不含编译、数据下载和事后几何统计。
+全部固定面板合计 260 次主执行，1155.065 CPU 秒、1442.036 逐作业墙钟秒之和；主输出含 2276 个带序姿势，两种独立的对齐和 PDBQT 解析所得最大 RMSD 差为 8.9×10⁻¹⁵ Å。额外研究开销为中间候选 192.291 CPU 秒、两次历史 BFGS 分叉合计 36.810 CPU 秒、遥测复跑 29.587 CPU 秒和官方默认补跑 112.868 CPU 秒。并行作业的墙钟相加不等于整场实验历时。历史已制备输入由四臂复用；其原始离线制作时间未归档到此表。计时不含编译、数据下载和事后几何统计。另从归档的 PDB/CCD 实际重建十个交叉组配体和十个受体，20/20 个 PDBQT 与冻存输入按 SHA-256 完全一致。逐结构制作合计 22.817 CPU 秒（配体图、构象与参考映射 1.083，受体 21.541，其余解析约 0.194）；逐结构墙钟之和 22.904 秒。受体/配体被种子、版本与三个交叉组预算复用一次。此独立重建只覆盖交叉组；同晶组的历史制备 CPU 未测。[逐结构制备时间与哈希](preparation.json)
 
 ## 复现入口
 
@@ -64,8 +64,10 @@ for a in official parent stable candidate; do
   OPENBLAS_NUM_THREADS=1 python "$D/run_panel.py" "$a" "/tmp/vina-four-builds/$a/vina" "/tmp/vina-four-runs/$a" --jobs 2
 done
 python "$D/evaluate.py" /tmp/vina-four-results --collect /tmp/vina-four-runs
-# Offline: independently check every archived rank, verify coverage, regenerate paired/summary CSV.
-python "$D/evaluate.py" "$D/results"
+# 从仓库根目录只读复算所有已归档姿势、主要汇总、补跑和计数，无需编译或联网。
+OPENBLAS_NUM_THREADS=1 python "$D/offline.py"
+# 如需单独重建交叉组制备时间，另安装 RDKit、Meeko、Gemmi、OpenMM、PDBFixer。
+OPENBLAS_NUM_THREADS=1 OPENMM_CPU_THREADS=1 python "$D/preparation.py" /tmp/vina-prep /tmp/prep-timing.json --jobs 2
 ```
 
 `bfgs.py run` 对每个精确历史版本执行两组 12k 面板，`bfgs.py analyze --core-archived` 可配合已归档的 `results` 验证中间版本和两次连续改动。`counters.py run` 使用 `benchmarks/cumulative/affinity/instrument.py` 对相符源码添加只读计数后的二进制；`counters.py verify` 只在与原始池字节相同的情况下登记计数。`completion.py retry` 和 `archive` 保存单独的默认补跑，可用 `combine` 核对覆盖所有主试验默认超时格。
