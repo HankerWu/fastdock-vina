@@ -29,6 +29,7 @@
 
 #include "conf.h"
 #include <cstring>
+#include <functional>
 
 // Only the local BFGS inverse Hessian uses this full symmetric storage.
 class flmat {
@@ -91,9 +92,11 @@ inline void bfgs_update(flmat& h, const flv& direction, const flv& y, fl alpha, 
 		}
 }
 
+using bfgs_trial_limit = std::function<fl(const conf&, const flv&, fl)>;
+
 template<bool StrictArmijo = false, typename F>
 fl line_search(F& f, const conf& x, fl f0, const flv& p, fl pg, conf& x_new, flv& g_new, fl& f1, int& evalcount,
-               int max_evals = 0) {
+               int max_evals = 0, const bfgs_trial_limit& last_trial = {}) {
 	if (!std::isfinite(pg) || pg >= 0)
 		return 0;
 	const fl c0 = 0.0001;
@@ -104,6 +107,8 @@ fl line_search(F& f, const conf& x, fl f0, const flv& p, fl pg, conf& x_new, flv
 	VINA_U_FOR(trial, max_trials) {
 		if (StrictArmijo && max_evals > 0 && evalcount >= max_evals)
 			return 0;
+		if (trial + 1 == max_trials && last_trial)
+			alpha = last_trial(x, p, alpha);
 		x_new.set_incremented(x, p, alpha);
 		f1 = f(x_new, g_new);
 		++evalcount;
@@ -168,7 +173,7 @@ public:
 	template<bool StrictArmijo = false, typename F>
 	bfgs_result minimize(F& f, conf& x, unsigned max_steps, int& evalcount,
 	                     const flv* inverse_metric = nullptr, int max_evals = 0,
-	                     const bfgs_rigid_metric* rigid_metric = nullptr) {
+	                     const bfgs_rigid_metric* rigid_metric = nullptr, const bfgs_trial_limit& last_trial = {}) {
 		h.clear();
 		if (inverse_metric) {
 			VINA_CHECK(StrictArmijo && inverse_metric->size() == h.dim());
@@ -197,7 +202,7 @@ public:
 			}
 			fl trial_energy = 0;
 			const fl alpha = line_search<StrictArmijo>(f, x, energy, *conformation_step, scalar_product(direction, gradient),
-			                                           trial, trial_gradient, trial_energy, evalcount, max_evals);
+			                                           trial, trial_gradient, trial_energy, evalcount, max_evals, last_trial);
 			if (alpha == 0) {
 				restore_coordinates = true; // The model may reflect the last rejected trial.
 				break;

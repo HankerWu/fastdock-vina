@@ -42,6 +42,7 @@ struct search_trajectory_counters {
 
 struct monte_carlo {
     unsigned max_evals;
+    fl hunt_grid_spacing = 0;
 	unsigned global_steps;
 	fl temperature;
 	vec hunt_cap;

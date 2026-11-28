@@ -1707,6 +1707,11 @@ void Vina::global_search(const int exhaustiveness, const int n_poses, const doub
 	parallelmc.mc.min_rmsd = min_rmsd;
 	parallelmc.mc.num_saved_mins = n_poses;
 	parallelmc.mc.hunt_cap = vec(10, 10, 10);
+    const auto search_dims = m_sf_choice == SF_AD42 ? m_ad4grid.gd() : m_grid.gd();
+    fl spacing = max_fl;
+    for (const auto& axis : search_dims)
+        if (axis.enabled()) spacing = std::min(spacing, axis.span() / axis.n_voxels);
+    if (spacing < max_fl) parallelmc.mc.hunt_grid_spacing = spacing;
 	parallelmc.mc.mixed_reorientation = m_mixed_reorientation;
 	parallelmc.mc.separate_hunt_chain = m_separate_hunt_chain;
 	parallelmc.mc.centered_rotation = m_centered_rotation;

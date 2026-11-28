@@ -114,6 +114,7 @@ public:
 	vecv get_heavy_atom_movable_coords() const;
 	vecv get_chemical_heavy_atom_movable_coords() const;
 	// Set c and return the regularized inverse diagonal of its Cartesian RMS metric.
+	fl max_heavy_atom_speed(const conf& base, const flv& direction);
 	flv geometry_inverse_metric(const conf& c);
 	std::vector<std::pair<sz, std::string>> chemical_heavy_atom_elements() const;
 	fl template_overlap(pose_template& reference) const;

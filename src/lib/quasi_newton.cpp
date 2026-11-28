@@ -43,7 +43,7 @@ boost::optional<bfgs_rigid_metric> centroid_metric(model& m, const conf& base) {
 } // namespace
 
 void quasi_newton::operator()(model& m, const precalculate_byatom& p, const igrid& ig,
-                              output_type& out, const vec& v, int& evalcount, pose_template* reference, int max_evals) {
+                              output_type& out, const vec& v, int& evalcount, pose_template* reference, int max_evals, fl final_trial_spacing) {
     const auto rigid = rigid_metric ? centroid_metric(m, out.c) : boost::none;
     auto evaluate = [&](const conf& c, flv& gradient) {
         m.set(c);
@@ -54,10 +54,17 @@ void quasi_newton::operator()(model& m, const precalculate_byatom& p, const igri
     };
     VINA_CHECK(!geometry_metric || strict_armijo);
     const flv inverse = geometry_metric ? m.geometry_inverse_metric(out.c) : flv();
+    bfgs_trial_limit last_trial;
+    if (final_trial_spacing > 0) {
+        last_trial = [&](const conf& base, const flv& direction, fl alpha) {
+            const fl speed = m.max_heavy_atom_speed(base, direction);
+            return speed > 0 && std::isfinite(speed) ? std::min(alpha, final_trial_spacing / speed) : alpha;
+        };
+    }
     const bfgs_result result = strict_armijo
         ? workspace.minimize<true>(evaluate, out.c, max_steps, evalcount,
                                    geometry_metric ? &inverse : nullptr, max_evals, rigid ? &*rigid : nullptr)
-        : workspace.minimize(evaluate, out.c, max_steps, evalcount);
+        : workspace.minimize(evaluate, out.c, max_steps, evalcount, nullptr, 0, nullptr, last_trial);
     if (result.restore_coordinates)
         m.set(out.c);
     out.e = result.energy;

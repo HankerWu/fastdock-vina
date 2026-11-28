@@ -754,6 +754,44 @@ vecv model::get_chemical_heavy_atom_movable_coords() const {
 }
 
 namespace {
+// Forward kinematics for a tangent in the same preorder as conf::set_incremented.
+// linear is the velocity of the node origin; angular is in the receptor frame.
+template<typename Node>
+void max_frame_speed(const model& m, const Node& node, const branches& children,
+                     const vec& linear, const vec& angular, flv::const_iterator& torsion,
+                     fl& max_squared) {
+    VINA_RANGE(i, node.begin, node.end) {
+        if (chemical_heavy_atom(m.movable_atom(i))) {
+            const vec velocity = linear + cross_product(angular, m.movable_coords(i) - node.get_origin());
+            max_squared = std::max(max_squared, sqr(velocity));
+        }
+    }
+    for (const auto& child : children) {
+        const vec pivot_velocity = linear + cross_product(angular, child.node.get_origin() - node.get_origin());
+        const vec rotation = angular + (*torsion++) * child.node.get_axis();
+        max_frame_speed(m, child.node, child.children, pivot_velocity, rotation, torsion, max_squared);
+    }
+}
+} // namespace
+
+fl model::max_heavy_atom_speed(const conf& base, const flv& direction) {
+    set(base);
+    auto p = direction.begin();
+    fl max_squared = 0;
+    for (const auto& ligand : ligands) {
+        const vec linear(p[0], p[1], p[2]), angular(p[3], p[4], p[5]);
+        p += conf_size::rigid_degrees_of_freedom;
+        max_frame_speed(*this, ligand.node, ligand.children, linear, angular, p, max_squared);
+    }
+    for (const auto& residue : flex) {
+        const vec angular = (*p++) * residue.node.get_axis();
+        max_frame_speed(*this, residue.node, residue.children, zero_vec, angular, p, max_squared);
+    }
+    assert(p == direction.end());
+    return std::sqrt(max_squared);
+}
+
+namespace {
 // Unweighted second central moments of the chemical heavy atoms. All centers
 // use ligand-root-relative coordinates to avoid subtracting large world offsets.
 struct subtree_moments {
