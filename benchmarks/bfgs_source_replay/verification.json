@@ -1,0 +1,9 @@
+{
+  "method": "Independent SVD pocket fit and raw event parser; log/coordinate/energy checks",
+  "historical_driver_paths": 18,
+  "matched_native_controls": 7130,
+  "stable_candidate_pairs": 7130,
+  "first_divergences": 9,
+  "verified_published_ranks": 51,
+  "max_abs_numeric_discrepancy": 4.440892098500626e-15
+}

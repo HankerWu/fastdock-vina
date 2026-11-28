@@ -51,3 +51,5 @@ python "$D/analyze.py" /tmp/bfgs-offline /tmp/bfgs-offline-tables
 python "$D/candidate_replay.py" /tmp/bfgs-offline /tmp/bfgs-offline-tables
 diff -qr "$D/results" /tmp/bfgs-offline-tables
 ```
+
+An [independent verifier](verify.py) uses a NumPy SVD pocket fit, an independent event parser and direct PDBQT coordinates. [Verification results](verification.json) cover all nine first state divergences, all 18 native trajectories, 51 published ranks, 7,130 same-solver controls and 7,130 stable–candidate proposal pairs. The largest absolute discrepancy on checked aggregates is 4.45 × 10⁻¹⁵ or less. Run `python "$D/verify.py" /tmp/bfgs-offline "$D/results"` after restoring the bundle.

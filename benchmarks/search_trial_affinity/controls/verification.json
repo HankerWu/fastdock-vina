@@ -1,0 +1,54 @@
+{
+  "domain_calls": 92,
+  "domain_summary_equal": true,
+  "mode_score_calls": 54,
+  "max_abs_residual": 0.027000000000001023,
+  "max_excess_A": 0.0,
+  "fresh_fixed_score_winner": {
+    "seed": 85231,
+    "rank": 1,
+    "rmsd": 1.2503376184055248,
+    "fixed_score": -10.4,
+    "printed_score": -10.023
+  },
+  "fresh_printed_score_winner": {
+    "seed": 85231,
+    "rank": 1,
+    "rmsd": 1.2503376184055248,
+    "fixed_score": -10.4,
+    "printed_score": -10.023
+  },
+  "fresh_rmsd_winner": {
+    "seed": 85237,
+    "rank": 1,
+    "rmsd": 1.232948871608227,
+    "fixed_score": -10.378,
+    "printed_score": -10.016
+  },
+  "archived_fixed_score_winner": {
+    "seed": 85237,
+    "rank": 1,
+    "rmsd": 10.310033429625726,
+    "fixed_score": -9.773,
+    "printed_score": -9.343
+  },
+  "archived_printed_score_winner": {
+    "seed": 85237,
+    "rank": 1,
+    "rmsd": 10.310033429625726,
+    "fixed_score": -9.773,
+    "printed_score": -9.343
+  },
+  "archived_rmsd_winner": {
+    "seed": 85231,
+    "rank": 1,
+    "rmsd": 1.761683320009587,
+    "fixed_score": -9.764,
+    "printed_score": -9.319
+  },
+  "binary_sha256": {
+    "prefix": "a39261c561df69b36b48777be08b2ab806abdd691e002b287ba1ad718760228f",
+    "stable": "f6ff9e0d9d6f0bc6e77e65409f9c7f88fccd826eca064a49e9c91a9a73496f9f",
+    "candidate": "c7d4ca42dca2da9d864bdef91458706e73722278f49a3ea8291d8c9fc3947e23"
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "binaries": {
+    "baseline": {
+      "sha256": "f6ff9e0d9d6f0bc6e77e65409f9c7f88fccd826eca064a49e9c91a9a73496f9f",
+      "compiled_path": "/workspace/scratch/a0337c8bef8c/repo",
+      "path_literals": 20,
+      "elf_build_id": "3b4c649f42cf4b6f97ed40f1860eb9b9a3a5b224",
+      "normalized_sha256": "eda2a4d3a1aec84656d26dc2d8220913392e3a51f4258a4782df1c1e5b2513e9"
+    },
+    "restored": {
+      "sha256": "181963d595b77eb7822e874a669882952765f685bef965f4090ef85951882aaa",
+      "compiled_path": "/workspace/scratch/f14e3b42fd33/repo",
+      "path_literals": 20,
+      "elf_build_id": "6986722e7cb81dfb736d6a9199efb92e7d76ddfa",
+      "normalized_sha256": "eda2a4d3a1aec84656d26dc2d8220913392e3a51f4258a4782df1c1e5b2513e9"
+    }
+  },
+  "source_commit": "d37e5e4743f2460c89726d18b6452487ae085096",
+  "normalized_binary_identical": true,
+  "byte_identical_pools": 65,
+  "modes": 572,
+  "cpu_s": 123.273801,
+  "summed_wall_s": 124.206194,
+  "peak_rss_kib": 43724
+}

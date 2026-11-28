@@ -1,0 +1,164 @@
+{
+  "omission": {
+    "4OCZ": {
+      "receiver_chain": "A",
+      "ligand_instance": "A 603",
+      "distance_A": 48.718759395124174,
+      "ligand_atom": {
+        "serial": 4346,
+        "atom": "C17",
+        "altloc": "",
+        "residue": "2RU",
+        "chain": "A",
+        "seq": "603",
+        "element": "C"
+      },
+      "omitted_atom": {
+        "serial": 4338,
+        "atom": "O4",
+        "altloc": "",
+        "residue": "PO4",
+        "chain": "A",
+        "seq": "601",
+        "element": "O"
+      },
+      "altlocs": []
+    },
+    "6AUM": {
+      "receiver_chain": "A",
+      "ligand_instance": "A 603",
+      "distance_A": 4.1293012726125955,
+      "ligand_atom": {
+        "serial": 4355,
+        "atom": "O25",
+        "altloc": "",
+        "residue": "BXV",
+        "chain": "A",
+        "seq": "603",
+        "element": "O"
+      },
+      "omitted_atom": {
+        "serial": 4382,
+        "atom": "CL",
+        "altloc": "",
+        "residue": "CL",
+        "chain": "A",
+        "seq": "604",
+        "element": "CL"
+      },
+      "altlocs": []
+    },
+    "4R6E": {
+      "receiver_chain": "A",
+      "ligand_instance": "A1101",
+      "distance_A": 3.5255583954885843,
+      "ligand_atom": {
+        "serial": 11012,
+        "atom": "CAG",
+        "altloc": "",
+        "residue": "3JD",
+        "chain": "A",
+        "seq": "1101",
+        "element": "C"
+      },
+      "omitted_atom": {
+        "serial": 11033,
+        "atom": "C2",
+        "altloc": "",
+        "residue": "GOL",
+        "chain": "A",
+        "seq": "1103",
+        "element": "C"
+      },
+      "altlocs": []
+    }
+  },
+  "verified_ranks": 70,
+  "maximum_rmsd_error_A": 1.7763568394002505e-15,
+  "ligand_atoms": 25,
+  "graph_mappings": [
+    48
+  ],
+  "cells": [
+    {
+      "arm": "official",
+      "seed": "85231",
+      "modes": 8,
+      "top1": 9.087951912284748,
+      "best5": 7.561155887825618,
+      "oracle": 7.561155887825618,
+      "regret": 1.5267960244591299,
+      "sha256": "8bee1ac0bc593423682888ecab4cab4289b11702c675c2d37a3ad99286678cbb"
+    },
+    {
+      "arm": "official",
+      "seed": "85237",
+      "modes": 9,
+      "top1": 1.2820928827506999,
+      "best5": 1.2820928827506999,
+      "oracle": 1.2820928827506999,
+      "regret": 0.0,
+      "sha256": "2ec43503a235312de6cd0b24cd4c854cdfd0bcaba61392c3ad08cd6ccf5b9ef1"
+    },
+    {
+      "arm": "parent",
+      "seed": "85231",
+      "modes": 8,
+      "top1": 9.087951912284748,
+      "best5": 7.561155887825618,
+      "oracle": 7.561155887825618,
+      "regret": 1.5267960244591299,
+      "sha256": "8bee1ac0bc593423682888ecab4cab4289b11702c675c2d37a3ad99286678cbb"
+    },
+    {
+      "arm": "parent",
+      "seed": "85237",
+      "modes": 9,
+      "top1": 1.2820928827506999,
+      "best5": 1.2820928827506999,
+      "oracle": 1.2820928827506999,
+      "regret": 0.0,
+      "sha256": "2ec43503a235312de6cd0b24cd4c854cdfd0bcaba61392c3ad08cd6ccf5b9ef1"
+    },
+    {
+      "arm": "stable",
+      "seed": "85231",
+      "modes": 9,
+      "top1": 1.761683320009587,
+      "best5": 1.761683320009587,
+      "oracle": 1.761683320009587,
+      "regret": 0.0,
+      "sha256": "b181911ec0ba99cf0172e1e3f7a93bd1080e38f6a7a8975970aee6a497dc6a74"
+    },
+    {
+      "arm": "stable",
+      "seed": "85237",
+      "modes": 9,
+      "top1": 10.310033429625726,
+      "best5": 9.801492227207039,
+      "oracle": 9.801492227207039,
+      "regret": 0.5085412024186873,
+      "sha256": "3632ab4baa0246697c7870a934374208d05c938076f6efdb6d7909adcfd79007"
+    },
+    {
+      "arm": "candidate",
+      "seed": "85231",
+      "modes": 9,
+      "top1": 1.2503376184055248,
+      "best5": 1.2503376184055248,
+      "oracle": 1.2503376184055248,
+      "regret": 0.0,
+      "sha256": "a8e7f268e01adcd7ddfc355e123b1507049bfebe32b28e3c3dbcdcebc32763c2"
+    },
+    {
+      "arm": "candidate",
+      "seed": "85237",
+      "modes": 9,
+      "top1": 1.232948871608227,
+      "best5": 1.232948871608227,
+      "oracle": 1.232948871608227,
+      "regret": 0.0,
+      "sha256": "11ce86a0c14687b8c6c9a0fa7605a6d8a0fc23cd6f5b28e74c0b4f5e1a417a3b"
+    }
+  ]
+}
